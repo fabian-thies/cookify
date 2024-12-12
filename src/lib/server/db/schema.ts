@@ -9,7 +9,7 @@ export const userTable = pgTable('user', {
     createdAt: timestamp('created_at', {
         withTimezone: true,
         mode: 'date'
-    }).notNull()
+    }).defaultNow().notNull()
 });
 
 // Session Table
