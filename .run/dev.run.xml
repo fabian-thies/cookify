@@ -6,7 +6,7 @@
       <script value="dev" />
     </scripts>
     <node-interpreter value="project" />
-    <package-manager value="pnpm" />
+    <package-manager value="$USER_HOME$/.nvm/versions/node/v23.3.0/bin/npm" />
     <envs />
     <method v="2" />
   </configuration>
