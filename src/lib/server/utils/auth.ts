@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import {env} from '$env/dynamic/private';
+import type {JwtVerificationResult} from "$lib/types/JwtVerificationResult";
 
 interface JwtPayload {
     userId: string;
@@ -21,15 +22,16 @@ export const signJWT = async (userId: string, username: string, roles: string[] 
     return jwt.sign(payload, env.SECRET_APP_KEY, {expiresIn: '7d'});
 };
 
-export const verifyJWT = async (token: string): Promise<JwtPayload> => {
+export const verifyJWT = async (token: string): Promise<JwtVerificationResult> => {
     if (!env.SECRET_APP_KEY) {
         throw new Error('SECRET_APP_KEY is not defined');
     }
 
     try {
-        return jwt.verify(token, env.SECRET_APP_KEY) as JwtPayload;
+        const jwtPayload = jwt.verify(token, env.SECRET_APP_KEY) as JwtPayload;
+        return {isValid: true, payload: jwtPayload};
     } catch (err) {
-        throw new Error('Invalid or expired token');
+        return {isValid: false};
     }
 };
 
