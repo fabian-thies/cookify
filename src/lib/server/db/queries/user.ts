@@ -26,3 +26,17 @@ export async function createUser(username: string, email: string, password: stri
 
     return newUser.id;
 }
+
+export async function getUserByEmail(email: string): Promise<{
+    id: number;
+    email: string;
+    username: string;
+    passwordHash: string
+} | null> {
+    const [user] = await db
+        .select()
+        .from(userTable)
+        .where(eq(userTable.email, email));
+
+    return user;
+}
