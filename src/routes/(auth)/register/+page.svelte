@@ -1,7 +1,7 @@
 <script>
     import {Button, Input, Label} from "flowbite-svelte";
 
-    const { form } = $props();
+    const {form} = $props();
 </script>
 
 <section class="w-[30rem] mx-auto my-28">
@@ -12,6 +12,10 @@
                 { form.formError.error }
             </p>
         {/if}
+        <Label class="space-y-2">
+            <span>Nutzername</span>
+            <Input name="username" placeholder="Dein Nutzername" required type="text"/>
+        </Label>
         <Label class="space-y-2">
             <span>E-Mail</span>
             <Input name="email" placeholder="max@mustermann.de" required type="email"/>
