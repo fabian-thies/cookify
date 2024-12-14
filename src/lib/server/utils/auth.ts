@@ -5,17 +5,19 @@ import type {JwtVerificationResult} from "$lib/types/JwtVerificationResult";
 interface JwtPayload {
     userId: string;
     username: string;
+    email: string;
     roles: string[];
 }
 
-export const signJWT = async (userId: string, username: string, roles: string[] = []): Promise<string> => {
+export const signJWT = async (userId: string, username: string, email: string, roles: string[] = []): Promise<string> => {
     if (!env.SECRET_APP_KEY) {
         throw new Error('SECRET_APP_KEY is not defined');
     }
 
     const payload: JwtPayload = {
-        userId: userId,
+        userId,
         username,
+        email,
         roles
     };
 

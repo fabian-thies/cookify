@@ -22,7 +22,7 @@ export const actions = {
         const isPasswordValid = await bcrypt.compare(password, user?.passwordHash);
 
         if (isPasswordValid) {
-            const token = await signJWT(user.id.toString(), user.username);
+            const token = await signJWT(user.id.toString(), user.username, user.email);
 
             cookies.set('token', token, {
                 httpOnly: true,

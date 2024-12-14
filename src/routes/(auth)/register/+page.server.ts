@@ -19,7 +19,7 @@ export const actions = {
         }
 
         const userId: string = createUser(username, email, password).toString();
-        const token = await signJWT(userId, username);
+        const token = await signJWT(userId, username, email);
 
         cookies.set('token', token, {
             httpOnly: true,
