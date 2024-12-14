@@ -6,7 +6,7 @@ export const handle: Handle = async ({event, resolve}) => {
         return resolve(event);
     }
 
-    const authToken: string = String(event.cookies.get("token"));
+    const authToken: string = String(event.cookies.get("session"));
     const jwtPayload = await verifyJWT(authToken);
 
     if (!jwtPayload.isValid) {
