@@ -1,5 +1,6 @@
 <script lang="ts">
     import {Button, Input, Label} from "flowbite-svelte";
+    import type {ActionData} from './$types';
     import {enhance} from "$app/forms";
 
     const {form}: { form: ActionData } = $props();

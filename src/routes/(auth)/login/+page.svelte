@@ -1,6 +1,7 @@
 <script lang="ts">
     import {Button, Input, Label} from "flowbite-svelte";
     import {enhance} from "$app/forms";
+    import type {ActionData} from './$types';
 
     let {form}: { form: ActionData } = $props();
 </script>
@@ -8,7 +9,7 @@
 <section class="w-[30rem] mx-auto my-28">
     <form class="flex flex-col space-y-6" method="POST" use:enhance>
         <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">Melde dich an</h3>
-        {#if form?.formError}
+        {#if form?.formMsg}
             <p class="text-red-500 text-sm">
                 { form.formMsg.error}
             </p>
