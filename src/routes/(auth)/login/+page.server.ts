@@ -2,6 +2,9 @@ import {type Actions, fail, redirect} from '@sveltejs/kit';
 import {createSession, getUserByEmail} from "$lib/server/db/queries/user";
 import bcrypt from "bcrypt";
 
+const WRONG_CREDENTIALS = 'Die E-Mail oder das Passwort ist falsch.';
+const ERROR_ATTEMPT = 'Ein Fehler ist aufgetreten. Bitte versuche es erneut.';
+
 export const actions = {
     default: async ({request, cookies}) => {
         const data = await request.formData();
@@ -15,7 +18,7 @@ export const actions = {
         const user = await getUserByEmail(email);
 
         if (!user.success) {
-            return fail(400, {message: {error: 'Der Benutzername oder das Passwort ist falsch.'}})
+            return fail(400, {message: {error: WRONG_CREDENTIALS}})
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.data.passwordHash);
@@ -23,8 +26,8 @@ export const actions = {
         if (isPasswordValid) {
             const sessionToken = await createSession(user.data.id);
 
-            if(!sessionToken.success) {
-                return fail(400, {message: {error: 'Ein Fehler ist aufgetreten. Bitte versuche es erneut.'}});
+            if (!sessionToken.success) {
+                return fail(400, {message: {error: ERROR_ATTEMPT}});
             }
 
             const token = sessionToken.data;
@@ -38,7 +41,7 @@ export const actions = {
             return redirect(303, '/');
         }
 
-        return fail(400, {message: {error: 'Der Benutzername oder das Passwort ist falsch.'}})
+        return fail(400, {message: {error: WRONG_CREDENTIALS}})
     }
 } satisfies Actions;
 
