@@ -6,5 +6,5 @@ export const load = async ({cookies}) => {
         expires: new Date(Date.now())
     })
 
-    redirect(303, "/")
+    redirect(303, "/login");
 }

@@ -1,7 +1,6 @@
 import {type Actions, fail, redirect} from '@sveltejs/kit';
-import {getUserByEmail} from "$lib/server/db/queries/user";
+import {createSession, getUserByEmail} from "$lib/server/db/queries/user";
 import bcrypt from "bcrypt";
-import {signJWT} from "$lib/server/utils/auth";
 
 export const actions = {
     default: async ({request, cookies}) => {
@@ -10,30 +9,36 @@ export const actions = {
         const password = String(data.get('password'));
 
         if (!email || !password) {
-            return fail(400, {formMsg: {error: 'Bitte alle Felder ausfüllen.'}});
+            return fail(400, {message: {error: 'Bitte alle Felder ausfüllen.'}});
         }
 
         const user = await getUserByEmail(email);
 
-        if (!user) {
-            return fail(400, {formMsg: {error: 'Der Benutzername oder das Passwort ist falsch.'}})
+        if (!user.success) {
+            return fail(400, {message: {error: 'Der Benutzername oder das Passwort ist falsch.'}})
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user?.passwordHash);
+        const isPasswordValid = await bcrypt.compare(password, user.data.passwordHash);
 
         if (isPasswordValid) {
-            const token = await signJWT(user.id.toString(), user.username, user.email);
+            const sessionToken = await createSession(user.data.id);
+
+            if(!sessionToken.success) {
+                return fail(400, {message: {error: 'Ein Fehler ist aufgetreten. Bitte versuche es erneut.'}});
+            }
+
+            const token = sessionToken.data;
 
             cookies.set('session', token, {
                 httpOnly: true,
                 maxAge: 60 * 60 * 24 * 7,
-                path: '/'
+                path: '/',
             });
 
             return redirect(303, '/');
         }
 
-        return fail(400, {formMsg: {error: 'Der Benutzername oder das Passwort ist falsch.'}})
+        return fail(400, {message: {error: 'Der Benutzername oder das Passwort ist falsch.'}})
     }
 } satisfies Actions;
 

@@ -14,7 +14,7 @@ export const userTable = pgTable('user', {
 
 // Session Table
 export const sessionTable = pgTable('session', {
-    id: text('id').primaryKey(),
+    token: text('session_token').notNull().unique().primaryKey(),
     userId: integer('user_id')
         .notNull()
         .references(() => userTable.id),

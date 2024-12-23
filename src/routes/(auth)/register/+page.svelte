@@ -9,9 +9,9 @@
 <section class="w-[30rem] mx-auto my-28">
     <form class="flex flex-col space-y-6" method="POST" use:enhance>
         <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">Registriere dein Account</h3>
-        {#if form?.formMsg}
+        {#if form?.message}
             <p class="text-red-500 text-sm">
-                { form.formMsg.error }
+                { form.message.error }
             </p>
         {/if}
         <Label class="space-y-2">
