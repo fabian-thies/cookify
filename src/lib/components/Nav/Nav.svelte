@@ -15,7 +15,7 @@
     const user = page.data.user;
 </script>
 
-<Navbar class="p-6">
+<Navbar class="my-4">
     <NavBrand href="/">
         <span class="self-center whitespace-nowrap text-xl font-bold dark:text-white">cookify</span>
     </NavBrand>

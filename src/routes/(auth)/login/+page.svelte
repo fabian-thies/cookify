@@ -6,7 +6,7 @@
     let {form}: { form: ActionData } = $props();
 </script>
 
-<section class="w-[30rem] mx-auto my-28 m-4">
+<section class="w-[30rem] mx-auto my-28">
     <form class="flex flex-col space-y-6" method="POST" use:enhance>
         <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">Melde dich an</h3>
         {#if form?.message}
