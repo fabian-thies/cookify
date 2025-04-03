@@ -4,7 +4,9 @@ export const user = pgTable('user', {
     id: text('id').primaryKey(),
     age: integer('age'),
     username: text('username').notNull().unique(),
-    passwordHash: text('password_hash').notNull()
+    passwordHash: text('password_hash').notNull(),
+    createdAt: timestamp('created_at', {withTimezone: true}).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', {withTimezone: true}).defaultNow().notNull(),
 });
 
 export const session = pgTable('session', {
@@ -17,6 +19,14 @@ export const recipe = pgTable('recipe', {
     id: serial('id').primaryKey(),
     userId: text('user_id').notNull().references(() => user.id),
     title: text('title').notNull(),
+    description: text('description').notNull(),
+    imageUrl: text('image_url').notNull(),
+    prepTime: integer('prep_time'), // in minutes
+    cookTime: integer('cook_time'), // in minutes
+    servings: integer('servings'),
+    status: text('status').default('draft').notNull(), // draft, published, archived
+    createdAt: timestamp('created_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow()
 });
 
 export const ingredient = pgTable('ingredient', {
@@ -32,8 +42,21 @@ export const instructions = pgTable('instructions', {
     instruction: text('instruction').notNull()
 });
 
+export const category = pgTable('category', {
+    id: serial('id').primaryKey(),
+    name: text('name').notNull(),
+});
+
+export const recipeCategory = pgTable('recipe_category', {
+    id: serial('id').primaryKey(),
+    recipeId: integer('recipe_id').notNull().references(() => recipe.id),
+    categoryId: integer('category_id').notNull().references(() => category.id),
+});
+
 export type Session = typeof session.$inferSelect;
 export type User = typeof user.$inferSelect;
 export type Recipe = typeof recipe.$inferSelect;
 export type Ingredient = typeof ingredient.$inferSelect;
 export type Instructions = typeof instructions.$inferSelect;
+export type Category = typeof category.$inferSelect;
+export type RecipeCategory = typeof recipeCategory.$inferSelect;
