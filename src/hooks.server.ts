@@ -1,35 +1,26 @@
-import {type Handle, redirect} from "@sveltejs/kit";
-import {getUserBySessionToken} from "$lib/server/db/queries/user";
+import type { Handle } from '@sveltejs/kit';
+import * as auth from '$lib/server/auth.js';
 
-export const handle: Handle = async ({event, resolve}) => {
-    const sessionCookie = event.cookies.get("session");
-    const pathIsLogin: Boolean = event.url.pathname == "/login";
-    const pathIsRegister: Boolean = event.url.pathname == "/register";
+const handleAuth: Handle = async ({ event, resolve }) => {
+	const sessionToken = event.cookies.get(auth.sessionCookieName);
 
-    if (pathIsLogin || pathIsRegister) {
-        return resolve(event);
-    }
+	if (!sessionToken) {
+		event.locals.user = null;
+		event.locals.session = null;
+		return resolve(event);
+	}
 
-    if (!sessionCookie) {
-        redirect(303, "/login");
-    }
+	const { session, user } = await auth.validateSessionToken(sessionToken);
 
-    const user = await getUserBySessionToken(sessionCookie);
+	if (session) {
+		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
+	} else {
+		auth.deleteSessionTokenCookie(event);
+	}
 
-    if (!user.success) {
-        event.cookies.set('session', '', {
-            path: "/",
-            expires: new Date(0),
-        });
+	event.locals.user = user;
+	event.locals.session = session;
+	return resolve(event);
+};
 
-        redirect(303, "/login");
-    }
-
-    event.locals.user = {
-        id: user.data.id,
-        email: user.data.email,
-        username: user.data.username,
-    }
-
-    return resolve(event);
-}
+export const handle: Handle = handleAuth;

@@ -1,79 +1,39 @@
 import {integer, pgTable, serial, text, timestamp} from 'drizzle-orm/pg-core';
 
-// User Table
-export const userTable = pgTable('user', {
-    id: serial('id').primaryKey(),
-    email: text('email').notNull().unique(),
+export const user = pgTable('user', {
+    id: text('id').primaryKey(),
+    age: integer('age'),
     username: text('username').notNull().unique(),
-    passwordHash: text('password_hash').notNull(),
-    createdAt: timestamp('created_at', {
-        withTimezone: true,
-        mode: 'date'
-    }).defaultNow().notNull()
+    passwordHash: text('password_hash').notNull()
 });
 
-// Session Table
-export const sessionTable = pgTable('session', {
-    token: text('session_token').notNull().unique().primaryKey(),
-    userId: integer('user_id')
-        .notNull()
-        .references(() => userTable.id),
-    expiresAt: timestamp('expires_at', {
-        withTimezone: true,
-        mode: 'date'
-    }).notNull()
+export const session = pgTable('session', {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull().references(() => user.id),
+    expiresAt: timestamp('expires_at', {withTimezone: true, mode: 'date'}).notNull()
 });
 
-// Role Table
-export const roleTable = pgTable('role', {
+export const recipe = pgTable('recipe', {
     id: serial('id').primaryKey(),
-    name: text('name').notNull().unique(),
-    createdAt: timestamp('created_at', {
-        withTimezone: true,
-        mode: 'date'
-    }).notNull()
+    userId: text('user_id').notNull().references(() => user.id),
+    title: text('title').notNull(),
 });
 
-// User-Role Linking Table
-export const userRoleTable = pgTable('user_role', {
+export const ingredient = pgTable('ingredient', {
     id: serial('id').primaryKey(),
-    userId: integer('user_id')
-        .notNull()
-        .references(() => userTable.id),
-    roleId: integer('role_id')
-        .notNull()
-        .references(() => roleTable.id)
+    recipeId: integer('recipe_id').notNull().references(() => recipe.id),
+    name: text('name').notNull(),
+    quantity: text('quantity').notNull()
 });
 
-// Permission Table
-export const permissionTable = pgTable('permission', {
+export const instructions = pgTable('instructions', {
     id: serial('id').primaryKey(),
-    name: text('name').notNull().unique(),
-    createdAt: timestamp('created_at', {
-        withTimezone: true,
-        mode: 'date'
-    }).notNull()
+    recipeId: integer('recipe_id').notNull().references(() => recipe.id),
+    instruction: text('instruction').notNull()
 });
 
-// Role-Permission Linking Table
-export const rolePermissionTable = pgTable('role_permission', {
-    id: serial('id').primaryKey(),
-    roleId: integer('role_id')
-        .notNull()
-        .references(() => roleTable.id),
-    permissionId: integer('permission_id')
-        .notNull()
-        .references(() => permissionTable.id)
-});
-
-// Audit Log Table
-// export const auditLogTable = pgTable('audit_log', {
-//     id: serial('id').primaryKey(),
-//     userId: integer('user_id').references(() => userTable.id),
-//     action: text('action').notNull(),
-//     details: text('details'),
-//     createdAt: timestamp('created_at', {
-//         withTimezone: true,
-//         mode: 'date'
-//     }).notNull()
-// });
+export type Session = typeof session.$inferSelect;
+export type User = typeof user.$inferSelect;
+export type Recipe = typeof recipe.$inferSelect;
+export type Ingredient = typeof ingredient.$inferSelect;
+export type Instructions = typeof instructions.$inferSelect;
