@@ -34,10 +34,10 @@ export const recipe = pgTable('recipe', {
     title: text('title').notNull(),
     description: text('description').notNull(),
     imageUrl: text('image_url').notNull(),
-    prepTime: integer('prep_time'),
-    cookTime: integer('cook_time'),
+    prepTime: integer('prep_time'), // in minutes
+    cookTime: integer('cook_time'), // in minutes
     servings: integer('servings'),
-    status: text('status').default('draft').notNull(),
+    status: text('status').default('draft').notNull(), // 'draft' or 'published'
     createdAt: timestamp('created_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow()
 });
