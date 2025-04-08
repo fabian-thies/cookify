@@ -96,7 +96,7 @@ export async function PUT({url}) {
         if (!title || !description || !userId || !imageUrl) {
             return json({
                 success: false,
-                message: 'Pflichtfelder fehlen'
+                message: 'Missing required fields'
             }, {status: 400});
         }
 

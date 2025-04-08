@@ -1,43 +1,43 @@
 <script lang='ts'>
 	import { enhance } from '$app/forms';
-	import type { ActionData } from '../../../.svelte-kit/types/src/routes';
+	import type {ActionData} from "./$types";
 
 	let { form }: { form: ActionData } = $props();
 </script>
 
-<div class="min-h-screen flex items-center justify-center bg-[#edf2f7] py-12 px-4 sm:px-6 lg:px-8">
-	<div class="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-md">
+<div class="min-h-screen flex items-center justify-center bg-base-300 py-12 px-4 sm:px-6 lg:px-8">
+	<div class="max-w-md w-full space-y-8 bg-base-100 p-8 rounded-xl shadow-md">
 		<div class="text-center">
-			<h2 class="mt-6 text-3xl font-extrabold text-gray-900">
+			<h2 class="mt-6 text-3xl font-extrabold text-base-content">
 				Login
 			</h2>
-			<p class="mt-2 text-sm text-gray-600">
+			<p class="mt-2 text-sm text-base-content">
 				Login or register to access your account.
 			</p>
 		</div>
 		<form method='post' action='?/login' use:enhance class="mt-8 space-y-6">
-			<div class="rounded-md -space-y-px">
-				<div class="mb-4">
-					<label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+			<div class="rounded-md space-y-4">
+				<div>
+					<label for="username" class="block text-sm font-medium text-base-content">Username</label>
 					<input
 							id="username"
 							name="username"
 							type="text"
 							autocomplete="username"
 							required
-							class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+							class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 bg-base-300 border border-base-100 placeholder-gray-500 text-base-content focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
 							placeholder="Username"
 					/>
 				</div>
 				<div>
-					<label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+					<label for="password" class="block text-sm font-medium text-base-content">Password</label>
 					<input
 							id="password"
 							name="password"
 							type="password"
 							autocomplete="current-password"
 							required
-							class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+							class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 bg-base-300 border border-base-100 placeholder-gray-500 text-base-content focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
 							placeholder="Password"
 					/>
 				</div>
