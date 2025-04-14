@@ -1,4 +1,4 @@
-import { json } from "@sveltejs/kit";
+import {json} from "@sveltejs/kit";
 import {db} from "$lib/server/db";
 
 export async function GET() {
@@ -22,7 +22,7 @@ export async function GET() {
             }
         });
 
-        if(recipes.length === 0) {
+        if (recipes.length === 0) {
             return json({
                 success: false,
                 message: 'No recipes found'
