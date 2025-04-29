@@ -1,5 +1,8 @@
 <script lang="ts">
     import type {IngredientInput} from "$lib/types";
+    import {enhance} from "$app/forms";
+
+    let {data, form}: PageProps = $props();
 
     let preparationSteps = $state("");
     let recipeName = $state("");
@@ -45,7 +48,7 @@
 
 <article class="container mx-auto p-6">
     <div class="bg-base-100 rounded-xl p-8">
-        <form class="grid grid-cols-1 lg:grid-cols-4 gap-10">
+        <form class="grid grid-cols-1 lg:grid-cols-4 gap-10" method="POST" enctype="multipart/form-data" use:enhance>
             <section class="space-y-3 lg:col-span-1">
                 <header>
                     <h2 class="text-md font-semibold text-base-content/80">RECIPE INFORMATION</h2>
@@ -55,26 +58,33 @@
                     <div>
                         <div
                                 id="dropzone"
-                                class="border-2 border-dashed border-primary/30 hover:border-primary hover:bg-primary/5 p-8 rounded-lg text-center cursor-pointer transition-all duration-300 relative group h-48 flex flex-col items-center justify-center"
+                                class="border-2 border-dashed {form?.errors?.imageFile ? 'border-error' : 'border-primary/30'} hover:border-primary hover:bg-primary/5 p-8 rounded-lg text-center cursor-pointer transition-all duration-300 relative group h-48 flex flex-col items-center justify-center"
                         >
                             {#if imagePreview}
-                                <img src={imagePreview} alt="Recipe preview" class="absolute inset-0 w-full h-full object-cover" />
-                                <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <p class="text-white text-sm">Klicken, um Bild zu ändern</p>
+                                <img src={imagePreview} alt="Recipe preview"
+                                     class="absolute inset-0 w-full h-full object-cover"/>
+                                <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity duration-300">
+                                    <p class="text-white text-sm">Press to change image</p>
                                 </div>
                             {:else}
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                     stroke-width="1.5"
                                      stroke="currentColor"
                                      class="w-12 h-12 text-primary/60 group-hover:text-primary transition-colors duration-300">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                           d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
                                 </svg>
-                                <p class="mt-2 text-sm text-base-content/70 group-hover:text-base-content">Drag image here
+                                <p class="mt-2 text-sm text-base-content/70 group-hover:text-base-content">Drag image
+                                    here
                                     or click to select</p>
                             {/if}
-                            <input type="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            <input type="file" name="imageFile"
+                                   class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                    onchange={handleImageUpload} accept="image/*"/>
                         </div>
+                        {#if form?.errors?.imageFile}
+                            <div class="text-error text-sm mt-1">Please upload an image for your recipe</div>
+                        {/if}
                     </div>
 
                     <div class="space-y-4">
@@ -85,11 +95,13 @@
                             <input
                                     id="recipe-name"
                                     name="recipe-name"
-                                    required
-                                    class="input input-bordered w-full rounded-lg border-base-300 bg-base-100 focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                    class="input input-bordered w-full rounded-lg {form?.errors?.recipeName ? 'input-error' : 'border-base-300'} bg-base-100 focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                                     placeholder="Give your recipe a name"
                                     bind:value={recipeName}
                             />
+                            {#if form?.errors?.recipeName}
+                                <div class="text-error text-sm mt-1">Please enter a recipe name</div>
+                            {/if}
                         </fieldset>
 
                         <div class="grid grid-cols-2 gap-4">
@@ -100,11 +112,13 @@
                                         id="servings"
                                         name="servings"
                                         type="number"
-                                        required
-                                        class="input input-bordered w-full rounded-lg border-base-300 bg-base-100 focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                        class="input input-bordered w-full rounded-lg {form?.errors?.servings ? 'input-error' : 'border-base-300'} bg-base-100 focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                                         placeholder="Number of servings"
                                         bind:value={servings}
                                 />
+                                {#if form?.errors?.servings}
+                                    <div class="text-error text-sm mt-1">Please enter a valid number of servings</div>
+                                {/if}
                             </fieldset>
 
                             <fieldset class="space-y-2">
@@ -115,11 +129,13 @@
                                         id="duration"
                                         name="duration"
                                         type="time"
-                                        required
-                                        class="input input-bordered w-full rounded-lg border-base-300 bg-base-100 focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                        class="input input-bordered w-full rounded-lg {form?.errors?.cookingTime ? 'input-error' : 'border-base-300'} bg-base-100 focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                                         placeholder="Duration"
                                         bind:value={cookingTime}
                                 />
+                                {#if form?.errors?.cookingTime}
+                                    <div class="text-error text-sm mt-1">Please enter cooking time</div>
+                                {/if}
                             </fieldset>
                         </div>
 
@@ -145,18 +161,24 @@
                 </header>
 
                 <div class="space-y-12">
-                    <fieldset class="bg-base-200 p-6 rounded-md space-y-4">
+                    <fieldset
+                            class="bg-base-200 p-6 rounded-md space-y-4 {form?.errors?.ingredients ? 'border border-error' : ''}">
                         <legend class="sr-only">Ingredients</legend>
                         <label for="ingredients" class="text-md font-medium text-base-content/70">Ingredients</label>
+                        {#if form?.errors?.ingredients}
+                            <div class="text-error text-sm mt-1">Please add at least one ingredient with name and
+                                quantity
+                            </div>
+                        {/if}
 
                         {#each ingredients as ingredient, index}
                             <div class="space-y-3 mt-3">
                                 <div class="flex items-center gap-2">
-                                    <input id="ingredients-amount" type="text"
+                                    <input name="ingredients-quantity-{index}" type="text"
                                            class="input input-bordered w-1/3 rounded-lg border-base-300 bg-base-100"
                                            placeholder="Amount (e.g. 200g)"
                                            bind:value={ingredient.quantity}/>
-                                    <input id="ingredients-name" type="text"
+                                    <input name="ingredients-name-{index}" type="text"
                                            class="input input-bordered flex-grow rounded-lg border-base-300 bg-base-100"
                                            placeholder="Ingredient (e.g. apple)"
                                            bind:value={ingredient.name}/>
@@ -186,10 +208,14 @@
                         <legend class="sr-only">Preparation Steps</legend>
                         <label for="instructions"
                                class="text-md font-medium text-base-content/70">Preparation steps</label>
+                        {#if form?.errors?.preparationSteps}
+                            <div class="text-error text-sm mt-1">Please describe how to prepare your recipe</div>
+                        {/if}
                         <div class="mt-3">
                             <textarea
                                     id="instructions"
-                                    class="textarea textarea-bordered w-full h-40 resize-y rounded-lg border-base-300 bg-base-100 focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                    name="instructions"
+                                    class="textarea textarea-bordered w-full h-40 resize-y rounded-lg {form?.errors?.preparationSteps ? 'textarea-error' : 'border-base-300'} bg-base-100 focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                                     placeholder="Describe how to prepare your recipe..."
                                     bind:value={preparationSteps}
                             ></textarea>
@@ -197,11 +223,11 @@
                     </fieldset>
                 </div>
             </section>
-        </form>
 
-        <footer class="mt-12 flex justify-end gap-4">
-            <button class="btn btn-ghost" type="button">Cancel</button>
-            <button class="btn btn-primary" type="submit" onclick={submitForm}>Save recipe</button>
-        </footer>
+            <footer class="mt-12 flex justify-end gap-4 col-span-full">
+                <button class="btn btn-ghost" type="button">Cancel</button>
+                <button class="btn btn-primary" type="submit">Save recipe</button>
+            </footer>
+        </form>
     </div>
 </article>
