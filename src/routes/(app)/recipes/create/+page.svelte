@@ -128,9 +128,10 @@
                                 <input
                                         id="duration"
                                         name="duration"
-                                        type="time"
+                                        type="number"
+                                        min="1"
                                         class="input input-bordered w-full rounded-lg {form?.errors?.cookingTime ? 'input-error' : 'border-base-300'} bg-base-100 focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                                        placeholder="Duration"
+                                        placeholder="Minuten"
                                         bind:value={cookingTime}
                                 />
                                 {#if form?.errors?.cookingTime}

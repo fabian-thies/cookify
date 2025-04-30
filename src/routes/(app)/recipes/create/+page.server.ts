@@ -1,10 +1,16 @@
 import {fail} from '@sveltejs/kit';
-import type {Actions} from './$types';
+import type {Actions, PageServerLoad} from './$types';
+import {PUT} from "../../api/recipes/+server";
+
+export const load: PageServerLoad = async (event) => {
+    console.log(event.locals.user);
+}
 
 export const actions: Actions = {
-    default: async ({request}) => {
-        const formData = await request.formData();
+    default: async (event) => {
+        const {request, locals} = event;
 
+        const formData = await request.formData();
         const recipeName = formData.get('recipe-name')?.toString();
         const servings = formData.get('servings')?.toString();
         const cookingTime = formData.get('duration')?.toString();
@@ -40,15 +46,30 @@ export const actions: Actions = {
             }
         }
 
-        console.log(imageFile);
-
         if (!hasIngredients) errors.ingredients = true;
-
-        console.log(errors)
 
         // If validation error
         if (Object.keys(errors).length > 0) {
             return fail(400, {errors});
+        }
+
+        const response = await event.fetch(`/api/recipes`, {
+            method: "PUT",
+            body: JSON.stringify({
+                userId: locals?.user?.id,
+                recipeName,
+                servings: Number(servings),
+                cookingTime: Number(cookingTime),
+                visibility,
+                preparationSteps,
+                ingredients: ingredientData
+            }),
+        });
+
+        if (response.ok) {
+            return {success: true};
+        } else {
+            return fail(500, {error: 'Failed to create recipe'});
         }
     }
 };

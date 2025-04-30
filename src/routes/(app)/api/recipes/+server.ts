@@ -1,7 +1,7 @@
 import {json} from '@sveltejs/kit';
 import {db} from '$lib/server/db';
 import {asc, desc} from 'drizzle-orm';
-import {recipe} from "$lib/server/db/schema";
+import {ingredient, recipe} from "$lib/server/db/schema";
 
 // Fetch all recipes with optional search, category filter, and pagination
 export async function GET({url}) {
@@ -82,18 +82,22 @@ export async function GET({url}) {
 }
 
 // Create a new recipe
-export async function PUT({url}) {
+export async function PUT({request}) {
     try {
-        const title = url.searchParams.get('title');
-        const description = url.searchParams.get('description');
-        const userId = url.searchParams.get('userId');
-        const imageUrl = url.searchParams.get('imageUrl');
-        const prepTime = url.searchParams.get('prepTime');
-        const cookTime = url.searchParams.get('cookTime');
-        const servings = url.searchParams.get('servings');
-        const status = url.searchParams.get('status') || 'draft'; // Default to 'draft' if not provided
+        const data = await request.json();
+        const {recipeName, servings, cookingTime, visibility, preparationSteps, ingredients, userId} = data;
 
-        if (!title || !description || !userId || !imageUrl) {
+        if (!recipeName || !preparationSteps || !ingredients || ingredients.length === 0 || !userId || !visibility || !servings || !cookingTime) {
+            console.log('Missing required fields:', {
+                recipeName,
+                preparationSteps,
+                ingredients,
+                userId,
+                visibility,
+                servings,
+                cookingTime
+            });
+
             return json({
                 success: false,
                 message: 'Missing required fields'
@@ -101,16 +105,26 @@ export async function PUT({url}) {
         }
 
         await db.transaction(async (tx) => {
-            await tx.insert(recipe).values({
+            const [newRecipe] = await tx.insert(recipe).values({
                 userId,
-                title,
-                description,
-                imageUrl,
-                prepTime: prepTime ? parseInt(prepTime) : null,
-                cookTime: cookTime ? parseInt(cookTime) : null,
-                servings: servings ? parseInt(servings) : null,
-                status
-            });
+                title: recipeName,
+                description: preparationSteps,
+                imageUrl: "placeholder.jpg", // TODO: Handle image upload
+                prepTime: null,
+                cookTime: cookingTime ? cookingTime : null,
+                servings: servings ? servings : null,
+                status: visibility === 'Published' ? 'published' : 'draft'
+            }).returning();
+
+            if (ingredients && ingredients.length > 0) {
+                await Promise.all(ingredients.map(async (ing: { name: string; quantity: string; }) => {
+                    await tx.insert(ingredient).values({
+                        recipeId: newRecipe.id,
+                        name: ing.name,
+                        quantity: ing.quantity
+                    });
+                }));
+            }
         });
 
         return json({
