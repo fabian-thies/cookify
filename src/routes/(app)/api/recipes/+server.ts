@@ -1,10 +1,10 @@
-import {json} from '@sveltejs/kit';
+import {json, type RequestHandler} from '@sveltejs/kit';
 import {db} from '$lib/server/db';
 import {asc, desc} from 'drizzle-orm';
 import {ingredient, recipe} from "$lib/server/db/schema";
+import {saveFile} from "$lib/server/storage";
 
-// Fetch all recipes with optional search, category filter, and pagination
-export async function GET({url}) {
+export const GET: RequestHandler = async ({url}) => {
     try {
         const searchQuery = url.searchParams.get('search') || '';
         const categoryId = url.searchParams.get('category') ? parseInt(url.searchParams.get('category') || '0') : undefined;
@@ -51,7 +51,6 @@ export async function GET({url}) {
                 sortOrder === asc ? ascOp(recipe[sortBy as keyof typeof recipe]) : descOp(recipe[sortBy as keyof typeof recipe])
         });
 
-        // For pagination, we need to count the total number of recipes that match the criteria
         const totalCount = await db.query.recipe.findMany({
             where: (recipes, {eq: equals}) => equals(recipes.status, 'published'),
             columns: {
@@ -81,62 +80,76 @@ export async function GET({url}) {
     }
 }
 
-// Create a new recipe
-export async function PUT({request}) {
+export const PUT: RequestHandler = async ({request}) => {
     try {
-        const data = await request.json();
-        const {recipeName, servings, cookingTime, visibility, preparationSteps, ingredients, userId} = data;
+        const formData = await request.formData();
+        const recipeName = formData.get('recipeName')?.toString().trim();
+        const servingsRaw = formData.get('servings')?.toString().trim();
+        const cookingTimeRaw = formData.get('cookingTime')?.toString().trim();
+        const visibility = formData.get('visibility')?.toString().trim();
+        const preparationSteps = formData.get('preparationSteps')?.toString().trim();
+        const userId = formData.get('userId')?.toString().trim();
+        const imageFile = formData.get('imageFile') as File | null;
+        const ingredientsRaw = formData.get('ingredients')?.toString() ?? '[]';
 
-        if (!recipeName || !preparationSteps || !ingredients || ingredients.length === 0 || !userId || !visibility || !servings || !cookingTime) {
-            console.log('Missing required fields:', {
-                recipeName,
-                preparationSteps,
-                ingredients,
-                userId,
-                visibility,
-                servings,
-                cookingTime
-            });
-
-            return json({
-                success: false,
-                message: 'Missing required fields'
-            }, {status: 400});
+        let ingredients: { name: string; quantity: string }[];
+        try {
+            ingredients = JSON.parse(ingredientsRaw);
+        } catch {
+            return json({success: false, message: 'Invalid ingredients format'}, {status: 400});
         }
 
-        await db.transaction(async (tx) => {
-            const [newRecipe] = await tx.insert(recipe).values({
-                userId,
-                title: recipeName,
-                description: preparationSteps,
-                imageUrl: "placeholder.jpg", // TODO: Handle image upload
-                prepTime: null,
-                cookTime: cookingTime ? cookingTime : null,
-                servings: servings ? servings : null,
-                status: visibility === 'Published' ? 'published' : 'draft'
-            }).returning();
+        if (
+            !recipeName ||
+            !preparationSteps ||
+            ingredients.length === 0 ||
+            !userId ||
+            !visibility ||
+            !servingsRaw ||
+            !cookingTimeRaw ||
+            !imageFile ||
+            imageFile.size === 0
+        ) {
+            return json({success: false, message: 'Missing required fields'}, {status: 400});
+        }
 
-            if (ingredients && ingredients.length > 0) {
-                await Promise.all(ingredients.map(async (ing: { name: string; quantity: string; }) => {
-                    await tx.insert(ingredient).values({
+        const servings = Number(servingsRaw);
+        const cookingTime = Number(cookingTimeRaw);
+        if (isNaN(servings) || isNaN(cookingTime)) {
+            return json({success: false, message: 'Servings and cookingTime must be numbers'}, {status: 400});
+        }
+
+        const imageUrl = await saveFile(imageFile);
+
+        await db.transaction(async (tx) => {
+            const [newRecipe] = await tx
+                .insert(recipe)
+                .values({
+                    userId,
+                    title: recipeName,
+                    description: preparationSteps,
+                    imageUrl,
+                    prepTime: null,
+                    cookTime: cookingTime,
+                    servings,
+                    status: visibility === 'Published' ? 'published' : 'draft'
+                })
+                .returning();
+
+            await Promise.all(
+                ingredients.map(ing =>
+                    tx.insert(ingredient).values({
                         recipeId: newRecipe.id,
                         name: ing.name,
                         quantity: ing.quantity
-                    });
-                }));
-            }
+                    })
+                )
+            );
         });
 
-        return json({
-            success: true,
-            message: 'Recipe created successfully'
-        });
+        return json({success: true, message: 'Recipe created successfully'});
     } catch (error) {
         console.error('Error creating recipe:', error);
-
-        return json({
-            success: false,
-            message: 'Recipe could not be created'
-        }, {status: 500});
+        return json({success: false, message: 'Recipe could not be created'}, {status: 500});
     }
-}
+};
