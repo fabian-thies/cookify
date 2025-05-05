@@ -25,9 +25,9 @@
     ]);
 </script>
 
-<article class="container mx-auto p-6">
+<article class="max-w-[120rem] mx-auto p-6">
     <div class="bg-base-100 rounded-xl p-8">
-        <form class="grid grid-cols-1 lg:grid-cols-4 gap-10" enctype="multipart/form-data" method="POST" use:enhance>
+        <form class="grid grid-cols-1 lg:grid-cols-4 gap-6" enctype="multipart/form-data" method="POST" use:enhance>
             <section class="space-y-3 lg:col-span-1">
                 <header>
                     <h2 class="text-md font-semibold text-base-content/80">RECIPE INFORMATION</h2>
@@ -52,28 +52,28 @@
                                 placeholder="Give your recipe a name"
                         />
 
-                        <div class="grid grid-cols-2 gap-4">
-                            <FormField
-                                    bind:value={servings}
-                                    error={form?.errors?.servings ? "Please enter a valid number of servings" : undefined}
-                                    id="servings"
-                                    label="Servings"
-                                    name="servings"
-                                    placeholder="Number of servings"
-                                    type="number"
-                            />
+                        <FormField
+                                bind:value={servings}
+                                error={form?.errors?.servings ? "Please enter a valid number of servings" : undefined}
+                                id="servings"
+                                label="Servings"
+                                name="servings"
+                                placeholder="Number of servings"
+                                type="number"
+                                unit="servings"
+                        />
 
-                            <FormField
-                                    bind:value={cookingTime}
-                                    error={form?.errors?.cookingTime ? "Please enter cooking time" : undefined}
-                                    id="duration"
-                                    label="Cooking time"
-                                    min={1}
-                                    name="duration"
-                                    placeholder="Minuten"
-                                    type="number"
-                            />
-                        </div>
+                        <FormField
+                                bind:value={cookingTime}
+                                error={form?.errors?.cookingTime ? "Please enter cooking time" : undefined}
+                                id="duration"
+                                label="Cooking time"
+                                min={1}
+                                name="duration"
+                                placeholder="Minutes"
+                                type="number"
+                                unit="minutes"
+                        />
 
                         <SelectField
                                 bind:value={visibility}

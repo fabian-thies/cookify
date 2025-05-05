@@ -1,9 +1,51 @@
 @import "tailwindcss";
 
 @plugin "daisyui";
-@plugin "daisyui" {
-    themes: light --prefersdark, dark --prefersdark;
+@plugin "daisyui/theme" {
+    name: "cookify";
+    default: true;
+    prefersdark: true;
+    color-scheme: light;
+
+    --color-base-100: oklch(100% 0 0);
+    --color-base-200: oklch(98% 0 0);
+    --color-base-300: oklch(95% 0 0);
+    --color-base-content: oklch(15% 0.02 95);
+
+    --color-primary: oklch(60% 0.25 55);
+    --color-primary-content: oklch(100% 0 0);
+
+    --color-secondary: oklch(30% 0.02 95);
+    --color-secondary-content: oklch(100% 0 0);
+
+    --color-accent: oklch(75% 0.1 80);
+    --color-accent-content: oklch(20% 0.02 80);
+
+    --color-neutral: oklch(50% 0.02 95);
+    --color-neutral-content: oklch(100% 0 0);
+    --color-info: oklch(70% 0.1 250);
+    --color-info-content: oklch(100% 0 0);
+    --color-success: oklch(60% 0.2 150);
+    --color-success-content: oklch(100% 0 0);
+    --color-warning: oklch(75% 0.15 85);
+    --color-warning-content: oklch(20% 0.02 85);
+    --color-error: oklch(55% 0.2 30);
+    --color-error-content: oklch(100% 0 0);
+
+    --radius-selector: 0.5rem;
+    --radius-field: 0.25rem;
+    --radius-box: 0.25rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+
+    --depth: 1;
+    --noise: 0;
 }
 
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+
+*:focus {
+    @apply outline-none;
+}

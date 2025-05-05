@@ -31,14 +31,14 @@
                 <input
                         name="ingredients-quantity-{index}"
                         type="text"
-                        class="input input-bordered w-1/3 rounded-lg border-base-300 bg-base-100"
+                        class="input input-bordered w-1/3 rounded-lg border-base-300 bg-base-100 focus:border-primary focus:ring-1 focus:ring-primary"
                         placeholder="Amount (e.g. 200g)"
                         bind:value={ingredient.quantity}
                 />
                 <input
                         name="ingredients-name-{index}"
                         type="text"
-                        class="input input-bordered flex-grow rounded-lg border-base-300 bg-base-100"
+                        class="input input-bordered flex-grow rounded-lg border-base-300 bg-base-100 focus:border-primary focus:ring-1 focus:ring-primary"
                         placeholder="Ingredient (e.g. apple)"
                         bind:value={ingredient.name}
                 />
