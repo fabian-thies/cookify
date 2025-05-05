@@ -17,12 +17,12 @@
 
 <fieldset class="space-y-2">
     <legend class="sr-only">{label}</legend>
-    <label class="text-sm font-medium text-base-content/70" for={id}>{label}</label>
+    <label class="text-md font-medium text-base-content" for={id}>{label}</label>
 
     <div class="relative w-full mt-1">
         <input
                 bind:value={value}
-                class="input input-bordered {fullWidth ? 'w-full' : ''} rounded-lg pr-16 {error ? 'input-error' : 'border-base-300'} bg-base-100 focus:border-primary focus:ring-1 focus:ring-primary transition-all {inputClass}"
+                class="[&::-webkit-inner-spin-button]:appearance-none border p-2 rounded {fullWidth ? 'w-full' : ''} rounded-lg pr-18 {error ? 'input-error' : 'border-base-300'} bg-base-100 focus:border-primary focus:ring-1 focus:ring-primary transition-all {inputClass}"
                 {id}
                 {min}
                 {name}
@@ -31,7 +31,7 @@
                 {type}
         />
         {#if unit}
-          <span class="absolute right-4 top-1/2 -translate-y-1/2 text-base-content/70 text-sm pointer-events-none">
+          <span class="absolute right-4 top-1/2 -translate-y-1/2 text-base-content text-sm pointer-events-none">
             {unit}
         </span>
         {/if}

@@ -19,7 +19,7 @@
 
 <fieldset class="bg-base-200 p-6 rounded-md space-y-4 {error ? 'border border-error' : ''}">
     <legend class="sr-only">Ingredients</legend>
-    <label class="text-md font-medium text-base-content/70" for="ingredients">Ingredients</label>
+    <label class="text-md font-medium text-base-content" for="ingredients">Ingredients</label>
 
     {#if error}
         <div class="text-error text-sm mt-1">{error}</div>
