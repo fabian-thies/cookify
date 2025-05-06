@@ -1,20 +1,10 @@
 <script>
-    let {children} = $props();
+    import Nav from "$lib/components/Nav.svelte";
+    import {page} from '$app/state';
+
+    let {data, children} = $props();
 </script>
 
-<nav class="navbar bg-base-100 container mx-auto py-6">
-    <div class="flex-1">
-        <a class="text-2xl font-bold" href="/">cookify</a>
-    </div>
-    <div class="flex-none">
-        <button aria-label="Menu" class="cursor-pointer">
-            <svg class="inline-block h-7 w-7 stroke-current" fill="none" viewBox="0 0 24 24"
-                 xmlns="http://www.w3.org/2000/svg">
-                <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round"
-                      stroke-width="2"></path>
-            </svg>
-        </button>
-    </div>
-</nav>
+<Nav/>
 
 {@render children()}

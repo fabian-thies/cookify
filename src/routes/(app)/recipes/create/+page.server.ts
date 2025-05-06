@@ -1,11 +1,14 @@
-// src/routes/your-route/+page.server.ts
 import {fail} from '@sveltejs/kit';
 import type {Actions, PageServerLoad} from './$types';
+import type {NavAction} from "$lib/types";
 
 export const load: PageServerLoad = async ({locals}) => {
-    console.log('Aktueller User:', locals.user);
     return {
-        user: locals.user
+        user: locals.user,
+        navActions: [
+            {type: 'Cancel', formId: 'create-recipe', formaction: '/'},
+            {type: 'Publish', formId: 'create-recipe', formaction: '?'}
+        ] as NavAction[]
     };
 };
 
@@ -18,14 +21,14 @@ export const actions: Actions = {
         const cookingTime = data.get('duration')?.toString() ?? '';
         const visibility = data.get('visibility')?.toString() ?? 'Draft';
         const preparationSteps = data.get('instructions')?.toString() ?? '';
-        const imageFile = data.get('imageFile');
+        const imageFile = data.get('imageFile') as File;
 
         const errors: Record<string, boolean> = {};
 
         if (!recipeName) errors.recipeName = true;
         if (!servings || isNaN(+servings)) errors.servings = true;
         if (!cookingTime) errors.cookingTime = true;
-        if (!imageFile) errors.imageFile = true;
+        if (!imageFile || imageFile.size <= 0) errors.imageFile = true;
         if (!preparationSteps) errors.preparationSteps = true;
 
         const ingredientData: { name: string; quantity: string }[] = [];
@@ -49,7 +52,7 @@ export const actions: Actions = {
                 cookingTime,
                 visibility,
                 preparationSteps,
-                ingredientData
+                ingredientData,
             });
         }
 

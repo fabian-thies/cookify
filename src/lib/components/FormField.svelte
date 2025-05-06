@@ -22,7 +22,7 @@
     <div class="relative w-full mt-1">
         <input
                 bind:value={value}
-                class="[&::-webkit-inner-spin-button]:appearance-none border p-2 rounded {fullWidth ? 'w-full' : ''} rounded-lg pr-18 {error ? 'input-error' : 'border-base-300'} bg-base-100 focus:border-primary focus:ring-1 focus:ring-primary transition-all {inputClass}"
+                class="[&::-webkit-inner-spin-button]:appearance-none border p-2 rounded {fullWidth ? 'w-full' : ''} rounded-lg pr-18 {error ? 'border border-error' : 'border-base-300'} bg-base-100 focus:border-primary focus:ring-1 focus:ring-primary transition-all {inputClass}"
                 {id}
                 {min}
                 {name}

@@ -14,7 +14,7 @@
 
 <fieldset class="bg-base-200 p-6 rounded-md space-y-4">
     <legend class="sr-only">{label}</legend>
-    <label class="text-md font-medium text-base-content/70" for={id}>{label}</label>
+    <label class="text-md font-medium text-base-conten" for={id}>{label}</label>
 
     {#if error}
         <div class="text-error text-sm mt-1">{error}</div>
