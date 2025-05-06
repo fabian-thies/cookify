@@ -1,3 +1,5 @@
 import path from "node:path";
+import {fileURLToPath} from "node:url";
 
-export const UPLOAD_DIR = path.resolve(".", "uploads");
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+export const UPLOAD_DIR = path.join(__dirname, "../../../static/uploads");
