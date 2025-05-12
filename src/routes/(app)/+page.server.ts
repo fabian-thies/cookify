@@ -1,13 +1,35 @@
-import * as auth from '$lib/server/auth';
-import {type Actions, fail, redirect} from '@sveltejs/kit';
 import type {PageServerLoad} from './$types';
+import {type Actions, error, fail, redirect} from '@sveltejs/kit';
+import * as auth from '$lib/server/auth';
+import type {Recipe} from "$lib/server/db/schema";
 
-export const load: PageServerLoad = async (event) => {
-    if (!event.locals.user) {
-        return redirect(302, '/login');
+export const load: PageServerLoad = async ({url, locals, depends, fetch}) => {
+    if (!locals.user) {
+        throw redirect(302, '/login');
     }
-    return {user: event.locals.user};
+
+    const search = url.searchParams.get('search') ?? '';
+    const res = await fetch(`/api/recipes?search=${encodeURIComponent(search)}`);
+
+    if (!res.ok) {
+        throw error(res.status, 'Fehler beim Laden der Rezepte');
+    }
+
+    const payload = await res.json() as {
+        success: boolean;
+        recipes: Recipe[];
+        pagination?: unknown;
+    };
+
+    const recipes: Recipe[] = payload.recipes;
+
+    return {
+        user: locals.user,
+        search,
+        recipes
+    };
 };
+
 
 export const actions: Actions = {
     logout: async (event) => {
