@@ -1,6 +1,6 @@
 import {json, type RequestHandler} from '@sveltejs/kit';
 import {db} from '$lib/server/db';
-import {asc, desc} from 'drizzle-orm';
+import {and, asc, count, desc, eq} from 'drizzle-orm';
 import {ingredient, recipe} from "$lib/server/db/schema";
 import {saveFile} from "$lib/server/storage";
 
@@ -14,60 +14,28 @@ export const GET: RequestHandler = async ({url}) => {
         const sortBy = url.searchParams.get('sortBy') || 'createdAt';
         const sortOrder = url.searchParams.get('order') === 'asc' ? asc : desc;
 
-        let query = db.query.recipe.findMany({
-            where: (recipes, {eq: equals, and, like: likeOp, inArray}) => {
-                const conditions = [equals(recipes.status, 'published')];
+        let whereConditions = [eq(recipe.status, 'published')];
 
-                if (searchQuery) {
-                    conditions.push(likeOp(recipes.title, `%${searchQuery}%`));
-                }
+        if (searchQuery) {
+            whereConditions.push(eq(recipe.title, searchQuery));
+        }
 
-                return and(...conditions);
-            },
-            with: {
-                ingredients: true,
-                instructions: true,
-                user: {
-                    columns: {
-                        id: true,
-                        username: true
-                    }
-                },
-                recipeCategories: categoryId ? {
-                    where: (recipeCategories, {eq: equals}) =>
-                        equals(recipeCategories.categoryId, categoryId),
-                    with: {
-                        category: true
-                    }
-                } : {
-                    with: {
-                        category: true
-                    }
-                }
-            },
-            limit,
-            offset,
-            orderBy: (recipe, {asc: ascOp, desc: descOp}) =>
-                sortOrder === asc ? ascOp(recipe[sortBy as keyof typeof recipe]) : descOp(recipe[sortBy as keyof typeof recipe])
-        });
+        let whereClause = whereConditions.length === 1
+            ? whereConditions[0]
+            : and(...whereConditions);
 
-        const totalCount = await db.query.recipe.findMany({
-            where: (recipes, {eq: equals}) => equals(recipes.status, 'published'),
-            columns: {
-                id: true
-            }
-        }).then(results => results.length);
+        let recipesCount = await db.select({recipeCount: count()}).from(recipe).where(whereClause);
+        let recipes = await db.select().from(recipe).where(whereClause).limit(limit).offset(offset);
 
-        const recipes = await query;
+        const hasNextPage = recipesCount[0].recipeCount > page * limit;
 
         return json({
             success: true,
             recipes,
             pagination: {
-                total: totalCount,
                 page,
                 limit,
-                totalPages: Math.ceil(totalCount / limit)
+                hasNextPage
             }
         });
     } catch (error) {

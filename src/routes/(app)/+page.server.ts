@@ -5,7 +5,9 @@ import type {Recipe} from "$lib/server/db/schema";
 
 export const load: PageServerLoad = async ({url, locals, fetch}) => {
     const search = url.searchParams.get('search') ?? '';
-    const res = await fetch(`/api/recipes?search=${encodeURIComponent(search)}&page=2`);
+    const page = url.searchParams.get('page') ?? '';
+
+    const res = await fetch(`/api/recipes?search=${encodeURIComponent(search)}&page=${encodeURIComponent(page)}`);
 
     if (!res.ok) {
         throw error(res.status, 'Fehler beim Laden der Rezepte');
@@ -14,15 +16,17 @@ export const load: PageServerLoad = async ({url, locals, fetch}) => {
     const payload = await res.json() as {
         success: boolean;
         recipes: Recipe[];
-        pagination?: unknown;
+        pagination: { page: number; limit: number, hasNextPage: boolean };
     };
 
-    const recipes: Recipe[] = payload.recipes;
+    const recipes = payload.recipes;
+    const pagination = payload.pagination;
 
     return {
         user: locals.user,
         search,
-        recipes
+        recipes,
+        pagination
     };
 };
 

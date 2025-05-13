@@ -18,6 +18,15 @@
         });
     }, 300);
 
+    function updatePage(newPage: number) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', String(newPage));
+        goto(url.toString(), {
+            replaceState: true,
+            keepFocus: true,
+        });
+    }
+
 </script>
 
 <section class="max-w-screen-xl mx-auto p-6">
@@ -45,6 +54,25 @@
                         href={`/recipes/${recipe.id}`}
                 />
             {/each}
+        </div>
+        <div class="join flex justify-center mt-10">
+            <button
+                    class="join-item btn"
+                    on:click={() => updatePage(data.pagination.page - 1)}
+                    disabled={data.pagination.page === 1}
+            >
+                «
+            </button>
+            <button class="join-item btn" disabled>
+                {data.pagination.page}
+            </button>
+            <button
+                    class="join-item btn"
+                    on:click={() => updatePage(data.pagination.page + 1)}
+                    disabled={!data.pagination.hasNextPage}
+            >
+                »
+            </button>
         </div>
     {/if}
 </section>
