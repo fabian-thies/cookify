@@ -2,6 +2,7 @@
     import RecipeCard from '$lib/components/RecipeCard.svelte';
     import {debounce} from '$lib/utils/debounce';
     import {goto} from '$app/navigation';
+    import {updatePage} from "$lib/utils/pagination";
 
     let {data}: PageProps = $props();
 
@@ -24,16 +25,6 @@
             noScroll: true
         });
     }, 300);
-
-    function updatePage(newPage: number) {
-        const url = new URL(window.location.href);
-        url.searchParams.set('page', String(newPage));
-        goto(url.toString(), {
-            replaceState: true,
-            keepFocus: true,
-        });
-    }
-
 </script>
 
 <section class="max-w-screen-xl mx-auto p-6">
