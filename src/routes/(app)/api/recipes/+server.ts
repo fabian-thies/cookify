@@ -1,6 +1,6 @@
 import {json, type RequestHandler} from '@sveltejs/kit';
 import {db} from '$lib/server/db';
-import {and, asc, count, desc, eq} from 'drizzle-orm';
+import {and, asc, count, desc, eq, like} from 'drizzle-orm';
 import {ingredient, recipe} from "$lib/server/db/schema";
 import {saveFile} from "$lib/server/storage";
 
@@ -17,7 +17,7 @@ export const GET: RequestHandler = async ({url}) => {
         let whereConditions = [eq(recipe.status, 'published')];
 
         if (searchQuery) {
-            whereConditions.push(eq(recipe.title, searchQuery));
+            whereConditions.push(like(recipe.title, `%${searchQuery}%`));
         }
 
         let whereClause = whereConditions.length === 1
