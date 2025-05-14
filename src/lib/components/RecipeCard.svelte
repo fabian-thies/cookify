@@ -21,7 +21,7 @@
             {/each}
         </div>
         <div class="card-actions justify-end mt-4">
-            <a href={href} class="btn btn-sm btn-primary">Details</a>
+            <a class="btn btn-sm btn-primary" href={href}>Details</a>
         </div>
     </div>
 </article>

@@ -33,7 +33,7 @@
 
 <article class="max-w-[120rem] mx-auto p-6">
     <div class="bg-base-100 rounded-xl p-8">
-        <form class="grid grid-cols-1 lg:grid-cols-4 gap-6" id="create-recipe" enctype="multipart/form-data"
+        <form class="grid grid-cols-1 lg:grid-cols-4 gap-6" enctype="multipart/form-data" id="create-recipe"
               method="POST" use:enhance>
             <section class="space-y-3 lg:col-span-1">
                 <header>
@@ -117,10 +117,10 @@
                 </div>
             </section>
 
-<!--            <footer class="mt-12 flex justify-end gap-4 col-span-full">
-                <button class="btn btn-ghost" type="button">Cancel</button>
-                <button class="btn btn-primary" type="submit">Save recipe</button>
-            </footer>-->
+            <!--            <footer class="mt-12 flex justify-end gap-4 col-span-full">
+                            <button class="btn btn-ghost" type="button">Cancel</button>
+                            <button class="btn btn-primary" type="submit">Save recipe</button>
+                        </footer>-->
         </form>
     </div>
 </article>

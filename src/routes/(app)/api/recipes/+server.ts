@@ -24,8 +24,10 @@ export const GET: RequestHandler = async ({url}) => {
             ? whereConditions[0]
             : and(...whereConditions);
 
-        let recipesCount = await db.select({recipeCount: count()}).from(recipe).where(whereClause);
-        let recipes = await db.select().from(recipe).where(whereClause).limit(limit).offset(offset);
+        const [recipesCount, recipes] = await Promise.all([
+            db.select({recipeCount: count()}).from(recipe).where(whereClause),
+            db.select().from(recipe).where(whereClause).limit(limit).offset(offset)
+        ]);
 
         const hasNextPage = recipesCount[0].recipeCount > page * limit;
 

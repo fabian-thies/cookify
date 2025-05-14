@@ -1,20 +1,14 @@
 <script lang="ts">
     import RecipeCard from '$lib/components/RecipeCard.svelte';
-    import {debounce} from '$lib/utils/debounce';
     import {goto} from '$app/navigation';
     import {updatePage} from "$lib/utils/pagination";
 
     let {data}: PageProps = $props();
+    let search = $state('');
 
-    const onSearch = debounce((event: Event) => {
-        const input = event.target as HTMLInputElement;
-        const search = input.value;
-
+    $effect(() => {
         const url = new URL(window.location.href);
-        url.searchParams.forEach((value, name, searchParams) => {
-            url.searchParams.delete(name)
-        })
-
+        url.searchParams.delete('search');
         if (search) {
             url.searchParams.set('search', search);
         }
@@ -24,18 +18,18 @@
             keepFocus: true,
             noScroll: true
         });
-    }, 300);
+    });
 </script>
 
 <section class="max-w-screen-xl mx-auto p-6">
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h2 class="text-xl font-semibold">Alle Rezepte</h2>
         <input
+                aria-label="Rezepte durchsuchen"
+                bind:value={search}
                 class="input input-bordered w-full sm:w-80"
                 placeholder="Suche nach Titel..."
                 type="search"
-                oninput={onSearch}
-                aria-label="Rezepte durchsuchen"
         />
     </div>
 
