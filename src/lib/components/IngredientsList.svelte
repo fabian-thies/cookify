@@ -46,7 +46,7 @@
                         type="button"
                         aria-label="Remove ingredient"
                         class="btn btn-circle btn-sm btn-ghost text-base-content/50 hover:bg-error/10 hover:text-error transition-colors"
-                        on:click={() => removeIngredient(index)}
+                        onclick={() => removeIngredient(index)}
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                          class="h-5 w-5 stroke-current">
@@ -60,7 +60,7 @@
 
     <button
             class="btn btn-outline btn-primary w-full gap-2"
-            on:click={addIngredient}
+            onclick={addIngredient}
             type="button"
     >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"

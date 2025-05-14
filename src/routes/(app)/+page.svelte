@@ -10,7 +10,14 @@
         const search = input.value;
 
         const url = new URL(window.location.href);
-        url.searchParams.set('search', search);
+        url.searchParams.forEach((value, name, searchParams) => {
+            url.searchParams.delete(name)
+        })
+
+        if (search) {
+            url.searchParams.set('search', search);
+        }
+
         goto(url.toString(), {
             replaceState: true,
             keepFocus: true,
@@ -36,7 +43,7 @@
                 class="input input-bordered w-full sm:w-80"
                 placeholder="Suche nach Titel..."
                 type="search"
-                on:input={onSearch}
+                oninput={onSearch}
                 aria-label="Rezepte durchsuchen"
         />
     </div>
@@ -58,17 +65,17 @@
         <div class="join flex justify-center mt-10">
             <button
                     class="join-item btn"
-                    on:click={() => updatePage(data.pagination.page - 1)}
+                    onclick={() => updatePage(data.pagination.page - 1)}
                     disabled={data.pagination.page === 1}
             >
                 «
             </button>
-            <button class="join-item btn" disabled>
+            <button class="join-item btn">
                 {data.pagination.page}
             </button>
             <button
                     class="join-item btn"
-                    on:click={() => updatePage(data.pagination.page + 1)}
+                    onclick={() => updatePage(data.pagination.page + 1)}
                     disabled={!data.pagination.hasNextPage}
             >
                 »
