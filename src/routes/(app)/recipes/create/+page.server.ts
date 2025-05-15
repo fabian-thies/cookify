@@ -29,6 +29,9 @@ export const actions: Actions = {
         if (!servings || isNaN(+servings)) errors.servings = true;
         if (!cookingTime) errors.cookingTime = true;
         if (!imageFile || imageFile.size <= 0) errors.imageFile = true;
+        if (imageFile.size >= 30_000_000) {
+            errors.imageFileSize = true; // TODO: show on frontend
+        }
         if (!preparationSteps) errors.preparationSteps = true;
 
         const ingredientData: { name: string; quantity: string }[] = [];

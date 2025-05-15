@@ -21,50 +21,74 @@
     });
 </script>
 
-<section class="max-w-screen-xl mx-auto p-6">
-    <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h2 class="text-xl font-semibold">Alle Rezepte</h2>
-        <input
+<section class="max-w-screen-xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+    <div class="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+        <h2 class="text-2xl font-bold tracking-tight">Alle Rezepte</h2>
+        <div class="relative w-full sm:w-80">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+            <input
                 aria-label="Rezepte durchsuchen"
                 bind:value={search}
-                class="input input-bordered w-full sm:w-80"
+                class="input input-bordered w-full pl-10 pr-4 py-2 rounded-full focus:ring-2 focus:ring-primary focus:border-primary"
                 placeholder="Suche nach Titel..."
                 type="search"
-        />
+            />
+        </div>
     </div>
 
     {#if data.recipes.length === 0}
-        <p class="text-base-content/70">Keine Rezepte gefunden.</p>
+        <div class="flex flex-col items-center justify-center py-12 text-center">
+            <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.5 15.5l-3-3m0 0l-3 3m3-3v9m-3-3h6m-6-3v-4a3 3 0 013-3h6a3 3 0 013 3v4"></path>
+            </svg>
+            <p class="text-lg text-base-content/70">Keine Rezepte gefunden.</p>
+            <p class="text-sm text-base-content/50 mt-2">Versuche es mit einem anderen Suchbegriff.</p>
+        </div>
     {:else}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {#each data.recipes as recipe}
                 <RecipeCard
-                        title={recipe.title}
-                        description={recipe.description}
-                        image={recipe.imageUrl}
-                        categories={recipe.categories}
-                        href={`/recipes/${recipe.id}`}
+                    title={recipe.title}
+                    description={recipe.description}
+                    image={recipe.imageUrl}
+                    categories={recipe.categories}
+                    cookTime={recipe.cookTime}
+                    href={`/recipes/${recipe.id}`}
                 />
             {/each}
         </div>
-        <div class="join flex justify-center mt-10">
-            <button
-                    class="join-item btn"
+
+        <!-- Pagination -->
+        <div class="flex justify-center mt-12">
+            <nav class="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                <button
+                    class="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium hover:bg-gray-50 transition-colors duration-200 ease-in-out"
                     onclick={() => updatePage(data.pagination.page - 1)}
                     disabled={data.pagination.page === 1}
-            >
-                «
-            </button>
-            <button class="join-item btn">
-                {data.pagination.page}
-            </button>
-            <button
-                    class="join-item btn"
+                    aria-label="Previous page"
+                >
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+                <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium hover:bg-gray-50">
+                    {data.pagination.page}
+                </button>
+                <button
+                    class="relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium hover:bg-gray-50 transition-colors duration-200 ease-in-out"
                     onclick={() => updatePage(data.pagination.page + 1)}
                     disabled={!data.pagination.hasNextPage}
-            >
-                »
-            </button>
+                    aria-label="Next page"
+                >
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </nav>
         </div>
     {/if}
 </section>
