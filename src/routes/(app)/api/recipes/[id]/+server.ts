@@ -14,10 +14,10 @@ export async function GET(event: RequestEvent) {
 
         const recipeId = parseInt(event.params.id);
 
-        const recipes = await db.select().from(recipe).where(and(eq(recipe.status, 'published'), eq(recipe.id, recipeId)))
-            .innerJoin(ingredient, eq(recipe.id, ingredient.recipeId));
+        const recipeResult = await db.select().from(recipe).where(and(eq(recipe.status, 'published'), eq(recipe.id, recipeId)))
+            .innerJoin(ingredient, eq(recipe.id, ingredient.recipeId)).limit(1);
 
-        if (!recipes || recipes.length === 0) {
+        if (!recipeResult || recipeResult.length === 0) {
             return json({
                 success: false,
                 message: 'No recipe found'
@@ -26,7 +26,7 @@ export async function GET(event: RequestEvent) {
 
         return json({
             success: true,
-            recipes
+            recipe: recipeResult[0]
         });
     } catch (error) {
         console.error('Error fetching recipe:', error);
