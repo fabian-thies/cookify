@@ -3,7 +3,7 @@ import {error} from "@sveltejs/kit";
 import type {Recipe} from "$lib/server/db/schema";
 
 export const load: PageServerLoad = async ({fetch, url, params}) => {
-    const res = await fetch(`/api/recipes/${params.id}`);
+    const res = await fetch(`/api/v1/recipes/${params.id}`);
 
     if(!res.ok) {
         error(500, {

@@ -7,7 +7,7 @@ export const load: PageServerLoad = async ({url, locals, fetch}) => {
     const search = url.searchParams.get('search') ?? '';
     const page = url.searchParams.get('page') ?? '';
 
-    const res = await fetch(`/api/recipes?search=${encodeURIComponent(search)}&page=${encodeURIComponent(page)}`);
+    const res = await fetch(`/api/v1/recipes?search=${encodeURIComponent(search)}&page=${encodeURIComponent(page)}`);
 
     if (!res.ok) {
         throw error(res.status, 'Fehler beim Laden der Rezepte');
