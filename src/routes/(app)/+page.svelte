@@ -67,7 +67,7 @@
         <div class="flex justify-center mt-12">
             <nav class="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
                 <button
-                    class="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium hover:bg-gray-50 transition-colors duration-200 ease-in-out"
+                    class="relative inline-flex items-center px-4 py-2 rounded-l-md bg-neutral text-sm font-medium hover:bg-neutral/10 transition-colors duration-200 ease-in-out cursor-pointer"
                     onclick={() => updatePage(data.pagination.page - 1)}
                     disabled={data.pagination.page === 1}
                     aria-label="Previous page"
@@ -76,11 +76,11 @@
                         <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
                     </svg>
                 </button>
-                <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium hover:bg-gray-50">
+                <button class="relative inline-flex items-center px-4 py-2 bg-neutral text-sm font-medium hover:bg-neutral/10 cursor-pointer">
                     {data.pagination.page}
                 </button>
                 <button
-                    class="relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium hover:bg-gray-50 transition-colors duration-200 ease-in-out"
+                    class="relative inline-flex items-center px-4 py-2 rounded-r-md bg-neutral text-sm font-medium hover:bg-neutral/10 transition-colors duration-200 ease-in-out cursor-pointer"
                     onclick={() => updatePage(data.pagination.page + 1)}
                     disabled={!data.pagination.hasNextPage}
                     aria-label="Next page"
