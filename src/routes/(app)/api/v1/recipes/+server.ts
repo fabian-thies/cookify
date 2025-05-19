@@ -1,10 +1,10 @@
 import {json, type RequestHandler} from '@sveltejs/kit';
 import {db} from '$lib/server/db';
-import {and, asc, count, desc, eq, ilike, like} from 'drizzle-orm';
-import {ingredient, recipe} from "$lib/server/db/schema";
+import {and, asc, count, desc, eq, ilike} from 'drizzle-orm';
+import {ingredient, recipe, saved_recipes} from "$lib/server/db/schema";
 import {saveFile} from "$lib/server/storage";
 
-export const GET: RequestHandler = async ({url}) => {
+export const GET: RequestHandler = async ({url, locals}) => {
     try {
         const searchQuery = url.searchParams.get('search') || '';
         const categoryId = url.searchParams.get('category') ? parseInt(url.searchParams.get('category') || '0') : undefined;
@@ -29,6 +29,8 @@ export const GET: RequestHandler = async ({url}) => {
             db.select().from(recipe).where(whereClause).limit(limit).offset(offset)
         ]);
 
+        console.log(recipes)
+
         const hasNextPage = recipesCount[0].recipeCount > page * limit;
 
         return json({
@@ -50,7 +52,14 @@ export const GET: RequestHandler = async ({url}) => {
     }
 }
 
-export const PUT: RequestHandler = async ({request}) => {
+export const PUT: RequestHandler = async ({request, locals}) => {
+    const user = locals.user;
+    if (!user) {
+        return new Response("Unauthorized", {status: 401});
+    }
+
+    const userId = user.id;
+
     try {
         const formData = await request.formData();
         const recipeName = formData.get('recipeName')?.toString().trim();
@@ -58,7 +67,6 @@ export const PUT: RequestHandler = async ({request}) => {
         const cookingTimeRaw = formData.get('cookingTime')?.toString().trim();
         const visibility = formData.get('visibility')?.toString().trim();
         const preparationSteps = formData.get('preparationSteps')?.toString().trim();
-        const userId = formData.get('userId')?.toString().trim();
         const imageFile = formData.get('imageFile') as File | null;
         const ingredientsRaw = formData.get('ingredients')?.toString() ?? '[]';
 
@@ -73,7 +81,6 @@ export const PUT: RequestHandler = async ({request}) => {
             !recipeName ||
             !preparationSteps ||
             ingredients.length === 0 ||
-            !userId ||
             !visibility ||
             !servingsRaw ||
             !cookingTimeRaw ||

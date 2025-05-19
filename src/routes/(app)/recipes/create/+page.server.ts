@@ -60,7 +60,6 @@ export const actions: Actions = {
         }
 
         const payload = new FormData();
-        payload.append('userId', locals.user?.id ?? '');
         payload.append('recipeName', recipeName);
         payload.append('servings', servings);
         payload.append('cookingTime', cookingTime);

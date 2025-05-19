@@ -13,7 +13,7 @@
     <div class="flex-shrink-0">
         <a class="text-2xl font-bold text-primary" href="/">cookify</a>
     </div>
-    <div class="flex items-center space-x-2">
+    <div class="flex items-center space-x-3">
         {#each navActions as action}
             {#if action.type === NavActionType.CANCEL}
                 <a class="btn btn-neutral flex items-center gap-2 px-4 min-w-24" href={action.formaction}>

@@ -1,33 +1,50 @@
 <script lang="ts">
+    import Icon from "@iconify/svelte";
     import {UPLOAD_DIR} from "$lib/client/config";
 
-    export let image: string;
-    export let title: string;
-    export let description: string;
-    export let categories: string[] = [];
-    export let href: string = '#';
-    export let cookTime: number | null = null;
-    export let rating: number | null = 0;
+    let {
+        id,
+        image,
+        title,
+        description,
+        categories = [],
+        href = '#',
+        cookTime = null,
+        rating = 0,
+        saved
+    } = $props();
+
+    let isSaved = $state(saved);
+
+    async function toggleSave() {
+        const response = await fetch(`/api/v1/recipes/${id}/save`, {
+            method: 'POST',
+            body: JSON.stringify({title}),
+            headers: {'Content-Type': 'application/json'}
+        });
+
+        if (response.ok) {
+            isSaved = !isSaved;
+        }
+    }
 </script>
 
-<a href={href}
-   class="block relative group overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform">
-    <div class="relative w-full h-64">
-        {#if image}
-            <img
-                    src={UPLOAD_DIR + image}
-                    alt={title}
-                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-        {:else}
-            <div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                <span class="text-gray-500">No image</span>
-            </div>
-        {/if}
+<div class="relative w-full h-64">
+    {#if image}
+        <img
+                src={UPLOAD_DIR + image}
+                alt={title}
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+    {:else}
+        <div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+            <span class="text-gray-500">No image</span>
+        </div>
+    {/if}
 
-        {#if cookTime}
-            <div class="absolute top-3 right-3 bg-primary backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-medium shadow-md transition-all duration-300">
-                <span class="flex items-center">
+    {#if cookTime}
+        <div class="absolute top-3 right-3 bg-primary backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-medium shadow-md transition-all duration-300">
+                <span class="flex items-center text-primary-content">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                          xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -35,10 +52,10 @@
                     </svg>
                     {cookTime} min
                 </span>
-            </div>
-        {/if}
+        </div>
+    {/if}
 
-        <div class="absolute top-14 right-3 bg-primary backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-medium shadow-md transition-all duration-300">
+    <div class="absolute top-14 right-3 bg-primary backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-medium shadow-md transition-all duration-300">
             <span class="flex items-center text-primary-content">
                 <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"
                      xmlns="http://www.w3.org/2000/svg">
@@ -46,10 +63,18 @@
                 </svg>
                 {rating}
             </span>
-        </div>
-
-        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent pt-10 pb-4 px-4 transition-opacity duration-300">
-            <h3 class="text-white font-medium text-lg tracking-wide">{title}</h3>
-        </div>
     </div>
-</a>
+
+    <div class="absolute bottom-0 right-3 z-10 mb-4" onclick={toggleSave}>
+        <Icon
+                icon={isSaved ? 'material-symbols:bookmark' : 'material-symbols:bookmark-outline'}
+                width="28"
+                height="28"
+                style="transition: 0.2s ease"
+        />
+    </div>
+
+    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent pt-10 pb-4 px-4 transition-opacity duration-300">
+        <h3 class="text-white font-medium text-lg tracking-wide">{title}</h3>
+    </div>
+</div>

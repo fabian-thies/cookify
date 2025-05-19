@@ -1,6 +1,6 @@
 import {json, type RequestEvent} from "@sveltejs/kit";
 import {db} from "$lib/server/db";
-import {ingredient, recipe} from "$lib/server/db/schema";
+import {ingredient, recipe, saved_recipes} from "$lib/server/db/schema";
 import {and, eq} from "drizzle-orm";
 
 export async function GET(event: RequestEvent) {
