@@ -29,8 +29,6 @@ export const GET: RequestHandler = async ({url, locals}) => {
             db.select().from(recipe).where(whereClause).limit(limit).offset(offset)
         ]);
 
-        console.log(recipes)
-
         const hasNextPage = recipesCount[0].recipeCount > page * limit;
 
         return json({

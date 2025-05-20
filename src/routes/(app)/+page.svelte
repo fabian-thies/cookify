@@ -63,7 +63,7 @@
                         categories={recipe.categories}
                         cookTime={recipe.cookTime}
                         href={`/recipes/${recipe.id}`}
-                        saved={recipe.saved}
+                        saved={recipe.isSaved}
                 />
             {/each}
         </div>

@@ -13,7 +13,7 @@ export const POST: RequestHandler = async ({locals, params}) => {
         return new Response("Recipe ID is required", {status: 400});
     }
 
-    const saveExists = await db.select().from(saved_recipes).where(and(eq(saved_recipes.userId, user.id), eq(saved_recipes.recipeId, params.id)));
+    const saveExists = await db.select().from(saved_recipes).where(and(eq(saved_recipes.userId, user.id), eq(saved_recipes.recipeId, parseInt(params.id))));
     let saved;
 
     if(saveExists.length == 0) {
@@ -22,7 +22,7 @@ export const POST: RequestHandler = async ({locals, params}) => {
             recipeId: parseInt(params.id)
         });
     } else {
-        saved = await db.delete(saved_recipes).where(and(eq(saved_recipes.userId, user.id), eq(saved_recipes.recipeId, params.id)));
+        saved = await db.delete(saved_recipes).where(and(eq(saved_recipes.userId, user.id), eq(saved_recipes.recipeId, parseInt(params.id))));
     }
 
     return new Response(JSON.stringify(saved), {
