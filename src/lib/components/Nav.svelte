@@ -1,6 +1,6 @@
 <script lang="ts">
     import {page} from '$app/state';
-    import {type NavAction, NavActionType} from '$lib/types';
+    import {NavActionType} from "$lib/types/nav";
 
     let navActions: NavAction[] = $state([]);
 

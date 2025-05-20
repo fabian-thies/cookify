@@ -1,6 +1,6 @@
 import {fail} from '@sveltejs/kit';
 import type {Actions, PageServerLoad} from './$types';
-import type {NavAction} from "$lib/types";
+import type {NavAction} from "$lib/types/nav";
 
 export const load: PageServerLoad = async ({locals}) => {
     return {
