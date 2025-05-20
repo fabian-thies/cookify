@@ -6,7 +6,7 @@
 </script>
 
 <div class="min-h-screen flex items-center justify-center bg-base-300 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8 bg-base-100 p-8 rounded-xl shadow-md">
+    <div class="max-w-md w-full space-y-8 bg-base-100 p-8 rounded-box shadow-md">
         <div class="text-center">
             <h2 class="mt-6 text-3xl font-extrabold text-base-content">
                 Login
@@ -16,12 +16,12 @@
             </p>
         </div>
         <form action='?/login' class="mt-8 space-y-6" method='post' use:enhance>
-            <div class="rounded-md space-y-4">
+            <div class="rounded-field space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-base-content" for="username">Username</label>
                     <input
                             autocomplete="username"
-                            class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 bg-base-300 border border-base-100 placeholder-gray-500 text-base-content focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                            class="mt-1 appearance-none rounded-field relative block w-full px-3 py-2 bg-base-300 border border-base-100 placeholder-gray-500 text-base-content focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                             id="username"
                             name="username"
                             placeholder="Username"
@@ -33,7 +33,7 @@
                     <label class="block text-sm font-medium text-base-content" for="password">Password</label>
                     <input
                             autocomplete="current-password"
-                            class="mt-1 appearance-none rounded-md relative block w-full px-3 py-2 bg-base-300 border border-base-100 placeholder-gray-500 text-base-content focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                            class="mt-1 appearance-none rounded-field relative block w-full px-3 py-2 bg-base-300 border border-base-100 placeholder-gray-500 text-base-content focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                             id="password"
                             name="password"
                             placeholder="Password"
@@ -44,7 +44,7 @@
             </div>
 
             {#if form?.message}
-                <div class="rounded-md bg-red-50 p-4">
+                <div class="rounded-field bg-red-50 p-4">
                     <div class="flex">
                         <div class="flex-shrink-0">
                             <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"

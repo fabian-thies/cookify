@@ -8,7 +8,7 @@ export const GET: RequestHandler = async ({url, locals}) => {
     try {
         const searchQuery = url.searchParams.get('search') || '';
         const categoryId = url.searchParams.get('category') ? parseInt(url.searchParams.get('category') || '0') : undefined;
-        const limit = parseInt(url.searchParams.get('limit') || '20');
+        const limit = parseInt(url.searchParams.get('limit') || '21');
         const page = parseInt(url.searchParams.get('page') || '1');
         const offset = (page - 1) * limit; // Calculate offset for pagination
         const sortBy = url.searchParams.get('sortBy') || 'createdAt';
