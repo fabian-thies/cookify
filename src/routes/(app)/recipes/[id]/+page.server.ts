@@ -1,28 +1,25 @@
 import type {PageServerLoad} from './$types';
 import {error} from "@sveltejs/kit";
-import type {Recipe} from "$lib/server/db/schema";
+import type {RecipeResponse} from "$lib/types/recipes";
 
-export const load: PageServerLoad = async ({fetch, url, params}) => {
+export const load: PageServerLoad = async ({fetch, params}) => {
     const res = await fetch(`/api/v1/recipes/${params.id}`);
 
-    if(!res.ok) {
+    if (!res.ok) {
         error(500, {
             message: "Ein Fehler ist aufgetreten."
         })
     }
 
-    const recipeFetchResult = await res.json() as {
-        success: boolean;
-        recipe: Recipe;
-    };
+    const data: RecipeResponse = await res.json();
 
-    if(!recipeFetchResult.recipe) {
+    if (!data.success) {
         error(404, {
             message: "Rezept nicht gefunden."
         })
     }
 
     return {
-        recipe: recipeFetchResult.recipe
+        ...data
     }
 };

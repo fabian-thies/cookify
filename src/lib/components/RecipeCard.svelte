@@ -28,7 +28,7 @@
         }
     }
 </script>
-<a {href} class="block w-full h-full">
+<a class="block w-full h-full group" {href}>
     <div class="relative w-full h-64 rounded-box overflow-hidden">
         {#if image}
             <img
@@ -65,13 +65,14 @@
             </span>
         </div>
 
-        <div class="absolute bottom-0 right-3 z-10 mb-4 cursor-pointer" on:click|preventDefault|stopPropagation={toggleSave}>
-                <Icon
-                        icon={isSaved ? 'material-symbols:bookmark' : 'material-symbols:bookmark-outline'}
-                        width="28"
-                        height="28"
-                        style="transition: 0.2s ease"
-                />
+        <div class="absolute bottom-0 right-3 z-10 mb-4 cursor-pointer"
+             on:click|preventDefault|stopPropagation={toggleSave}>
+            <Icon
+                    height="28"
+                    icon={isSaved ? 'material-symbols:bookmark' : 'material-symbols:bookmark-outline'}
+                    style="transition: 0.2s ease"
+                    width="28"
+            />
         </div>
 
         <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent pt-10 pb-4 px-4 transition-opacity duration-300">

@@ -35,7 +35,8 @@ export const load: PageServerLoad = async ({url, locals, fetch}) => {
 
     const recipes = recipesData.recipes.map(r => ({
         ...r,
-        isSaved: savedData.saved.some(s => s.recipeId === r.id)}));
+        isSaved: savedData.saved.some(s => s.recipeId === r.id)
+    }));
 
     return {
         user: locals.user,

@@ -1,7 +1,7 @@
 import {json, type RequestHandler} from '@sveltejs/kit';
 import {db} from '$lib/server/db';
 import {and, asc, count, desc, eq, ilike} from 'drizzle-orm';
-import {ingredient, recipe, saved_recipes} from "$lib/server/db/schema";
+import {ingredient, recipe} from "$lib/server/db/schema";
 import {saveFile} from "$lib/server/storage";
 
 export const GET: RequestHandler = async ({url, locals}) => {

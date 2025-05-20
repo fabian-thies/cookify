@@ -4,7 +4,7 @@ import * as auth from '$lib/server/auth.js';
 function redirect(location: string, body?: string) {
     return new Response(body, {
         status: 303,
-        headers: { location }
+        headers: {location}
     });
 }
 

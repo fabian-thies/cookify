@@ -1,6 +1,6 @@
 import type {Recipe} from "$lib/server/db/schema";
 
-type RecipesResponse = {
+export type RecipesResponse = {
     success: boolean;
     recipes: Recipe[];
     pagination: {
@@ -10,7 +10,12 @@ type RecipesResponse = {
     };
 };
 
-type SavedStatusResponse = {
+export type RecipeResponse = {
+    success: boolean;
+    recipe: Recipe;
+}
+
+export type SavedStatusResponse = {
     saved: { userId: string, recipeId: number }[];
 };
 

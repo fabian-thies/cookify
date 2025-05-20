@@ -1,6 +1,6 @@
 import {json, type RequestEvent} from "@sveltejs/kit";
 import {db} from "$lib/server/db";
-import {ingredient, recipe, saved_recipes} from "$lib/server/db/schema";
+import {ingredient, recipe} from "$lib/server/db/schema";
 import {and, eq} from "drizzle-orm";
 
 export async function GET(event: RequestEvent) {
@@ -14,10 +14,10 @@ export async function GET(event: RequestEvent) {
 
         const recipeId = parseInt(event.params.id);
 
-        const recipeResult = await db.select().from(recipe).where(and(eq(recipe.status, 'published'), eq(recipe.id, recipeId)))
+        const result = await db.select().from(recipe).where(and(eq(recipe.status, 'published'), eq(recipe.id, recipeId)))
             .innerJoin(ingredient, eq(recipe.id, ingredient.recipeId)).limit(1);
 
-        if (!recipeResult || recipeResult.length === 0) {
+        if (!result || result.length === 0) {
             return json({
                 success: false,
                 message: 'No recipe found'
@@ -26,7 +26,7 @@ export async function GET(event: RequestEvent) {
 
         return json({
             success: true,
-            recipe: recipeResult[0]
+            ...result[0]
         });
     } catch (error) {
         console.error('Error fetching recipe:', error);

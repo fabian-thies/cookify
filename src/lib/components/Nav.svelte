@@ -5,13 +5,12 @@
 
     let {data}: PageProps = $props();
 
+
     let navActions: NavAction[] = $state([]);
 
     $effect(() => {
         navActions = page.data.navActions;
     });
-
-    console.log(data)
 </script>
 
 <nav class="navbar bg-base-100 mx-auto py-6 px-22 flex items-center justify-between">

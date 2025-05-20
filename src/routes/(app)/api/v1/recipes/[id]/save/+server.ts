@@ -16,7 +16,7 @@ export const POST: RequestHandler = async ({locals, params}) => {
     const saveExists = await db.select().from(saved_recipes).where(and(eq(saved_recipes.userId, user.id), eq(saved_recipes.recipeId, parseInt(params.id))));
     let saved;
 
-    if(saveExists.length == 0) {
+    if (saveExists.length == 0) {
         saved = await db.insert(saved_recipes).values({
             userId: user.id,
             recipeId: parseInt(params.id)

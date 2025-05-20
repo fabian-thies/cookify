@@ -12,5 +12,5 @@ export const GET: RequestHandler = async ({locals}) => {
     // TOOD: Implement load of given recipe IDs
     const rows = await db.select().from(saved_recipes).where(eq(saved_recipes.userId, user.id));
 
-    return json({ saved: rows})
+    return json({saved: rows})
 }
