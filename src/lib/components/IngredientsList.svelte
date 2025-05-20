@@ -17,7 +17,7 @@
     }
 </script>
 
-<fieldset class="bg-base-200 p-6 rounded-md space-y-4 {error ? 'border border-error' : ''}">
+<fieldset class="bg-base-200 p-6 rounded-field space-y-4 {error ? 'border border-error' : ''}">
     <legend class="sr-only">Ingredients</legend>
     <label class="text-md font-medium text-base-content" for="ingredients">Ingredients</label>
 

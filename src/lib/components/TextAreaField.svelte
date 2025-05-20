@@ -12,7 +12,7 @@
     export let textareaClass: string = "";
 </script>
 
-<fieldset class="bg-base-200 p-6 rounded-md space-y-4">
+<fieldset class="bg-base-200 p-6 rounded-field space-y-4">
     <legend class="sr-only">{label}</legend>
     <label class="text-md font-medium text-base-conten" for={id}>{label}</label>
 

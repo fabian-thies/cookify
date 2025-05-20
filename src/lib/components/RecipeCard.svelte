@@ -28,22 +28,22 @@
         }
     }
 </script>
+<a {href} class="block w-full h-full">
+    <div class="relative w-full h-64 rounded-box overflow-hidden">
+        {#if image}
+            <img
+                    src={UPLOAD_DIR + image}
+                    alt={title}
+                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+        {:else}
+            <div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                <span class="text-gray-500">No image</span>
+            </div>
+        {/if}
 
-<div class="relative w-full h-64">
-    {#if image}
-        <img
-                src={UPLOAD_DIR + image}
-                alt={title}
-                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-    {:else}
-        <div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-            <span class="text-gray-500">No image</span>
-        </div>
-    {/if}
-
-    {#if cookTime}
-        <div class="absolute top-3 right-3 bg-primary backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-medium shadow-md transition-all duration-300">
+        {#if cookTime}
+            <div class="absolute top-3 right-3 bg-primary backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-medium shadow-md transition-all duration-300">
                 <span class="flex items-center text-primary-content">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                          xmlns="http://www.w3.org/2000/svg">
@@ -52,10 +52,10 @@
                     </svg>
                     {cookTime} min
                 </span>
-        </div>
-    {/if}
+            </div>
+        {/if}
 
-    <div class="absolute top-14 right-3 bg-primary backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-medium shadow-md transition-all duration-300">
+        <div class="absolute top-14 right-3 bg-primary backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-medium shadow-md transition-all duration-300">
             <span class="flex items-center text-primary-content">
                 <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"
                      xmlns="http://www.w3.org/2000/svg">
@@ -63,18 +63,19 @@
                 </svg>
                 {rating}
             </span>
-    </div>
+        </div>
 
-    <div class="absolute bottom-0 right-3 z-10 mb-4" onclick={toggleSave}>
-        <Icon
-                icon={isSaved ? 'material-symbols:bookmark' : 'material-symbols:bookmark-outline'}
-                width="28"
-                height="28"
-                style="transition: 0.2s ease"
-        />
-    </div>
+        <div class="absolute bottom-0 right-3 z-10 mb-4 cursor-pointer" on:click|preventDefault|stopPropagation={toggleSave}>
+                <Icon
+                        icon={isSaved ? 'material-symbols:bookmark' : 'material-symbols:bookmark-outline'}
+                        width="28"
+                        height="28"
+                        style="transition: 0.2s ease"
+                />
+        </div>
 
-    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent pt-10 pb-4 px-4 transition-opacity duration-300">
-        <h3 class="text-white font-medium text-lg tracking-wide">{title}</h3>
+        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent pt-10 pb-4 px-4 transition-opacity duration-300">
+            <h3 class="text-white font-medium text-lg tracking-wide">{title}</h3>
+        </div>
     </div>
-</div>
+</a>
