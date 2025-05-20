@@ -6,6 +6,7 @@ export const user = pgTable('user', {
     age: integer('age'),
     username: text('username').notNull().unique(),
     passwordHash: text('password_hash').notNull(),
+    avatarUrl: text('avatar_url'),
     createdAt: timestamp('created_at', {withTimezone: true}).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', {withTimezone: true}).defaultNow().notNull(),
 });

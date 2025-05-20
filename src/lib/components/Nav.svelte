@@ -3,11 +3,15 @@
     import {NavActionType} from "$lib/types/nav";
     import {enhance} from '$app/forms';
 
+    let {data}: PageProps = $props();
+
     let navActions: NavAction[] = $state([]);
 
     $effect(() => {
         navActions = page.data.navActions;
     });
+
+    console.log(data)
 </script>
 
 <nav class="navbar bg-base-100 mx-auto py-6 px-22 flex items-center justify-between">
@@ -43,13 +47,21 @@
         </div>
     {:else}
         <div class="dropdown dropdown-end">
-            <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-                <div class="w-10 rounded-full">
-                    <img
-                            alt="Tailwind CSS Navbar component"
-                            src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"/>
+            {#if data.user.avatarUrl}
+                <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+                    <div class="w-10 rounded-full">
+                        <img
+                                alt="Avatar"
+                                src={data.user.avatarUrl}/>
+                    </div>
                 </div>
-            </div>
+            {:else}
+                <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar avatar-placeholder">
+                    <div class="bg-neutral text-neutral-content w-12 rounded-full">
+                        <span class="text-xs">{ data.user.username.slice(0, 2) }</span>
+                    </div>
+                </div>
+            {/if}
             <ul
                     tabindex="0"
                     class="menu menu-sm dropdown-content bg-base-200 rounded-box z-1 mt-3 w-52 p-2 shadow-lg">

@@ -4,6 +4,6 @@
     let {data, children} = $props();
 </script>
 
-<Nav/>
+<Nav data={data}/>
 
 {@render children()}
