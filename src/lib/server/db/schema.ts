@@ -41,7 +41,7 @@ export const saved_recipes = pgTable('saved_recipes', {
     ]
 );
 
-export const ingredient = pgTable('ingredient', {
+export const ingredients = pgTable('ingredients', {
     id: serial('id').primaryKey(),
     recipeId: integer('recipe_id').notNull().references(() => recipe.id),
     name: text('name').notNull(),
@@ -68,7 +68,7 @@ export const recipeCategory = pgTable('recipe_category', {
 export type Session = typeof session.$inferSelect;
 export type User = typeof user.$inferSelect;
 export type Recipe = typeof recipe.$inferSelect;
-export type Ingredient = typeof ingredient.$inferSelect;
+export type Ingredient = typeof ingredients.$inferSelect;
 export type Instructions = typeof instructions.$inferSelect;
 export type Category = typeof category.$inferSelect;
 export type RecipeCategory = typeof recipeCategory.$inferSelect;

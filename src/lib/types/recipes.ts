@@ -19,9 +19,9 @@ export type SavedStatusResponse = {
     saved: { userId: string, recipeId: number }[];
 };
 
-export type IngredientInput = {
-    id?: number;
+export type Ingredient = {
+    id: number;
     name: string;
     quantity: string;
-    recipeId?: number;
+    recipeId: number;
 };
