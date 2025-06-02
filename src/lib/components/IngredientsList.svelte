@@ -1,7 +1,7 @@
 <script lang="ts">
-    import type {IngredientInput} from "$lib/types";
+    import type {Ingredient} from "$lib/types";
 
-    export let ingredients: IngredientInput[] = [{name: "", quantity: ""}];
+    export let ingredients: Ingredient[] = [{name: "", quantity: ""}];
     export let error: string | undefined = undefined;
 
     function addIngredient() {

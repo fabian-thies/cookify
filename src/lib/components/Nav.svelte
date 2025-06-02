@@ -13,7 +13,7 @@
     });
 </script>
 
-<nav class="navbar bg-base-100 mx-auto py-6 px-22 flex items-center justify-between">
+<nav class="navbar bg-base-200 mx-auto py-6 px-22 flex items-center justify-between">
     <div class="flex-shrink-0">
         <a class="text-2xl font-bold text-primary" href="/">cookify</a>
     </div>

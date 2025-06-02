@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type {IngredientInput} from "$lib/types";
+    import type {Ingredient} from "$lib/types";
     import {enhance} from "$app/forms";
     import ImageUploader from "$lib/components/ImageUploader.svelte";
     import IngredientsList from "$lib/components/IngredientsList.svelte";
@@ -17,7 +17,7 @@
     let imageFile: File | null = $state(null);
     let imagePreview: string | null = $state(null);
 
-    let ingredients: IngredientInput[] = $state([
+    let ingredients: Ingredient[] = $state([
         {
             name: "",
             quantity: ""
@@ -115,10 +115,5 @@
                 />
             </div>
         </section>
-
-        <!--            <footer class="mt-12 flex justify-end gap-4 col-span-full">
-                        <button class="btn btn-ghost" type="button">Cancel</button>
-                        <button class="btn btn-primary" type="submit">Save recipe</button>
-                    </footer>-->
     </form>
 </article>

@@ -71,8 +71,7 @@
                     height="28"
                     icon={isSaved ? 'material-symbols:bookmark' : 'material-symbols:bookmark-outline'}
                     style="transition: 0.2s ease"
-                    width="28"
-            />
+                    width="28"/>
         </div>
 
         <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent pt-10 pb-4 px-4 transition-opacity duration-300">
