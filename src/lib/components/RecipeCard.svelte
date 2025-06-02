@@ -10,8 +10,10 @@
         categories = [],
         href = '#',
         cookTime = null,
+        difficulty = "Einfach",
         rating = 0,
-        saved
+        servings = 1,
+        saved,
     } = $props();
 
     let isSaved = $state(saved);
@@ -27,55 +29,97 @@
             isSaved = !isSaved;
         }
     }
+
+    function getDifficultyColor(difficulty: string) {
+        switch (difficulty) {
+            case "Einfach":
+                return "badge-success";
+            case "Mittel":
+                return "badge-warning";
+            case "Schwer":
+                return "badge-error";
+            default:
+                return "badge-neutral";
+        }
+    }
 </script>
-<a class="block w-full h-full group" {href}>
-    <div class="relative w-full h-64 rounded-box overflow-hidden">
+
+<div class="card bg-base-100 shadow-sm hover:shadow-lg transition-shadow duration-200 border border-base-300">
+    <figure class="relative">
         {#if image}
             <img
                     src={UPLOAD_DIR + image}
                     alt={title}
-                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    class="w-full h-48 object-cover"
             />
         {:else}
-            <div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                <span class="text-gray-500">No image</span>
+            <div class="w-full h-48 bg-base-200 flex items-center justify-center">
+                <span class="text-base-content/50">Kein Bild</span>
             </div>
         {/if}
-
-        {#if cookTime}
-            <div class="absolute top-3 right-3 bg-primary backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-medium shadow-md transition-all duration-300">
-                <span class="flex items-center text-primary-content">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                         xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    {cookTime} min
-                </span>
+        <div class="absolute top-2 right-2">
+            <div class={`badge ${getDifficultyColor(difficulty)} badge-sm font-medium`}>
+                {difficulty}
             </div>
-        {/if}
+        </div>
+    </figure>
 
-        <div class="absolute top-14 right-3 bg-primary backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-medium shadow-md transition-all duration-300">
-            <span class="flex items-center text-primary-content">
-                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"
-                     xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                </svg>
-                {rating}
-            </span>
+    <div class="card-body p-4">
+        <h3 class="card-title text-lg mb-2 line-clamp-1">{title}</h3>
+        <p class="text-base-content/70 text-sm mb-3 line-clamp-2">{description}</p>
+
+        <div class="flex items-center justify-between text-sm text-base-content/60 mb-3">
+            <div class="flex items-center gap-1">
+                <Icon icon="lucide:clock" class="h-4 w-4"/>
+                <span>{cookTime} Min</span>
+            </div>
+            <div class="flex items-center gap-1">
+                <Icon icon="lucide:users" class="h-4 w-4"/>
+                <span>{servings} Portionen</span>
+            </div>
+            <div class="flex items-center gap-1">
+                <Icon icon="lucide:star" class="h-4 w-4 text-warning"/>
+                <span>{rating}</span>
+            </div>
         </div>
 
-        <div class="absolute bottom-0 right-3 z-10 mb-4 cursor-pointer"
-             on:click|preventDefault|stopPropagation={toggleSave}>
-            <Icon
-                    height="28"
-                    icon={isSaved ? 'material-symbols:bookmark' : 'material-symbols:bookmark-outline'}
-                    style="transition: 0.2s ease"
-                    width="28"/>
-        </div>
+        <!-- Tags -->
+        <!--        <div class="flex flex-wrap gap-1 mb-3">-->
+        <!--            {#each tags.slice(0, 2) as tag}-->
+        <!--                <div class="badge badge-secondary badge-sm">-->
+        <!--                    {tag}-->
+        <!--                </div>-->
+        <!--            {/each}-->
+        <!--            {#if tags.length > 2}-->
+        <!--                <div class="badge badge-secondary badge-sm">-->
+        <!--                    +{tags.length - 2}-->
+        <!--                </div>-->
+        <!--            {/if}-->
+        <!--        </div>-->
 
-        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent pt-10 pb-4 px-4 transition-opacity duration-300">
-            <h3 class="text-white font-medium text-lg tracking-wide">{title}</h3>
+        <div class="card-actions justify-end">
+            <a
+                    {href}
+                    class="btn btn-neutral w-full"
+            >
+                Rezept ansehen
+            </a>
         </div>
     </div>
-</a>
+</div>
+
+<style>
+    .line-clamp-1 {
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
