@@ -194,7 +194,7 @@
                 </ul>
             </div>
 
-            {#if activeFiltersCount > 0 || search}
+            {#if search || selectedCategory !== "Alle" || selectedDifficulty !== "Alle" || maxCookTime !== null}
                 <button
                         class="btn btn-ghost btn-sm"
                         onclick={resetFilters}
