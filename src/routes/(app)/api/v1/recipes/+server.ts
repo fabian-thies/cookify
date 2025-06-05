@@ -1,7 +1,7 @@
 import {json, type RequestHandler} from '@sveltejs/kit';
 import {db} from '$lib/server/db';
 import {and, asc, count, desc, eq, ilike} from 'drizzle-orm';
-import {ingredient, recipe} from "$lib/server/db/schema";
+import {ingredients, recipe} from "$lib/server/db/schema";
 import {saveFile} from "$lib/server/storage";
 
 export const GET: RequestHandler = async ({url, locals}) => {
@@ -68,9 +68,9 @@ export const PUT: RequestHandler = async ({request, locals}) => {
         const imageFile = formData.get('imageFile') as File | null;
         const ingredientsRaw = formData.get('ingredients')?.toString() ?? '[]';
 
-        let ingredients: { name: string; quantity: string }[];
+        let ingredientsList: { name: string; quantity: string }[];
         try {
-            ingredients = JSON.parse(ingredientsRaw);
+            ingredientsList = JSON.parse(ingredientsRaw);
         } catch {
             return json({success: false, message: 'Invalid ingredients format'}, {status: 400});
         }
@@ -78,7 +78,7 @@ export const PUT: RequestHandler = async ({request, locals}) => {
         if (
             !recipeName ||
             !preparationSteps ||
-            ingredients.length === 0 ||
+            ingredientsList.length === 0 ||
             !visibility ||
             !servingsRaw ||
             !cookingTimeRaw ||
@@ -112,8 +112,8 @@ export const PUT: RequestHandler = async ({request, locals}) => {
                 .returning();
 
             await Promise.all(
-                ingredients.map(ing =>
-                    tx.insert(ingredient).values({
+                ingredientsList.map(ing =>
+                    tx.insert(ingredients).values({
                         recipeId: newRecipe.id,
                         name: ing.name,
                         quantity: ing.quantity
