@@ -38,7 +38,7 @@
             <header>
                 <h2 class="text-md font-semibold text-base-content/80">RECIPE INFORMATION</h2>
             </header>
-            <fieldset class="bg-base-200 p-6 rounded-md space-y-4">
+            <fieldset class="bg-base-100 p-6 rounded-md space-y-4">
                 <legend class="sr-only">Recipe Information</legend>
                 <div>
                     <ImageUploader

@@ -20,7 +20,7 @@
 
 <div>
     <div
-            class="border-2 border-dashed {error ? 'border-error' : 'border-primary/30'} hover:border-primary hover:bg-primary/5 p-8 rounded-field text-center cursor-pointer transition-all duration-300 relative group h-48 flex flex-col items-center justify-center"
+            class="border-2 bg-base-200 border-dashed {error ? 'border-error' : 'border-primary/30'} hover:border-primary hover:bg-primary/5 p-8 rounded-field text-center cursor-pointer transition-all duration-300 relative group h-48 flex flex-col items-center justify-center"
             id="dropzone"
     >
         {#if imagePreview}

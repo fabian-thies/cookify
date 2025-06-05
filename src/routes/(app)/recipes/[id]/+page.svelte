@@ -170,7 +170,7 @@
                         <div class="space-y-3">
                             {#each ingredients as ingredient}
                                 <div class="flex items-center gap-3">
-                                    <input type="checkbox" class="checkbox checkbox-primary"/>
+                                    <input type="checkbox" class="btn checkbox checkbox-primary"/>
                                     <span class="text-base-content/70">{ingredient.quantity} {ingredient.name}</span>
                                 </div>
                             {/each}

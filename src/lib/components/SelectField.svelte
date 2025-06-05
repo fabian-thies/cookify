@@ -17,7 +17,7 @@
     <label class="text-md font-medium text-base-content" for={id}>{label}</label>
     <select
             bind:value={value}
-            class="select select-bordered mt-1 {fullWidth ? 'w-full' : ''} rounded-lg {error ? 'select-error' : 'border-base-300'} bg-base-100 focus:border-primary focus:ring-1 focus:ring-primary transition-all {selectClass}"
+            class="select select-bordered mt-1 {fullWidth ? 'w-full' : ''} rounded-lg {error ? 'select-error' : 'border-base-300'} bg-base-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all {selectClass}"
             {id}
             {name}
             {required}

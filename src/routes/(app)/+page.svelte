@@ -95,7 +95,7 @@
 
         <div class="flex flex-wrap gap-4 items-center">
             <div class="dropdown">
-                <div tabindex="0" role="button" class="btn btn-outline w-48">
+                <div tabindex="0" role="button" class="btn btn-outline w-48 border border-base-content/30">
                     <Icon icon="lucide:tag" class="w-4 h-4 mr-2"/>
                     {selectedCategory}
                     <Icon icon="lucide:chevron-down" class="w-4 h-4 ml-auto"/>
@@ -117,7 +117,7 @@
             </div>
 
             <div class="dropdown">
-                <div tabindex="0" role="button" class="btn btn-outline w-48">
+                <div tabindex="0" role="button" class="btn btn-outline w-48 border border-base-content/30">
                     <Icon icon="lucide:bar-chart-3" class="w-4 h-4 mr-2"/>
                     {selectedDifficulty}
                     <Icon icon="lucide:chevron-down" class="w-4 h-4 ml-auto"/>
@@ -139,13 +139,13 @@
             </div>
 
             <div class="dropdown">
-                <div tabindex="0" role="button" class="btn btn-outline w-48">
+                <div tabindex="0" role="button" class="btn btn-outline w-48 border-base-content/30">
                     <Icon icon="lucide:clock" class="w-4 h-4 mr-2"/>
                     {maxCookTime ? `≤ ${maxCookTime} Min` : 'Zubereitungszeit'}
                     <Icon icon="lucide:chevron-down" class="w-4 h-4 ml-auto"/>
                 </div>
                 <ul tabindex="0"
-                    class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow-lg border border-base-300">
+                    class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow-lg">
                     <li>
                         <button
                                 class="justify-start"
@@ -276,7 +276,7 @@
         <div class="flex justify-center mt-12">
             <div class="join">
                 <button
-                        class="join-item btn btn-outline"
+                        class="join-item btn btn-neutral"
                         class:btn-disabled={data.pagination.page === 1}
                         onclick={() => updatePage(data.pagination.page - 1)}
                         disabled={data.pagination.page === 1}
@@ -284,11 +284,11 @@
                 >
                     <Icon icon="lucide:chevron-left" class="h-5 w-5"/>
                 </button>
-                <button class="join-item btn btn-active">
+                <button class="join-item btn btn-neutral">
                     {data.pagination.page}
                 </button>
                 <button
-                        class="join-item btn btn-outline"
+                        class="join-item btn btn-neutral"
                         class:btn-disabled={!data.pagination.hasNextPage}
                         onclick={() => updatePage(data.pagination.page + 1)}
                         disabled={!data.pagination.hasNextPage}
