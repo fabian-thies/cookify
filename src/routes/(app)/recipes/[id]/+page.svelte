@@ -2,6 +2,7 @@
     import {UPLOAD_DIR} from "$lib/client/config";
     import type {Ingredient, Recipe} from "$lib/server/db/schema";
     import Icon from "@iconify/svelte";
+    import {enhance} from '$app/forms';
 
     let {data} = $props();
 
@@ -50,6 +51,8 @@
                 "Spinat unterrühren und kurz zusammenfallen lassen. Gekochte Pasta untermischen und mit Parmesan servieren.",
         },
     ];
+
+    let isSaved: boolean = $state(data.isSaved);
 </script>
 
 <div class="min-h-screen bg-base-200">
@@ -60,10 +63,19 @@
                     {category}
                 </span>
                 <div class="flex gap-2">
-                    <button class="btn btn-outline btn-sm border-base-content/30">
-                        <Icon icon="mdi:heart" class="h-4 w-4 mr-2"/>
-                        Favorit
-                    </button>
+                    <form method="POST" action="?/toggleFavorite" use:enhance={() => {
+                        return async ({ result }) => {
+                            if (result.type === 'success') {
+                                isSaved = !isSaved;
+                            }
+                        };
+                    }}>
+                        <button class={`btn btn-sm ${isSaved ? 'btn-primary' : 'btn-outline border-base-content/30'}`}
+                                type="submit">
+                            <Icon icon="mdi:heart" class={`h-4 w-4 mr-2 ${isSaved ? 'text-primary-content' : ''}`}/>
+                            {isSaved ? 'Gespeichert' : 'Favorit'}
+                        </button>
+                    </form>
                     <button class="btn btn-outline btn-sm border-base-content/30">
                         <Icon icon="mdi:share" class="h-4 w-4 mr-2"/>
                         Teilen
@@ -80,11 +92,16 @@
             <div class="flex items-center gap-4 text-base-content/60 mb-6">
                 <div class="flex items-center gap-1">
                     <div class="rating flex">
-                        <input type="radio" name="rating-2" class="mask mask-star-2 bg-primary" checked={rating >= 1} aria-label="1 star"/>
-                        <input type="radio" name="rating-2" class="mask mask-star-2 bg-primary" checked={rating >= 2} aria-label="2 star"/>
-                        <input type="radio" name="rating-2" class="mask mask-star-2 bg-primary" checked={rating >= 3} aria-label="3 star"/>
-                        <input type="radio" name="rating-2" class="mask mask-star-2 bg-primary" checked={rating >= 4} aria-label="4 star"/>
-                        <input type="radio" name="rating-2" class="mask mask-star-2 bg-primary" checked={rating >= 5} aria-label="5 star"/>
+                        <input type="radio" name="rating-2" class="mask mask-star-2 bg-primary" checked={rating >= 1}
+                               aria-label="1 star"/>
+                        <input type="radio" name="rating-2" class="mask mask-star-2 bg-primary" checked={rating >= 2}
+                               aria-label="2 star"/>
+                        <input type="radio" name="rating-2" class="mask mask-star-2 bg-primary" checked={rating >= 3}
+                               aria-label="3 star"/>
+                        <input type="radio" name="rating-2" class="mask mask-star-2 bg-primary" checked={rating >= 4}
+                               aria-label="4 star"/>
+                        <input type="radio" name="rating-2" class="mask mask-star-2 bg-primary" checked={rating >= 5}
+                               aria-label="5 star"/>
                     </div>
                     <span class="ml-1">{rating} ({reviewCount} Bewertungen)</span>
                 </div>
