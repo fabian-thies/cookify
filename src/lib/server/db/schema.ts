@@ -26,6 +26,7 @@ export const recipe = pgTable('recipe', {
     prepTime: integer('prep_time'), // in minutes
     cookTime: integer('cook_time'), // in minutes
     servings: integer('servings'),
+    difficulty: text('difficulty').default('easy').notNull(), // 'easy', 'medium', 'hard'
     status: text('status').default('draft').notNull(), // 'draft' or 'published'
     createdAt: timestamp('created_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow()
