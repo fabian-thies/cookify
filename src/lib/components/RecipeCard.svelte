@@ -1,6 +1,7 @@
 <script lang="ts">
     import Icon from "@iconify/svelte";
     import {UPLOAD_DIR} from "$lib/client/config";
+    import {getDifficultyColor, getDifficultyText} from "$lib/utils/recipe";
 
     let {
         id,
@@ -17,31 +18,7 @@
     } = $props();
 
     let isSaved = $state(saved);
-
-    async function toggleSave() {
-        const response = await fetch(`/api/v1/recipes/${id}/save`, {
-            method: 'POST',
-            body: JSON.stringify({title}),
-            headers: {'Content-Type': 'application/json'}
-        });
-
-        if (response.ok) {
-            isSaved = !isSaved;
-        }
-    }
-
-    function getDifficultyColor(difficulty: string) {
-        switch (difficulty) {
-            case "Einfach":
-                return "badge-success";
-            case "Mittel":
-                return "badge-warning";
-            case "Schwer":
-                return "badge-error";
-            default:
-                return "badge-neutral";
-        }
-    }
+    difficulty = getDifficultyText(difficulty);
 </script>
 
 <div class="card bg-base-100 shadow-sm hover:shadow-lg transition-shadow duration-200 border border-base-300">
@@ -107,19 +84,3 @@
         </div>
     </div>
 </div>
-
-<style>
-    .line-clamp-1 {
-        display: -webkit-box;
-        -webkit-line-clamp: 1;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    .line-clamp-2 {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-</style>
