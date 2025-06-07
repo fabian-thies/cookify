@@ -2,6 +2,7 @@ import type {PageServerLoad} from './$types';
 import {type Actions, error, fail, redirect} from '@sveltejs/kit';
 import * as auth from '$lib/server/auth';
 import type {Recipe} from "$lib/server/db/schema";
+import {getRecipeCount} from "$lib/server/services/recipe";
 
 type RecipesResponse = {
     success: boolean;

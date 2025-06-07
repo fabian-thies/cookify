@@ -3,15 +3,16 @@
     import type {Ingredient, Recipe} from "$lib/server/db/schema";
     import Icon from "@iconify/svelte";
     import {enhance} from '$app/forms';
+    import {getDifficultyText} from "$lib/utils/recipe";
 
     let {data} = $props();
 
     const recipe: Recipe = data.recipe;
-    const ingredients: Ingredient[] = data.ingredients;
+    const ingredients: Ingredient[] = recipe.ingredients;
 
     const rating = 4.8;
     const reviewCount = 124;
-    const difficulty = "Einfach";
+    const difficulty = getDifficultyText(recipe.difficulty);
     const category = "Hauptgericht";
 
     const recipeSteps = [
