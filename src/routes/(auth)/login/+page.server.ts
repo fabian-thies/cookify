@@ -28,9 +28,6 @@ export const actions: Actions = {
         if (!passwordValidation.isValid) {
             return fail(400, {message: 'Invalid password (min 6, max 255 characters)'});
         }
-        if (passwordValidation.isTooWeak) {
-            return fail(400, {message: 'Password is too weak. Use a mix of uppercase, lowercase, numbers, and special characters.'});
-        }
 
         const validatedPassword = password as string;
 
