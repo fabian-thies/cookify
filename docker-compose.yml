@@ -3,7 +3,7 @@ services:
     image: postgres
     restart: always
     ports:
-      - 5432:5432
+      - "5432:5432"
     environment: 
       POSTGRES_USER: root
       POSTGRES_PASSWORD: RF8hRZD2jb03X8z5f1Xr3SJ7oUJBatJ0uMB2AmgcTvtN00UHBi
