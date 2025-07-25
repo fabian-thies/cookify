@@ -23,9 +23,16 @@ export const actions: Actions = {
         if (!validateUsername(username)) {
             return fail(400, {message: 'Invalid username (min 3, max 31 characters, alphanumeric only)'});
         }
-        if (!validatePassword(password)) {
+        
+        const passwordValidation = validatePassword(password);
+        if (!passwordValidation.isValid) {
             return fail(400, {message: 'Invalid password (min 6, max 255 characters)'});
         }
+        if (passwordValidation.isTooWeak) {
+            return fail(400, {message: 'Password is too weak. Use a mix of uppercase, lowercase, numbers, and special characters.'});
+        }
+
+        const validatedPassword = password as string;
 
         const results = await db
             .select()
@@ -37,7 +44,7 @@ export const actions: Actions = {
             return fail(400, {message: 'Incorrect username or password'});
         }
 
-        const validPassword = await verify(existingUser.passwordHash, password, {
+        const validPassword = await verify(existingUser.passwordHash, validatedPassword, {
             memoryCost: 19456,
             timeCost: 2,
             outputLen: 32,
@@ -61,13 +68,19 @@ export const actions: Actions = {
         if (!validateUsername(username)) {
             return fail(400, {message: 'Invalid username'});
         }
-        if (!validatePassword(password)) {
-            return fail(400, {message: 'Invalid password'});
+        
+        const passwordValidation = validatePassword(password);
+        if (!passwordValidation.isValid) {
+            return fail(400, {message: 'Invalid password (min 6, max 255 characters)'});
+        }
+        if (passwordValidation.isTooWeak) {
+            return fail(400, {message: 'Password is too weak. Use a mix of uppercase, lowercase, numbers, and special characters.'});
         }
 
+        const validatedPassword = password as string;
+
         const userId = generateUserId();
-        const passwordHash = await hash(password, {
-            // recommended minimum parameters
+        const passwordHash = await hash(validatedPassword, {
             memoryCost: 19456,
             timeCost: 2,
             outputLen: 32,
@@ -103,10 +116,24 @@ function validateUsername(username: unknown): username is string {
     );
 }
 
-function validatePassword(password: unknown): password is string {
-    return (
-        typeof password === 'string' &&
-        password.length >= 6 &&
-        password.length <= 255
-    );
+function validatePassword(password: unknown): { isValid: boolean; isTooWeak: boolean } {
+    const isString = typeof password === 'string';
+    const hasValidLength = isString && password.length >= 6 && password.length <= 255;
+    
+    if (!isString || !hasValidLength) {
+        return { isValid: false, isTooWeak: false };
+    }
+    
+    const hasUppercase = /[A-Z]/.test(password as string);
+    const hasLowercase = /[a-z]/.test(password as string);
+    const hasNumbers = /[0-9]/.test(password as string);
+    const hasSpecialChars = /[^A-Za-z0-9]/.test(password as string);
+    
+    const strengthScore = [hasUppercase, hasLowercase, hasNumbers, hasSpecialChars].filter(Boolean).length;
+    const isStrong = strengthScore >= 3;
+    
+    return { 
+        isValid: true, 
+        isTooWeak: !isStrong 
+    };
 }
