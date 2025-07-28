@@ -45,28 +45,28 @@
             <form method="post" action="{isLogin ? '?/login' : '?/register'}" use:enhance>
                 <div class="grid gap-6">
                     <div class="grid gap-6">
+                        <div class="grid gap-3">
+                            <Label for="username-{id}">{m["login.username"]()}</Label>
+                            <Input
+                                    id="username-{id}"
+                                    name="username"
+                                    type="text"
+                                    placeholder={m["login.enterUsername"]()}
+                                    required
+                            />
+                        </div>
                         {#if !isLogin}
                             <div class="grid gap-3">
-                                <Label for="username-{id}">{m["login.username"]()}</Label>
+                                <Label for="email-{id}">{m["login.email"]()}</Label>
                                 <Input
-                                        id="username-{id}"
-                                        name="username"
-                                        type="text"
-                                        placeholder={m["login.enterUsername"]()}
+                                        id="email-{id}"
+                                        name="email"
+                                        type="email"
+                                        placeholder={m["login.emailPlaceholder"]()}
                                         required
                                 />
                             </div>
                         {/if}
-                        <div class="grid gap-3">
-                            <Label for="email-{id}">{m["login.email"]()}</Label>
-                            <Input
-                                    id="email-{id}"
-                                    name="email"
-                                    type="email"
-                                    placeholder={m["login.emailPlaceholder"]()}
-                                    required
-                            />
-                        </div>
                         <div class="grid gap-3">
                             <div class="flex items-center">
                                 <Label for="password-{id}">{m["login.password"]()}</Label>
@@ -102,7 +102,7 @@
                         <button
                                 type="button"
                                 onclick={() => isLogin = !isLogin}
-                                class="underline underline-offset-4 hover:no-underline"
+                                class="underline underline-offset-4 hover:no-underline cursor-pointer"
                         >
                             {isLogin ? m["login.signUp"]() : m["login.signInLink"]()}
                         </button>
