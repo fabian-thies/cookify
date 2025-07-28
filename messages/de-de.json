@@ -1,4 +1,24 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"logout": "Abmelden"
+	"logout": "Abmelden",
+	"login": {
+		"welcomeBack": "Willkommen zurück",
+		"createAccount": "Konto erstellen",
+		"signInToContinue": "Anmelden, um fortzufahren",
+		"enterDetailsToStart": "Geben Sie Ihre Daten ein, um zu beginnen",
+		"username": "Benutzername",
+		"email": "E-Mail",
+		"password": "Passwort",
+		"confirmPassword": "Passwort bestätigen",
+		"enterUsername": "Geben Sie Ihren Benutzernamen ein",
+		"emailPlaceholder": "name@beispiel.de",
+		"confirmPasswordPlaceholder": "Bestätigen Sie Ihr Passwort",
+		"forgotPassword": "Passwort vergessen?",
+		"signIn": "Anmelden",
+		"createAccountButton": "Konto erstellen",
+		"noAccount": "Haben Sie kein Konto?",
+		"haveAccount": "Haben Sie bereits ein Konto?",
+		"signUp": "Registrieren",
+		"signInLink": "Anmelden"
+	}
 }
