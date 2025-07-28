@@ -1,7 +1,7 @@
 import * as auth from '$lib/server/auth';
-import { fail, redirect } from '@sveltejs/kit';
+import {type Actions, fail, redirect} from '@sveltejs/kit';
 import { getRequestEvent } from '$app/server';
-import type { Actions, PageServerLoad } from './$types';
+import type {PageServerLoad} from "../../.svelte-kit/types/src/routes/$types";
 
 export const load: PageServerLoad = async () => {
 	const user = requireLogin()
@@ -16,7 +16,7 @@ export const actions: Actions = {
 		await auth.invalidateSession(event.locals.session.id);
 		auth.deleteSessionTokenCookie(event);
 
-		return redirect(302, '/demo/lucia/login');
+		return redirect(302, '/login');
 	},
 };
 
@@ -24,7 +24,7 @@ function requireLogin() {
   const { locals } = getRequestEvent();
 
   if (!locals.user) {
-    return redirect(302, "/demo/lucia/login");
+    return redirect(302, "/login");
   }
 
   return locals.user;
