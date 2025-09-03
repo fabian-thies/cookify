@@ -22,7 +22,7 @@
 </script>
 
 {#snippet ingredientRow(item: Ingredient, index: number)}
-    <div class="flex flex-row gap-6">
+    <div class="flex flex-col md:flex-row gap-6">
         <div class="flex w-full flex-col gap-1.5">
             <Label for="ingredients-{index}-amount">Menge</Label>
             <Input
@@ -53,7 +53,7 @@
                     placeholder="z.B. Nudeln, Eier, Speck"
             />
         </div>
-        <div class="flex w-full max-w-10 flex-col gap-1.5">
+        <div class="flex w-full md:max-w-10 flex-col gap-x-1.5">
             <Label>&nbsp;</Label>
             <Button
                     variant="outline"
