@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { Button } from "$lib/components/ui/button/index.js";
-    import { Label } from "$lib/components/ui/label/index.js";
-    import { Input } from "$lib/components/ui/input/index.js";
-    import * as Card from "$lib/components/ui/card/index.js";
-    import { Badge } from "$lib/components/ui/badge/index.js";
+    import { Button } from "$lib/components/ui/button";
+    import { Label } from "$lib/components/ui/label";
+    import { Input } from "$lib/components/ui/input";
+    import * as Card from "$lib/components/ui/card";
+    import { Badge } from "$lib/components/ui/badge";
     import {Clock, Star, UserRound} from "lucide-svelte";
 
     type Props = {
