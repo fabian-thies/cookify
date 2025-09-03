@@ -1,48 +1,64 @@
 <script lang="ts">
-    import { Button } from "$lib/components/ui/button/index.js";
-    import { Label } from "$lib/components/ui/label/index.js";
-    import { Input } from "$lib/components/ui/input/index.js";
+    import {Button} from "$lib/components/ui/button/index.js";
+    import {Label} from "$lib/components/ui/label/index.js";
+    import {Input} from "$lib/components/ui/input/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
-    import {BookOpen, ChefHat, Minus, Plus} from "lucide-svelte";
 
-    type Ingredient = {
-        amount: string,
-        unit: string,
-        ingredient: string
-    }
+    import {Minus, Plus} from "lucide-svelte";
 
-    let ingredients: Ingredient[] = [{amount: "", unit: "", ingredient: ""}];
+    const { form } = $props();
+
+    type Ingredient = { amount: string; unit: string; ingredient: string };
+    let ingredients: Ingredient[] = $state([{amount: "", unit: "", ingredient: ""}]);
 
     const addIngredient = () => {
         ingredients = [...ingredients, {amount: "", unit: "", ingredient: ""}];
-    }
-
+    };
     const removeIngredient = (index: number) => {
         if (ingredients.length > 1) {
             ingredients = ingredients.filter((_, i) => i !== index);
         }
-    }
+    };
 </script>
 
 {#snippet ingredientRow(item: Ingredient, index: number)}
     <div class="flex flex-row gap-6">
         <div class="flex w-full flex-col gap-1.5">
-            <Label for="amount-{index}">Menge</Label>
-            <Input type="text" id="amount-{index}" bind:value={item.amount} placeholder="z.B. 500" />
+            <Label for="ingredients-{index}-amount">Menge</Label>
+            <Input
+                    type="number"
+                    id="ingredients-{index}-amount"
+                    name="ingredients_amount[]"
+                    bind:value={item.amount}
+                    placeholder="z.B. 500"
+            />
         </div>
         <div class="flex w-full flex-col gap-1.5">
-            <Label for="unit-{index}">Einheit</Label>
-            <Input type="text" id="unit-{index}" bind:value={item.unit} placeholder="z.B. Gramm, ml, Stück" />
+            <Label for="ingredients-{index}-unit">Einheit</Label>
+            <Input
+                    type="text"
+                    id="ingredients-{index}-unit"
+                    name="ingredients_unit[]"
+                    bind:value={item.unit}
+                    placeholder="z.B. g, ml, Stück"
+            />
         </div>
         <div class="flex w-full flex-col gap-1.5">
-            <Label for="ingredient-{index}">Zutat</Label>
-            <Input type="text" id="ingredient-{index}" bind:value={item.ingredient} placeholder="z.B. Nudeln, Eier, Speck" />
+            <Label for="ingredients-{index}-ingredient">Zutat</Label>
+            <Input
+                    type="text"
+                    id="ingredients-{index}-ingredient"
+                    name="ingredients_name[]"
+                    bind:value={item.ingredient}
+                    placeholder="z.B. Nudeln, Eier, Speck"
+            />
         </div>
         <div class="flex w-full max-w-10 flex-col gap-1.5">
             <Label>&nbsp;</Label>
             <Button
                     variant="outline"
                     class="hover:cursor-pointer"
+                    type="button"
                     disabled={ingredients.length === 1}
                     onclick={() => removeIngredient(index)}
             >
@@ -64,7 +80,7 @@
         {/each}
     </Card.Content>
     <Card.Footer>
-        <Button variant="outline" class="w-full hover:cursor-pointer" onclick={addIngredient}>
+        <Button type="button" variant="outline" class="w-full hover:cursor-pointer" onclick={addIngredient}>
             <Plus />Zutat hinzufügen
         </Button>
     </Card.Footer>

@@ -1,27 +1,21 @@
 <script lang="ts">
     import { Button } from "$lib/components/ui/button/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
-    import { Input } from "$lib/components/ui/input/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
-    import {BookOpen, ChefHat, Copy, Minus, Plus} from "lucide-svelte";
-    import {Textarea} from "$lib/components/ui/textarea";
+    import { Textarea } from "$lib/components/ui/textarea";
+    import { Minus, Plus } from "lucide-svelte";
 
-    type Instruction = {
-        step: number,
-        description: string
-    }
-
-    let instructions: Instruction[] = [{step: 1, description: ""}];
+    type Instruction = { step: number; description: string };
+    let instructions: Instruction[] = [{ step: 1, description: "" }];
 
     const addInstruction = () => {
-        instructions = [...instructions, {step: instructions.length + 1, description: ""}]
-    }
-
+        instructions = [...instructions, { step: instructions.length + 1, description: "" }];
+    };
     const removeInstruction = (index: number) => {
         if (instructions.length > 1) {
-            instructions = instructions.filter((_, i) => i !== index)
+            instructions = instructions.filter((_, i) => i !== index).map((it, i) => ({ ...it, step: i + 1 }));
         }
-    }
+    };
 </script>
 
 {#snippet instructionRow(item: Instruction, index: number)}
@@ -33,12 +27,19 @@
             </div>
         </div>
         <div class="flex w-full flex-col gap-1.5">
-            <Label for="step-{index}">Schritt</Label>
-            <Textarea id="step-{index}" bind:value={item.description} placeholder="z.B. Zwiebeln schälen und würfeln" />
+            <Label for="instructions-{index}-description">Schritt</Label>
+            <Textarea
+                    id="instructions-{index}-description"
+                    name="instructions_description[]"
+                    bind:value={item.description}
+                    placeholder="z.B. Zwiebeln schälen und würfeln"
+            />
+            <input type="hidden" name="instructions_step[]" value={index + 1} />
         </div>
         <div class="flex w-full max-w-10 flex-col gap-1.5">
             <Label>&nbsp;</Label>
             <Button
+                    type="button"
                     variant="outline"
                     class="hover:cursor-pointer"
                     disabled={instructions.length === 1}
@@ -62,7 +63,7 @@
         {/each}
     </Card.Content>
     <Card.Footer>
-        <Button variant="outline" class="w-full hover:cursor-pointer" onclick={addInstruction}>
+        <Button type="button" variant="outline" class="w-full hover:cursor-pointer" onclick={addInstruction}>
             <Plus />Schritt hinzufügen
         </Button>
     </Card.Footer>

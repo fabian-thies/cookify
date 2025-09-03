@@ -14,6 +14,7 @@
         name?: string;
         class?: string;
         disabled?: boolean;
+        id?: string;
     }
 
     let {
@@ -23,7 +24,8 @@
         groupLabel,
         name,
         class: className = "w-[180px]",
-        disabled = false
+        disabled = false,
+        id
     }: Props = $props();
 
     const triggerContent = $derived(
@@ -31,8 +33,8 @@
     );
 </script>
 
-<Select.Root type="single" {name} bind:value {disabled}>
-    <Select.Trigger class={className}>
+<Select.Root type="single" {name} bind:value {disabled} {id}>
+    <Select.Trigger class={className + "bg-primary text-primary-foreground"}>
         {triggerContent}
     </Select.Trigger>
     <Select.Content>
