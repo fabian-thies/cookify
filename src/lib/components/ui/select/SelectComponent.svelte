@@ -34,7 +34,7 @@
 </script>
 
 <Select.Root type="single" {name} bind:value {disabled} {id}>
-    <Select.Trigger class={className + "bg-primary text-primary-foreground"}>
+    <Select.Trigger class={className + " bg-background" }>
         {triggerContent}
     </Select.Trigger>
     <Select.Content>
