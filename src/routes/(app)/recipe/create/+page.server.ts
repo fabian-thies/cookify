@@ -1,7 +1,6 @@
 import {type Actions, fail, type RequestEvent} from "@sveltejs/kit";
-import {getDifficultyId, validateInputEmpty} from "$lib/server/utils";
-import { db } from '$lib/server/db';
-import {difficultyToRecipe, ingredients, recipes, steps as stepsTable} from "$lib/server/db/schema";
+import {validateInputEmpty} from "$lib/server/utils";
+import {createRecipe} from "$lib/server/db/recipe";
 
 export const actions = {
     createRecipe: async ({request, locals}: RequestEvent) => {
@@ -17,10 +16,6 @@ export const actions = {
         const units: string[] = [];
         const name: string[] = [];
         const steps: string[] = [];
-
-        console.log("locals.user!.id")
-        console.log(locals.user)
-        console.log("locals.user")
 
         try {
             validateInputEmpty(title, description, cookTime, servings, difficulty);
@@ -69,19 +64,16 @@ export const actions = {
         }));
 
         try {
-            const result = await db.insert(recipes).values({ title, description, image: "", cookingTime: cookTime, servings, userId: locals.user!.id }).returning({ id: recipes.id });
-
-            console.log('Difficulty value:', difficulty);
-
-            await db.insert(difficultyToRecipe).values({recipeId: result[0].id, difficultyId: getDifficultyId(difficulty)});
-
-            for (const ingredient of ingredientsList) {
-                await db.insert(ingredients).values({recipeId: result[0].id, name: ingredient.name, quantity: ingredient.amount, unit: ingredient.unit})
-            }
-            for (const step of steps) {
-                await db.insert(stepsTable).values({recipeId: result[0].id, step: step, number: steps.indexOf(step) + 1})
-            }
-
+            await createRecipe({
+                title,
+                description,
+                cookTime,
+                servings,
+                userId: locals.user!.id,
+                difficulty,
+                ingredientsList,
+                steps
+            })
         } catch (e) {
             console.error(e);
             return fail(500, {internalError: true});
