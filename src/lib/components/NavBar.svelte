@@ -6,7 +6,7 @@
     }
 </script>
 
-<nav class="bg-background shadow-xs h-18 w-screen flex items-center justify-around px-8">
+<nav class="bg-background shadow-xs h-18 w-full flex items-center justify-around px-8">
     <a href="/">
         <h1 class="text-2xl font-bold text-foreground">cookify</h1>
     </a>
