@@ -19,7 +19,8 @@
 </script>
 
 <Card.Root class="w-full max-w-sm pt-0 overflow-hidden rounded-lg bg-card">
-    <Card.Header class="p-0 max-h-52 overflow-hidden">
+    <Card.Header class="p-0 max-h-52 overflow-hidden relative">
+        <Badge variant="secondary" class="absolute right-3 top-3">Difficulty</Badge>
         <img src={image} alt="">
     </Card.Header>
     <Card.Content>
@@ -40,7 +41,10 @@
             </span>
         </div>
         <div class="flex gap-2 pt-4">
-            <Badge variant="outline">Badge</Badge>
+            <Badge variant="outline">Tags</Badge>
+            <Badge variant="outline">Tags</Badge>
+            <Badge variant="outline">Tags</Badge>
+            <Badge variant="outline">...</Badge>
         </div>
     </Card.Content>
     <Card.Footer class="flex-col gap-2">
