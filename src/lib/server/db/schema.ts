@@ -62,6 +62,12 @@ export const favorite = pgTable('favorite', {
     recipeUserUnique: uniqueIndex('favorite_recipe_user_unique').on(t.recipeId, t.userId),
 }));
 
+export const tags = pgTable('tags', {
+    id: serial('id').primaryKey(),
+    recipeId: integer('recipe_id').notNull().references(() => recipes.id),
+    name: text('name').notNull(),
+});
+
 export type Session = typeof session.$inferSelect;
 export type Recipe = typeof recipes.$inferSelect;
 export type Ingredient = typeof ingredients.$inferSelect;
@@ -69,3 +75,4 @@ export type Step = typeof steps.$inferSelect;
 export type User = typeof user.$inferSelect;
 export type Difficulty = typeof difficulty.$inferSelect;
 export type DifficultyToRecipe = typeof difficultyToRecipe.$inferSelect;
+export type Favorite = typeof favorite.$inferSelect;
