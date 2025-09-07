@@ -5,7 +5,7 @@ import {eq} from 'drizzle-orm';
 import * as auth from '$lib/server/auth';
 import {db} from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
-import type {PageServerLoad} from "../../../../.svelte-kit/types/src/routes/$types";
+import type {PageServerLoad} from "./$types";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {

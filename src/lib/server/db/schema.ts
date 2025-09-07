@@ -1,4 +1,4 @@
-import {integer, pgTable, primaryKey, serial, text, timestamp} from 'drizzle-orm/pg-core';
+import {integer, boolean, pgTable, primaryKey, serial, text, timestamp, uniqueIndex} from 'drizzle-orm/pg-core';
 
 export const user = pgTable('user', {
 	id: text('id').primaryKey(),
@@ -29,7 +29,7 @@ export const recipes = pgTable('recipes', {
 export const difficulty = pgTable('difficulty', {
     id: serial('id').primaryKey().notNull(),
     difficulty: text('difficulty', {enum: ['easy', 'medium', 'hard']}).notNull(),
-})
+});
 
 export const difficultyToRecipe = pgTable('difficulty_to_recipe', {
     difficultyId: integer('difficulty_id').notNull().references(() => difficulty.id),
@@ -44,14 +44,23 @@ export const ingredients = pgTable('ingredients', {
     name: text('name').notNull(),
     quantity: integer('quantity').notNull(),
     unit: text('unit').notNull(),
-})
+});
 
 export const steps = pgTable('steps', {
     id: serial('id').primaryKey(),
     recipeId: integer('recipe_id').notNull().references(() => recipes.id),
     step: text('step').notNull(),
     number: integer('number').notNull(),
-})
+});
+
+export const favorite = pgTable('favorite', {
+    id: serial('id').primaryKey(),
+    recipeId: integer('recipe_id').notNull().references(() => recipes.id),
+    userId: text('user_id').notNull().references(() => user.id),
+    favorite: boolean('favorite').notNull().default(false),
+}, (t) => ({
+    recipeUserUnique: uniqueIndex('favorite_recipe_user_unique').on(t.recipeId, t.userId),
+}));
 
 export type Session = typeof session.$inferSelect;
 export type Recipe = typeof recipes.$inferSelect;

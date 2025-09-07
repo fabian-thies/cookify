@@ -1,6 +1,15 @@
 import {db} from "$lib/server/db/index";
-import {difficultyToRecipe, ingredients, recipes, steps as stepsTable} from "$lib/server/db/schema";
+import {
+    difficulty,
+    difficultyToRecipe,
+    favorite,
+    ingredients,
+    recipes,
+    steps,
+    steps as stepsTable
+} from "$lib/server/db/schema";
 import {getDifficultyId} from "$lib/server/utils";
+import {and, eq, getTableColumns, sql} from "drizzle-orm";
 
 export async function createRecipe({
                                        title,
@@ -34,4 +43,51 @@ export async function createRecipe({
     for (const step of steps) {
         await db.insert(stepsTable).values({recipeId: result[0].id, step: step, number: steps.indexOf(step) + 1})
     }
+}
+
+export async function getRecipeById(id: number) {
+    const result = await db
+        .select({
+            ...getTableColumns(recipes),
+            difficulty: difficulty.difficulty,
+        })
+        .from(recipes)
+        .leftJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
+        .leftJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
+        .where(eq(recipes.id, id));
+
+    return result[0] ?? null;
+}
+
+export async function getRecipeFavoriteState(userId: string, recipeId: number) {
+    const rows = await db
+        .select({ favorite: favorite.favorite })
+        .from(favorite)
+        .where(and(eq(favorite.userId, userId), eq(favorite.recipeId, recipeId)));
+
+    return rows[0]?.favorite ?? false;
+}
+
+export async function getSteps(recipeId: number) {
+    return db.select(getTableColumns(steps)).from(steps).where(eq(steps.recipeId, recipeId));
+}
+
+export async function getIngredients(recipeId: number) {
+    return db.select(getTableColumns(ingredients)).from(ingredients).where(eq(ingredients.recipeId, recipeId));
+}
+
+export async function toggleRecipeFavorite(userId: string, recipeId: number) {
+    return db.insert(favorite)
+        .values({
+            recipeId,
+            userId,
+            favorite: true,
+        })
+        .onConflictDoUpdate({
+            target: [favorite.recipeId, favorite.userId],
+            set: {
+                favorite: sql`NOT
+                ${favorite.favorite}`,
+            },
+        });
 }
