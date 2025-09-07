@@ -48,6 +48,7 @@
 		"drizzle-orm": "^0.44.5",
 		"lucide-svelte": "^0.542.0",
 		"postgres": "^3.4.7",
-		"svelte-sonner": "^1.0.5"
+		"svelte-sonner": "^1.0.5",
+		"valibot": "^1.1.0"
 	}
 }
