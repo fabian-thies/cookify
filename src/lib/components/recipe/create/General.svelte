@@ -19,7 +19,7 @@
         </div>
         <div class="flex w-full flex-col gap-1.5">
             <Label for="description">Beschreibung</Label>
-            <Input type="text" id="description" name="description" placeholder="Beschreibe dein Rezept kurz" />
+            <Input type="text" id="description" name="description" placeholder="Beschreibe dein Rezept kurz" required/>
         </div>
     </Card.Content>
 </Card.Root>

@@ -19,12 +19,13 @@ export async function createRecipe({
                                        userId,
                                        difficulty,
                                        ingredientsList,
-                                       steps
+                                       steps,
+                                       image
                                    }: CreateRecipeInput) {
     const result = await db.insert(recipes).values({
         title,
         description,
-        image: "",
+        image,
         cookingTime: cookTime,
         servings,
         userId: userId

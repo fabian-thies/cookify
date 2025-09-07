@@ -31,6 +31,7 @@
                     name="ingredients_amount[]"
                     bind:value={item.amount}
                     placeholder="z.B. 500"
+                    required
             />
         </div>
         <div class="flex w-full flex-col gap-1.5">
@@ -41,6 +42,7 @@
                     name="ingredients_unit[]"
                     bind:value={item.unit}
                     placeholder="z.B. g, ml, Stück"
+                    required
             />
         </div>
         <div class="flex w-full flex-col gap-1.5">
@@ -51,6 +53,7 @@
                     name="ingredients_name[]"
                     bind:value={item.ingredient}
                     placeholder="z.B. Nudeln, Eier, Speck"
+                    required
             />
         </div>
         <div class="flex w-full md:max-w-10 flex-col gap-x-1.5">

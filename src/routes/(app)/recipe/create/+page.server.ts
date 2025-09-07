@@ -1,5 +1,5 @@
 import {type Actions, fail, type RequestEvent} from "@sveltejs/kit";
-import {validateInputEmpty} from "$lib/server/utils";
+import {saveImage, validateInputEmpty} from "$lib/server/utils";
 import {createRecipe} from "$lib/server/db/recipe";
 
 export const actions = {
@@ -11,11 +11,14 @@ export const actions = {
         const cookTime: number = Number(formData.get("cookTime"));
         const servings: number = Number(formData.get("servings"));
         const difficulty: string = formData.get("difficulty")?.toString() ?? "";
+        const picture = formData.get('picture') as File | null;
 
-        const amounts: number[] = [];
-        const units: string[] = [];
-        const name: string[] = [];
-        const steps: string[] = [];
+        if (!picture || picture.size === 0) {
+            return fail(400, { invalid: true, pictureMissing: true });
+        }
+        if (picture.size > 5 * 1024 * 1024) {
+            return fail(400, { invalid: true, pictureTooLarge: true });
+        }
 
         try {
             validateInputEmpty(title, description, cookTime, servings, difficulty);
@@ -24,6 +27,19 @@ export const actions = {
 
             return fail(400, {invalid: true});
         }
+
+        let imageUrl: string;
+        try {
+            imageUrl = await saveImage(picture);
+        } catch (e) {
+            console.error('Image save failed', e);
+            return fail(500, { internalError: true, imageSaveFailed: true });
+        }
+
+        const amounts: number[] = [];
+        const units: string[] = [];
+        const name: string[] = [];
+        const steps: string[] = [];
 
         for (const amount of formData.getAll("ingredients_amount[]")) {
             const num = Number(amount);
@@ -72,7 +88,8 @@ export const actions = {
                 userId: locals.user!.id,
                 difficulty,
                 ingredientsList,
-                steps
+                steps,
+                image: imageUrl
             })
         } catch (e) {
             console.error(e);

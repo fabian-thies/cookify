@@ -22,11 +22,11 @@
     <Card.Content class="flex flex-col gap-6">
         <div class="flex w-full flex-col gap-1.5">
             <Label for="cookTime"><Clock size={18}/> Kochzeit (Min.)</Label>
-            <Input type="number" id="cookTime" name="cookTime" min="0" placeholder="z.B. 25" />
+            <Input type="number" id="cookTime" name="cookTime" min="0" placeholder="z.B. 25" required />
         </div>
         <div class="flex w-full flex-col gap-1.5">
             <Label for="servings"><Users size={18}/> Portionen</Label>
-            <Input type="number" id="servings" name="servings" min="1" placeholder="z.B. 4" />
+            <Input type="number" id="servings" name="servings" min="1" placeholder="z.B. 4" required/>
         </div>
         <div class="flex w-full flex-col gap-1.5">
             <Label for="difficulty">Schwierigkeitsgrad</Label>
@@ -37,6 +37,10 @@
                     placeholder="Wähle Schwierigkeitsgrad"
                     groupLabel="Schwierigkeitsgrad"
                     class="w-full" />
+        </div>
+        <div class="flex w-full flex-col gap-1.5">
+            <Label for="picture">Vorschaubild</Label>
+            <Input id="picture" type="file" accept="image/*" name="picture" required/>
         </div>
     </Card.Content>
 </Card.Root>

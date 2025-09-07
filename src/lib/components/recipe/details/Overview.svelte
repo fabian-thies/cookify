@@ -67,6 +67,6 @@
         </div>
     </div>
     <div class="mb-6">
-        <img class="w-full h-96 object-cover rounded-lg shadow-lg border" src="https://picsum.photos/1500/1500" alt="">
+        <img class="w-full h-96 object-cover rounded-lg shadow-lg border" src={image} alt="">
     </div>
 </div>

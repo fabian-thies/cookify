@@ -1,3 +1,7 @@
+import {promises as fs} from 'fs';
+import path from 'path';
+import crypto from 'crypto';
+
 /**
  * Throws an error if any of the inputs is empty
  */
@@ -22,4 +26,34 @@ export const getDifficultyId = (difficulty: string): number => {
         case 'hard': return 3;
         default: throw new Error('Invalid difficulty');
     }
+}
+
+const uploadDir = path.join(process.cwd(), 'static', 'uploads');
+
+function extFromMime(mime: string) {
+    if (!mime) return '';
+    if (mime === 'image/jpeg') return '.jpg';
+    if (mime === 'image/png') return '.png';
+    if (mime === 'image/webp') return '.webp';
+    if (mime === 'image/gif') return '.gif';
+    return '';
+}
+
+export async function saveImage(file: File): Promise<string> {
+    await fs.mkdir(uploadDir, {recursive: true});
+
+    const arr = await file.arrayBuffer();
+    const buffer = Buffer.from(arr);
+
+    const ext =
+        extFromMime(file.type) ||
+        path.extname((file as unknown as { name?: string }).name ?? '') ||
+        '.jpg';
+
+    const filename = `${crypto.randomUUID()}${ext}`;
+    const fullpath = path.join(uploadDir, filename);
+
+    await fs.writeFile(fullpath, buffer);
+
+    return `/uploads/${filename}`;
 }

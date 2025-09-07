@@ -33,6 +33,7 @@
                     name="instructions_description[]"
                     bind:value={item.description}
                     placeholder="z.B. Zwiebeln schälen und würfeln"
+                    required
             />
             <input type="hidden" name="instructions_step[]" value={index + 1} />
         </div>
