@@ -2,6 +2,9 @@
     import SelectComponent from "$lib/components/ui/select/SelectComponent.svelte";
     import {Input} from "$lib/components/ui/input";
     import RecipeCard from "$lib/components/recipe/RecipeCard.svelte";
+    import type {PageProps} from "./$types";
+
+    const { data }: PageProps = $props();
 
     const categories = [
         { value: "Hauptgericht", label: "Hauptgericht" },
@@ -44,9 +47,8 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 place-items-center">
-        <RecipeCard title="Title" description="Description" image="https://picsum.photos/1500/1500" serves={4} cookingTime={20} rating={4.5} />
-        <RecipeCard title="Title" description="Description" image="https://picsum.photos/1500/1500" serves={4} cookingTime={20} rating={4.5} />
-        <RecipeCard title="Title" description="Description" image="https://picsum.photos/1500/1500" serves={4} cookingTime={20} rating={4.5} />
-        <RecipeCard title="Title" description="Description" image="https://picsum.photos/1500/1500" serves={4} cookingTime={20} rating={4.5} />
+        {#each data.recipes as recipe (recipe.id)}
+            <RecipeCard {...recipe} />
+        {/each}
     </div>
 </div>

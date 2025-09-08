@@ -7,20 +7,22 @@
     import {Clock, Star, UserRound} from "lucide-svelte";
 
     type Props = {
+        id: number;
         title: string;
         description: string;
         image: string;
-        serves: number;
+        servings: number;
         cookingTime: number;
-        rating: number;
+        rating?: number;
+        difficulty: string | null;
     };
-    let { title, description, image, serves, cookingTime, rating }: Props = $props();
+    let {id, title, description, image, servings, cookingTime, rating, difficulty}: Props = $props();
 
 </script>
 
 <Card.Root class="w-full max-w-sm pt-0 overflow-hidden rounded-lg bg-card">
     <Card.Header class="p-0 max-h-52 overflow-hidden relative">
-        <Badge variant="secondary" class="absolute right-3 top-3">Difficulty</Badge>
+        <Badge class="absolute right-3 top-3" variant="secondary">{ difficulty }</Badge>
         <img src={image} alt="">
     </Card.Header>
     <Card.Content>
@@ -33,11 +35,13 @@
             </span>
             <span class="text-sm text-muted-foreground flex flex-row gap-1 items-center">
                 <UserRound size={15} />
-                {serves} Portionen
+                {servings} Portionen
             </span>
             <span class="text-sm text-muted-foreground flex flex-row gap-1 items-center">
-                <Star size={15} fill="#fbbf24" color="#fbbf24"/>
+            {#if rating != null}
+                    <Star size={15} fill="#fbbf24" color="#fbbf24"/>
                 {rating}
+            {/if}
             </span>
         </div>
         <div class="flex gap-2 pt-4">
@@ -48,6 +52,6 @@
         </div>
     </Card.Content>
     <Card.Footer class="flex-col gap-2">
-        <Button type="submit" class="w-full" href="/">Rezept ansehen</Button>
+        <Button type="submit" class="w-full" href="/recipe/{id}" data-sveltekit-preload-data="hover">Rezept ansehen</Button>
     </Card.Footer>
 </Card.Root>

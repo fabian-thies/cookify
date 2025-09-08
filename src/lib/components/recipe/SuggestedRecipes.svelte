@@ -22,7 +22,7 @@
                         <div class="p-1">
                             <RecipeCard title="Title" description="Description" image="https://picsum.photos/1500/1500"
                                         serves={4}
-                                        cookingTime={20} rating={4.5}/>
+                                        cookingTime={20} rating={4.5} difficulty="EASY"/>
                         </div>
                     </Carousel.Item>
                 {/each}

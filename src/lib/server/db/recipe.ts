@@ -46,6 +46,16 @@ export async function createRecipe({
     }
 }
 
+export async function getRecipes() {
+    return db.select({
+        ...getTableColumns(recipes),
+        difficulty: difficulty.difficulty,
+    })
+        .from(recipes)
+        .leftJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
+        .leftJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId));
+}
+
 export async function getRecipeById(id: number) {
     const result = await db
         .select({
