@@ -6,6 +6,7 @@
 
     const { data }: PageProps = $props();
 
+    const recipes = data.recipes;
     const categories = [
         { value: "Hauptgericht", label: "Hauptgericht" },
         { value: "Dessert", label: "Dessert" },
@@ -43,11 +44,11 @@
     </div>
 
     <div class="pt-6 pb-2">
-        <p class="text-muted-foreground">6 Rezepte gefunden</p>
+        <p class="text-muted-foreground">{recipes.length} Rezepte gefunden</p>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 place-items-center">
-        {#each data.recipes as recipe (recipe.id)}
+        {#each recipes as recipe (recipe.id)}
             <RecipeCard {...recipe} />
         {/each}
     </div>

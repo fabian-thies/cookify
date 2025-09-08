@@ -44,12 +44,12 @@
             {/if}
             </span>
         </div>
-        <div class="flex gap-2 pt-4">
+        <!--<div class="flex gap-2 pt-4">
             <Badge variant="outline">Tags</Badge>
             <Badge variant="outline">Tags</Badge>
             <Badge variant="outline">Tags</Badge>
             <Badge variant="outline">...</Badge>
-        </div>
+        </div>-->
     </Card.Content>
     <Card.Footer class="flex-col gap-2">
         <Button type="submit" class="w-full" href="/recipe/{id}" data-sveltekit-preload-data="hover">Rezept ansehen</Button>
