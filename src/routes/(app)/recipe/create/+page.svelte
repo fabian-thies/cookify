@@ -1,8 +1,8 @@
 <script>
-    import General from "$lib/components/recipe/create/General.svelte";
-    import Ingredients from "$lib/components/recipe/create/Ingredients.svelte";
-    import Instructions from "$lib/components/recipe/create/Instructions.svelte";
-    import Details from "$lib/components/recipe/create/Details.svelte";
+    import General from "$lib/components/recipe/form/General.svelte";
+    import Ingredients from "$lib/components/recipe/form/Ingredients.svelte";
+    import Instructions from "$lib/components/recipe/form/Instructions.svelte";
+    import Details from "$lib/components/recipe/form/Details.svelte";
     import {Button} from "$lib/components/ui/button/index.js";
 
     const {form} = $props();

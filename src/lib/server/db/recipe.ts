@@ -44,6 +44,8 @@ export async function createRecipe({
     for (const step of steps) {
         await db.insert(stepsTable).values({recipeId: result[0].id, step: step, number: steps.indexOf(step) + 1})
     }
+
+    return result;
 }
 
 export async function getRecipes() {
@@ -85,6 +87,10 @@ export async function getSteps(recipeId: number) {
 
 export async function getIngredients(recipeId: number) {
     return db.select(getTableColumns(ingredients)).from(ingredients).where(eq(ingredients.recipeId, recipeId));
+}
+
+export async function getDifficulties() {
+    return db.select().from(difficulty);
 }
 
 export async function toggleRecipeFavorite(userId: string, recipeId: number) {

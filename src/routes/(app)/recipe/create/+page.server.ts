@@ -1,4 +1,4 @@
-import {type Actions, fail, type RequestEvent} from "@sveltejs/kit";
+import {type Actions, fail, redirect, type RequestEvent} from "@sveltejs/kit";
 import {saveImage, validateInputEmpty} from "$lib/server/utils";
 import {createRecipe} from "$lib/server/db/recipe";
 
@@ -79,8 +79,10 @@ export const actions = {
             name: name[index]
         }));
 
+        let recipeId;
+
         try {
-            await createRecipe({
+            recipeId = await createRecipe({
                 title,
                 description,
                 cookTime,
@@ -96,8 +98,6 @@ export const actions = {
             return fail(500, {internalError: true});
         }
 
-        return {
-            success: true
-        }
+        throw redirect(302, '/recipe/' + recipeId[0].id);
     }
 } satisfies Actions;
