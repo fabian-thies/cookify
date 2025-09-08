@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {Clock, Heart, Share2, Star, Users} from "lucide-svelte";
+    import {Clock, Edit, Heart, Share2, Star, Users} from "lucide-svelte";
     import {Separator} from "$lib/components/ui/separator/index.js";
     import {Badge} from "$lib/components/ui/badge/index.js";
     import {Button} from "$lib/components/ui/button/index.js";
@@ -14,10 +14,11 @@
         servings: number,
         cookingTime: number,
         image: string,
-        isFavorite: boolean
+        isFavorite: boolean,
+        recipeOwner: boolean
     };
 
-    let {title, description, difficulty, servings, cookingTime, image, userId, id: recipeId, isFavorite}: props = $props();
+    let {title, description, difficulty, servings, cookingTime, image, userId, id: recipeId, isFavorite, recipeOwner }: props = $props();
 </script>
 
 <div class="w-full">
@@ -64,6 +65,12 @@
                 <Heart fill={isFavorite ? "white" : "none"} />
                 Speichern
             </Button>
+            {#if recipeOwner}
+                <Button variant="outline" href="/recipe/{recipeId}/edit">
+                    <Edit size={18}/>
+                    Bearbeiten
+                </Button>
+            {/if}
         </div>
     </div>
     <div class="mb-6">

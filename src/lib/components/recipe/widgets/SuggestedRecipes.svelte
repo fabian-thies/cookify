@@ -1,6 +1,6 @@
 <script lang="ts">
-    import RecipeCard from "$lib/components/recipe/RecipeCard.svelte";
-    import * as Carousel from "$lib/components/ui/carousel/index.js";
+    import RecipeCard from "$lib/components/recipe/widgets/RecipeCard.svelte";
+    import * as Carousel from "$lib/components/ui/carousel";
 
     type Props = {
         title: string;
