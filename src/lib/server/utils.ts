@@ -20,7 +20,7 @@ export const validateInputEmpty = (...inputs: (string | number)[]): void => {
 }
 
 export const getDifficultyId = (difficulty: string): number => {
-    switch (difficulty) {
+    switch (difficulty.toLowerCase()) {
         case 'easy': return 1;
         case 'medium': return 2;
         case 'hard': return 3;
