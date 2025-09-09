@@ -3,5 +3,7 @@ import {getIngredients, getRecipeById, getRecipeFavoriteState, getSteps} from "$
 import {error} from "@sveltejs/kit";
 
 export const load: PageServerLoad = async (event) => {
+    const recipe = await getRecipeById(Number(event.params.recipeId));
 
+    return {recipe}
 }
