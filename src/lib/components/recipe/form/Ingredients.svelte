@@ -3,25 +3,43 @@
     import {Label} from "$lib/components/ui/label/index.js";
     import {Input} from "$lib/components/ui/input/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
-
     import {Minus, Plus} from "lucide-svelte";
+    import {onMount} from "svelte";
+    import type {Ingredient} from "$lib/server/db/schema";
 
-    const { form } = $props();
+    const { recipe, ingredients: ingredientsProp = [] } = $props();
 
-    type Ingredient = { amount: string; unit: string; ingredient: string };
-    let ingredients: Ingredient[] = $state([{amount: "", unit: "", ingredient: ""}]);
+    type IngredientDraft = {
+        id: number | null;
+        recipeId: number;
+        name: string;
+        quantity: number | null;
+        unit: string;
+    };
+
+    type IngredientLike = Ingredient | IngredientDraft;
+
+    let ingredients: IngredientLike[] = $state(ingredientsProp);
 
     const addIngredient = () => {
-        ingredients = [...ingredients, {amount: "", unit: "", ingredient: ""}];
+        ingredients = [
+            ...ingredients,
+            { id: null, recipeId: recipe?.id, name: "", quantity: null, unit: "" }
+        ];
     };
+
     const removeIngredient = (index: number) => {
         if (ingredients.length > 1) {
             ingredients = ingredients.filter((_, i) => i !== index);
         }
     };
+
+    onMount(() => {
+        if (ingredients.length <= 0) addIngredient();
+    });
 </script>
 
-{#snippet ingredientRow(item: Ingredient, index: number)}
+{#snippet ingredientRow(item: IngredientLike, index: number)}
     <div class="flex flex-col md:flex-row gap-6">
         <div class="flex w-full flex-col gap-1.5">
             <Label for="ingredients-{index}-amount">Menge</Label>
@@ -29,7 +47,7 @@
                     type="number"
                     id="ingredients-{index}-amount"
                     name="ingredients_amount[]"
-                    bind:value={item.amount}
+                    bind:value={item.quantity}
                     placeholder="z.B. 500"
                     required
             />
@@ -51,7 +69,7 @@
                     type="text"
                     id="ingredients-{index}-ingredient"
                     name="ingredients_name[]"
-                    bind:value={item.ingredient}
+                    bind:value={item.name}
                     placeholder="z.B. Nudeln, Eier, Speck"
                     required
             />

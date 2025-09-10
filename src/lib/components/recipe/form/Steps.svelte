@@ -4,21 +4,31 @@
     import * as Card from "$lib/components/ui/card/index.js";
     import { Textarea } from "$lib/components/ui/textarea";
     import { Minus, Plus } from "lucide-svelte";
+    import { onMount } from "svelte";
+    import type { Step } from "$lib/server/db/schema";
 
-    type Instruction = { step: number; description: string };
-    let instructions: Instruction[] = [{ step: 1, description: "" }];
+    const { steps: stepsProp = [] } = $props();
 
-    const addInstruction = () => {
-        instructions = [...instructions, { step: instructions.length + 1, description: "" }];
+    let steps: Step[] = $state(stepsProp);
+
+    const addStep = () => {
+        steps = [...steps, { number: steps.length + 1, step: "" } as Step];
     };
-    const removeInstruction = (index: number) => {
-        if (instructions.length > 1) {
-            instructions = instructions.filter((_, i) => i !== index).map((it, i) => ({ ...it, step: i + 1 }));
+
+    const removeStep = (index: number) => {
+        if (steps.length > 1) {
+            steps = steps
+                .filter((_, i) => i !== index)
+                .map((it, i) => ({ ...it, number: i + 1 }));
         }
     };
+
+    onMount(() => {
+        if (steps.length <= 0) addStep();
+    });
 </script>
 
-{#snippet instructionRow(item: Instruction, index: number)}
+{#snippet instructionRow(item: Step, index: number)}
     <div class="flex flex-row gap-6">
         <div class="flex w-full max-w-10 flex-col gap-1.5">
             <Label>&nbsp;</Label>
@@ -26,25 +36,27 @@
                 {index + 1}
             </div>
         </div>
+
         <div class="flex w-full flex-col gap-1.5">
             <Label for="instructions-{index}-description">Schritt</Label>
             <Textarea
                     id="instructions-{index}-description"
                     name="instructions_description[]"
-                    bind:value={item.description}
+                    bind:value={item.step}
                     placeholder="z.B. Zwiebeln schälen und würfeln"
                     required
             />
-            <input type="hidden" name="instructions_step[]" value={index + 1} />
+            <input type="hidden" name="instructions_step[]" value={item.number} />
         </div>
+
         <div class="flex w-full max-w-10 flex-col gap-1.5">
             <Label>&nbsp;</Label>
             <Button
                     type="button"
                     variant="outline"
                     class="hover:cursor-pointer"
-                    disabled={instructions.length === 1}
-                    onclick={() => removeInstruction(index)}
+                    disabled={steps.length === 1}
+                    onclick={() => removeStep(index)}
             >
                 <Minus />
             </Button>
@@ -58,13 +70,20 @@
             Schritte
         </Card.Title>
     </Card.Header>
+
     <Card.Content class="flex flex-col gap-6">
-        {#each instructions as item, index}
+        {#each steps as item, index (item.number)}
             {@render instructionRow(item, index)}
         {/each}
     </Card.Content>
+
     <Card.Footer>
-        <Button type="button" variant="outline" class="w-full hover:cursor-pointer" onclick={addInstruction}>
+        <Button
+                type="button"
+                variant="outline"
+                class="w-full hover:cursor-pointer"
+                onclick={addStep}
+        >
             <Plus />Schritt hinzufügen
         </Button>
     </Card.Footer>

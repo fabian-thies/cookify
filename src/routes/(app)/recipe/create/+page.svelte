@@ -1,7 +1,7 @@
 <script>
     import General from "$lib/components/recipe/form/General.svelte";
     import Ingredients from "$lib/components/recipe/form/Ingredients.svelte";
-    import Instructions from "$lib/components/recipe/form/Instructions.svelte";
+    import Steps from "$lib/components/recipe/form/Steps.svelte";
     import Details from "$lib/components/recipe/form/Details.svelte";
     import {Button} from "$lib/components/ui/button/index.js";
 
@@ -14,7 +14,7 @@
             <div class="space-y-6 lg:col-span-2">
                 <General/>
                 <Ingredients {form}/>
-                <Instructions/>
+                <Steps/>
             </div>
 
             <div class="space-y-6">

@@ -3,7 +3,17 @@ import {getIngredients, getRecipeById, getRecipeFavoriteState, getSteps} from "$
 import {error} from "@sveltejs/kit";
 
 export const load: PageServerLoad = async (event) => {
-    const recipe = await getRecipeById(Number(event.params.recipeId));
+    const recipeId = Number(event.params.recipeId);
 
-    return {recipe}
+    const recipe = await getRecipeById(Number(event.params.recipeId));
+    const ingredients = await getIngredients(recipeId);
+    const steps = await getSteps(recipeId);
+
+    if(!recipe) {
+        error(404, {
+            message: "Recipe not found"
+        })
+    }
+
+    return {recipe: {...recipe, ingredients, steps}}
 }

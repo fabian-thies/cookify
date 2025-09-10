@@ -3,6 +3,8 @@
     import { Input } from "$lib/components/ui/input/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
     import { ChefHat } from "lucide-svelte";
+
+    const { recipe } = $props();
 </script>
 
 <Card.Root class="w-full">
@@ -15,11 +17,11 @@
     <Card.Content class="flex flex-col gap-6">
         <div class="flex w-full flex-col gap-1.5">
             <Label for="title">Rezeptname</Label>
-            <Input type="text" id="title" name="title" placeholder="z.B. Italienische Pasta Carbonara" required />
+            <Input type="text" id="title" name="title" placeholder="z.B. Italienische Pasta Carbonara" required value={recipe?.title || ''}/>
         </div>
         <div class="flex w-full flex-col gap-1.5">
             <Label for="description">Beschreibung</Label>
-            <Input type="text" id="description" name="description" placeholder="Beschreibe dein Rezept kurz" required/>
+            <Input type="text" id="description" name="description" placeholder="Beschreibe dein Rezept kurz" required value={recipe?.description || ''}/>
         </div>
     </Card.Content>
 </Card.Root>

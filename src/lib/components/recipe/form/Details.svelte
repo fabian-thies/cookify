@@ -5,12 +5,13 @@
     import { Clock, Users } from "lucide-svelte";
     import SelectComponent from "$lib/components/ui/select/SelectComponent.svelte";
 
+    const { recipe } = $props();
+
     const difficulties = [
         { value: "easy", label: "Einfach" },
         { value: "medium", label: "Mittel" },
         { value: "hard", label: "Schwierig" }
     ];
-
 </script>
 
 <Card.Root class="w-full b">
@@ -22,11 +23,11 @@
     <Card.Content class="flex flex-col gap-6">
         <div class="flex w-full flex-col gap-1.5">
             <Label for="cookTime"><Clock size={18}/> Kochzeit (Min.)</Label>
-            <Input type="number" id="cookTime" name="cookTime" min="0" placeholder="z.B. 25" required />
+            <Input type="number" id="cookTime" name="cookTime" min="0" placeholder="z.B. 25" required value={recipe?.cookingTime || ''}/>
         </div>
         <div class="flex w-full flex-col gap-1.5">
             <Label for="servings"><Users size={18}/> Portionen</Label>
-            <Input type="number" id="servings" name="servings" min="1" placeholder="z.B. 4" required/>
+            <Input type="number" id="servings" name="servings" min="1" placeholder="z.B. 4" required value={recipe?.servings || ''}/>
         </div>
         <div class="flex w-full flex-col gap-1.5">
             <Label for="difficulty">Schwierigkeitsgrad</Label>
@@ -36,7 +37,7 @@
                     options={difficulties}
                     placeholder="Wähle Schwierigkeitsgrad"
                     groupLabel="Schwierigkeitsgrad"
-                    class="w-full" />
+                    class="w-full" value={recipe?.difficulty.toLowerCase() || ''}/>
         </div>
         <div class="flex w-full flex-col gap-1.5">
             <Label for="picture">Vorschaubild</Label>
