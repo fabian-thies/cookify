@@ -33,17 +33,22 @@ export async function createRecipe({
 
     await db.insert(difficultyToRecipe).values({recipeId: result[0].id, difficultyId: getDifficultyId(difficulty)});
 
-    for (const ingredient of ingredientsList) {
-        await db.insert(ingredients).values({
+    await db.insert(ingredients).values(
+        ingredientsList.map((ingredient) => ({
             recipeId: result[0].id,
             name: ingredient.name,
             quantity: ingredient.amount,
-            unit: ingredient.unit
-        })
-    }
-    for (const step of steps) {
-        await db.insert(stepsTable).values({recipeId: result[0].id, step: step, number: steps.indexOf(step) + 1})
-    }
+            unit: ingredient.unit,
+        }))
+    );
+
+    await db.insert(stepsTable).values(
+        steps.map((step, index) => ({
+            recipeId: result[0].id,
+            step,
+            number: index + 1,
+        }))
+    );
 
     return result;
 }
