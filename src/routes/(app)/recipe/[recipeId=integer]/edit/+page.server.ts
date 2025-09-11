@@ -1,5 +1,12 @@
 import type {PageServerLoad} from "./$types";
-import {getIngredients, getRecipeById, getRecipeFavoriteState, getSteps, updateRecipe} from "$lib/server/db/recipe";
+import {
+    getIngredients,
+    getRecipeById,
+    getRecipeFavoriteState,
+    getSteps,
+    getTags,
+    updateRecipe
+} from "$lib/server/db/recipe";
 import {type Actions, error, fail, redirect, type RequestEvent} from "@sveltejs/kit";
 import {saveImage, validateInputEmpty} from "$lib/server/utils";
 
@@ -9,6 +16,7 @@ export const load: PageServerLoad = async (event) => {
     const recipe = await getRecipeById(Number(event.params.recipeId));
     const ingredients = await getIngredients(recipeId);
     const steps = await getSteps(recipeId);
+    const tags = await getTags(recipeId);
 
     if(!recipe) {
         error(404, {
@@ -16,7 +24,7 @@ export const load: PageServerLoad = async (event) => {
         })
     }
 
-    return {recipe: {...recipe, ingredients, steps}}
+    return {recipe: {...recipe, ingredients, steps, tags}}
 }
 
 export const actions = {
@@ -58,6 +66,7 @@ export const actions = {
         const units: string[] = [];
         const names: string[] = [];
         const stepsArr: string[] = [];
+        const tagsArr: string[] = [];
 
         for (const amount of formData.getAll("ingredients_amount[]")) {
             const num = Number(amount);
@@ -91,6 +100,13 @@ export const actions = {
             stepsArr.push(str);
         }
 
+        for (const tag of formData.getAll("tags[]")) {
+            const str = tag.toString().trim();
+            if (str !== "") {
+                tagsArr.push(str);
+            }
+        }
+
         const ingredientsList = amounts.map((amount, index) => ({
             amount: amount,
             unit: units[index],
@@ -108,6 +124,7 @@ export const actions = {
                 difficulty,
                 ingredientsList,
                 steps: stepsArr,
+                tags: tagsArr,
                 image: imageUrl
             });
         } catch (e) {

@@ -20,14 +20,14 @@
                 {#each Array(5) as _, i (i)}
                     <Carousel.Item class="pl-1 md:basis-1/2 lg:basis-1/3">
                         <div class="p-1">
-                            <RecipeCard title="Title" description="Description" image="https://picsum.photos/1500/1500"
-                                        serves={4}
-                                        cookingTime={20} rating={4.5} difficulty="EASY"/>
+                            <RecipeCard id={2} title="Title" description="Description"
+                                        image="https://picsum.photos/1500/1500"
+                                        servings={4}
+                                        cookingTime={20} difficulty="EASY"/>
                         </div>
                     </Carousel.Item>
                 {/each}
             </Carousel.Content>
-
             <Carousel.Previous />
             <Carousel.Next />
         </Carousel.Root>

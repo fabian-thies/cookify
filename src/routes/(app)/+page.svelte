@@ -24,15 +24,16 @@
 </script>
 
 <div class="flex flex-col gap-4 p-4 mt-6">
+    <h1 class="font-bold text-3xl mb-2">Rezepte</h1>
     <Input type="search" placeholder="Search" class="flex justify-center" bind:value={search}/>
 
-    <div class="flex flex-row gap-2">
+    <div class="flex flex-wrap gap-2">
         <SelectComponent
                 options={categories}
                 placeholder="Select a category"
                 groupLabel="Kategorien"
                 name="category"
-                class="w-[200px]"
+                class=""
         />
 
         <SelectComponent
@@ -40,7 +41,7 @@
                 placeholder="Select a category"
                 groupLabel="Kategorien"
                 name="category"
-                class="w-[200px]"
+                class=""
         />
 
         <SelectComponent
@@ -48,7 +49,7 @@
                 placeholder="Select a category"
                 groupLabel="Kategorien"
                 name="category"
-                class="w-[200px]"
+                class=""
         />
     </div>
     <div class="pt-6 pb-2">

@@ -6,7 +6,8 @@ import {
     ingredients,
     recipes,
     steps,
-    steps as stepsTable
+    steps as stepsTable,
+    tags as tagsTable
 } from "$lib/server/db/schema";
 import {getDifficultyId} from "$lib/server/utils";
 import {and, eq, getTableColumns, sql} from "drizzle-orm";
@@ -20,6 +21,7 @@ export async function createRecipe({
                                        difficulty,
                                        ingredientsList,
                                        steps,
+                                       tags,
                                        image
                                    }: CreateRecipeInput) {
     const result = await db.insert(recipes).values({
@@ -50,6 +52,15 @@ export async function createRecipe({
         }))
     );
 
+    if (tags.length > 0) {
+        await db.insert(tagsTable).values(
+            tags.map((tag) => ({
+                recipeId: result[0].id,
+                name: tag,
+            }))
+        );
+    }
+
     return result;
 }
 
@@ -63,6 +74,7 @@ export async function updateRecipe({
                                        difficulty,
                                        ingredientsList,
                                        steps,
+                                       tags,
                                        image
                                    }: UpdateRecipeInput) {
     await db.update(recipes)
@@ -99,6 +111,16 @@ export async function updateRecipe({
             number: index + 1,
         }))
     );
+
+    await db.delete(tagsTable).where(eq(tagsTable.recipeId, id));
+    if (tags.length > 0) {
+        await db.insert(tagsTable).values(
+            tags.map((tag) => ({
+                recipeId: id,
+                name: tag,
+            }))
+        );
+    }
 
     return {id};
 }
@@ -142,6 +164,10 @@ export async function getSteps(recipeId: number) {
 
 export async function getIngredients(recipeId: number) {
     return db.select(getTableColumns(ingredients)).from(ingredients).where(eq(ingredients.recipeId, recipeId));
+}
+
+export async function getTags(recipeId: number) {
+    return db.select(getTableColumns(tagsTable)).from(tagsTable).where(eq(tagsTable.recipeId, recipeId));
 }
 
 export async function getDifficulties() {

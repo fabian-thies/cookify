@@ -1,4 +1,4 @@
-import {integer, boolean, pgTable, primaryKey, serial, text, timestamp, uniqueIndex} from 'drizzle-orm/pg-core';
+import {integer, boolean, pgTable, primaryKey, serial, text, timestamp, uniqueIndex, unique} from 'drizzle-orm/pg-core';
 
 export const user = pgTable('user', {
 	id: text('id').primaryKey(),
@@ -58,9 +58,10 @@ export const favorite = pgTable('favorite', {
     recipeId: integer('recipe_id').notNull().references(() => recipes.id),
     userId: text('user_id').notNull().references(() => user.id),
     favorite: boolean('favorite').notNull().default(false),
-}, (t) => ({
-    recipeUserUnique: uniqueIndex('favorite_recipe_user_unique').on(t.recipeId, t.userId),
-}));
+    }, (t) => [
+        unique('favorite_recipe_user_unique').on(t.recipeId, t.userId),
+    ]
+);
 
 export const tags = pgTable('tags', {
     id: serial('id').primaryKey(),
@@ -76,3 +77,4 @@ export type User = typeof user.$inferSelect;
 export type Difficulty = typeof difficulty.$inferSelect;
 export type DifficultyToRecipe = typeof difficultyToRecipe.$inferSelect;
 export type Favorite = typeof favorite.$inferSelect;
+export type Tag = typeof tags.$inferSelect;

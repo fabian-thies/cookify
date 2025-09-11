@@ -40,6 +40,7 @@ export const actions = {
         const units: string[] = [];
         const name: string[] = [];
         const steps: string[] = [];
+        const tags: string[] = [];
 
         for (const amount of formData.getAll("ingredients_amount[]")) {
             const num = Number(amount);
@@ -73,6 +74,13 @@ export const actions = {
             steps.push(str);
         }
 
+        for (const tag of formData.getAll("tags[]")) {
+            const str = tag.toString().trim();
+            if (str !== "") {
+                tags.push(str);
+            }
+        }
+
         const ingredientsList = amounts.map((amount, index) => ({
             amount: amount,
             unit: units[index],
@@ -91,6 +99,7 @@ export const actions = {
                 difficulty,
                 ingredientsList,
                 steps,
+                tags,
                 image: imageUrl
             })
         } catch (e) {

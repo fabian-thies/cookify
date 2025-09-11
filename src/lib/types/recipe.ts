@@ -7,6 +7,7 @@ interface CreateRecipeInput {
     difficulty: string;
     ingredientsList: { name: string; amount: number; unit: string }[];
     steps: string[];
+    tags: string[];
     image: string;
 }
 

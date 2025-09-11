@@ -4,6 +4,7 @@
     import Steps from "$lib/components/recipe/form/Steps.svelte";
     import Details from "$lib/components/recipe/form/Details.svelte";
     import {Button} from "$lib/components/ui/button/index.js";
+    import Tags from "$lib/components/recipe/form/Tags.svelte";
 
     const {form} = $props();
 </script>
@@ -13,7 +14,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="space-y-6 lg:col-span-2">
                 <General/>
-                <Ingredients {form}/>
+                <Ingredients/>
                 <Steps/>
             </div>
 
