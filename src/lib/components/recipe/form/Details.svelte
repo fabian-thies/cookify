@@ -66,7 +66,7 @@
                     class="w-full" value={recipe?.difficulty.toLowerCase() || ''}/>
         </div>
         <div class="flex w-full flex-col gap-1.5">
-            <Label for="tagInput">Tags</Label>
+            <Label for="tagInput">Schlagwörter</Label>
             <Input
                     bind:value={tagInput}
                     id="tagInput"

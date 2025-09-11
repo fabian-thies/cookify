@@ -57,3 +57,75 @@ export async function saveImage(file: File): Promise<string> {
 
     return `/uploads/${filename}`;
 }
+
+export function parseRecipeFormData(formData: FormData) {
+    const title: string = formData.get("title")?.toString() ?? "";
+    const description: string = formData.get("description")?.toString() ?? "";
+    const cookTime: number = Number(formData.get("cookTime"));
+    const servings: number = Number(formData.get("servings"));
+    const difficulty: string = formData.get("difficulty")?.toString() ?? "";
+
+    validateInputEmpty(title, description, cookTime, servings, difficulty);
+
+    const amounts: number[] = [];
+    const units: string[] = [];
+    const names: string[] = [];
+    const stepsArr: string[] = [];
+    const tagsArr: string[] = [];
+
+    for (const amount of formData.getAll("ingredients_amount[]")) {
+        const num = Number(amount);
+        if (Number.isNaN(num)) {
+            throw new Error("invalid");
+        }
+        amounts.push(num);
+    }
+
+    for (const unit of formData.getAll("ingredients_unit[]")) {
+        const str = unit.toString();
+        if (str.trim() === "") {
+            throw new Error("invalid");
+        }
+        units.push(str);
+    }
+
+    for (const ingredient of formData.getAll("ingredients_name[]")) {
+        const str = ingredient.toString();
+        if (str.trim() === "") {
+            throw new Error("invalid");
+        }
+        names.push(str);
+    }
+
+    for (const step of formData.getAll("instructions_description[]")) {
+        const str = step.toString();
+        if (str.trim() === "") {
+            throw new Error("invalid");
+        }
+        stepsArr.push(str);
+    }
+
+    for (const tag of formData.getAll("tags[]")) {
+        const str = tag.toString().trim();
+        if (str !== "") {
+            tagsArr.push(str);
+        }
+    }
+
+    const ingredientsList = amounts.map((amount, index) => ({
+        amount: amount,
+        unit: units[index],
+        name: names[index]
+    }));
+
+    return {
+        title,
+        description,
+        cookTime,
+        servings,
+        difficulty,
+        ingredientsList,
+        steps: stepsArr,
+        tags: tagsArr
+    };
+}
