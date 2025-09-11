@@ -4,7 +4,6 @@
     import Steps from "$lib/components/recipe/form/Steps.svelte";
     import Details from "$lib/components/recipe/form/Details.svelte";
     import {Button} from "$lib/components/ui/button/index.js";
-    import Tags from "$lib/components/recipe/form/Tags.svelte";
 
     const {form} = $props();
 </script>
