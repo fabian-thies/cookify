@@ -7,20 +7,28 @@
     const { data }: PageProps = $props();
 
     const recipes = data.recipes;
+    const difficulties = data.difficulties;
 
     let search = $state("");
+    let selectedDifficulty = $state("");
 
     const filteredRecipes = $derived.by(() => {
         return recipes.filter(recipe => {
-            return recipe.title.toLowerCase().includes(search.toLowerCase());
+            const matchesSearch = recipe.title
+                .toLowerCase()
+                .includes(search.toLowerCase());
+
+            const matchesDifficulty =
+                !selectedDifficulty || String(recipe.difficulty) === selectedDifficulty;
+
+            return matchesSearch && matchesDifficulty;
         });
     });
 
-    const categories = [
-        { value: "Hauptgericht", label: "Hauptgericht" },
-        { value: "Dessert", label: "Dessert" },
-        { value: "Vorspeise", label: "Vorspeise" }
-    ];
+    const difficultiesOptions = difficulties.map(difficulty => ({
+        value: difficulty.difficulty,
+        label: difficulty.difficulty
+    }));
 </script>
 
 <div class="flex flex-col gap-4 p-4 mt-6">
@@ -29,27 +37,12 @@
 
     <div class="flex flex-wrap gap-2">
         <SelectComponent
-                options={categories}
-                placeholder="Select a category"
+                options={difficultiesOptions}
+                placeholder="Select a difficulty"
                 groupLabel="Kategorien"
                 name="category"
                 class=""
-        />
-
-        <SelectComponent
-                options={categories}
-                placeholder="Select a category"
-                groupLabel="Kategorien"
-                name="category"
-                class=""
-        />
-
-        <SelectComponent
-                options={categories}
-                placeholder="Select a category"
-                groupLabel="Kategorien"
-                name="category"
-                class=""
+                bind:value={selectedDifficulty}
         />
     </div>
     <div class="pt-6 pb-2">

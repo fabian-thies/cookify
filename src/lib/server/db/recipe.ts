@@ -171,7 +171,7 @@ export async function getTags(recipeId: number) {
 }
 
 export async function getDifficulties() {
-    return db.select().from(difficulty);
+    return db.select().from(difficulty).orderBy(difficulty.id);
 }
 
 export async function toggleRecipeFavorite(userId: string, recipeId: number) {
