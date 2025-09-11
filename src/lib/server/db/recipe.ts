@@ -53,6 +53,56 @@ export async function createRecipe({
     return result;
 }
 
+export async function updateRecipe({
+                                       id,
+                                       title,
+                                       description,
+                                       cookTime,
+                                       servings,
+                                       userId,
+                                       difficulty,
+                                       ingredientsList,
+                                       steps,
+                                       image
+                                   }: UpdateRecipeInput) {
+    await db.update(recipes)
+        .set({
+            title,
+            description,
+            image,
+            cookingTime: cookTime,
+            servings,
+            userId,
+            updatedAt: new Date(),
+        })
+        .where(eq(recipes.id, id));
+
+    await db.update(difficultyToRecipe)
+        .set({difficultyId: getDifficultyId(difficulty)})
+        .where(eq(difficultyToRecipe.recipeId, id));
+
+    await db.delete(ingredients).where(eq(ingredients.recipeId, id));
+    await db.insert(ingredients).values(
+        ingredientsList.map((ingredient) => ({
+            recipeId: id,
+            name: ingredient.name,
+            quantity: ingredient.amount,
+            unit: ingredient.unit,
+        }))
+    );
+
+    await db.delete(stepsTable).where(eq(stepsTable.recipeId, id));
+    await db.insert(stepsTable).values(
+        steps.map((step, index) => ({
+            recipeId: id,
+            step,
+            number: index + 1,
+        }))
+    );
+
+    return {id};
+}
+
 export async function getRecipes() {
     return db.select({
         ...getTableColumns(recipes),

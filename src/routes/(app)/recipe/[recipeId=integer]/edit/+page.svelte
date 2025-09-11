@@ -13,7 +13,7 @@
 </script>
 
 <div class="container mx-auto mt-14">
-    <form method="POST" action="?/createRecipe" enctype="multipart/form-data">
+    <form method="POST" action="?/updateRecipe" enctype="multipart/form-data">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="space-y-6 lg:col-span-2">
                 <General {recipe}/>

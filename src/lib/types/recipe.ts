@@ -9,3 +9,7 @@ interface CreateRecipeInput {
     steps: string[];
     image: string;
 }
+
+interface UpdateRecipeInput extends CreateRecipeInput {
+    id: number;
+}

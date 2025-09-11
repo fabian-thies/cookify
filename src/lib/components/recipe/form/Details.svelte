@@ -41,7 +41,7 @@
         </div>
         <div class="flex w-full flex-col gap-1.5">
             <Label for="picture">Vorschaubild</Label>
-            <Input id="picture" type="file" accept="image/*" name="picture" required/>
+            <Input id="picture" type="file" accept="image/*" name="picture" required={!recipe}/>
         </div>
     </Card.Content>
 </Card.Root>
