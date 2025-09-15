@@ -2,49 +2,84 @@
     import * as NavigationMenu from "$lib/components/ui/navigation-menu/index.js";
     import * as Avatar from "$lib/components/ui/avatar/index.js";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
+    import * as Sheet from "$lib/components/ui/sheet";
     import {Button} from "$lib/components/ui/button";
+    import {Menu} from "lucide-svelte";
     import type {User} from "$lib/server/db/schema";
+    import {Separator} from "$lib/components/ui/separator";
 
-    let isOpen = false;
+    let isOpen = $state(true);
 
     const { user }: { user: User } = $props();
-
-    function toggleMenu() {
-        isOpen = !isOpen;
-    }
 </script>
 
-<nav class="bg-background shadow-xs h-18 w-full flex items-center justify-between px-8">
+<nav class="bg-background shadow-xs h-18 w-full flex items-center justify-between px-4 md:px-8">
     <a href="/">
-        <h1 class="text-2xl font-bold text-foreground">cookify</h1>
+        <h1 class="text-xl md:text-2xl font-bold text-foreground">cookify</h1>
     </a>
-    <NavigationMenu.Root>
-        <NavigationMenu.List>
-            <NavigationMenu.Item>
-                <NavigationMenu.Link href="/">
-                    Rezepte
-                </NavigationMenu.Link>
-            </NavigationMenu.Item>
-            <NavigationMenu.Item>
-                <NavigationMenu.Link href="/favorites">
-                    Favoriten
-                </NavigationMenu.Link>
-            </NavigationMenu.Item>
-        </NavigationMenu.List>
-    </NavigationMenu.Root>
-    <div class="flex items-center gap-4">
-<!--        <Button href="/recipe/create" data-sveltekit-preload-data="hover">-->
-<!--            Rezept erstellen-->
-<!--        </Button>-->
 
+    <!-- Desktop Navigation -->
+    <div class="hidden md:block">
+        <NavigationMenu.Root>
+            <NavigationMenu.List>
+                <NavigationMenu.Item>
+                    <NavigationMenu.Link href="/">
+                        Rezepte
+                    </NavigationMenu.Link>
+                </NavigationMenu.Item>
+                <NavigationMenu.Item>
+                    <NavigationMenu.Link href="/favorites">
+                        Favoriten
+                    </NavigationMenu.Link>
+                </NavigationMenu.Item>
+            </NavigationMenu.List>
+        </NavigationMenu.Root>
+    </div>
+
+    <div class="flex items-center gap-2 md:gap-4">
+        <!-- Mobile Menu Button -->
+        <Sheet.Root bind:open={isOpen}>
+            <Sheet.Trigger class="md:hidden">
+                <Button variant="ghost" size="icon">
+                    <Menu class="h-5 w-5" />
+                </Button>
+            </Sheet.Trigger>
+            <Sheet.Content side="left" class="w-80">
+                <Sheet.Header>
+                    <Sheet.Title>Navigation</Sheet.Title>
+                </Sheet.Header>
+                <div class="flex flex-col gap-4 mt-6 m-6 text-lg">
+                    <a href="/" onclick={() => isOpen = false}>
+                        Rezepte
+                    </a>
+                    <a href="/favorites" onclick={() => isOpen = false}>
+                        Favoriten
+                    </a>
+                    <Separator />
+                    <a href="/profile" onclick={() => isOpen = false}>
+                        Profil
+                    </a>
+                    <a href="/settings" onclick={() => isOpen = false}>
+                        Einstellungen
+                    </a>
+                    <form method="post" action="/logout" class="mt-4 text-destructive">
+                        <Button type="submit" variant="outline" class="w-full">
+                            Logout
+                        </Button>
+                    </form>
+                </div>
+            </Sheet.Content>
+        </Sheet.Root>
+
+        <!-- User Avatar Dropdown -->
         <DropdownMenu.Root>
-            <DropdownMenu.Trigger>
-                    <Avatar.Root class="cursor-pointer">
-                        <Avatar.Image src={user.avatar}/>
-                        <Avatar.Fallback>{user.username.slice(0, 2)}</Avatar.Fallback>
-                    </Avatar.Root>
+            <DropdownMenu.Trigger class="hidden md:block">
+                <Avatar.Root class="cursor-pointer h-8 w-8 md:h-10 md:w-10">
+                    <Avatar.Image src={user.avatar}/>
+                    <Avatar.Fallback>{user.username.slice(0, 2)}</Avatar.Fallback>
+                </Avatar.Root>
             </DropdownMenu.Trigger>
-            <DropdownMenu.Content align="end" sideOffset={8} class="w-56">
+            <DropdownMenu.Content align="end" sideOffset={8} class="w-56 hidden md:block">
                 <DropdownMenu.Label class="font-normal">
                     <div class="flex items-center gap-2">
                         <Avatar.Root class="h-8 w-8">
@@ -52,8 +87,8 @@
                             <Avatar.Fallback>{user.username.slice(0, 2)}</Avatar.Fallback>
                         </Avatar.Root>
                         <div class="grid gap-0.5">
-                            <p class="text-sm font-medium leading-none">{ user.username }</p>
-                            <p class="text-xs text-muted-foreground">{ user.email }</p>
+                            <p class="text-sm font-medium leading-none">{user.username}</p>
+                            <p class="text-xs text-muted-foreground">{user.email}</p>
                         </div>
                     </div>
                 </DropdownMenu.Label>
@@ -77,6 +112,4 @@
             </DropdownMenu.Content>
         </DropdownMenu.Root>
     </div>
-    {#if isOpen}
-    {/if}
 </nav>
