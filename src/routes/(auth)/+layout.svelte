@@ -3,6 +3,6 @@
 	let { children } = $props();
 </script>
 
-<div class="container mx-auto p-2">
+<div class="container mx-auto">
     {@render children()}
 </div>
