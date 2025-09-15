@@ -1,5 +1,5 @@
 import * as auth from '$lib/server/auth';
-import {type Actions, fail, redirect} from '@sveltejs/kit';
+import {redirect} from '@sveltejs/kit';
 import {getRequestEvent} from '$app/server';
 import type {PublicUser} from "$lib/server/db/schema";
 

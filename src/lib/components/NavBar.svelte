@@ -8,7 +8,7 @@
     import type {PublicUser} from "$lib/server/db/schema";
     import {Separator} from "$lib/components/ui/separator";
 
-    let isOpen = $state(true);
+    let isOpen = $state(false);
 
     const { user }: { user: PublicUser } = $props();
 </script>
@@ -76,16 +76,16 @@
             <DropdownMenu.Root>
                 <DropdownMenu.Trigger class="hidden md:block">
                     <Avatar.Root class="cursor-pointer h-8 w-8 md:h-10 md:w-10">
-                        <Avatar.Image src={user.avatar ?? undefined}/>
-                        <Avatar.Fallback>{(user.username ?? "?").slice(0, 2)}</Avatar.Fallback>
+                        <Avatar.Image src={user.avatar}/>
+                        <Avatar.Fallback>{(user.username).slice(0, 2)}</Avatar.Fallback>
                     </Avatar.Root>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content align="end" sideOffset={8} class="w-56 hidden md:block">
                     <DropdownMenu.Label class="font-normal">
                         <div class="flex items-center gap-2">
                             <Avatar.Root class="h-8 w-8">
-                                <Avatar.Image src={user.avatar ?? undefined} alt=""/>
-                                <Avatar.Fallback>{(user.username ?? "?").slice(0, 2)}</Avatar.Fallback>
+                                <Avatar.Image src={user.avatar} alt=""/>
+                                <Avatar.Fallback>{(user.username).slice(0, 2)}</Avatar.Fallback>
                             </Avatar.Root>
                             <div class="grid gap-0.5">
                                 <p class="text-sm font-medium leading-none">{user.username}</p>
