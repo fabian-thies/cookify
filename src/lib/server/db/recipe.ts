@@ -135,6 +135,18 @@ export async function getRecipes() {
         .leftJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId));
 }
 
+export async function getFavoriteRecipes() {
+    return db.select({
+        ...getTableColumns(recipes),
+        difficulty: difficulty.difficulty,
+    })
+        .from(recipes)
+        .innerJoin(favorite, eq(favorite.recipeId, recipes.id))
+        .leftJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
+        .leftJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
+        .where(eq(favorite.favorite, true));
+}
+
 export async function getRecipeById(id: number) {
     const result = await db
         .select({
@@ -189,3 +201,6 @@ export async function toggleRecipeFavorite(userId: string, recipeId: number) {
             },
         });
 }
+
+export type Recipe = Awaited<ReturnType<typeof getRecipes>>[number];
+export type Difficulty = Awaited<ReturnType<typeof getDifficulties>>[number];
