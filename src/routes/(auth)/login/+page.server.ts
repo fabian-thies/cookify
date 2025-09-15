@@ -11,6 +11,7 @@ export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
 		return redirect(302, '/');
 	}
+
 	return {};
 };
 
@@ -19,6 +20,7 @@ export const actions: Actions = {
 		const formData = await event.request.formData();
 		const username = formData.get('username');
 		const password = formData.get('password');
+		const redirectTo = formData.get('redirectTo');
 
 		if (!validateUsername(username)) {
 			return fail(400, { message: 'Invalid username (min 3, max 31 characters, alphanumeric only)' });
@@ -51,6 +53,10 @@ export const actions: Actions = {
 		const session = await auth.createSession(sessionToken, existingUser.id);
 		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
+        if (redirectTo && typeof redirectTo === 'string' && redirectTo.startsWith('/') && !redirectTo.startsWith('//')) {
+            return redirect(302, redirectTo);
+        }
+
 		return redirect(302, '/');
 	},
 	register: async (event) => {
@@ -59,6 +65,7 @@ export const actions: Actions = {
 		const email = formData.get('email');
 		const password = formData.get('password');
 		const confirmPassword = formData.get('confirmPassword');
+		const redirectTo = formData.get('redirectTo');
 
 		if (!validateUsername(username)) {
 			return fail(400, { message: 'Invalid username' });
@@ -91,6 +98,11 @@ export const actions: Actions = {
 		} catch {
 			return fail(500, { message: 'An error has occurred' });
 		}
+
+		if (redirectTo && typeof redirectTo === 'string' && redirectTo.startsWith('/') && !redirectTo.startsWith('//')) {
+			return redirect(302, redirectTo);
+		}
+
 		return redirect(302, '/');
 	},
 };

@@ -5,12 +5,12 @@
     import * as Sheet from "$lib/components/ui/sheet";
     import {Button} from "$lib/components/ui/button";
     import {Menu} from "lucide-svelte";
-    import type {User} from "$lib/server/db/schema";
+    import type {PublicUser} from "$lib/server/db/schema";
     import {Separator} from "$lib/components/ui/separator";
 
     let isOpen = $state(true);
 
-    const { user }: { user: User } = $props();
+    const { user }: { user: PublicUser } = $props();
 </script>
 
 <nav class="bg-background shadow-xs h-18 w-full flex items-center justify-between px-4 md:px-8">
@@ -72,44 +72,52 @@
         </Sheet.Root>
 
         <!-- User Avatar Dropdown -->
-        <DropdownMenu.Root>
-            <DropdownMenu.Trigger class="hidden md:block">
-                <Avatar.Root class="cursor-pointer h-8 w-8 md:h-10 md:w-10">
-                    <Avatar.Image src={user.avatar}/>
-                    <Avatar.Fallback>{user.username.slice(0, 2)}</Avatar.Fallback>
-                </Avatar.Root>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content align="end" sideOffset={8} class="w-56 hidden md:block">
-                <DropdownMenu.Label class="font-normal">
-                    <div class="flex items-center gap-2">
-                        <Avatar.Root class="h-8 w-8">
-                            <Avatar.Image src={user.avatar} alt=""/>
-                            <Avatar.Fallback>{user.username.slice(0, 2)}</Avatar.Fallback>
-                        </Avatar.Root>
-                        <div class="grid gap-0.5">
-                            <p class="text-sm font-medium leading-none">{user.username}</p>
-                            <p class="text-xs text-muted-foreground">{user.email}</p>
+        {#if user}
+            <DropdownMenu.Root>
+                <DropdownMenu.Trigger class="hidden md:block">
+                    <Avatar.Root class="cursor-pointer h-8 w-8 md:h-10 md:w-10">
+                        <Avatar.Image src={user.avatar ?? undefined}/>
+                        <Avatar.Fallback>{(user.username ?? "?").slice(0, 2)}</Avatar.Fallback>
+                    </Avatar.Root>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content align="end" sideOffset={8} class="w-56 hidden md:block">
+                    <DropdownMenu.Label class="font-normal">
+                        <div class="flex items-center gap-2">
+                            <Avatar.Root class="h-8 w-8">
+                                <Avatar.Image src={user.avatar ?? undefined} alt=""/>
+                                <Avatar.Fallback>{(user.username ?? "?").slice(0, 2)}</Avatar.Fallback>
+                            </Avatar.Root>
+                            <div class="grid gap-0.5">
+                                <p class="text-sm font-medium leading-none">{user.username}</p>
+                                <p class="text-xs text-muted-foreground">{user.email}</p>
+                            </div>
                         </div>
-                    </div>
-                </DropdownMenu.Label>
-                <DropdownMenu.Separator/>
-                <DropdownMenu.Group>
-                    <DropdownMenu.Item>
-                        <a href="/profile">Profil</a>
+                    </DropdownMenu.Label>
+                    <DropdownMenu.Separator/>
+                    <DropdownMenu.Group>
+                        <DropdownMenu.Item>
+                            <a href="/profile">Profil</a>
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Item>
+                            <a href="/settings">Einstellungen</a>
+                        </DropdownMenu.Item>
+                    </DropdownMenu.Group>
+                    <DropdownMenu.Separator/>
+                    <DropdownMenu.Item class="text-destructive">
+                        <form method="post" action="/logout">
+                            <button type="submit">
+                                Logout
+                            </button>
+                        </form>
                     </DropdownMenu.Item>
-                    <DropdownMenu.Item>
-                        <a href="/settings">Einstellungen</a>
-                    </DropdownMenu.Item>
-                </DropdownMenu.Group>
-                <DropdownMenu.Separator/>
-                <DropdownMenu.Item class="text-destructive">
-                    <form method="post" action="/logout">
-                        <button type="submit">
-                            Logout
-                        </button>
-                    </form>
-                </DropdownMenu.Item>
-            </DropdownMenu.Content>
-        </DropdownMenu.Root>
+                </DropdownMenu.Content>
+            </DropdownMenu.Root>
+        {:else}
+            <div class="hidden md:block">
+                <a href="/login">
+                    <Button variant="ghost">Login</Button>
+                </a>
+            </div>
+        {/if}
     </div>
 </nav>

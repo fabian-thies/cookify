@@ -75,6 +75,7 @@ export type Recipe = typeof recipes.$inferSelect;
 export type Ingredient = typeof ingredients.$inferSelect;
 export type Step = typeof steps.$inferSelect;
 export type User = typeof user.$inferSelect;
+export type PublicUser = Omit<User, 'passwordHash'>;
 export type Difficulty = typeof difficulty.$inferSelect;
 export type DifficultyToRecipe = typeof difficultyToRecipe.$inferSelect;
 export type Favorite = typeof favorite.$inferSelect;

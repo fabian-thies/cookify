@@ -20,6 +20,7 @@
     const id = $props.id();
 
     const form = $derived(page.form);
+    const redirectTo = $derived(page.url.searchParams.get('redirectTo'));
 </script>
 
 <div class={cn("flex flex-col gap-6", className)} {...restProps}>
@@ -43,6 +44,9 @@
         </Card.Header>
         <Card.Content>
             <form method="post" action="{isLogin ? '?/login' : '?/register'}" use:enhance>
+                {#if redirectTo}
+                    <input type="hidden" name="redirectTo" value={redirectTo} />
+                {/if}
                 <div class="grid gap-6">
                     <div class="grid gap-6">
                         <div class="grid gap-3">
