@@ -8,4 +8,4 @@
     const difficulties = data.difficulties;
 </script>
 
-<RecipeList {recipes} {difficulties} title="Rezepte"/>
+<RecipeList {recipes} {difficulties} title="Favoriten"/>

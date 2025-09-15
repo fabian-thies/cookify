@@ -12,10 +12,6 @@
     function toggleMenu() {
         isOpen = !isOpen;
     }
-
-    function logout(): void {
-        console.log("logout");
-    }
 </script>
 
 <nav class="bg-background shadow-xs h-18 w-full flex items-center justify-between px-8">
@@ -30,7 +26,7 @@
                 </NavigationMenu.Link>
             </NavigationMenu.Item>
             <NavigationMenu.Item>
-                <NavigationMenu.Link href="/">
+                <NavigationMenu.Link href="/favorites">
                     Favoriten
                 </NavigationMenu.Link>
             </NavigationMenu.Item>
@@ -44,7 +40,7 @@
         <DropdownMenu.Root>
             <DropdownMenu.Trigger>
                     <Avatar.Root class="cursor-pointer">
-                        <Avatar.Image src={user.avatar} alt={user?.username ?? "@user"} />
+                        <Avatar.Image src={user.avatar}/>
                         <Avatar.Fallback>{user.username.slice(0, 2)}</Avatar.Fallback>
                     </Avatar.Root>
             </DropdownMenu.Trigger>
