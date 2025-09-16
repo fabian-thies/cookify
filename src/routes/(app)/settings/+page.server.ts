@@ -1,12 +1,13 @@
 import type {RequestEvent} from "@sveltejs/kit";
 import {fail} from "@sveltejs/kit";
 import * as v from 'valibot';
-import {saveProfile} from "$lib/server/db/user";
-import {saveImage} from "$lib/server/utils";
+import {saveProfile, updatePassword} from "$lib/server/db/user";
+import {hashPassword, saveImage} from "$lib/server/utils";
 
 const ProfileSchema = v.object({
     username: v.string(),
-    email: v.pipe(v.string(), v.email())
+    email: v.pipe(v.string(), v.email()),
+    password: v.optional(v.string())
 });
 
 export const actions = {
@@ -16,7 +17,8 @@ export const actions = {
         const formData = await request.formData();
         const data = {
             username: String(formData.get("username") ?? ""),
-            email: String(formData.get("email") ?? "")
+            email: String(formData.get("email") ?? ""),
+            password: String(formData.get("password") ?? "")
         };
 
         let parsed;
@@ -39,5 +41,9 @@ export const actions = {
         }
 
         await saveProfile(locals.user.id, parsed.username, parsed.email, avatarUrl);
+
+        if(parsed.password && parsed.password.length > 0) {
+            await updatePassword(locals.user.id, await hashPassword(parsed.password))
+        }
     }
 };

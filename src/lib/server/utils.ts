@@ -1,6 +1,7 @@
 import {promises as fs} from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import {hash} from "@node-rs/argon2";
 
 /**
  * Throws an error if any of the inputs is empty
@@ -17,6 +18,16 @@ export const validateInputEmpty = (...inputs: (string | number)[]): void => {
             throw new Error(`Input at position ${i} cannot be empty or invalid number`);
         }
     }
+}
+
+export const hashPassword = async (password: string): Promise<string> => {
+    return await hash(password, {
+        // recommended minimum parameters
+        memoryCost: 19456,
+        timeCost: 2,
+        outputLen: 32,
+        parallelism: 1,
+    })
 }
 
 export const getDifficultyId = (difficulty: string): number => {

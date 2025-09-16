@@ -7,3 +7,9 @@ export async function saveProfile(userId: string, username: string, email: strin
         .set({username, email, avatar})
         .where(eq(user.id, userId));
 }
+
+export async function updatePassword(userId: string, passwordHash: string) {
+    return db.update(user)
+        .set({passwordHash})
+        .where(eq(user.id, userId));
+}
