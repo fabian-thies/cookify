@@ -2,6 +2,7 @@
     import {Button} from "$lib/components/ui/button/index.js";
     import {Label} from "$lib/components/ui/label/index.js";
     import {Input} from "$lib/components/ui/input/index.js";
+    import { m } from "$lib/paraglide/messages";
     import * as Card from "$lib/components/ui/card/index.js";
     import * as Avatar from "$lib/components/ui/avatar/index.js";
     import * as Separator from "$lib/components/ui/separator/index.js";
@@ -38,8 +39,8 @@
 
 <Card.Root class="w-full">
     <Card.Header>
-        <Card.Title>Profil</Card.Title>
-        <Card.Description>Verwalten Sie Ihre persönlichen Informationen</Card.Description>
+        <Card.Title>{m["settings.profile.title"]()}</Card.Title>
+        <Card.Description>{m["settings.profile.description"]()}</Card.Description>
     </Card.Header>
     <Card.Content>
         <div class="flex flex-col gap-6">
@@ -59,27 +60,27 @@
                 />
                 <Button variant="outline" class="flex items-center gap-2" onclick={() => fileInput.click()}>
                     <Camera size={16}/>
-                    Avatar ändern
+                    {m["settings.profile.changeAvatar"]()}
                 </Button>
             </div>
             <div class="flex w-full flex-col gap-1.5">
-                <Label for="username">Username</Label>
+                <Label for="username">{m["settings.profile.username"]()}</Label>
                 <Input
                         type="text"
                         id="username"
                         name="username"
-                        placeholder="z.B. MaxMustermann"
+                        placeholder={m["settings.profile.usernamePlaceholder"]()}
                         required
                         value={user.username}
                 />
             </div>
             <div class="flex w-full flex-col gap-1.5">
-                <Label for="email">E-Mail</Label>
+                <Label for="email">{m["settings.profile.email"]()}</Label>
                 <Input
                         type="email"
                         id="email"
                         name="email"
-                        placeholder="z.B. max@example.com"
+                        placeholder={m["settings.profile.emailPlaceholder"]()}
                         required
                         value={user.email}
                 />
@@ -88,18 +89,18 @@
             <div class="space-y-4">
                 <div class="flex items-center gap-2 mb-4">
                     <Lock size={16} class="text-muted-foreground"/>
-                    <h3 class="text-sm font-medium">Passwort ändern</h3>
+                    <h3 class="text-sm font-medium">{m["settings.profile.changePassword"]()}</h3>
                 </div>
 
                 <div class="grid gap-4 md:grid-cols-2">
                     <div class="flex w-full flex-col gap-1.5">
-                        <Label for="password">Neues Passwort</Label>
+                        <Label for="password">{m["settings.profile.newPassword"]()}</Label>
                         <div class="relative">
                             <Input
                                     type={showPassword ? "text" : "password"}
                                     id="password"
                                     name="password"
-                                    placeholder="Neues Passwort eingeben"
+                                    placeholder={m["settings.profile.newPasswordPlaceholder"]()}
                                     bind:value={password}
                                     class="pr-10"
                             />
@@ -138,12 +139,12 @@
                     </div>
                     <div class="flex w-full flex-col gap-1.5">
                         <Label for="passwordConfirm" class="flex items-center gap-2">
-                            Passwort bestätigen
+                            {m["settings.profile.confirmPassword"]()}
                             {#if password.length > 0 && passwordConfirm.length > 0}
                                 {#if passwordsMatch}
-                                    <span class="text-green-600 text-xs">Stimmt überein</span>
+                                    <span class="text-green-600 text-xs">{m["settings.profile.match"]()}</span>
                                 {:else}
-                                    <span class="text-red-600 text-xs">Stimmt nicht überein</span>
+                                    <span class="text-red-600 text-xs">{m["settings.profile.mismatch"]()}</span>
                                 {/if}
                             {/if}
                         </Label>
@@ -152,7 +153,7 @@
                                     type={showPasswordConfirm ? "text" : "password"}
                                     id="passwordConfirm"
                                     name="passwordConfirm"
-                                    placeholder="Passwort wiederholen"
+                                    placeholder={m["settings.profile.confirmPasswordPlaceholder"]()}
                                     bind:value={passwordConfirm}
                                     class="pr-10 {passwordConfirm.length > 0 && !passwordsMatch ? 'border-red-500' : ''}"
                             />
@@ -180,7 +181,7 @@
                 type="submit"
                 disabled={password.length > 0 && (!passwordsMatch || password.length < 6)}
         >
-            Profil speichern
+            {m["settings.profile.save"]()}
         </Button>
     </Card.Footer>
 </Card.Root>

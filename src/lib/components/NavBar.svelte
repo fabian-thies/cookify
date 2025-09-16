@@ -6,6 +6,7 @@
     import {Button} from "$lib/components/ui/button";
     import {Menu} from "lucide-svelte";
     import type {PublicUser} from "$lib/server/db/schema";
+    import { m } from "$lib/paraglide/messages.js";
     import {Separator} from "$lib/components/ui/separator";
 
     let isOpen = $state(false);
@@ -24,12 +25,12 @@
             <NavigationMenu.List>
                 <NavigationMenu.Item>
                     <NavigationMenu.Link href="/">
-                        Rezepte
+                        {m["nav.recipes"]()}
                     </NavigationMenu.Link>
                 </NavigationMenu.Item>
                 <NavigationMenu.Item>
                     <NavigationMenu.Link href="/favorites">
-                        Favoriten
+                        {m["nav.favorites"]()}
                     </NavigationMenu.Link>
                 </NavigationMenu.Item>
             </NavigationMenu.List>
@@ -44,25 +45,25 @@
             </Sheet.Trigger>
             <Sheet.Content side="left" class="w-80">
                 <Sheet.Header>
-                    <Sheet.Title>Navigation</Sheet.Title>
+                    <Sheet.Title>{m["nav.navigation"]()}</Sheet.Title>
                 </Sheet.Header>
                 <div class="flex flex-col gap-4 mt-6 m-6 text-lg">
                     <a href="/" onclick={() => isOpen = false}>
-                        Rezepte
+                        {m["nav.recipes"]()}
                     </a>
                     <a href="/favorites" onclick={() => isOpen = false}>
-                        Favoriten
+                        {m["nav.favorites"]()}
                     </a>
                     <Separator />
                     <a href="/profile" onclick={() => isOpen = false}>
-                        Profil
+                        {m["nav.profile"]()}
                     </a>
                     <a href="/settings" onclick={() => isOpen = false}>
-                        Einstellungen
+                        {m["nav.settings"]()}
                     </a>
                     <form method="post" action="/logout" class="mt-4 text-destructive">
                         <Button type="submit" variant="outline" class="w-full hover:cursor-pointer">
-                            Logout
+                            {m["logout"]()}
                         </Button>
                     </form>
                 </div>
@@ -94,17 +95,17 @@
                     <DropdownMenu.Separator/>
                     <DropdownMenu.Group>
                         <DropdownMenu.Item>
-                            <a href="/profile">Profil</a>
+                            <a href="/profile">{m["nav.profile"]()}</a>
                         </DropdownMenu.Item>
                         <DropdownMenu.Item>
-                            <a href="/settings">Einstellungen</a>
+                            <a href="/settings">{m["nav.settings"]()}</a>
                         </DropdownMenu.Item>
                     </DropdownMenu.Group>
                     <DropdownMenu.Separator/>
                     <DropdownMenu.Item class="text-destructive">
                         <form method="post" action="/logout">
                             <button type="submit">
-                                Logout
+                                {m["logout"]()}
                             </button>
                         </form>
                     </DropdownMenu.Item>
@@ -113,7 +114,7 @@
         {:else}
             <div class="hidden md:block">
                 <a href="/login">
-                    <Button variant="ghost">Login</Button>
+                    <Button variant="ghost">{m["nav.login"]()}</Button>
                 </a>
             </div>
         {/if}

@@ -3,6 +3,7 @@
     import {Separator} from "$lib/components/ui/separator/index.js";
     import {Badge} from "$lib/components/ui/badge/index.js";
     import {Button} from "$lib/components/ui/button/index.js";
+    import { m } from "$lib/paraglide/messages";
     import {likeRecipe} from "$lib/functions/recipe.remote";
 
     type props = {
@@ -27,7 +28,7 @@
         <Star size={20} fill="#fbbf24" color="#fbbf24"/>
         (4.8)
         <Separator orientation="vertical"/>
-        <p>128 Bewertungen</p>
+        <p>{m["recipe.common.reviews"]({ count: 128 })}</p>
     </div>
     <p class="text-lg text-muted-foreground mb-6">{description}
     </p>
@@ -36,12 +37,12 @@
         <div class="flex items-center space-x-6 h-5">
             <div class="flex items-center gap-2">
                 <Clock size={18}/>
-                <span class="font-medium">{cookingTime} min</span>
+                <span class="font-medium">{m["recipe.common.duration"]({ count: cookingTime })}</span>
             </div>
             <Separator orientation="vertical"/>
             <div class="flex items-center gap-2">
                 <Users size={18}/>
-                <span class="font-medium">{servings} Portionen</span>
+                <span class="font-medium">{m["recipe.common.servingsCount"]({ count: servings })}</span>
             </div>
             <Separator orientation="vertical"/>
             <div class="flex items-center gap-2">
@@ -51,7 +52,7 @@
         <div class="flex items-center space-x-2">
             <Button variant="outline">
                 <Share2/>
-                Teilen
+                {m["actions.share"]()}
             </Button>
             <Button onclick={async () => {
                 try {
@@ -63,12 +64,12 @@
                 }
             }}>
                 <Heart fill={isFavorite ? "white" : "none"} />
-                Speichern
+                {m["actions.save"]()}
             </Button>
             {#if recipeOwner}
                 <Button variant="outline" href="/recipe/{recipeId}/edit">
                     <Edit size={18}/>
-                    Bearbeiten
+                    {m["actions.edit"]()}
                 </Button>
             {/if}
         </div>

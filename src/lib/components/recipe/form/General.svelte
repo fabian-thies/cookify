@@ -3,6 +3,7 @@
     import { Input } from "$lib/components/ui/input/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
     import { ChefHat } from "lucide-svelte";
+    import { m } from "$lib/paraglide/messages";
 
     const { recipe } = $props();
 </script>
@@ -11,17 +12,17 @@
     <Card.Header class="flex items-center gap-4">
         <Card.Title class="text-lg font-bold flex flex-row items-center gap-2">
             <ChefHat />
-            Grundinformationen
+            {m["recipe.form.general.title"]()}
         </Card.Title>
     </Card.Header>
     <Card.Content class="flex flex-col gap-6">
         <div class="flex w-full flex-col gap-1.5">
-            <Label for="title">Rezeptname</Label>
-            <Input type="text" id="title" name="title" placeholder="z.B. Italienische Pasta Carbonara" required value={recipe?.title || ''}/>
+            <Label for="title">{m["recipe.form.general.nameLabel"]()}</Label>
+            <Input type="text" id="title" name="title" placeholder={m["recipe.form.general.namePlaceholder"]()} required value={recipe?.title || ''}/>
         </div>
         <div class="flex w-full flex-col gap-1.5">
-            <Label for="description">Beschreibung</Label>
-            <Input type="text" id="description" name="description" placeholder="Beschreibe dein Rezept kurz" required value={recipe?.description || ''}/>
+            <Label for="description">{m["recipe.form.general.descriptionLabel"]()}</Label>
+            <Input type="text" id="description" name="description" placeholder={m["recipe.form.general.descriptionPlaceholder"]()} required value={recipe?.description || ''}/>
         </div>
     </Card.Content>
 </Card.Root>

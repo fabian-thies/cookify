@@ -20,5 +20,122 @@
 		"haveAccount": "Haben Sie bereits ein Konto?",
 		"signUp": "Registrieren",
 		"signInLink": "Anmelden"
+	},
+	"nav": {
+		"navigation": "Navigation",
+		"recipes": "Rezepte",
+		"favorites": "Favoriten",
+		"profile": "Profil",
+		"settings": "Einstellungen",
+		"login": "Anmelden"
+	},
+	"recipe": {
+		"common": {
+			"ingredients": "Zutaten",
+			"steps": "Schritte",
+			"forServings": "Für {count} Portionen",
+			"servingsCount": "{count} Portionen",
+			"duration": "{count} Min",
+			"reviews": "{count} Bewertungen",
+			"similar": "Ähnliche Rezepte",
+			"difficulty": {
+				"easy": "Einfach",
+				"medium": "Mittel",
+				"hard": "Schwierig"
+			}
+		},
+		"list": {
+			"searchPlaceholder": "Rezepte suchen",
+			"difficultyPlaceholder": "Schwierigkeitsgrad auswählen",
+			"groupLabel": "Kategorien",
+			"results": "{count} Rezepte gefunden"
+		},
+		"card": {
+			"view": "Rezept ansehen"
+		},
+		"view": {
+			"preparation": {
+				"title": "Zubereitung",
+				"subtitle": "Schritt für Schritt Anleitung"
+			}
+		},
+		"form": {
+			"general": {
+				"title": "Grundinformationen",
+				"nameLabel": "Rezeptname",
+				"namePlaceholder": "z.B. Italienische Pasta Carbonara",
+				"descriptionLabel": "Beschreibung",
+				"descriptionPlaceholder": "Beschreibe dein Rezept kurz"
+			},
+			"ingredients": {
+				"title": "Zutaten",
+				"quantityLabel": "Menge",
+				"quantityPlaceholder": "z.B. 500",
+				"unitLabel": "Einheit",
+				"unitPlaceholder": "z.B. g, ml, Stück",
+				"nameLabel": "Zutat",
+				"namePlaceholder": "z.B. Nudeln, Eier, Speck",
+				"addButton": "Zutat hinzufügen"
+			},
+			"steps": {
+				"title": "Schritte",
+				"stepLabel": "Schritt",
+				"stepPlaceholder": "z.B. Zwiebeln schälen und würfeln",
+				"addButton": "Schritt hinzufügen"
+			},
+			"details": {
+				"title": "Rezept-Details",
+				"cookTimeLabel": "Kochzeit (Min.)",
+				"cookTimePlaceholder": "z.B. 25",
+				"servingsLabel": "Portionen",
+				"servingsPlaceholder": "z.B. 4",
+				"difficultyLabel": "Schwierigkeitsgrad",
+				"difficultyPlaceholder": "Schwierigkeitsgrad auswählen",
+				"difficultyGroupLabel": "Schwierigkeitsgrad",
+				"tagsLabel": "Schlagwörter",
+				"tagsPlaceholder": "Tag eingeben und Enter drücken",
+				"previewLabel": "Vorschaubild"
+			}
+		}
+	},
+	"routes": {
+		"home": {
+			"title": "Rezepte"
+		},
+		"favorites": {
+			"title": "Favoriten"
+		}
+	},
+	"actions": {
+		"share": "Teilen",
+		"save": "Speichern",
+		"edit": "Bearbeiten",
+		"saveRecipe": "Rezept speichern",
+		"showPreview": "Vorschau anzeigen"
+	},
+	"settings": {
+		"profile": {
+			"title": "Profil",
+			"description": "Verwalten Sie Ihre persönlichen Informationen",
+			"changeAvatar": "Avatar ändern",
+			"username": "Benutzername",
+			"usernamePlaceholder": "z.B. MaxMustermann",
+			"email": "E-Mail",
+			"emailPlaceholder": "z.B. max@example.com",
+			"changePassword": "Passwort ändern",
+			"newPassword": "Neues Passwort",
+			"newPasswordPlaceholder": "Neues Passwort eingeben",
+			"passwordStrength": {
+				"weak": "Schwach - mindestens 6 Zeichen",
+				"medium": "Mittel - mindestens 10 Zeichen empfohlen",
+				"strong": "Stark"
+			},
+			"confirmPassword": "Passwort bestätigen",
+			"match": "Stimmt überein",
+			"mismatch": "Stimmt nicht überein",
+			"confirmPasswordPlaceholder": "Passwort wiederholen",
+			"save": "Profil speichern",
+			"saved": "Erfolgreich gespeichert"
+		}
 	}
 }

@@ -3,6 +3,7 @@
     import { Label } from "$lib/components/ui/label";
     import { Input } from "$lib/components/ui/input";
     import * as Card from "$lib/components/ui/card";
+    import { m } from "$lib/paraglide/messages";
     import { Badge } from "$lib/components/ui/badge";
     import {Clock, Star, UserRound} from "lucide-svelte";
 
@@ -31,11 +32,11 @@
         <div class="flex gap-2 pt-2 justify-between">
             <span class="text-sm text-muted-foreground flex flex-row gap-1 items-center">
                 <Clock size={15}/>
-                {cookingTime} Min
+                {m["recipe.common.duration"]({ count: cookingTime })}
             </span>
             <span class="text-sm text-muted-foreground flex flex-row gap-1 items-center">
                 <UserRound size={15} />
-                {servings} Portionen
+                {m["recipe.common.servingsCount"]({ count: servings })}
             </span>
             <span class="text-sm text-muted-foreground flex flex-row gap-1 items-center">
             {#if rating != null}
@@ -52,6 +53,6 @@
         </div>-->
     </Card.Content>
     <Card.Footer class="flex-col gap-2">
-        <Button type="submit" class="w-full" href="/recipe/{id}" data-sveltekit-preload-data="hover">Rezept ansehen</Button>
+        <Button type="submit" class="w-full" href="/recipe/{id}" data-sveltekit-preload-data="hover">{m["recipe.card.view"]()}</Button>
     </Card.Footer>
 </Card.Root>

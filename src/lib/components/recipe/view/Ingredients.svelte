@@ -1,5 +1,6 @@
 <script lang="ts">
     import * as Card from "$lib/components/ui/card/index.js";
+    import { m } from "$lib/paraglide/messages";
 
     const { servings, ingredients } = $props<{
         servings: number;
@@ -25,8 +26,8 @@
 <Card.Root class="w-full">
     <Card.Header class="flex items-center gap-4">
         <Card.Title class="flex flex-col gap-2">
-            <h1 class="text-lg font-bold">Zutaten</h1>
-            <p class="text-sm text-muted-foreground">Für {servings} Portionen</p>
+            <h1 class="text-lg font-bold">{m["recipe.common.ingredients"]()}</h1>
+            <p class="text-sm text-muted-foreground">{m["recipe.common.forServings"]({ count: servings })}</p>
         </Card.Title>
     </Card.Header>
 

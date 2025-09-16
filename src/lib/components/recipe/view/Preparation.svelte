@@ -3,6 +3,7 @@
     import { Label } from "$lib/components/ui/label/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
     import { Textarea } from "$lib/components/ui/textarea";
+    import { m } from "$lib/paraglide/messages";
     import {Plus} from "lucide-svelte";
 
     type StepParam = {
@@ -32,9 +33,9 @@
     <Card.Header class="flex items-center gap-4">
         <Card.Title class="flex flex-col gap-2">
             <h1 class="text-lg font-bold">
-                Zubereitung
+                {m["recipe.view.preparation.title"]()}
             </h1>
-            <p class="text-sm text-muted-foreground">Schritt für Schritt Anleitung</p>
+            <p class="text-sm text-muted-foreground">{m["recipe.view.preparation.subtitle"]()}</p>
         </Card.Title>
     </Card.Header>
     <Card.Content class="flex flex-col gap-6">

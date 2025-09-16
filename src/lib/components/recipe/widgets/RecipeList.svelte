@@ -4,6 +4,7 @@
     import RecipeCard from "$lib/components/recipe/widgets/RecipeCard.svelte";
     import type {Difficulty, Recipe} from "$lib/server/db/recipe";
     import {Button} from "$lib/components/ui/button";
+    import { m } from "$lib/paraglide/messages";
 
     type Props = {
         recipes: Recipe[];
@@ -43,13 +44,13 @@
 
 <div class="flex flex-col gap-4 p-4 mt-6">
     <h1 class="font-bold text-3xl mb-2">{title}</h1>
-    <Input type="search" placeholder="Search" class="flex justify-center" bind:value={search}/>
+    <Input type="search" placeholder={m["recipe.list.searchPlaceholder"]()} class="flex justify-center" bind:value={search}/>
 
     <div class="flex flex-wrap gap-2">
         <SelectComponent
                 options={difficultiesOptions}
-                placeholder="Select a difficulty"
-                groupLabel="Kategorien"
+                placeholder={m["recipe.list.difficultyPlaceholder"]()}
+                groupLabel={m["recipe.list.groupLabel"]()}
                 name="category"
                 class=""
                 bind:value={selectedDifficulty}
@@ -65,7 +66,7 @@
         {/if}
     </div>
     <div class="pt-6 pb-2">
-        <p class="text-muted-foreground">{filteredRecipes.length} Rezepte gefunden</p>
+        <p class="text-muted-foreground">{filteredRecipes.length} {m["recipe.list.results"]({ count: filteredRecipes.length })}</p>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 place-items-center">

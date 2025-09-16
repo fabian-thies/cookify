@@ -20,5 +20,122 @@
 		"haveAccount": "Already have an account?",
 		"signUp": "Sign up",
 		"signInLink": "Sign in"
+	},
+	"nav": {
+		"navigation": "Navigation",
+		"recipes": "Recipes",
+		"favorites": "Favorites",
+		"profile": "Profile",
+		"settings": "Settings",
+		"login": "Login"
+	},
+	"recipe": {
+		"common": {
+			"ingredients": "Ingredients",
+			"steps": "Steps",
+			"forServings": "Serves {count}",
+			"servingsCount": "{count} servings",
+			"duration": "{count} min",
+			"reviews": "{count} reviews",
+			"similar": "Similar recipes",
+			"difficulty": {
+				"easy": "Easy",
+				"medium": "Medium",
+				"hard": "Hard"
+			}
+		},
+		"list": {
+			"searchPlaceholder": "Search recipes",
+			"difficultyPlaceholder": "Select a difficulty",
+			"groupLabel": "Categories",
+			"results": "{count} recipes found"
+		},
+		"card": {
+			"view": "View recipe"
+		},
+		"view": {
+			"preparation": {
+				"title": "Preparation",
+				"subtitle": "Step-by-step instructions"
+			}
+		},
+		"form": {
+			"general": {
+				"title": "Basic information",
+				"nameLabel": "Recipe name",
+				"namePlaceholder": "e.g. Italian pasta carbonara",
+				"descriptionLabel": "Description",
+				"descriptionPlaceholder": "Briefly describe your recipe"
+			},
+			"ingredients": {
+				"title": "Ingredients",
+				"quantityLabel": "Quantity",
+				"quantityPlaceholder": "e.g. 500",
+				"unitLabel": "Unit",
+				"unitPlaceholder": "e.g. g, ml, pieces",
+				"nameLabel": "Ingredient",
+				"namePlaceholder": "e.g. pasta, eggs, bacon",
+				"addButton": "Add ingredient"
+			},
+			"steps": {
+				"title": "Steps",
+				"stepLabel": "Step",
+				"stepPlaceholder": "e.g. Peel and dice onions",
+				"addButton": "Add step"
+			},
+			"details": {
+				"title": "Recipe details",
+				"cookTimeLabel": "Cooking time (min)",
+				"cookTimePlaceholder": "e.g. 25",
+				"servingsLabel": "Servings",
+				"servingsPlaceholder": "e.g. 4",
+				"difficultyLabel": "Difficulty",
+				"difficultyPlaceholder": "Select difficulty",
+				"difficultyGroupLabel": "Difficulty",
+				"tagsLabel": "Tags",
+				"tagsPlaceholder": "Enter a tag and press Enter",
+				"previewLabel": "Cover image"
+			}
+		}
+	},
+	"routes": {
+		"home": {
+			"title": "Recipes"
+		},
+		"favorites": {
+			"title": "Favorites"
+		}
+	},
+	"actions": {
+		"share": "Share",
+		"save": "Save",
+		"edit": "Edit",
+		"saveRecipe": "Save recipe",
+		"showPreview": "Show preview"
+	},
+	"settings": {
+		"profile": {
+			"title": "Profile",
+			"description": "Manage your personal information",
+			"changeAvatar": "Change avatar",
+			"username": "Username",
+			"usernamePlaceholder": "e.g. johnsmith",
+			"email": "Email",
+			"emailPlaceholder": "e.g. max@example.com",
+			"changePassword": "Change password",
+			"newPassword": "New password",
+			"newPasswordPlaceholder": "Enter a new password",
+			"passwordStrength": {
+				"weak": "Weak - at least 6 characters",
+				"medium": "Medium - at least 10 characters recommended",
+				"strong": "Strong"
+			},
+			"confirmPassword": "Confirm password",
+			"match": "Matches",
+			"mismatch": "Does not match",
+			"confirmPasswordPlaceholder": "Repeat password",
+			"save": "Save profile",
+			"saved": "Successfully saved"
+		}
 	}
 }

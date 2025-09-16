@@ -3,6 +3,7 @@
     import Ingredients from "$lib/components/recipe/view/Ingredients.svelte";
     import Overview from "$lib/components/recipe/view/Overview.svelte";
     import SuggestedRecipes from "$lib/components/recipe/widgets/SuggestedRecipes.svelte";
+    import { m } from "$lib/paraglide/messages";
     import type { PageProps } from "./$types";
 
     const { data }: PageProps = $props();
@@ -21,4 +22,4 @@
     </div>
 </div>
 
-<SuggestedRecipes class="mt-12" title="Ähnliche Rezepte" />
+<SuggestedRecipes class="mt-12" title={m["recipe.common.similar"]()} />

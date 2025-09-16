@@ -5,6 +5,7 @@
     import * as Card from "$lib/components/ui/card/index.js";
     import {Minus, Plus} from "lucide-svelte";
     import {onMount} from "svelte";
+    import { m } from "$lib/paraglide/messages";
     import type {Ingredient} from "$lib/server/db/schema";
 
     const { recipe, ingredients: ingredientsProp = [] } = $props();
@@ -42,13 +43,13 @@
 {#snippet ingredientRow(item: IngredientLike, index: number)}
     <div class="flex flex-col md:flex-row gap-6">
         <div class="flex w-full flex-col gap-1.5">
-            <Label for="ingredients-{index}-amount">Menge</Label>
+            <Label for="ingredients-{index}-amount">{m["recipe.form.ingredients.quantityLabel"]()}</Label>
             <Input
                     type="number"
                     id="ingredients-{index}-amount"
                     name="ingredients_amount[]"
                     bind:value={item.quantity}
-                    placeholder="z.B. 500"
+                    placeholder={m["recipe.form.ingredients.quantityPlaceholder"]()}
                     required
             />
         </div>
@@ -59,7 +60,7 @@
                     id="ingredients-{index}-unit"
                     name="ingredients_unit[]"
                     bind:value={item.unit}
-                    placeholder="z.B. g, ml, Stück"
+                    placeholder={m["recipe.form.ingredients.unitPlaceholder"]()}
                     required
             />
         </div>
@@ -70,7 +71,7 @@
                     id="ingredients-{index}-ingredient"
                     name="ingredients_name[]"
                     bind:value={item.name}
-                    placeholder="z.B. Nudeln, Eier, Speck"
+                    placeholder={m["recipe.form.ingredients.namePlaceholder"]()}
                     required
             />
         </div>
@@ -92,7 +93,7 @@
 <Card.Root class="w-full">
     <Card.Header class="flex items-center gap-4">
         <Card.Title class="text-lg font-bold flex flex-row items-center gap-2">
-            Zutaten
+            {m["recipe.form.ingredients.title"]()}
         </Card.Title>
     </Card.Header>
     <Card.Content class="flex flex-col gap-6">
@@ -102,7 +103,7 @@
     </Card.Content>
     <Card.Footer>
         <Button type="button" variant="outline" class="w-full hover:cursor-pointer" onclick={addIngredient}>
-            <Plus />Zutat hinzufügen
+            <Plus />{m["recipe.form.ingredients.addButton"]()}
         </Button>
     </Card.Footer>
 </Card.Root>

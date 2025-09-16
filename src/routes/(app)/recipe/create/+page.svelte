@@ -4,6 +4,7 @@
     import Steps from "$lib/components/recipe/form/Steps.svelte";
     import Details from "$lib/components/recipe/form/Details.svelte";
     import {Button} from "$lib/components/ui/button/index.js";
+    import { m } from "$lib/paraglide/messages";
 
     const {form} = $props();
 </script>
@@ -21,10 +22,10 @@
                 <Details/>
                 <div class="flex flex-col gap-3 mt-6">
                     <Button type="submit" class="w-full">
-                        Rezept speichern
+                        {m["actions.saveRecipe"]()}
                     </Button>
                     <Button type="button" class="w-full" variant="outline" onclick={() => alert('Vorschau könnte hier geöffnet werden')}>
-                        Vorschau anzeigen
+                        {m["actions.showPreview"]()}
                     </Button>
                 </div>
             </div>

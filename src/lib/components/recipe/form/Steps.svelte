@@ -6,6 +6,7 @@
     import { Minus, Plus } from "lucide-svelte";
     import { onMount } from "svelte";
     import type { Step } from "$lib/server/db/schema";
+    import { m } from "$lib/paraglide/messages";
 
     const { steps: stepsProp = [] } = $props();
 
@@ -38,12 +39,12 @@
         </div>
 
         <div class="flex w-full flex-col gap-1.5">
-            <Label for="instructions-{index}-description">Schritt</Label>
+            <Label for="instructions-{index}-description">{m["recipe.form.steps.stepLabel"]()}</Label>
             <Textarea
                     id="instructions-{index}-description"
                     name="instructions_description[]"
                     bind:value={item.step}
-                    placeholder="z.B. Zwiebeln schälen und würfeln"
+                    placeholder={m["recipe.form.steps.stepPlaceholder"]()}
                     required
             />
             <input type="hidden" name="instructions_step[]" value={item.number} />
@@ -67,7 +68,7 @@
 <Card.Root class="w-full">
     <Card.Header class="flex items-center gap-4">
         <Card.Title class="text-lg font-bold flex flex-row items-center gap-2">
-            Schritte
+            {m["recipe.form.steps.title"]()}
         </Card.Title>
     </Card.Header>
 
@@ -84,7 +85,7 @@
                 class="w-full hover:cursor-pointer"
                 onclick={addStep}
         >
-            <Plus />Schritt hinzufügen
+            <Plus />{m["recipe.form.steps.addButton"]()}
         </Button>
     </Card.Footer>
 </Card.Root>

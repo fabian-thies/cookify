@@ -1,6 +1,7 @@
 <script lang="ts">
     import type {PageProps} from "./$types";
     import RecipeList from "$lib/components/recipe/widgets/RecipeList.svelte";
+    import { m } from "$lib/paraglide/messages";
 
     const { data }: PageProps = $props();
 
@@ -8,4 +9,4 @@
     const difficulties = data.difficulties;
 </script>
 
-<RecipeList {recipes} {difficulties} title="Rezepte"/>
+<RecipeList {recipes} {difficulties} title={m["routes.home.title"]()}/>

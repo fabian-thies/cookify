@@ -2,6 +2,7 @@
     import { Label } from "$lib/components/ui/label/index.js";
     import { Input } from "$lib/components/ui/input/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
+    import { m } from "$lib/paraglide/messages";
     import {Clock, Users, X} from "lucide-svelte";
     import SelectComponent from "$lib/components/ui/select/SelectComponent.svelte";
     import {Badge} from "$lib/components/ui/badge";
@@ -9,9 +10,9 @@
     const { recipe } = $props();
 
     const difficulties = [
-        { value: "easy", label: "Einfach" },
-        { value: "medium", label: "Mittel" },
-        { value: "hard", label: "Schwierig" }
+        { value: "easy", label: m["recipe.common.difficulty.easy"]() },
+        { value: "medium", label: m["recipe.common.difficulty.medium"]() },
+        { value: "hard", label: m["recipe.common.difficulty.hard"]() }
     ];
 
     type TagLike = { name: string };
@@ -43,35 +44,35 @@
 <Card.Root class="w-full b">
     <Card.Header class="flex items-center gap-4">
         <Card.Title class="text-lg font-bold flex flex-row items-center gap-2">
-            Rezept-Details
+            {m["recipe.form.details.title"]()}
         </Card.Title>
     </Card.Header>
     <Card.Content class="flex flex-col gap-6">
         <div class="flex w-full flex-col gap-1.5">
-            <Label for="cookTime"><Clock size={18}/> Kochzeit (Min.)</Label>
-            <Input type="number" id="cookTime" name="cookTime" min="0" placeholder="z.B. 25" required value={recipe?.cookingTime || ''}/>
+            <Label for="cookTime"><Clock size={18}/> {m["recipe.form.details.cookTimeLabel"]()}</Label>
+            <Input type="number" id="cookTime" name="cookTime" min="0" placeholder={m["recipe.form.details.cookTimePlaceholder"]()} required value={recipe?.cookingTime || ''}/>
         </div>
         <div class="flex w-full flex-col gap-1.5">
-            <Label for="servings"><Users size={18}/> Portionen</Label>
-            <Input type="number" id="servings" name="servings" min="1" placeholder="z.B. 4" required value={recipe?.servings || ''}/>
+            <Label for="servings"><Users size={18}/> {m["recipe.form.details.servingsLabel"]()}</Label>
+            <Input type="number" id="servings" name="servings" min="1" placeholder={m["recipe.form.details.servingsPlaceholder"]()} required value={recipe?.servings || ''}/>
         </div>
         <div class="flex w-full flex-col gap-1.5">
-            <Label for="difficulty">Schwierigkeitsgrad</Label>
+            <Label for="difficulty">{m["recipe.form.details.difficultyGroupLabel"]()}</Label>
             <SelectComponent
                     id="difficulty"
                     name="difficulty"
                     options={difficulties}
-                    placeholder="Wähle Schwierigkeitsgrad"
-                    groupLabel="Schwierigkeitsgrad"
+                    placeholder={m["recipe.form.details.difficultyPlaceholder"]()}
+                    groupLabel={m["recipe.form.details.difficultyGroupLabel"]()}
                     class="w-full" value={recipe?.difficulty.toLowerCase() || ''}/>
         </div>
         <div class="flex w-full flex-col gap-1.5">
-            <Label for="tagInput">Schlagwörter</Label>
+            <Label for="tagInput">{m["recipe.form.details.tagsLabel"]()}</Label>
             <Input
                     bind:value={tagInput}
                     id="tagInput"
                     onkeydown={handleKeydown}
-                    placeholder="Tag eingeben und Enter drücken"
+                    placeholder={m["recipe.form.details.tagsPlaceholder"]()}
                     type="text"
             />
             {#if tags.length > 0}
@@ -87,7 +88,7 @@
             {/if}
         </div>
         <div class="flex w-full flex-col gap-1.5">
-            <Label for="picture">Vorschaubild</Label>
+            <Label for="picture">{m["recipe.form.details.previewLabel"]()}</Label>
             <Input id="picture" type="file" accept="image/*" name="picture" required={!recipe}/>
         </div>
     </Card.Content>
