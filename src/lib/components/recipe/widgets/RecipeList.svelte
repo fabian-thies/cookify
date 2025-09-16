@@ -3,6 +3,7 @@
     import SelectComponent from "$lib/components/ui/select/SelectComponent.svelte";
     import RecipeCard from "$lib/components/recipe/widgets/RecipeCard.svelte";
     import type {Difficulty, Recipe} from "$lib/server/db/recipe";
+    import {Button} from "$lib/components/ui/button";
 
     type Props = {
         recipes: Recipe[];
@@ -14,6 +15,7 @@
 
     let search = $state("");
     let selectedDifficulty = $state("");
+    let filterActive = $derived(!!search || !!selectedDifficulty);
 
     const filteredRecipes = $derived.by(() => {
         return recipes.filter(recipe => {
@@ -27,6 +29,11 @@
             return matchesSearch && matchesDifficulty;
         });
     });
+
+    const clearFilters = () => {
+        search = "";
+        selectedDifficulty = "";
+    };
 
     const difficultiesOptions = difficulties.map(difficulty => ({
         value: difficulty.difficulty,
@@ -47,6 +54,15 @@
                 class=""
                 bind:value={selectedDifficulty}
         />
+        {#if filterActive}
+            <Button
+                    class="btn btn-outline btn-secondary"
+                    onclick={clearFilters}
+                    variant="outline"
+            >
+                Clear Filters
+            </Button>
+        {/if}
     </div>
     <div class="pt-6 pb-2">
         <p class="text-muted-foreground">{filteredRecipes.length} Rezepte gefunden</p>

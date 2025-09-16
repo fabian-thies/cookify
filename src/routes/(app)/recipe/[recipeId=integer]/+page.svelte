@@ -12,7 +12,6 @@
 </script>
 
 <Overview {...recipe} userId={recipe.userId} recipeOwner={recipeOwner}/>
-
 <div class="grid lg:grid-cols-3 gap-8">
     <div class="lg:col-span-1">
         <Ingredients servings={recipe.servings} ingredients={recipe.ingredients} />
