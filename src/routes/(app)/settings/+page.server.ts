@@ -2,6 +2,7 @@ import type {RequestEvent} from "@sveltejs/kit";
 import {fail} from "@sveltejs/kit";
 import * as v from 'valibot';
 import {saveProfile} from "$lib/server/db/user";
+import {saveImage} from "$lib/server/utils";
 
 const ProfileSchema = v.object({
     username: v.string(),
@@ -25,10 +26,18 @@ export const actions = {
             return fail(400, {invalid: true});
         }
 
-        const avatar = String(formData.get("avatar"));
+        const avatarInput = formData.get("avatar");
+        let avatarUrl: string = locals.user.avatar ?? "";
 
-        await saveProfile(locals.user.id, parsed.username, parsed.email, avatar);
+        if(avatarInput && avatarInput instanceof File && avatarInput.size > 0) {
+            try {
+                avatarUrl = await saveImage(avatarInput);
+            } catch (e) {
+                console.error("Avatar upload failed", e);
+                return fail(500, {internalError: true, avatarUploadFailed: true});
+            }
+        }
 
-        return {success: true};
+        await saveProfile(locals.user.id, parsed.username, parsed.email, avatarUrl);
     }
 };

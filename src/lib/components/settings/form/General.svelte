@@ -8,6 +8,18 @@
     import {Camera} from "lucide-svelte";
 
     const {user}: { user: PublicUser } = $props();
+
+    let fileInput: HTMLInputElement;
+    let selectedFile = $state<File | null>(null);
+
+    let previewUrl = $derived(
+        selectedFile ? URL.createObjectURL(selectedFile) : null
+    );
+
+    function handleAvatarChange(event: Event) {
+        const files = (event.target as HTMLInputElement).files;
+        selectedFile = files?.[0] ?? null;
+    }
 </script>
 
 <Card.Root class="w-full">
@@ -19,10 +31,19 @@
         <div class="flex flex-col gap-6">
             <div class="flex items-center gap-6">
                 <Avatar.Root class="cursor-pointer h-8 w-8 md:h-10 md:w-10 lg:h-24 lg:w-24">
-                    <Avatar.Image src={user.avatar}/>
+                    <Avatar.Image src={previewUrl ?? user.avatar}/>
                     <Avatar.Fallback>{user.username.slice(0, 2)}</Avatar.Fallback>
                 </Avatar.Root>
-                <Button variant="outline" class="flex items-center gap-2">
+                <input
+                        bind:this={fileInput}
+                        id="avatar"
+                        class="hidden"
+                        type="file"
+                        accept="image/*"
+                        name="avatar"
+                        onchange={handleAvatarChange}
+                />
+                <Button variant="outline" class="flex items-center gap-2" onclick={() => fileInput.click()}>
                     <Camera/>
                     Avatar ändern
                 </Button>

@@ -6,9 +6,9 @@
     import {Button} from "$lib/components/ui/button";
     import {Menu} from "lucide-svelte";
     import type {PublicUser} from "$lib/server/db/schema";
-    import {Separator} from "$lib/components/ui/separator";
 
     let isOpen = $state(false);
+
 
     const { user }: { user: PublicUser } = $props();
 </script>
@@ -40,9 +40,7 @@
         <!-- Mobile Menu Button -->
         <Sheet.Root bind:open={isOpen}>
             <Sheet.Trigger class="md:hidden">
-                <Button variant="ghost" size="icon">
-                    <Menu class="h-5 w-5" />
-                </Button>
+                <Menu class="h-5 w-5" />
             </Sheet.Trigger>
             <Sheet.Content side="left" class="w-80">
                 <Sheet.Header>
@@ -63,7 +61,7 @@
                         Einstellungen
                     </a>
                     <form method="post" action="/logout" class="mt-4 text-destructive">
-                        <Button type="submit" variant="outline" class="w-full">
+                        <Button type="submit" variant="outline" class="w-full hover:cursor-pointer">
                             Logout
                         </Button>
                     </form>
@@ -74,20 +72,20 @@
         <!-- User Avatar Dropdown -->
         {#if user}
             <DropdownMenu.Root>
-                <DropdownMenu.Trigger class="hidden md:block">
-                    <Avatar.Root class="cursor-pointer h-8 w-8 md:h-10 md:w-10">
+                        <Avatar.Image src={user.avatar}/>
+                        <Avatar.Fallback>{(user.username).slice(0, 2)}</Avatar.Fallback>
                         <Avatar.Image src={user.avatar}/>
                         <Avatar.Fallback>{(user.username).slice(0, 2)}</Avatar.Fallback>
                     </Avatar.Root>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content align="end" sideOffset={8} class="w-56 hidden md:block">
                     <DropdownMenu.Label class="font-normal">
-                        <div class="flex items-center gap-2">
-                            <Avatar.Root class="h-8 w-8">
                                 <Avatar.Image src={user.avatar} alt=""/>
                                 <Avatar.Fallback>{(user.username).slice(0, 2)}</Avatar.Fallback>
-                            </Avatar.Root>
-                            <div class="grid gap-0.5">
+                                <Avatar.Image src={user.avatar} alt=""/>
+                                <Avatar.Fallback>{(user.username).slice(0, 2)}</Avatar.Fallback>
+                                <p class="text-sm font-medium leading-none">{user.username}</p>
+                                <p class="text-xs text-muted-foreground">{user.email}</p>
                                 <p class="text-sm font-medium leading-none">{user.username}</p>
                                 <p class="text-xs text-muted-foreground">{user.email}</p>
                             </div>
