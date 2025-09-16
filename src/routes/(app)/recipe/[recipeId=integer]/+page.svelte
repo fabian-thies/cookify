@@ -2,7 +2,7 @@
     import Preparation from "$lib/components/recipe/view/Preparation.svelte";
     import Ingredients from "$lib/components/recipe/view/Ingredients.svelte";
     import Overview from "$lib/components/recipe/view/Overview.svelte";
-    import SuggestedRecipes from "$lib/components/recipe/widgets/SuggestedRecipes.svelte";
+    import RecipeCarousel from "$lib/components/recipe/widgets/RecipeCarousel.svelte";
     import { m } from "$lib/paraglide/messages";
     import type { PageProps } from "./$types";
 
@@ -22,4 +22,4 @@
     </div>
 </div>
 
-<SuggestedRecipes class="mt-12" title={m["recipe.common.similar"]()} />
+<RecipeCarousel class="mt-12" title={m["recipe.common.similar"]()} />
