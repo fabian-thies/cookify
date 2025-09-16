@@ -31,15 +31,24 @@
         });
     });
 
+    const difficultyLabel = {
+        easy: () => m["recipe.common.difficulty.easy"](),
+        medium: () => m["recipe.common.difficulty.medium"](),
+        hard: () => m["recipe.common.difficulty.hard"]()
+    } as const;
+
+    const difficultiesOptions = difficulties.map(difficulty => {
+        const key = difficulty.difficulty.toLowerCase() as keyof typeof difficultyLabel;
+        return {
+            value: difficulty.difficulty,
+            label: difficultyLabel[key]?.() ?? difficulty.difficulty
+        };
+    });
+
     const clearFilters = () => {
         search = "";
         selectedDifficulty = "";
     };
-
-    const difficultiesOptions = difficulties.map(difficulty => ({
-        value: difficulty.difficulty,
-        label: difficulty.difficulty
-    }));
 </script>
 
 <div class="flex flex-col gap-4 p-4 mt-6">
