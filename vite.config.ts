@@ -11,5 +11,8 @@ export default defineConfig({
 			project: './project.inlang',
 			outdir: './src/lib/paraglide'
 		})
-	]
+	],
+	optimizeDeps: {
+		exclude: ['@node-rs/argon2', '@node-rs/argon2-wasm32-wasi']
+	}
 });
