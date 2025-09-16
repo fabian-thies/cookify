@@ -75,7 +75,7 @@
         {/if}
     </div>
     <div class="pt-6 pb-2">
-        <p class="text-muted-foreground">{filteredRecipes.length} {m["recipe.list.results"]({ count: filteredRecipes.length })}</p>
+        <p class="text-muted-foreground">{m["recipe.list.results"]({ count: filteredRecipes.length })}</p>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 place-items-center">
