@@ -5,7 +5,7 @@
 
 	let { children, data } = $props();
 
-    const user = data.user;
+    const user = $derived(data.user);
 </script>
 
 <NavBar {user}/>

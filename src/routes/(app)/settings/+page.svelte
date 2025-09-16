@@ -3,10 +3,9 @@
     import {invalidateAll} from '$app/navigation';
     import General from "$lib/components/settings/form/General.svelte";
     import {toast} from "svelte-sonner";
-    import {onMount} from "svelte";
     const { data } = $props();
 
-    const user = data.user;
+    const user = $derived(data.user);
 </script>
 <form
         action="?/save"
