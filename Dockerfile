@@ -8,8 +8,6 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 FROM deps AS build
-ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
 COPY . .
 RUN npm run build
 
@@ -18,7 +16,6 @@ RUN npm prune --omit=dev
 
 FROM node:20-bullseye-slim AS runner
 WORKDIR /app
-ENV NODE_ENV=production
 ENV PORT=3000
 
 COPY --from=production-deps /app/node_modules ./node_modules
