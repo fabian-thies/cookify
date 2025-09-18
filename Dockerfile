@@ -3,9 +3,6 @@
 FROM node:20-bullseye-slim AS base
 WORKDIR /app
 
-ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
-
 FROM base AS deps
 COPY package.json package-lock.json ./
 RUN npm ci
