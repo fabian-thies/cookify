@@ -25,8 +25,8 @@ services:
       args:
         - DATABASE_URL
     environment:
-      NODE_ENV: production
-      PORT: 3000
+      NODE_ENV: "production"
+      PORT: "3000"
       DATABASE_URL: ${DATABASE_URL}
     depends_on:
       db:
