@@ -3,7 +3,7 @@ import {encodeBase32LowerCase} from '@oslojs/encoding';
 import {type Actions, fail, redirect} from '@sveltejs/kit';
 import {eq} from 'drizzle-orm';
 import * as auth from '$lib/server/auth';
-import {db} from '$lib/server/db';
+import {getDb} from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
 import type {PageServerLoad} from "./$types";
 import {validateEmail, validatePassword, validateUsername} from "$lib/utils";
@@ -18,22 +18,23 @@ export const load: PageServerLoad = async (event) => {
 };
 
 export const actions: Actions = {
-	login: async (event) => {
-		const formData = await event.request.formData();
-		const username = formData.get('username');
-		const password = formData.get('password');
-		const redirectTo = formData.get('redirectTo');
+        login: async (event) => {
+                const formData = await event.request.formData();
+                const username = formData.get('username');
+                const password = formData.get('password');
+                const redirectTo = formData.get('redirectTo');
 
-		if (!validateUsername(username)) {
-			return fail(400, { message: 'Invalid username (min 3, max 31 characters, alphanumeric only)' });
-		}
-		if (!validatePassword(password)) {
-			return fail(400, { message: 'Invalid password (min 6, max 255 characters)' });
-		}
+                if (!validateUsername(username)) {
+                        return fail(400, { message: 'Invalid username (min 3, max 31 characters, alphanumeric only)' });
+                }
+                if (!validatePassword(password)) {
+                        return fail(400, { message: 'Invalid password (min 6, max 255 characters)' });
+                }
 
-		const results = await db
-			.select()
-			.from(table.user)
+                const db = getDb();
+                const results = await db
+                        .select()
+                        .from(table.user)
 			.where(eq(table.user.username, username));
 
 		const existingUser = results.at(0);
@@ -78,15 +79,16 @@ export const actions: Actions = {
 		if (password != confirmPassword) {
 			return fail(400, { message: 'Passwords do not match'})
 		}
-		if (!validateEmail(email)) {
-			return fail(400, {message: 'Invalid email'})
-		}
+                if (!validateEmail(email)) {
+                        return fail(400, {message: 'Invalid email'})
+                }
 
-		const userId = generateUserId();
-		const passwordHash = await hashPassword(password);
+                const userId = generateUserId();
+                const passwordHash = await hashPassword(password);
+                const db = getDb();
 
-		try {
-			await db.insert(table.user).values({id: userId, username, passwordHash, email});
+                try {
+                        await db.insert(table.user).values({id: userId, username, passwordHash, email});
 
 			const sessionToken = auth.generateSessionToken();
 			const session = await auth.createSession(sessionToken, userId);
