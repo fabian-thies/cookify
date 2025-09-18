@@ -19,10 +19,13 @@ WORKDIR /app
 ENV PORT=3000
 
 COPY --from=production-deps /app/node_modules ./node_modules
-COPY --from=build /app/package.json ./package.json
-COPY --from=build /app/package-lock.json ./package-lock.json
+COPY --from=build /app/package.json ./
 COPY --from=build /app/build ./build
+COPY --from=build /app/scripts ./scripts
+COPY --from=build /app/drizzle ./drizzle
+
+RUN npm i --no-save tsx
 
 EXPOSE 3000
 
-CMD ["node", "build/index.js"]
+CMD ["sh", "-c", "tsx scripts/migrate.ts && node build/index.js"]
