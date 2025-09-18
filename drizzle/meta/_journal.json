@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1756935568204,
-      "tag": "0000_seed-difficulties",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1758226802621,
-      "tag": "0001_worried_avengers",
+      "when": 1758233738562,
+      "tag": "0000_init",
       "breakpoints": true
     }
   ]
