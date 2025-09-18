@@ -1,14 +1,39 @@
+version: "3.9"
+
 services:
   db:
     image: postgres
     restart: always
     ports:
       - "5432:5432"
-    environment: 
+    environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: RF8hRZD2jb03X8z5f1Xr3SJ7oUJBatJ0uMB2AmgcTvtN00UHBi
       POSTGRES_DB: local
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB -h 127.0.0.1"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - DATABASE_URL
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: ${DATABASE_URL}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
 volumes:
   pgdata:
