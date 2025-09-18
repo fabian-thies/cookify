@@ -26,6 +26,7 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       NODE_ENV: ${NODE_ENV}
       PORT: ${PORT}
+      ORIGIN: ${ORIGIN}
     depends_on:
       db:
         condition: service_healthy
