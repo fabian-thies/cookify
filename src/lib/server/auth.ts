@@ -2,7 +2,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { sha256 } from '@oslojs/crypto/sha2';
 import { encodeBase64url, encodeHexLowerCase } from '@oslojs/encoding';
-import { db } from '$lib/server/db';
+import { getDb } from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
@@ -16,21 +16,23 @@ export function generateSessionToken() {
 }
 
 export async function createSession(token: string, userId: string) {
-	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
-	const session: table.Session = {
-		id: sessionId,
-		userId,
-		expiresAt: new Date(Date.now() + DAY_IN_MS * 30)
-	};
-	await db.insert(table.session).values(session);
-	return session;
+        const db = getDb();
+        const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+        const session: table.Session = {
+                id: sessionId,
+                userId,
+                expiresAt: new Date(Date.now() + DAY_IN_MS * 30)
+        };
+        await db.insert(table.session).values(session);
+        return session;
 }
 
 export async function validateSessionToken(token: string) {
-	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
-	const [result] = await db
-		.select({
-			// Adjust user table here to tweak returned data
+        const db = getDb();
+        const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+        const [result] = await db
+                .select({
+                        // Adjust user table here to tweak returned data
 			user: { id: table.user.id, username: table.user.username, email: table.user.email, avatar: table.user.avatar, age: table.user.age},
 			session: table.session
 		})
@@ -64,7 +66,8 @@ export async function validateSessionToken(token: string) {
 export type SessionValidationResult = Awaited<ReturnType<typeof validateSessionToken>>;
 
 export async function invalidateSession(sessionId: string) {
-	await db.delete(table.session).where(eq(table.session.id, sessionId));
+        const db = getDb();
+        await db.delete(table.session).where(eq(table.session.id, sessionId));
 }
 
 export function setSessionTokenCookie(event: RequestEvent, token: string, expiresAt: Date) {

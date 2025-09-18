@@ -1,4 +1,4 @@
-import {db} from "$lib/server/db/index";
+import {getDb} from "$lib/server/db/index";
 import {
     difficulty,
     difficultyToRecipe,
@@ -24,6 +24,7 @@ export async function createRecipe({
                                        tags,
                                        image
                                    }: CreateRecipeInput) {
+    const db = getDb();
     const result = await db.insert(recipes).values({
         title,
         description,
@@ -77,6 +78,7 @@ export async function updateRecipe({
                                        tags,
                                        image
                                    }: UpdateRecipeInput) {
+    const db = getDb();
     await db.update(recipes)
         .set({
             title,
@@ -126,6 +128,7 @@ export async function updateRecipe({
 }
 
 export async function getRecipes() {
+    const db = getDb();
     return db.select({
         ...getTableColumns(recipes),
         difficulty: difficulty.difficulty,
@@ -136,6 +139,7 @@ export async function getRecipes() {
 }
 
 export async function getFavoriteRecipes() {
+    const db = getDb();
     return db.select({
         ...getTableColumns(recipes),
         difficulty: difficulty.difficulty,
@@ -148,6 +152,7 @@ export async function getFavoriteRecipes() {
 }
 
 export async function getRecipeById(id: number) {
+    const db = getDb();
     const result = await db
         .select({
             ...getTableColumns(recipes),
@@ -162,6 +167,7 @@ export async function getRecipeById(id: number) {
 }
 
 export async function getRecipeFavoriteState(userId: string, recipeId: number) {
+    const db = getDb();
     const rows = await db
         .select({ favorite: favorite.favorite })
         .from(favorite)
@@ -171,22 +177,27 @@ export async function getRecipeFavoriteState(userId: string, recipeId: number) {
 }
 
 export async function getSteps(recipeId: number) {
+    const db = getDb();
     return db.select(getTableColumns(steps)).from(steps).where(eq(steps.recipeId, recipeId));
 }
 
 export async function getIngredients(recipeId: number) {
+    const db = getDb();
     return db.select(getTableColumns(ingredients)).from(ingredients).where(eq(ingredients.recipeId, recipeId));
 }
 
 export async function getTags(recipeId: number) {
+    const db = getDb();
     return db.select(getTableColumns(tagsTable)).from(tagsTable).where(eq(tagsTable.recipeId, recipeId));
 }
 
 export async function getDifficulties() {
+    const db = getDb();
     return db.select().from(difficulty).orderBy(difficulty.id);
 }
 
 export async function toggleRecipeFavorite(userId: string, recipeId: number) {
+    const db = getDb();
     return db.insert(favorite)
         .values({
             recipeId,
