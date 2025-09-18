@@ -28,4 +28,4 @@ RUN npm i --no-save tsx
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "tsx scripts/migrate.ts && node build/index.js"]
+CMD ["sh", "-c", "npx tsx scripts/migrate.ts && node build/index.js"]
