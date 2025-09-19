@@ -115,7 +115,8 @@
 		"save": "Save",
 		"edit": "Edit",
 		"saveRecipe": "Save recipe",
-		"showPreview": "Show preview"
+		"showPreview": "Show preview",
+		"error": "An error occurred. Please try again."
 	},
 	"settings": {
 		"profile": {

@@ -115,7 +115,8 @@
 		"save": "Speichern",
 		"edit": "Bearbeiten",
 		"saveRecipe": "Rezept speichern",
-		"showPreview": "Vorschau anzeigen"
+		"showPreview": "Vorschau anzeigen",
+		"error": "Etwas ist schief gelaufen. Bitte versuchen Sie es erneut."
 	},
 	"settings": {
 		"profile": {
