@@ -39,7 +39,7 @@ export const getDifficultyId = (difficulty: string): number => {
     }
 }
 
-const uploadDir = path.join(process.cwd(), 'static', 'uploads');
+const uploadDir = path.join(process.cwd(), 'uploads');
 
 function extFromMime(mime: string) {
     if (!mime) return '';

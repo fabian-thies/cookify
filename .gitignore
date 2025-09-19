@@ -30,4 +30,4 @@ project.inlang/cache/*
 
 .idea
 
-static/uploads/*
+uploads/*
