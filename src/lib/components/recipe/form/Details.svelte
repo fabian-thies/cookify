@@ -16,8 +16,11 @@
     ];
 
     type TagLike = { name: string };
+
     let tagInput = $state("");
     let tags = $state<string[]>(recipe?.tags?.map((t: TagLike) => t.name) ?? []);
+    let coverFile = $state<FileList | undefined>(undefined);
+    let previewUrl = $state<string>("");
 
     const addTag = () => {
         const value = tagInput.trim();
@@ -39,6 +42,22 @@
             tags = tags.slice(0, -1);
         }
     };
+
+    // Handle image preview
+    $effect(() => {
+        if (coverFile && coverFile.length > 0) {
+            const file = coverFile[0];
+            previewUrl = URL.createObjectURL(file);
+        } else {
+            previewUrl = "";
+        }
+
+        return () => {
+            if (previewUrl) {
+                URL.revokeObjectURL(previewUrl);
+            }
+        };
+    });
 </script>
 
 <Card.Root class="w-full b">
@@ -88,8 +107,17 @@
             {/if}
         </div>
         <div class="flex w-full flex-col gap-1.5">
-            <Label for="picture">{m["recipe.form.details.previewLabel"]()}</Label>
-            <Input id="picture" type="file" accept="image/*" name="picture" required={!recipe}/>
+            <div class="flex items-start gap-4">
+                {#if previewUrl}
+                    <div class="flex-shrink-0">
+                        <img src={previewUrl} alt="Preview" class="w-16 h-16 object-cover rounded-md border border-border">
+                    </div>
+                {/if}
+                <div class="flex-1 flex flex-col gap-1.5">
+                    <Label for="picture">{m["recipe.form.details.previewLabel"]()}</Label>
+                    <Input id="picture" type="file" accept="image/*" name="picture" required={!recipe} bind:files={coverFile}/>
+                </div>
+            </div>
         </div>
     </Card.Content>
 </Card.Root>
