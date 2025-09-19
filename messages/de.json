@@ -135,7 +135,8 @@
 			"mismatch": "Stimmt nicht überein",
 			"confirmPasswordPlaceholder": "Passwort wiederholen",
 			"save": "Profil speichern",
-			"saved": "Erfolgreich gespeichert"
+			"saved": "Erfolgreich gespeichert",
+			"error": "Fehler beim Speichern, bitte versuchen Sie es erneut."
 		}
 	}
 }

@@ -18,6 +18,8 @@
                 await invalidateAll();
 
                 toast.success(m["settings.profile.saved"]());
+            } else {
+                toast.error(m["settings.profile.error"]());
             }
         }}}>
 

@@ -135,7 +135,8 @@
 			"mismatch": "Does not match",
 			"confirmPasswordPlaceholder": "Repeat password",
 			"save": "Save profile",
-			"saved": "Successfully saved"
+			"saved": "Successfully saved",
+			"error": "An error occurred. Please try again."
 		}
 	}
 }
