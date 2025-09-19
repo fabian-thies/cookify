@@ -48,7 +48,10 @@ function extFromMime(mime: string) {
     if (mime === 'image/png') return '.png';
     if (mime === 'image/webp') return '.webp';
     if (mime === 'image/gif') return '.gif';
-    if (mime === 'image/heic' || mime === 'image/heif') return '.heic';
+    if (mime === 'image/heic') return '.heic';
+    if (mime === 'image/heif') return '.heif';
+    if (mime === 'image/heic-sequence') return '.heics';
+    if (mime === 'image/heif-sequence') return '.heifs';
     return '';
 }
 

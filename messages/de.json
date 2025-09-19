@@ -96,7 +96,11 @@
 				"tagsPlaceholder": "Tag eingeben und Enter drücken",
 				"previewLabel": "Vorschaubild"
 			}
-		}
+		},
+		"saveSuccess": "Rezept erfolgreich gespeichert!",
+		"saveError": "Fehler beim Speichern des Rezepts.",
+		"createSuccess": "Rezept erfolgreich erstellt!",
+		"createError": "Fehler beim Erstellen des Rezepts."
 	},
 	"routes": {
 		"home": {

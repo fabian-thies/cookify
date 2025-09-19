@@ -42,7 +42,7 @@ export const actions = {
 
         let imageUrl: string;
         if (picture && picture.size > 0) {
-            if (picture.size > 5 * 1024 * 1024) {
+            if (picture.size > 15 * 1024 * 1024) {
                 return fail(400, { invalid: true, pictureTooLarge: true });
             }
             try {
@@ -68,6 +68,9 @@ export const actions = {
             return fail(500, {internalError: true});
         }
 
-        throw redirect(302, '/recipe/' + params.recipeId);
+        return {
+            success: true,
+            id: params.recipeId
+        };
     }
 } satisfies Actions;

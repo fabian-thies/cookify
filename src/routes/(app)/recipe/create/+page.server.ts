@@ -11,7 +11,7 @@ export const actions = {
         if (!picture || picture.size === 0) {
             return fail(400, { invalid: true, pictureMissing: true });
         }
-        if (picture.size > 5 * 1024 * 1024) {
+        if (picture.size > 15 * 1024 * 1024) {
             return fail(400, { invalid: true, pictureTooLarge: true });
         }
 
@@ -44,6 +44,11 @@ export const actions = {
             return fail(500, {internalError: true});
         }
 
-        throw redirect(302, '/recipe/' + recipeId[0].id);
+        console.log(recipeId)
+
+        return {
+            success: true,
+            id: recipeId[0].id,
+        }
     }
 } satisfies Actions;

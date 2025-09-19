@@ -96,7 +96,11 @@
 				"tagsPlaceholder": "Enter a tag and press Enter",
 				"previewLabel": "Cover image"
 			}
-		}
+		},
+		"saveSuccess": "Recipe saved successfully!",
+		"saveError": "Error saving recipe.",
+		"createSuccess": "Recipe created successfully!",
+		"createError": "Error creating recipe."
 	},
 	"routes": {
 		"home": {
