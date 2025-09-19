@@ -25,6 +25,10 @@
         selectedFile = files?.[0] ?? null;
     }
 
+    function openAvatarPicker() {
+        fileInput?.click();
+    }
+
     let password = $state('');
     let passwordConfirm = $state('');
 
@@ -45,20 +49,34 @@
     <Card.Content>
         <div class="flex flex-col gap-6">
             <div class="flex items-center gap-6">
-                <Avatar.Root class="cursor-pointer h-8 w-8 md:h-10 md:w-10 lg:h-24 lg:w-24">
-                    <Avatar.Image src={previewUrl ?? user.avatar}/>
-                    <Avatar.Fallback>{user.username.slice(0, 2)}</Avatar.Fallback>
-                </Avatar.Root>
+                <button
+                        type="button"
+                        class="inline-flex rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                        onclick={openAvatarPicker}
+                        aria-controls="avatar"
+                        aria-label={m["settings.profile.changeAvatar"]()}
+                >
+                    <Avatar.Root class="cursor-pointer h-8 w-8 md:h-10 md:w-10 lg:h-24 lg:w-24">
+                        <Avatar.Image src={previewUrl ?? user.avatar}/>
+                        <Avatar.Fallback>{user.username.slice(0, 2)}</Avatar.Fallback>
+                    </Avatar.Root>
+                </button>
                 <input
                         bind:this={fileInput}
                         id="avatar"
-                        class="hidden"
+                        class="sr-only"
                         type="file"
                         accept="image/*"
                         name="avatar"
                         onchange={handleAvatarChange}
                 />
-                <Button variant="outline" class="flex items-center gap-2" onclick={() => fileInput.click()}>
+                <Button
+                        type="button"
+                        variant="outline"
+                        class="flex items-center gap-2"
+                        onclick={openAvatarPicker}
+                        aria-controls="avatar"
+                >
                     <Camera size={16}/>
                     {m["settings.profile.changeAvatar"]()}
                 </Button>
