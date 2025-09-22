@@ -27,7 +27,8 @@
 		"favorites": "Favorites",
 		"profile": "Profile",
 		"settings": "Settings",
-		"login": "Login"
+		"login": "Login",
+		"create": "Create Recipe"
 	},
 	"recipe": {
 		"common": {

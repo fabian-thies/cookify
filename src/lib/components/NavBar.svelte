@@ -4,7 +4,7 @@
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
     import * as Sheet from "$lib/components/ui/sheet";
     import {Button} from "$lib/components/ui/button";
-    import {Menu} from "lucide-svelte";
+    import {Menu, Plus} from "lucide-svelte";
     import type {PublicUser} from "$lib/server/db/schema";
     import { m } from "$lib/paraglide/messages.js";
     import {Separator} from "$lib/components/ui/separator";
@@ -54,6 +54,9 @@
                     <a href="/favorites" onclick={() => isOpen = false}>
                         {m["nav.favorites"]()}
                     </a>
+                    <a href="/recipe/create" onclick={() => isOpen = false}>
+                        {m["nav.create"]()}
+                    </a>
                     <Separator />
                     <a href="/profile/{user.id}" onclick={() => isOpen = false}>
                         {m["nav.profile"]()}
@@ -72,6 +75,11 @@
 
         <!-- User Avatar Dropdown -->
         {#if user}
+            <a href="/recipe/create" class="hidden md:inline-block">
+                <Button variant="outline" class="mr-2">
+                    <Plus class="h-4 w-4 mr-2" />{m["nav.create"]()}
+                </Button>
+            </a>
             <DropdownMenu.Root>
                 <DropdownMenu.Trigger class="hidden md:block">
                     <Avatar.Root class="cursor-pointer h-8 w-8 md:h-10 md:w-10">
