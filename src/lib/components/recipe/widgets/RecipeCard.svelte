@@ -6,6 +6,7 @@
     import { m } from "$lib/paraglide/messages";
     import { Badge } from "$lib/components/ui/badge";
     import {Clock, Star, UserRound} from "lucide-svelte";
+    import {type Difficulty, difficultyLabels} from "$lib/types/recipe";
 
     type Props = {
         id: number;
@@ -15,15 +16,16 @@
         servings: number;
         cookingTime: number;
         rating?: number;
-        difficulty: string | null;
+        difficulty: Difficulty;
     };
     let {id, title, description, image, servings, cookingTime, rating, difficulty}: Props = $props();
-
 </script>
 
 <Card.Root class="w-full max-w-sm pt-0 overflow-hidden rounded-lg bg-card">
     <Card.Header class="p-0 max-h-52 overflow-hidden relative">
-        <Badge class="absolute right-3 top-3" variant="secondary">{ difficulty }</Badge>
+        <Badge class="absolute right-3 top-3" variant="secondary">
+            {difficultyLabels[difficulty] ?? difficulty}
+        </Badge>
         <img src={image} alt="">
     </Card.Header>
     <Card.Content>

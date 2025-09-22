@@ -1,5 +1,6 @@
 import {integer, boolean, pgTable, primaryKey, serial, text, timestamp, unique} from 'drizzle-orm/pg-core';
 import { LANGUAGES } from '$lib/types/languages';
+import {DIFFICULTIES} from "$lib/types/recipe";
 
 export const user = pgTable('user', {
 	id: text('id').primaryKey(),
@@ -31,7 +32,7 @@ export const recipes = pgTable('recipes', {
 
 export const difficulty = pgTable('difficulty', {
     id: serial('id').primaryKey().notNull(),
-    difficulty: text('difficulty', {enum: ['easy', 'medium', 'hard']}).notNull(),
+    difficulty: text('difficulty', {enum: [...DIFFICULTIES]}).notNull(),
 });
 
 export const difficultyToRecipe = pgTable('difficulty_to_recipe', {

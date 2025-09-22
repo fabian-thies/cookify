@@ -6,13 +6,14 @@
     import { m } from "$lib/paraglide/messages";
     import {likeRecipe} from "$lib/functions/recipe.remote";
     import {toast} from "svelte-sonner";
+    import {type Difficulty, difficultyLabels} from "$lib/types/recipe";
 
     type props = {
         id: number
         userId: string,
         title: string,
         description: string,
-        difficulty: string | null,
+        difficulty: Difficulty,
         servings: number,
         cookingTime: number,
         image: string,
@@ -47,7 +48,9 @@
             </div>
             <Separator orientation="vertical" class="hidden sm:block"/>
             <div class="flex items-center gap-2">
-                <Badge variant="secondary">{difficulty}</Badge>
+                <Badge variant="secondary">
+                    {difficultyLabels[difficulty] ?? difficulty}
+                </Badge>
             </div>
         </div>
         <div class="flex items-center flex-wrap gap-2">
