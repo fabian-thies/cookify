@@ -6,10 +6,10 @@
     import Details from "$lib/components/recipe/form/Details.svelte";
     import {Button} from "$lib/components/ui/button/index.js";
     import { m } from "$lib/paraglide/messages";
-    import {goto, invalidateAll} from "$app/navigation";
+    import {goto} from "$app/navigation";
     import {toast} from "svelte-sonner";
 
-    const {data, form} = $props();
+    const {data} = $props();
 
     const recipe = data.recipe;
     const ingredients = recipe.ingredients;

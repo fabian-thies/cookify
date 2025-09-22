@@ -24,7 +24,7 @@
 
     const addTag = () => {
         const value = tagInput.trim();
-        if (value && !tags.includes(value)) {
+        if (value && !tags.includes(value) && tags.length <= 20) {
             tags = [...tags, value];
         }
         tagInput = "";
