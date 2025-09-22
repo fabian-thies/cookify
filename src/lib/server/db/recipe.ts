@@ -166,6 +166,19 @@ export async function getRecipeById(id: number) {
     return result[0] ?? null;
 }
 
+export async function getRecipesByUserId(userId: string) {
+    const db = getDb();
+
+    return db.select({
+        ...getTableColumns(recipes),
+        difficulty: difficulty.difficulty,
+    })
+        .from(recipes)
+        .leftJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
+        .leftJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
+        .where(eq(recipes.userId, userId));
+}
+
 export async function getRecipeFavoriteState(userId: string, recipeId: number) {
     const db = getDb();
     const rows = await db

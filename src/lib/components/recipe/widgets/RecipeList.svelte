@@ -9,10 +9,11 @@
     type Props = {
         recipes: Recipe[];
         difficulties: Difficulty[];
-        title: string;
+        title?: string;
+        showFilters?: boolean;
     };
 
-    let {recipes, difficulties, title}: Props = $props();
+    let {recipes, difficulties, title, showFilters = true}: Props = $props();
 
     let search = $state("");
     let selectedDifficulty = $state("");
@@ -52,30 +53,41 @@
 </script>
 
 <div class="flex flex-col gap-4 p-4 mt-6">
-    <h1 class="font-bold text-3xl mb-2">{title}</h1>
-    <Input type="search" placeholder={m["recipe.list.searchPlaceholder"]()} class="flex justify-center" bind:value={search}/>
+    {#if title}
+        <h1 class="font-bold text-3xl mb-2">{title}</h1>
+    {/if}
 
-    <div class="flex flex-wrap gap-2">
-        <SelectComponent
-                options={difficultiesOptions}
-                placeholder={m["recipe.list.difficultyPlaceholder"]()}
-                groupLabel={m["recipe.list.groupLabel"]()}
-                name="category"
-                class=""
-                bind:value={selectedDifficulty}
-        />
-        {#if filterActive}
-            <Button
-                    class="btn btn-outline btn-secondary"
-                    onclick={clearFilters}
-                    variant="outline"
-            >
-                Clear Filters
-            </Button>
+    {#if showFilters}
+        <Input type="search" placeholder={m["recipe.list.searchPlaceholder"]()} class="flex justify-center" bind:value={search}/>
+
+        <div class="flex flex-wrap gap-2 pb-6">
+            <SelectComponent
+                    options={difficultiesOptions}
+                    placeholder={m["recipe.list.difficultyPlaceholder"]()}
+                    groupLabel={m["recipe.list.groupLabel"]()}
+                    name="category"
+                    class=""
+                    bind:value={selectedDifficulty}
+            />
+            {#if filterActive}
+                <Button
+                        class="btn btn-outline btn-secondary"
+                        onclick={clearFilters}
+                        variant="outline"
+                >
+                    Clear Filters
+                </Button>
+            {/if}
+        </div>
+    {/if}
+    <div class="pb-2">
+        {#if filteredRecipes.length === 0}
+            <div class="flex flex-col items-center justify-center py-6 text-center">
+                <p class="text-muted-foreground text-md">{m["recipe.list.noRecipes"]()}</p>
+            </div>
+        {:else}
+            <p class="text-muted-foreground">{m["recipe.list.results"]({ count: filteredRecipes.length })}</p>
         {/if}
-    </div>
-    <div class="pt-6 pb-2">
-        <p class="text-muted-foreground">{m["recipe.list.results"]({ count: filteredRecipes.length })}</p>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 place-items-center">

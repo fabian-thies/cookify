@@ -48,7 +48,8 @@
 			"searchPlaceholder": "Search recipes",
 			"difficultyPlaceholder": "Select a difficulty",
 			"groupLabel": "Categories",
-			"results": "{count} recipes found"
+			"results": "{count} recipes found",
+			"noRecipes": "No recipes found"
 		},
 		"card": {
 			"view": "View recipe"
@@ -109,6 +110,9 @@
 		"favorites": {
 			"title": "Favorites"
 		}
+	},
+	"profile": {
+		"userRecipes": "{username}'s recipes"
 	},
 	"actions": {
 		"share": "Share",

@@ -48,7 +48,8 @@
 			"searchPlaceholder": "Rezepte suchen",
 			"difficultyPlaceholder": "Schwierigkeitsgrad auswählen",
 			"groupLabel": "Kategorien",
-			"results": "{count} Rezepte gefunden"
+			"results": "{count} Rezepte gefunden",
+			"noRecipes": "Keine Rezepte gefunden"
 		},
 		"card": {
 			"view": "Rezept ansehen"
@@ -109,6 +110,9 @@
 		"favorites": {
 			"title": "Favoriten"
 		}
+	},
+	"profile": {
+		"userRecipes": "{username}s Rezepte"
 	},
 	"actions": {
 		"share": "Teilen",

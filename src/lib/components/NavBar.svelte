@@ -55,7 +55,7 @@
                         {m["nav.favorites"]()}
                     </a>
                     <Separator />
-                    <a href="/profile" onclick={() => isOpen = false}>
+                    <a href="/profile/{user.id}" onclick={() => isOpen = false}>
                         {m["nav.profile"]()}
                     </a>
                     <a href="/settings" onclick={() => isOpen = false}>
@@ -95,7 +95,7 @@
                     <DropdownMenu.Separator/>
                     <DropdownMenu.Group>
                         <DropdownMenu.Item>
-                            <a href="/profile">{m["nav.profile"]()}</a>
+                            <a href="/profile/{user.id}">{m["nav.profile"]()}</a>
                         </DropdownMenu.Item>
                         <DropdownMenu.Item>
                             <a href="/settings">{m["nav.settings"]()}</a>
