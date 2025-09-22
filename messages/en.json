@@ -51,7 +51,7 @@
 			"groupLabel": "Categories",
 			"results": "{count} recipes found",
 			"noRecipes": "No recipes found",
-			"clearFilters": "Filter zurücksetzen"
+			"clearFilters": "Clear filters"
 		},
 		"card": {
 			"view": "View recipe"
@@ -136,8 +136,9 @@
 			"language": "Language",
 			"selectLanguage": "Select language",
 			"languages": {
-				"de": "Deutsch",
-				"en": "English"
+				"de": "German",
+				"en": "English",
+				"es": "Spanish"
 			},
 			"changePassword": "Change password",
 			"newPassword": "New password",

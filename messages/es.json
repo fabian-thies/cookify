@@ -1,0 +1,160 @@
+{
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "logout": "Cerrar sesión",
+  "login": {
+    "welcomeBack": "Bienvenido de nuevo",
+    "createAccount": "Crear una cuenta",
+    "signInToContinue": "Inicia sesión para continuar",
+    "enterDetailsToStart": "Ingresa tus datos para comenzar",
+    "username": "Nombre de usuario",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "enterUsername": "Ingresa tu nombre de usuario",
+    "emailPlaceholder": "nombre@ejemplo.com",
+    "confirmPasswordPlaceholder": "Confirma tu contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "signIn": "Iniciar sesión",
+    "createAccountButton": "Crear cuenta",
+    "noAccount": "¿No tienes una cuenta?",
+    "haveAccount": "¿Ya tienes una cuenta?",
+    "signUp": "Registrarse",
+    "signInLink": "Inicia sesión"
+  },
+  "nav": {
+    "navigation": "Navegación",
+    "recipes": "Recetas",
+    "favorites": "Favoritos",
+    "profile": "Perfil",
+    "settings": "Configuración",
+    "login": "Iniciar sesión",
+    "create": "Crear receta"
+  },
+  "recipe": {
+    "common": {
+      "ingredients": "Ingredientes",
+      "steps": "Pasos",
+      "forServings": "Para {count} personas",
+      "servingsCount": "{count} porciones",
+      "duration": "{count} min",
+      "reviews": "{count} reseñas",
+      "similar": "Recetas similares",
+      "difficulty": {
+        "easy": "Fácil",
+        "medium": "Medio",
+        "hard": "Difícil"
+      }
+    },
+    "list": {
+      "searchPlaceholder": "Buscar recetas",
+      "difficultyPlaceholder": "Selecciona una dificultad",
+      "groupLabel": "Categorías",
+      "results": "{count} recetas encontradas",
+      "noRecipes": "No se encontraron recetas",
+      "clearFilters": "Limpiar filtros"
+    },
+    "card": {
+      "view": "Ver receta"
+    },
+    "view": {
+      "preparation": {
+        "title": "Preparación",
+        "subtitle": "Instrucciones paso a paso"
+      }
+    },
+    "form": {
+      "general": {
+        "title": "Información básica",
+        "nameLabel": "Nombre de la receta",
+        "namePlaceholder": "p. ej. pasta carbonara italiana",
+        "descriptionLabel": "Descripción",
+        "descriptionPlaceholder": "Describe brevemente tu receta"
+      },
+      "ingredients": {
+        "title": "Ingredientes",
+        "quantityLabel": "Cantidad",
+        "quantityPlaceholder": "p. ej. 500",
+        "unitLabel": "Unidad",
+        "unitPlaceholder": "p. ej. g, ml, piezas",
+        "nameLabel": "Ingrediente",
+        "namePlaceholder": "p. ej. pasta, huevos, tocino",
+        "addButton": "Agregar ingrediente"
+      },
+      "steps": {
+        "title": "Pasos",
+        "stepLabel": "Paso",
+        "stepPlaceholder": "p. ej. Pelar y picar las cebollas",
+        "addButton": "Agregar paso"
+      },
+      "details": {
+        "title": "Detalles de la receta",
+        "cookTimeLabel": "Tiempo de cocción (min)",
+        "cookTimePlaceholder": "p. ej. 25",
+        "servingsLabel": "Porciones",
+        "servingsPlaceholder": "p. ej. 4",
+        "difficultyLabel": "Dificultad",
+        "difficultyPlaceholder": "Selecciona dificultad",
+        "difficultyGroupLabel": "Dificultad",
+        "tagsLabel": "Etiquetas",
+        "tagsPlaceholder": "Introduce una etiqueta y presiona Enter",
+        "previewLabel": "Imagen de portada"
+      }
+    },
+    "saveSuccess": "¡Receta guardada con éxito!",
+    "saveError": "Error al guardar la receta.",
+    "createSuccess": "¡Receta creada con éxito!",
+    "createError": "Error al crear la receta."
+  },
+  "routes": {
+    "home": {
+      "title": "Recetas"
+    },
+    "favorites": {
+      "title": "Favoritos"
+    }
+  },
+  "profile": {
+    "userRecipes": "Recetas de {username}"
+  },
+  "actions": {
+    "share": "Compartir",
+    "save": "Guardar",
+    "edit": "Editar",
+    "saveRecipe": "Guardar receta",
+    "showPreview": "Mostrar vista previa",
+    "error": "Ocurrió un error. Por favor, inténtalo de nuevo."
+  },
+  "settings": {
+    "profile": {
+      "title": "Perfil",
+      "description": "Administra tu información personal",
+      "changeAvatar": "Cambiar avatar",
+      "username": "Nombre de usuario",
+      "usernamePlaceholder": "p. ej. juanperez",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "p. ej. max@ejemplo.com",
+      "language": "Idioma",
+      "selectLanguage": "Selecciona idioma",
+      "languages": {
+        "de": "Alemán",
+        "en": "Inglés",
+        "es": "Español"
+      },
+      "changePassword": "Cambiar contraseña",
+      "newPassword": "Nueva contraseña",
+      "newPasswordPlaceholder": "Ingresa una nueva contraseña",
+      "passwordStrength": {
+        "weak": "Débil - al menos 6 caracteres",
+        "medium": "Medio - se recomiendan al menos 10 caracteres",
+        "strong": "Fuerte"
+      },
+      "confirmPassword": "Confirmar contraseña",
+      "match": "Coincide",
+      "mismatch": "No coincide",
+      "confirmPasswordPlaceholder": "Repite la contraseña",
+      "save": "Guardar perfil",
+      "saved": "Guardado con éxito",
+      "error": "Ocurrió un error. Por favor, inténtalo de nuevo."
+    }
+  }
+}

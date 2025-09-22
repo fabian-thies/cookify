@@ -44,6 +44,7 @@
     const languageOptions = [
         { value: 'en', label: m['settings.profile.languages.en']() },
         { value: 'de', label: m['settings.profile.languages.de']() },
+        { value: 'es', label: m['settings.profile.languages.es']() }
     ];
 </script>
 

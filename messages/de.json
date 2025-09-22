@@ -137,7 +137,8 @@
 			"selectLanguage": "Sprache auswählen",
 			"languages": {
 				"de": "Deutsch",
-				"en": "English"
+				"en": "Englisch",
+				"es": "Spanisch"
 			},
 			"changePassword": "Passwort ändern",
 			"newPassword": "Neues Passwort",
