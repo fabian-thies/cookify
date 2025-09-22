@@ -132,11 +132,13 @@
                                 </div>
                             </div>
                             <p class="text-xs text-muted-foreground">
-                                {passwordStrength() === 'weak'
-                                    ? 'Schwach - mindestens 6 Zeichen'
-                                    : passwordStrength() === 'medium'
-                                        ? 'Mittel - mindestens 10 Zeichen empfohlen'
-                                        : 'Stark'}
+                                {#if passwordStrength() === 'weak'}
+                                    {m["settings.profile.passwordStrength.weak"]()}
+                                {:else if passwordStrength() === 'medium'}
+                                    {m["settings.profile.passwordStrength.medium"]()}
+                                {:else if passwordStrength() === 'strong'}
+                                    {m["settings.profile.passwordStrength.strong"]()}
+                                {/if}
                             </p>
                         {/if}
                     </div>
