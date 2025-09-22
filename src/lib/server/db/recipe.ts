@@ -1,4 +1,5 @@
 import {getDb} from "$lib/server/db/index";
+import type { CreateRecipeInput, UpdateRecipeInput } from "$lib/types/recipe";
 import {
     difficulty,
     difficultyToRecipe,

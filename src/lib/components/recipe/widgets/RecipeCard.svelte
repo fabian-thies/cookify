@@ -6,7 +6,8 @@
     import { m } from "$lib/paraglide/messages";
     import { Badge } from "$lib/components/ui/badge";
     import {Clock, Star, UserRound} from "lucide-svelte";
-    import {type Difficulty, difficultyLabels} from "$lib/types/recipe";
+    import type { Difficulty } from "$lib/types/recipe";
+    import { difficultyLabels } from "$lib/i18n/recipe";
 
     type Props = {
         id: number;

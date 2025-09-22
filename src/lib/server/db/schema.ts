@@ -1,6 +1,6 @@
 import {integer, boolean, pgTable, primaryKey, serial, text, timestamp, unique} from 'drizzle-orm/pg-core';
-import { LANGUAGES } from '$lib/types/languages';
-import {DIFFICULTIES} from "$lib/types/recipe";
+import {LANGUAGES} from '../../types/languages';
+import {DIFFICULTIES} from '../../types/recipe';
 
 export const user = pgTable('user', {
 	id: text('id').primaryKey(),
