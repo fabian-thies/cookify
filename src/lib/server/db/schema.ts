@@ -1,4 +1,5 @@
-import {integer, boolean, pgTable, primaryKey, serial, text, timestamp, uniqueIndex, unique} from 'drizzle-orm/pg-core';
+import {integer, boolean, pgTable, primaryKey, serial, text, timestamp, unique} from 'drizzle-orm/pg-core';
+import { LANGUAGES } from '$lib/types/languages';
 
 export const user = pgTable('user', {
 	id: text('id').primaryKey(),
@@ -6,7 +7,8 @@ export const user = pgTable('user', {
 	age: integer('age'),
 	username: text('username').notNull().unique(),
 	passwordHash: text('password_hash').notNull(),
-    avatar: text('avatar')
+    avatar: text('avatar'),
+    language: text('language', {enum: [...LANGUAGES]}).notNull().default(LANGUAGES[0]),
 });
 
 export const session = pgTable('session', {

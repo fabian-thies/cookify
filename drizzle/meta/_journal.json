@@ -8,6 +8,13 @@
       "when": 1758233738562,
       "tag": "0000_init",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1758500170850,
+      "tag": "0001_parallel_amphibian",
+      "breakpoints": true
     }
   ]
 }

@@ -3,11 +3,14 @@ import {fail} from "@sveltejs/kit";
 import * as v from 'valibot';
 import {saveProfile, updatePassword} from "$lib/server/db/user";
 import {hashPassword, saveImage} from "$lib/server/utils";
+import { LANGUAGES, isUserLanguage } from "$lib/types/languages";
+import type { UserLanguage } from "$lib/types/languages";
 
 const ProfileSchema = v.object({
     username: v.string(),
     email: v.pipe(v.string(), v.email()),
-    password: v.optional(v.string())
+    password: v.optional(v.string()),
+    language: v.picklist(LANGUAGES)
 });
 
 export const actions = {
@@ -15,13 +18,19 @@ export const actions = {
         if (!locals.user) return fail(401);
 
         const formData = await request.formData();
+        const rawLanguage = formData.get("language");
+        if (!isUserLanguage(rawLanguage)) {
+            return fail(400, {invalid: true});
+        }
+
         const data = {
             username: String(formData.get("username") ?? ""),
             email: String(formData.get("email") ?? ""),
-            password: String(formData.get("password") ?? "")
+            password: String(formData.get("password") ?? ""),
+            language: rawLanguage as UserLanguage,
         };
 
-        let parsed;
+        let parsed: v.InferOutput<typeof ProfileSchema>;
         try {
             parsed = v.parse(ProfileSchema, data);
         } catch (e) {
@@ -40,7 +49,7 @@ export const actions = {
             }
         }
 
-        await saveProfile(locals.user.id, parsed.username, parsed.email, avatarUrl);
+        await saveProfile(locals.user.id, parsed.username, parsed.email, avatarUrl, parsed.language);
 
         if(parsed.password && parsed.password.length > 0) {
             await updatePassword(locals.user.id, await hashPassword(parsed.password))

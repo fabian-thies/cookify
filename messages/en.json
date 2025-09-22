@@ -132,6 +132,12 @@
 			"usernamePlaceholder": "e.g. johnsmith",
 			"email": "Email",
 			"emailPlaceholder": "e.g. max@example.com",
+			"language": "Language",
+			"selectLanguage": "Select language",
+			"languages": {
+				"de": "Deutsch",
+				"en": "English"
+			},
 			"changePassword": "Change password",
 			"newPassword": "New password",
 			"newPasswordPlaceholder": "Enter a new password",

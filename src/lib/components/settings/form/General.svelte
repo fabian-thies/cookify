@@ -7,7 +7,8 @@
     import * as Avatar from "$lib/components/ui/avatar/index.js";
     import * as Separator from "$lib/components/ui/separator/index.js";
     import type {PublicUser} from "$lib/server/db/schema";
-    import {Camera, Eye, EyeOff, Lock} from "lucide-svelte";
+    import {Camera, Eye, EyeOff, Languages, Lock} from "lucide-svelte";
+    import SelectComponent from "$lib/components/ui/select/SelectComponent.svelte";
 
     const {user}: { user: PublicUser } = $props();
 
@@ -16,15 +17,12 @@
     let showPassword = $state(false);
     let showPasswordConfirm = $state(false);
 
-    let previewUrl = $derived(
-        selectedFile ? URL.createObjectURL(selectedFile) : null
-    );
+    let previewUrl = $derived(selectedFile ? URL.createObjectURL(selectedFile) : null);
 
     function handleAvatarChange(event: Event) {
         const files = (event.target as HTMLInputElement).files;
         selectedFile = files?.[0] ?? null;
     }
-
     function openAvatarPicker() {
         fileInput?.click();
     }
@@ -39,6 +37,14 @@
         if (password.length < 10) return 'medium';
         return 'strong';
     });
+
+    let selectedLanguage = $state(user.language || 'en');
+
+    // TODO: Combine with db schema enum
+    const languageOptions = [
+        { value: 'en', label: m['settings.profile.languages.en']() },
+        { value: 'de', label: m['settings.profile.languages.de']() },
+    ];
 </script>
 
 <Card.Root class="w-full">
@@ -49,67 +55,56 @@
     <Card.Content>
         <div class="flex flex-col gap-6">
             <div class="flex items-center gap-6">
-                <button
-                        type="button"
-                        class="inline-flex rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                        onclick={openAvatarPicker}
-                        aria-controls="avatar"
-                        aria-label={m["settings.profile.changeAvatar"]()}
-                >
+                <button type="button" class="inline-flex rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background" onclick={openAvatarPicker} aria-controls="avatar" aria-label={m["settings.profile.changeAvatar"]()}>
                     <Avatar.Root class="cursor-pointer h-8 w-8 md:h-10 md:w-10 lg:h-24 lg:w-24">
                         <Avatar.Image src={previewUrl ?? user.avatar}/>
                         <Avatar.Fallback>{user.username.slice(0, 2)}</Avatar.Fallback>
                     </Avatar.Root>
                 </button>
-                <input
-                        bind:this={fileInput}
-                        id="avatar"
-                        class="sr-only"
-                        type="file"
-                        accept="image/*"
-                        name="avatar"
-                        onchange={handleAvatarChange}
-                />
-                <Button
-                        type="button"
-                        variant="outline"
-                        class="flex items-center gap-2"
-                        onclick={openAvatarPicker}
-                        aria-controls="avatar"
-                >
+                <input bind:this={fileInput} id="avatar" class="sr-only" type="file" accept="image/*" name="avatar" onchange={handleAvatarChange}/>
+                <Button type="button" variant="outline" class="flex items-center gap-2" onclick={openAvatarPicker} aria-controls="avatar">
                     <Camera size={16}/>
                     {m["settings.profile.changeAvatar"]()}
                 </Button>
             </div>
+
             <div class="flex w-full flex-col gap-1.5">
                 <Label for="username">{m["settings.profile.username"]()}</Label>
-                <Input
-                        type="text"
-                        id="username"
-                        name="username"
-                        placeholder={m["settings.profile.usernamePlaceholder"]()}
-                        required
-                        value={user.username}
-                />
+                <Input type="text" id="username" name="username" placeholder={m["settings.profile.usernamePlaceholder"]()} required value={user.username}/>
             </div>
+
             <div class="flex w-full flex-col gap-1.5">
                 <Label for="email">{m["settings.profile.email"]()}</Label>
-                <Input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder={m["settings.profile.emailPlaceholder"]()}
-                        required
-                        value={user.email}
-                />
+                <Input type="email" id="email" name="email" placeholder={m["settings.profile.emailPlaceholder"]()} required value={user.email}/>
             </div>
+
             <Separator.Root class="my-2"/>
+
+            <div class="space-y-4">
+                <div class="flex items-center gap-2 mb-4">
+                    <Languages size={16} class="text-muted-foreground"/>
+                    <h3 class="text-sm font-medium">{m["settings.profile.language"]()}</h3>
+                </div>
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div class="flex w-full flex-col gap-1.5">
+                        <Label for="language">{m["settings.profile.selectLanguage"]()}</Label>
+                        <SelectComponent
+                                options={languageOptions}
+                                placeholder={m["settings.profile.selectLanguage"]()}
+                                name="language"
+                                bind:value={selectedLanguage}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <Separator.Root class="my-2"/>
+
             <div class="space-y-4">
                 <div class="flex items-center gap-2 mb-4">
                     <Lock size={16} class="text-muted-foreground"/>
                     <h3 class="text-sm font-medium">{m["settings.profile.changePassword"]()}</h3>
                 </div>
-
                 <div class="grid gap-4 md:grid-cols-2">
                     <div class="flex w-full flex-col gap-1.5">
                         <Label for="password">{m["settings.profile.newPassword"]()}</Label>
@@ -122,13 +117,7 @@
                                     bind:value={password}
                                     class="pr-10"
                             />
-                            <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    class="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                                    onclick={() => showPassword = !showPassword}
-                            >
+                            <Button type="button" variant="ghost" size="sm" class="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent" onclick={() => showPassword = !showPassword}>
                                 {#if showPassword}
                                     <EyeOff size={16} class="text-muted-foreground"/>
                                 {:else}
@@ -139,22 +128,19 @@
                         {#if password.length > 0}
                             <div class="flex gap-1 mt-1">
                                 <div class="h-1 w-full rounded bg-muted">
-                                    <div
-                                            class="h-full rounded transition-all duration-300 {
-                                            passwordStrength() === 'weak' ? 'w-1/3 bg-red-500' :
-                                            passwordStrength() === 'medium' ? 'w-2/3 bg-yellow-500' :
-                                            passwordStrength() === 'strong' ? 'w-full bg-green-500' : 'w-0'
-                                        }"
-                                    ></div>
+                                    <div class="h-full rounded transition-all duration-300 {passwordStrength() === 'weak' ? 'w-1/3 bg-red-500' : passwordStrength() === 'medium' ? 'w-2/3 bg-yellow-500' : passwordStrength() === 'strong' ? 'w-full bg-green-500' : 'w-0'}"></div>
                                 </div>
                             </div>
                             <p class="text-xs text-muted-foreground">
-                                {passwordStrength() === 'weak' ? 'Schwach - mindestens 6 Zeichen' :
-                                    passwordStrength() === 'medium' ? 'Mittel - mindestens 10 Zeichen empfohlen' :
-                                        'Stark'}
+                                {passwordStrength() === 'weak'
+                                    ? 'Schwach - mindestens 6 Zeichen'
+                                    : passwordStrength() === 'medium'
+                                        ? 'Mittel - mindestens 10 Zeichen empfohlen'
+                                        : 'Stark'}
                             </p>
                         {/if}
                     </div>
+
                     <div class="flex w-full flex-col gap-1.5">
                         <Label for="passwordConfirm" class="flex items-center gap-2">
                             {m["settings.profile.confirmPassword"]()}
@@ -175,13 +161,7 @@
                                     bind:value={passwordConfirm}
                                     class="pr-10 {passwordConfirm.length > 0 && !passwordsMatch ? 'border-red-500' : ''}"
                             />
-                            <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    class="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                                    onclick={() => showPasswordConfirm = !showPasswordConfirm}
-                            >
+                            <Button type="button" variant="ghost" size="sm" class="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent" onclick={() => showPasswordConfirm = !showPasswordConfirm}>
                                 {#if showPasswordConfirm}
                                     <EyeOff size={16} class="text-muted-foreground"/>
                                 {:else}
@@ -195,10 +175,7 @@
         </div>
     </Card.Content>
     <Card.Footer class="flex-col gap-2 items-start">
-        <Button
-                type="submit"
-                disabled={password.length > 0 && (!passwordsMatch || password.length < 6)}
-        >
+        <Button type="submit" disabled={password.length > 0 && (!passwordsMatch || password.length < 6)}>
             {m["settings.profile.save"]()}
         </Button>
     </Card.Footer>
