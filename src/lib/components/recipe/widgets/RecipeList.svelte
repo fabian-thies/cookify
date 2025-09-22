@@ -75,7 +75,7 @@
                         onclick={clearFilters}
                         variant="outline"
                 >
-                    Clear Filters
+                    { m["recipe.list.clearFilters"]() }
                 </Button>
             {/if}
         </div>

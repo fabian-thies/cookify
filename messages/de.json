@@ -50,7 +50,8 @@
 			"difficultyPlaceholder": "Schwierigkeitsgrad auswählen",
 			"groupLabel": "Kategorien",
 			"results": "{count} Rezepte gefunden",
-			"noRecipes": "Keine Rezepte gefunden"
+			"noRecipes": "Keine Rezepte gefunden",
+			"clearFilters": "Filter zurücksetzen"
 		},
 		"card": {
 			"view": "Rezept ansehen"
