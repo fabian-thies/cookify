@@ -34,11 +34,14 @@ services:
     ports:
       - "3000:3000"
     restart: unless-stopped
+    volumes:
+      - uploads:/app/uploads
     networks:
       - cookify_net
 
 volumes:
   pgdata:
+  uploads:
 
 networks:
   cookify_net:
