@@ -66,27 +66,6 @@ export async function createRecipe({
     return result;
 }
 
-export async function deleteRecipe(userId: string, recipeId: number) {
-    const db = getDb();
-
-    const recipe = await db.select().from(recipes)
-        .where(and(eq(recipes.id, recipeId), eq(recipes.userId, userId)))
-        .limit(1);
-
-    if (userId !== recipe[0]?.userId) {
-        throw new Error('Insufficient permissions');
-    }
-
-    await db.delete(favorite).where(eq(favorite.recipeId, recipeId));
-    await db.delete(difficultyToRecipe).where(eq(difficultyToRecipe.recipeId, recipeId));
-    await db.delete(ingredients).where(eq(ingredients.recipeId, recipeId));
-    await db.delete(stepsTable).where(eq(stepsTable.recipeId, recipeId));
-    await db.delete(tagsTable).where(eq(tagsTable.recipeId, recipeId));
-    return db.delete(recipes)
-        .where(and(eq(recipes.id, recipeId), eq(recipes.userId, userId)))
-        .returning({id: recipes.id});
-}
-
 export async function updateRecipe({
                                        id,
                                        title,

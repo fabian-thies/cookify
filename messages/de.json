@@ -119,10 +119,7 @@
 	"actions": {
 		"share": "Teilen",
 		"save": "Speichern",
-		"deleteRecipe": "Rezept löschen",
 		"edit": "Bearbeiten",
-		"delete": "Löschen",
-		"confirmDelete": "Sicher, dass Sie dieses Rezept löschen möchten?",
 		"saveRecipe": "Rezept speichern",
 		"showPreview": "Vorschau anzeigen",
 		"error": "Etwas ist schief gelaufen. Bitte versuchen Sie es erneut."

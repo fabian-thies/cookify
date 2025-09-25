@@ -1,15 +1,13 @@
 <script lang="ts">
-    import {Clock, Delete, Edit, Heart, Recycle, Share2, Star, Trash, Trash2, Users} from "lucide-svelte";
-    import * as Dialog from "$lib/components/ui/dialog/index.js";
+    import {Clock, Edit, Heart, Share2, Star, Users} from "lucide-svelte";
     import {Separator} from "$lib/components/ui/separator/index.js";
     import {Badge} from "$lib/components/ui/badge/index.js";
-    import {Button, buttonVariants} from "$lib/components/ui/button/index.js";
+    import {Button} from "$lib/components/ui/button/index.js";
     import { m } from "$lib/paraglide/messages";
-    import {deleteRecipe, likeRecipe} from "$lib/functions/recipe.remote";
+    import {likeRecipe} from "$lib/functions/recipe.remote";
     import {toast} from "svelte-sonner";
     import type { Difficulty } from "$lib/types/recipe";
     import { difficultyLabels } from "$lib/i18n/recipe";
-    import {goto} from "$app/navigation";
 
     type props = {
         id: number
@@ -64,7 +62,7 @@
             <Button onclick={async () => {
             try {
                 isFavorite = !isFavorite;
-                await likeRecipe({recipeId});
+                await likeRecipe({userId, recipeId});
             } catch (e) {
                 toast.error(m["actions.error"]());
             }
@@ -77,31 +75,6 @@
                     <Edit size={16} class="sm:w-[18px] sm:h-[18px]"/>
                     <span class="hidden sm:inline">{m["actions.edit"]()}</span>
                 </Button>
-                <Dialog.Root>
-                    <Dialog.Trigger class={buttonVariants({ variant: "outline" }) + " flex-1 sm:flex-none min-w-0"}>
-                        <Trash2 size={16} class="sm:w-[18px] sm:h-[18px]"/>
-                        <span class="hidden sm:inline">{m["actions.delete"]()}</span>
-                    </Dialog.Trigger>
-                    <Dialog.Content>
-                        <Dialog.Header>
-                            <Dialog.Title>{m["actions.deleteRecipe"]()}</Dialog.Title>
-                            <Dialog.Description>
-                                {m["actions.confirmDelete"]()}
-                            </Dialog.Description>
-                        </Dialog.Header>
-                        <Dialog.Footer>
-                            <Button type="submit" onclick={async () => {
-                                try {
-                                    await deleteRecipe({recipeId});
-
-                                    await goto("/");
-                                } catch (e) {
-                                    toast.error(m["actions.error"]());
-                                }
-                            }}>{m["actions.deleteRecipe"]()}</Button>
-                        </Dialog.Footer>
-                    </Dialog.Content>
-                </Dialog.Root>
             {/if}
         </div>
     </div>
