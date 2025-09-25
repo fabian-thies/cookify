@@ -25,8 +25,6 @@ COPY --from=build /app/scripts ./scripts
 COPY --from=build /app/drizzle ./drizzle
 RUN mkdir -p /app/src/lib
 COPY --from=build /app/src/lib/paraglide ./src/lib/paraglide
-COPY --from=build /app/messages ./messages
-COPY --from=build /app/project.inlang ./project.inlang
 
 RUN npm i --no-save tsx
 
