@@ -6,8 +6,7 @@
     import { m } from "$lib/paraglide/messages";
     import {likeRecipe} from "$lib/functions/recipe.remote";
     import {toast} from "svelte-sonner";
-    import type { Difficulty } from "$lib/types/recipe";
-    import { difficultyLabels } from "$lib/i18n/recipe";
+    import {type Difficulty, difficultyLabels} from "$lib/types/recipe";
 
     type props = {
         id: number
