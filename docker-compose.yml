@@ -32,7 +32,7 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "3000:3000"
+      - "${PORT}:${PORT}"
     restart: unless-stopped
     networks:
       - cookify_net
