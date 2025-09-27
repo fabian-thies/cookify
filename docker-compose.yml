@@ -24,7 +24,6 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       PORT: 3000
       ORIGIN: ${ORIGIN}
-      HOST: 0.0.0.0
       BODY_SIZE_LIMIT: ${BODY_SIZE_LIMIT:-25M}
     depends_on:
       db:
