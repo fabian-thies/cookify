@@ -30,8 +30,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    expose:
-      - 3000
+    ports:
+      - "${PORT:-3000}:3000"
     restart: unless-stopped
     networks:
       - cookify_net
