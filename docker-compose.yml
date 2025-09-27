@@ -24,7 +24,7 @@ services:
       dockerfile: Dockerfile
     environment:
       DATABASE_URL: ${DATABASE_URL}
-      PORT: 3000
+      PORT: ${PORT}
       ORIGIN: ${ORIGIN}
       BODY_SIZE_LIMIT: ${BODY_SIZE_LIMIT:-25M}
     depends_on:
