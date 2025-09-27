@@ -28,8 +28,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    expose:
-      - 3000
+    ports:
+      - "3000"
     restart: unless-stopped
 
 volumes:
