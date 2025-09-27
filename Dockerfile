@@ -12,7 +12,6 @@ RUN npm run build
 
 FROM node:20-bullseye-slim AS runner
 WORKDIR /app
-ENV PORT=3000
 
 COPY --from=deps /app/node_modules ./node_modules
 RUN npm prune --omit=dev
