@@ -24,6 +24,7 @@ services:
       dockerfile: Dockerfile
     environment:
       DATABASE_URL: ${DATABASE_URL}
+      NODE_ENV: ${NODE_ENV}
       PORT: ${PORT}
       ORIGIN: ${ORIGIN}
       BODY_SIZE_LIMIT: ${BODY_SIZE_LIMIT:-25M}
@@ -31,7 +32,7 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "${PORT:-3000}:3000"
+      - "${PORT}:${PORT}"
     restart: unless-stopped
     networks:
       - cookify_net
