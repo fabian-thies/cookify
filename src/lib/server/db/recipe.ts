@@ -11,6 +11,7 @@ import {
 } from "$lib/server/db/schema";
 import {getDifficultyId} from "$lib/server/utils";
 import {and, eq, getTableColumns, sql} from "drizzle-orm";
+import type {CreateRecipeInput, UpdateRecipeInput} from "$lib/types/recipe";
 
 export async function createRecipe({
                                        title,
@@ -155,8 +156,8 @@ export async function getRecipes() {
         difficulty: difficulty.difficulty,
     })
         .from(recipes)
-        .leftJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
-        .leftJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId));
+        .innerJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
+        .innerJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId));
 }
 
 export async function getFavoriteRecipes() {

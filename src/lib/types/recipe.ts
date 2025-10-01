@@ -1,6 +1,6 @@
 import { m } from "$lib/paraglide/messages";
 
-interface CreateRecipeInput {
+export interface CreateRecipeInput {
     title: string;
     description: string;
     cookTime: number;
@@ -13,7 +13,7 @@ interface CreateRecipeInput {
     image: string;
 }
 
-interface UpdateRecipeInput extends CreateRecipeInput {
+export interface UpdateRecipeInput extends CreateRecipeInput {
     id: number;
 }
 

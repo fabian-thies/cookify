@@ -7,9 +7,8 @@
     import { m } from "$lib/paraglide/messages";
     import {deleteRecipe, likeRecipe} from "$lib/functions/recipe.remote";
     import {toast} from "svelte-sonner";
-    import type { Difficulty } from "$lib/types/recipe";
-    import { difficultyLabels } from "$lib/i18n/recipe";
     import {goto} from "$app/navigation";
+    import {type Difficulty, difficultyLabels} from "$lib/types/recipe";
 
     type props = {
         id: number
@@ -24,7 +23,7 @@
         recipeOwner: boolean
     };
 
-    let {title, description, difficulty, servings, cookingTime, image, userId, id: recipeId, isFavorite, recipeOwner }: props = $props();
+    let {title, description, difficulty, servings, cookingTime, image, id: recipeId, isFavorite, recipeOwner }: props = $props();
 </script>
 
 <div class="w-full">
@@ -52,7 +51,7 @@
             <Separator orientation="vertical" class="hidden sm:block"/>
             <div class="flex items-center gap-2">
                 <Badge variant="secondary">
-                    {difficultyLabels[difficulty] ?? difficulty}
+                    {difficultyLabels[difficulty]}
                 </Badge>
             </div>
         </div>
