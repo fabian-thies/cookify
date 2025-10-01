@@ -25,6 +25,6 @@ COPY --from=build /app/drizzle ./drizzle
 
 RUN npm i --no-save tsx
 
-EXPOSE ${PORT:-3000}
+EXPOSE 3311
 
 CMD ["sh", "-c", "npx tsx scripts/migrate.ts && node build/index.js"]
