@@ -120,6 +120,9 @@
 		"share": "Share",
 		"save": "Save",
 		"edit": "Edit",
+		"delete": "Delete",
+		"deleteRecipe": "Delete recipe",
+		"confirmDelete": "Are you sure you want to delete this recipe?",
 		"saveRecipe": "Save recipe",
 		"showPreview": "Show preview",
 		"error": "An error occurred. Please try again."
