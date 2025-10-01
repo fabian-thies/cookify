@@ -21,7 +21,7 @@
 	},
 	"devDependencies": {
 		"@internationalized/date": "^3.9.0",
-		"@lucide/svelte": "^0.515.0",
+		"@lucide/svelte": "^0.544.0",
 		"@playwright/test": "^1.55.0",
 		"@sveltejs/adapter-auto": "^6.1.0",
 		"@sveltejs/adapter-node": "^5.3.2",
@@ -32,7 +32,7 @@
 		"@tailwindcss/vite": "^4.1.12",
 		"@types/heic-convert": "^2.1.0",
 		"@types/node": "^24",
-		"bits-ui": "^2.9.4",
+		"bits-ui": "^2.11.4",
 		"clsx": "^2.1.1",
 		"drizzle-kit": "^0.31.4",
 		"embla-carousel-svelte": "^8.6.0",
