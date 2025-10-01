@@ -1,12 +1,13 @@
 <script lang="ts">
     import type {PageProps} from "./$types";
-    import RecipeList from "$lib/components/recipe/widgets/RecipeList.svelte";
     import { m } from "$lib/paraglide/messages";
+    import RecipeCarousel from "$lib/components/recipe/widgets/RecipeCarousel.svelte";
 
     const { data }: PageProps = $props();
-
-    const recipes = data.recipes;
-    const difficulties = data.difficulties;
 </script>
 
-<RecipeList {recipes} {difficulties} title={m["routes.home.title"]()}/>
+<div class="flex flex-col gap-12 p-4 mt-6">
+    <RecipeCarousel title="Beliebte Rezepte" recipes={data.recipes} />
+    <RecipeCarousel title="Schnell und Einfach" recipes={data.recipes} />
+    <RecipeCarousel title="Neu hinzugefügt" recipes={data.recipes} />
+</div>

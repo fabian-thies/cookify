@@ -1,7 +1,7 @@
 import {getDb} from "$lib/server/db/index";
 import {eq} from "drizzle-orm";
 import {user} from "$lib/server/db/schema";
-import type {UserLanguage} from "$lib/types/user";
+import type {UserLanguage} from "$lib/types/languages";
 
 export async function saveProfile(userId: string, username: string, email: string, avatar: string, language: UserLanguage) {
     const db = getDb();
