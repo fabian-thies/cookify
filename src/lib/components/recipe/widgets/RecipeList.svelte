@@ -5,15 +5,15 @@
     import type {Difficulty, Recipe} from "$lib/server/db/recipe";
     import {Button} from "$lib/components/ui/button";
     import { m } from "$lib/paraglide/messages";
+    import {difficultySelectOptions} from "$lib/types/recipe";
 
     type Props = {
         recipes: Recipe[];
-        difficulties: Difficulty[];
         title?: string;
         showFilters?: boolean;
     };
 
-    let {recipes, difficulties, title, showFilters = true}: Props = $props();
+    let {recipes, title, showFilters = true}: Props = $props();
 
     let search = $state("");
     let selectedDifficulty = $state("");
@@ -32,20 +32,6 @@
         });
     });
 
-    const difficultyLabel = {
-        easy: () => m["recipe.common.difficulty.easy"](),
-        medium: () => m["recipe.common.difficulty.medium"](),
-        hard: () => m["recipe.common.difficulty.hard"]()
-    } as const;
-
-    const difficultiesOptions = difficulties.map(difficulty => {
-        const key = difficulty.difficulty.toLowerCase() as keyof typeof difficultyLabel;
-        return {
-            value: difficulty.difficulty,
-            label: difficultyLabel[key]?.() ?? difficulty.difficulty
-        };
-    });
-
     const clearFilters = () => {
         search = "";
         selectedDifficulty = "";
@@ -62,7 +48,7 @@
 
         <div class="flex flex-wrap gap-2 pb-6">
             <SelectComponent
-                    options={difficultiesOptions}
+                    options={difficultySelectOptions}
                     placeholder={m["recipe.list.difficultyPlaceholder"]()}
                     groupLabel={m["recipe.list.groupLabel"]()}
                     name="category"

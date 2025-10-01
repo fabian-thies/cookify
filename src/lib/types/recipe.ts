@@ -26,3 +26,8 @@ export const difficultyLabels: Record<Difficulty, string> = {
     medium: m["recipe.common.difficulty.medium"](),
     hard: m["recipe.common.difficulty.hard"]()
 };
+
+export const difficultySelectOptions = DIFFICULTIES.map(difficulty => ({
+    value: difficulty,
+    label: difficultyLabels[difficulty]
+}));
