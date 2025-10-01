@@ -25,6 +25,11 @@
             <NavigationMenu.List>
                 <NavigationMenu.Item>
                     <NavigationMenu.Link href="/">
+                        {m["nav.explore"]()}
+                    </NavigationMenu.Link>
+                </NavigationMenu.Item>
+                <NavigationMenu.Item>
+                    <NavigationMenu.Link href="/recipe/search">
                         {m["nav.recipes"]()}
                     </NavigationMenu.Link>
                 </NavigationMenu.Item>

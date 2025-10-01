@@ -24,6 +24,7 @@
 	"nav": {
 		"navigation": "Navigation",
 		"recipes": "Rezepte",
+        "explore": "Entdecken",
 		"favorites": "Favoriten",
 		"profile": "Profil",
 		"settings": "Einstellungen",
