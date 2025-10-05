@@ -1,4 +1,5 @@
 import { m } from "$lib/paraglide/messages";
+import {DIFFICULTIES} from "$lib/server/db/constants";
 
 export interface CreateRecipeInput {
     title: string;
@@ -16,8 +17,6 @@ export interface CreateRecipeInput {
 export interface UpdateRecipeInput extends CreateRecipeInput {
     id: number;
 }
-
-export const DIFFICULTIES = ['easy', 'medium', 'hard'] as const;
 
 export type Difficulty = typeof DIFFICULTIES[number];
 
