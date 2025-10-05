@@ -1,6 +1,5 @@
 import {integer, boolean, pgTable, primaryKey, serial, text, timestamp, unique} from 'drizzle-orm/pg-core';
-import { LANGUAGES } from '$lib/types/languages';
-import {DIFFICULTIES} from "$lib/types/recipe";
+import {DIFFICULTIES, LANGUAGES} from './constants';
 
 export const user = pgTable('user', {
 	id: text('id').primaryKey(),
@@ -27,7 +26,8 @@ export const recipes = pgTable('recipes', {
     updatedAt: timestamp('updated_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow(),
     cookingTime: integer('cooking_time').notNull(),
     servings: integer('servings').notNull(),
-    userId: text('user_id').notNull().references(() => user.id)
+    userId: text('user_id').notNull().references(() => user.id),
+    viewCount: integer('view_count').notNull().default(0)
 });
 
 export const difficulty = pgTable('difficulty', {
