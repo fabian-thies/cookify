@@ -1,4 +1,4 @@
-import type {PageServerLoad} from "../../../.svelte-kit/types/src/routes/(auth)/login/$types";
+import type {PageServerLoad} from "./$types";
 import {getRecentRecipes, getRecipes} from "$lib/server/db/recipe";
 
 export const load: PageServerLoad = async (event) => {

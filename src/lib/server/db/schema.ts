@@ -1,5 +1,5 @@
 import {integer, boolean, pgTable, primaryKey, serial, text, timestamp, unique} from 'drizzle-orm/pg-core';
-import {DIFFICULTIES, LANGUAGES} from './constants';
+import {DIFFICULTIES, LANGUAGES} from "../../constants";
 
 export const user = pgTable('user', {
 	id: text('id').primaryKey(),

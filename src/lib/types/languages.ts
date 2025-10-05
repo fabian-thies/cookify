@@ -1,4 +1,4 @@
-import {LANGUAGES} from "$lib/server/db/constants";
+import {LANGUAGES} from "$lib/constants";
 
 export type UserLanguage = typeof LANGUAGES[number];
 

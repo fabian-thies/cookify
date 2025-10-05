@@ -1,5 +1,5 @@
 import { m } from "$lib/paraglide/messages";
-import {DIFFICULTIES} from "$lib/server/db/constants";
+import {DIFFICULTIES} from "$lib/constants";
 
 export interface CreateRecipeInput {
     title: string;
