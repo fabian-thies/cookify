@@ -122,6 +122,7 @@
 		"save": "Speichern",
 		"deleteRecipe": "Rezept löschen",
 		"edit": "Bearbeiten",
+        "cancel": "Abbrechen",
 		"delete": "Löschen",
 		"confirmDelete": "Sicher, dass Sie dieses Rezept löschen möchten?",
 		"saveRecipe": "Rezept speichern",

@@ -45,8 +45,8 @@
                     <Button type="submit" class="w-full">
                         {m["actions.saveRecipe"]()}
                     </Button>
-                    <Button type="button" class="w-full" variant="outline" onclick={() => alert('Vorschau könnte hier geöffnet werden')}>
-                        {m["actions.showPreview"]()}
+                    <Button type="button" class="w-full" variant="outline" href={"/recipe/" + recipe.id}>
+                        {m["actions.cancel"]()}
                     </Button>
                 </div>
             </div>
