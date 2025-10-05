@@ -20,7 +20,7 @@
         { title }
     </h2>
     <div class="flex justify-between gap-6">
-        {#if (recipes.length > 0)}
+        {#if (recipes && recipes.length > 0)}
             <Carousel.Root class="w-full flex justify-center">
                 <Carousel.Content class="-ml-1">
                     {#each recipes as recipe}
