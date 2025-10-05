@@ -1,5 +1,11 @@
 import type {PageServerLoad} from "./$types";
-import {getIngredients, getRecipeById, getRecipeFavoriteState, getSteps} from "$lib/server/db/recipe";
+import {
+    getIngredients,
+    getRecipeById,
+    getRecipeFavoriteState,
+    getSteps,
+    incrementRecipeViewCount
+} from "$lib/server/db/recipe";
 import {error} from "@sveltejs/kit";
 
 export const load: PageServerLoad = async (event) => {
@@ -14,6 +20,8 @@ export const load: PageServerLoad = async (event) => {
     if(recipe === null) {
         throw error(404, 'Recipe not found')
     }
+
+    await incrementRecipeViewCount(recipeId);
 
     const steps = await getSteps(recipeId);
     const ingredients = await getIngredients(recipeId);

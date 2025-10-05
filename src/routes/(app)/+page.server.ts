@@ -1,8 +1,9 @@
 import type {PageServerLoad} from "./$types";
-import {getRecentRecipes, getRecipes} from "$lib/server/db/recipe";
+import {getPopularRecipes, getRecentRecipes, getRecipes} from "$lib/server/db/recipe";
 
 export const load: PageServerLoad = async (event) => {
     const recentRecipes = await getRecentRecipes();
+    const popularRecipes = await getPopularRecipes();
 
-    return {recentRecipes};
+    return {recentRecipes, popularRecipes};
 }

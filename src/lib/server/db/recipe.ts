@@ -181,6 +181,10 @@ export async function getRecentRecipes() {
     return getRecipes(0, undefined, "recent");
 }
 
+export async function getPopularRecipes() {
+    return getRecipes(0, undefined, "popular");
+}
+
 export async function getFavoriteRecipes() {
     const db = getDb();
     return db.select({
@@ -267,6 +271,13 @@ export async function toggleRecipeFavorite(userId: string, recipeId: number) {
                 ${favorite.favorite}`,
             },
         });
+}
+
+export async function incrementRecipeViewCount(recipeId: number) {
+    const db = getDb();
+    return db.update(recipes)
+        .set({viewCount: sql`${recipes.viewCount} + 1`})
+        .where(eq(recipes.id, recipeId));
 }
 
 export type Recipe = Awaited<ReturnType<typeof getRecipes>>[number];
