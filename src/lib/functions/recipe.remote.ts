@@ -1,6 +1,10 @@
 import * as v from 'valibot';
 import {command, getRequestEvent} from '$app/server';
-import {toggleRecipeFavorite, deleteRecipe as deleteRecipeFromDb} from '$lib/server/db/recipe';
+import {
+    toggleRecipeFavorite,
+    deleteRecipe as deleteRecipeFromDb,
+    upsertRecipeRating
+} from '$lib/server/db/recipe';
 
 export const likeRecipe = command(v.object({
     recipeId: v.number()
@@ -26,4 +30,28 @@ export const deleteRecipe = command(v.object({
     }
 
     return await deleteRecipeFromDb(userId, recipeId);
+});
+
+export const rateRecipe = command(v.object({
+    recipeId: v.number(),
+    rating: v.pipe(
+        v.number(),
+        v.minValue(1),
+        v.maxValue(5)
+    )
+}), async ({recipeId, rating}) => {
+    const {locals} = getRequestEvent();
+    const userId = locals.user?.id;
+
+    if (!userId) {
+        throw new Error('User not authenticated');
+    }
+
+    const summary = await upsertRecipeRating(userId, recipeId, rating);
+
+    return {
+        average: summary.average,
+        count: summary.count,
+        rating,
+    };
 });

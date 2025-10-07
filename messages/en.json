@@ -39,6 +39,8 @@
 			"servingsCount": "{count} servings",
 			"duration": "{count} min",
 			"reviews": "{count} reviews",
+			"ratePrompt": "Rate this recipe",
+			"yourRating": "Your rating: {count}",
 			"similar": "Similar recipes",
 			"difficulty": {
 				"easy": "Easy",

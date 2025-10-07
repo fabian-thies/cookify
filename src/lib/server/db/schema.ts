@@ -73,6 +73,17 @@ export const tags = pgTable('tags', {
     name: text('name').notNull(),
 });
 
+export const recipeRating = pgTable('recipe_rating', {
+    id: serial('id').primaryKey(),
+    recipeId: integer('recipe_id').notNull().references(() => recipes.id),
+    userId: text('user_id').notNull().references(() => user.id),
+    rating: integer('rating').notNull(),
+    createdAt: timestamp('created_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow(),
+}, (t) => [
+    unique('recipe_rating_recipe_user_unique').on(t.recipeId, t.userId),
+]);
+
 export type Session = typeof session.$inferSelect;
 export type Recipe = typeof recipes.$inferSelect;
 export type Ingredient = typeof ingredients.$inferSelect;
@@ -83,3 +94,4 @@ export type Difficulty = typeof difficulty.$inferSelect;
 export type DifficultyToRecipe = typeof difficultyToRecipe.$inferSelect;
 export type Favorite = typeof favorite.$inferSelect;
 export type Tag = typeof tags.$inferSelect;
+export type RecipeRating = typeof recipeRating.$inferSelect;

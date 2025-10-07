@@ -39,6 +39,8 @@
 			"servingsCount": "{count} Portionen",
 			"duration": "{count} Min",
 			"reviews": "{count} Bewertungen",
+			"ratePrompt": "Bewerte dieses Rezept",
+			"yourRating": "Deine Bewertung: {count}",
 			"similar": "Ähnliche Rezepte",
 			"difficulty": {
 				"easy": "Einfach",

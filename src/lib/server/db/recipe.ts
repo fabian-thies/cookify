@@ -4,6 +4,7 @@ import {
     difficultyToRecipe,
     favorite,
     ingredients,
+    recipeRating,
     recipes,
     steps,
     steps as stepsTable,
@@ -278,6 +279,55 @@ export async function incrementRecipeViewCount(recipeId: number) {
     return db.update(recipes)
         .set({viewCount: sql`${recipes.viewCount} + 1`})
         .where(eq(recipes.id, recipeId));
+}
+
+export async function getRecipeRatingSummary(recipeId: number) {
+    const db = getDb();
+    const [row] = await db
+        .select({
+            average: sql<number>`COALESCE(AVG(${recipeRating.rating})::float, 0)`,
+            count: sql<number>`COUNT(${recipeRating.id})::int`,
+        })
+        .from(recipeRating)
+        .where(eq(recipeRating.recipeId, recipeId));
+
+    const count = row?.count ?? 0;
+
+    return {
+        average: count > 0 ? row?.average ?? 0 : null,
+        count,
+    };
+}
+
+export async function getUserRecipeRating(userId: string, recipeId: number) {
+    const db = getDb();
+    const [row] = await db
+        .select({rating: recipeRating.rating})
+        .from(recipeRating)
+        .where(and(eq(recipeRating.userId, userId), eq(recipeRating.recipeId, recipeId)));
+
+    return row?.rating ?? null;
+}
+
+export async function upsertRecipeRating(userId: string, recipeId: number, rating: number) {
+    const db = getDb();
+
+    await db
+        .insert(recipeRating)
+        .values({
+            userId,
+            recipeId,
+            rating,
+        })
+        .onConflictDoUpdate({
+            target: [recipeRating.recipeId, recipeRating.userId],
+            set: {
+                rating,
+                updatedAt: new Date(),
+            },
+        });
+
+    return getRecipeRatingSummary(recipeId);
 }
 
 export type Recipe = Awaited<ReturnType<typeof getRecipes>>[number];

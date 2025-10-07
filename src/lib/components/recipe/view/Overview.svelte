@@ -5,7 +5,7 @@
     import {Badge} from "$lib/components/ui/badge/index.js";
     import {Button, buttonVariants} from "$lib/components/ui/button/index.js";
     import { m } from "$lib/paraglide/messages";
-    import {deleteRecipe, likeRecipe} from "$lib/functions/recipe.remote";
+    import {deleteRecipe, likeRecipe, rateRecipe} from "$lib/functions/recipe.remote";
     import {toast} from "svelte-sonner";
     import {goto} from "$app/navigation";
     import {type Difficulty, difficultyLabels} from "$lib/types/recipe";
@@ -20,19 +20,118 @@
         cookingTime: number,
         image: string,
         isFavorite: boolean,
-        recipeOwner: boolean
+        recipeOwner: boolean,
+        averageRating: number | null,
+        ratingCount: number,
+        userRating: number | null
     };
 
-    let {title, description, difficulty, servings, cookingTime, image, id: recipeId, isFavorite, recipeOwner }: props = $props();
+    let {
+        title,
+        description,
+        difficulty,
+        servings,
+        cookingTime,
+        image,
+        id: recipeId,
+        isFavorite,
+        recipeOwner,
+        averageRating: initialAverageRating,
+        ratingCount: initialRatingCount,
+        userRating: initialUserRating
+    }: props = $props();
+
+    let averageRating = $state<number | null>(initialAverageRating);
+    let ratingCount = $state(initialRatingCount);
+    let userRating = $state<number | null>(initialUserRating);
+    let hoverRating = $state<number | null>(null);
+    let isSubmittingRating = $state(false);
+    const stars = [1, 2, 3, 4, 5] as const;
+
+    async function handleRate(value: number) {
+        if (isSubmittingRating || value < 1 || value > 5) {
+            return;
+        }
+
+        const previousUserRating = userRating;
+        const previousAverage = averageRating;
+        const previousCount = ratingCount;
+
+        userRating = value;
+
+        try {
+            isSubmittingRating = true;
+            const response = await rateRecipe({recipeId, rating: value});
+            averageRating = response.average;
+            ratingCount = response.count;
+            userRating = response.rating;
+        } catch (e) {
+            userRating = previousUserRating;
+            averageRating = previousAverage;
+            ratingCount = previousCount;
+            toast.error(m["actions.error"]());
+        } finally {
+            isSubmittingRating = false;
+        }
+    }
+
+    function starFillColor(star: number) {
+        const activeRating = hoverRating ?? userRating ?? 0;
+
+        return star <= activeRating ? "#fbbf24" : "none";
+    }
+
+    function starStrokeColor(star: number) {
+        const activeRating = hoverRating ?? userRating ?? 0;
+
+        return star <= activeRating ? "#fbbf24" : "#9ca3af";
+    }
 </script>
 
 <div class="w-full">
     <h1 class="text-4xl font-bold">{title}</h1>
     <div class="text-muted-foreground h-5 flex items-center gap-4 mb-4 mt-4">
-        <Star size={20} fill="#fbbf24" color="#fbbf24"/>
-        (4.8)
+        <div class="flex items-center gap-2">
+            <Star size={20} fill="#fbbf24" color="#fbbf24"/>
+            <span>{averageRating != null ? averageRating.toFixed(1) : "–"}</span>
+        </div>
         <Separator orientation="vertical"/>
-        <p>{m["recipe.common.reviews"]({ count: 128 })}</p>
+        <p>{m["recipe.common.reviews"]({ count: ratingCount })}</p>
+    </div>
+    <div class="flex flex-wrap items-center gap-3 mb-4">
+        <div
+            class="flex items-center gap-1"
+            role="group"
+            aria-label={m["recipe.common.ratePrompt"]()}
+            onmouseleave={() => hoverRating = null}
+        >
+            {#each stars as star}
+                <button
+                    type="button"
+                    class="p-0.5 cursor-pointer disabled:cursor-not-allowed disabled:opacity-70"
+                    aria-label={m["recipe.common.yourRating"]({ count: star })}
+                    onmouseenter={() => hoverRating = star}
+                    onfocus={() => hoverRating = star}
+                    onblur={() => hoverRating = null}
+                    onmouseleave={() => hoverRating = null}
+                    onclick={() => handleRate(star)}
+                    disabled={isSubmittingRating}
+                >
+                    <Star
+                        size={24}
+                        fill={starFillColor(star)}
+                        color={starStrokeColor(star)}
+                    />
+                </button>
+            {/each}
+        </div>
+        <span class="text-sm text-muted-foreground">
+            {#if userRating != null}
+                {m["recipe.common.yourRating"]({ count: userRating })}
+            {:else}
+                {m["recipe.common.ratePrompt"]()}
+            {/if}
+        </span>
     </div>
     <p class="text-lg text-muted-foreground mb-6">{description}
     </p>
