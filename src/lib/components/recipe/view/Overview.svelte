@@ -98,41 +98,6 @@
         <Separator orientation="vertical"/>
         <p>{m["recipe.common.reviews"]({ count: ratingCount })}</p>
     </div>
-    <div class="flex flex-wrap items-center gap-3 mb-4">
-        <div
-            class="flex items-center gap-1"
-            role="group"
-            aria-label={m["recipe.common.ratePrompt"]()}
-            onmouseleave={() => hoverRating = null}
-        >
-            {#each stars as star}
-                <button
-                    type="button"
-                    class="p-0.5 cursor-pointer disabled:cursor-not-allowed disabled:opacity-70"
-                    aria-label={m["recipe.common.yourRating"]({ count: star })}
-                    onmouseenter={() => hoverRating = star}
-                    onfocus={() => hoverRating = star}
-                    onblur={() => hoverRating = null}
-                    onmouseleave={() => hoverRating = null}
-                    onclick={() => handleRate(star)}
-                    disabled={isSubmittingRating}
-                >
-                    <Star
-                        size={24}
-                        fill={starFillColor(star)}
-                        color={starStrokeColor(star)}
-                    />
-                </button>
-            {/each}
-        </div>
-        <span class="text-sm text-muted-foreground">
-            {#if userRating != null}
-                {m["recipe.common.yourRating"]({ count: userRating })}
-            {:else}
-                {m["recipe.common.ratePrompt"]()}
-            {/if}
-        </span>
-    </div>
     <p class="text-lg text-muted-foreground mb-6">{description}
     </p>
 
@@ -155,6 +120,63 @@
             </div>
         </div>
         <div class="flex items-center flex-wrap gap-2">
+            <Dialog.Root>
+                <Dialog.Trigger
+                    class={buttonVariants({ variant: "outline" }) + " flex-1 sm:flex-none min-w-0"}
+                >
+                    <Star
+                        size={16}
+                        fill={userRating != null ? "#fbbf24" : "none"}
+                        color={userRating != null ? "#fbbf24" : "currentColor"}
+                        class="sm:w-[18px] sm:h-[18px]"
+                    />
+                    <span class="hidden sm:inline">
+                        {m["actions.rate"]()}
+                    </span>
+                </Dialog.Trigger>
+                <Dialog.Content>
+                    <Dialog.Header>
+                        <Dialog.Title>{m["recipe.common.ratePrompt"]()}</Dialog.Title>
+                        <Dialog.Description>
+                            {m["recipe.common.rateSubtitle"]()}
+                        </Dialog.Description>
+                    </Dialog.Header>
+                    <div class="flex flex-col items-center gap-4">
+                        <div
+                            class="flex items-center gap-1"
+                            role="group"
+                            onmouseleave={() => hoverRating = null}
+                        >
+                            {#each stars as star}
+                                <button
+                                    type="button"
+                                    class="p-1 cursor-pointer disabled:cursor-not-allowed disabled:opacity-70"
+                                    onmouseenter={() => hoverRating = star}
+                                    onfocus={() => hoverRating = star}
+                                    onblur={() => hoverRating = null}
+                                    onmouseleave={() => hoverRating = null}
+                                    onclick={() => handleRate(star)}
+                                    disabled={isSubmittingRating}
+                                >
+                                    <Star
+                                        size={32}
+                                        fill={starFillColor(star)}
+                                        color={starStrokeColor(star)}
+                                    />
+                                </button>
+                            {/each}
+                        </div>
+                    </div>
+                    <Dialog.Footer class="flex justify-end">
+                        <Dialog.Close
+                            class={buttonVariants({ variant: "outline" })}
+                            onclick={() => hoverRating = null}
+                        >
+                            {m["actions.cancel"]()}
+                        </Dialog.Close>
+                    </Dialog.Footer>
+                </Dialog.Content>
+            </Dialog.Root>
             <Button variant="outline" class="flex-1 sm:flex-none min-w-0">
                 <Share2 class="w-4 h-4 sm:w-5 sm:h-5"/>
                 <span class="hidden sm:inline">{m["actions.share"]()}</span>

@@ -40,7 +40,7 @@
 			"duration": "{count} min",
 			"reviews": "{count} reviews",
 			"ratePrompt": "Rate this recipe",
-			"yourRating": "Your rating: {count}",
+			"rateSubtitle": "How did you like the recipe?",
 			"similar": "Similar recipes",
 			"difficulty": {
 				"easy": "Easy",
@@ -122,8 +122,9 @@
 	"actions": {
 		"share": "Share",
 		"save": "Save",
+		"rate": "Rate",
 		"edit": "Edit",
-        "cancel": "Cancel",
+		"cancel": "Cancel",
 		"delete": "Delete",
 		"deleteRecipe": "Delete recipe",
 		"confirmDelete": "Are you sure you want to delete this recipe?",

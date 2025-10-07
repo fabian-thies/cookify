@@ -40,7 +40,7 @@
 			"duration": "{count} min",
 			"reviews": "{count} reseñas",
 			"ratePrompt": "Valora esta receta",
-			"yourRating": "Tu valoración: {count}",
+			"rateSubtitle": "¿Qué te pareció la receta?",
 			"similar": "Recetas similares",
       "difficulty": {
         "easy": "Fácil",
@@ -119,18 +119,19 @@
   "profile": {
     "userRecipes": "Recetas de {username}"
   },
-  "actions": {
-    "share": "Compartir",
-    "save": "Guardar",
-    "edit": "Editar",
-    "cancel": "Cancelar",
-    "delete": "Eliminar",
-    "deleteRecipe": "Eliminar receta",
-    "confirmDelete": "¿Estás seguro de que deseas eliminar esta receta?",
-    "saveRecipe": "Guardar receta",
-    "showPreview": "Mostrar vista previa",
-    "error": "Ocurrió un error. Por favor, inténtalo de nuevo."
-  },
+	"actions": {
+		"share": "Compartir",
+		"save": "Guardar",
+		"rate": "Calificar",
+		"edit": "Editar",
+		"cancel": "Cancelar",
+		"delete": "Eliminar",
+		"deleteRecipe": "Eliminar receta",
+		"confirmDelete": "¿Estás seguro de que deseas eliminar esta receta?",
+		"saveRecipe": "Guardar receta",
+		"showPreview": "Mostrar vista previa",
+		"error": "Ocurrió un error. Por favor, inténtalo de nuevo."
+	},
   "settings": {
     "profile": {
       "title": "Perfil",
