@@ -41,7 +41,7 @@
                     <Button type="submit" class="w-full">
                         {m["actions.saveRecipe"]()}
                     </Button>
-                    <Button type="button" class="w-full" variant="outline" href={"/recipe/" + recipe.id}>
+                    <Button type="button" class="w-full" variant="outline" href={"/"}>
                         {m["actions.cancel"]()}
                     </Button>
                 </div>
