@@ -2,7 +2,7 @@
     import {Input} from "$lib/components/ui/input";
     import SelectComponent from "$lib/components/ui/select/SelectComponent.svelte";
     import RecipeCard from "$lib/components/recipe/widgets/RecipeCard.svelte";
-    import type {Difficulty, Recipe} from "$lib/server/db/recipe";
+    import type {Recipe} from "$lib/server/db/recipe";
     import {Button} from "$lib/components/ui/button";
     import { m } from "$lib/paraglide/messages";
     import {difficultySelectOptions} from "$lib/types/recipe";
@@ -13,11 +13,37 @@
         showFilters?: boolean;
     };
 
+    const cookTimeFilters = [
+        {
+            value: "",
+            label: m["recipe.list.cookTime.options.any"](),
+            matches: () => true
+        },
+        {
+            value: "0-15",
+            label: m["recipe.list.cookTime.options.upTo15"](),
+            matches: (time: number) => time <= 15
+        },
+        {
+            value: "15-30",
+            label: m["recipe.list.cookTime.options.from15To30"](),
+            matches: (time: number) => time >= 15 && time <= 30
+        },
+        {
+            value: "30-60",
+            label: m["recipe.list.cookTime.options.from30To60"](),
+            matches: (time: number) => time >= 30 && time <= 60
+        }
+    ] as const;
+
+    const cookTimeSelectOptions = cookTimeFilters.map(({value, label}) => ({value, label}));
+
     let {recipes, title, showFilters = true}: Props = $props();
 
     let search = $state("");
     let selectedDifficulty = $state("");
-    let filterActive = $derived(!!search || !!selectedDifficulty);
+    let selectedCookTime = $state("");
+    let filterActive = $derived(!!search || !!selectedDifficulty || !!selectedCookTime);
 
     const filteredRecipes = $derived.by(() => {
         return recipes.filter(recipe => {
@@ -28,13 +54,18 @@
             const matchesDifficulty =
                 !selectedDifficulty || String(recipe.difficulty) === selectedDifficulty;
 
-            return matchesSearch && matchesDifficulty;
+            const cookTime = Number(recipe.cookingTime ?? 0);
+            const selectedFilter = cookTimeFilters.find(({value}) => value === selectedCookTime);
+            const matchesCookTime = selectedFilter ? selectedFilter.matches(cookTime) : true;
+
+            return matchesSearch && matchesDifficulty && matchesCookTime;
         });
     });
 
     const clearFilters = () => {
         search = "";
         selectedDifficulty = "";
+        selectedCookTime = "";
     };
 </script>
 
@@ -54,6 +85,14 @@
                     name="category"
                     class=""
                     bind:value={selectedDifficulty}
+            />
+            <SelectComponent
+                    options={cookTimeSelectOptions}
+                    placeholder={m["recipe.list.cookTimePlaceholder"]()}
+                    groupLabel={m["recipe.list.cookTimeGroupLabel"]()}
+                    name="cookTime"
+                    class=""
+                    bind:value={selectedCookTime}
             />
             {#if filterActive}
                 <Button

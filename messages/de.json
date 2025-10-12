@@ -52,6 +52,16 @@
 			"searchPlaceholder": "Rezepte suchen",
 			"difficultyPlaceholder": "Schwierigkeitsgrad auswählen",
 			"groupLabel": "Kategorien",
+            "cookTimePlaceholder": "Kochzeit auswählen",
+            "cookTimeGroupLabel": "Kochzeit",
+			"cookTime": {
+				"options": {
+					"any": "Alle Kochzeiten",
+					"upTo15": "Bis 15 Min",
+					"from15To30": "15-30 Min",
+					"from30To60": "30-60 Min"
+				}
+			},
 			"results": "{count} Rezepte gefunden",
 			"noRecipes": "Keine Rezepte gefunden",
 			"clearFilters": "Filter zurücksetzen"
