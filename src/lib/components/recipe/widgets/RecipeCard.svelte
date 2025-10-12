@@ -21,14 +21,14 @@
     let {id, title, description, image, servings, cookingTime, rating, difficulty}: Props = $props();
 </script>
 
-<Card.Root class="w-full pt-0 overflow-hidden rounded-lg bg-card">
-    <Card.Header class="p-0 max-h-52 overflow-hidden relative">
+<Card.Root class="flex h-full w-full flex-col overflow-hidden rounded-lg bg-card pt-0">
+    <Card.Header class="relative h-52 overflow-hidden p-0">
         <Badge class="absolute right-3 top-3" variant="secondary">
             {difficultyLabels[difficulty] ?? difficulty}
         </Badge>
-        <img src={image} alt="">
+        <img class="h-full w-full object-cover" src={image} alt="">
     </Card.Header>
-    <Card.Content>
+    <Card.Content class="flex-1">
         <h1 class="font-bold text-lg text-card-foreground">{title}</h1>
         <p class="text-sm pt-2 text-muted-foreground">{description}</p>
         <div class="flex gap-2 pt-2 justify-between">
