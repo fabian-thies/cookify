@@ -4,13 +4,14 @@ import {
     difficultyToRecipe,
     favorite,
     ingredients,
+    recipeRating,
     recipes,
     steps,
     steps as stepsTable,
     tags as tagsTable
 } from "$lib/server/db/schema";
 import {getDifficultyId} from "$lib/server/utils";
-import {and, eq, getTableColumns, sql} from "drizzle-orm";
+import {and, desc, eq, getTableColumns, sql} from "drizzle-orm";
 import type {CreateRecipeInput, UpdateRecipeInput} from "$lib/types/recipe";
 
 export async function createRecipe({
@@ -149,15 +150,40 @@ export async function updateRecipe({
     return {id};
 }
 
-export async function getRecipes() {
+export async function getRecipes(offset = 0, limit?: number, orderBy?: "recent" | "popular") {
     const db = getDb();
-    return db.select({
+    let query = db.select({
         ...getTableColumns(recipes),
         difficulty: difficulty.difficulty,
     })
         .from(recipes)
         .innerJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
-        .innerJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId));
+        .innerJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
+        .offset(offset)
+        .$dynamic();
+
+    if (limit) {
+        query = query.limit(limit);
+    }
+
+    switch (orderBy) {
+        case "recent":
+            query = query.orderBy(desc(recipes.createdAt))
+            break;
+        case "popular":
+            query = query.orderBy(desc(recipes.viewCount))
+            break;
+    }
+
+    return query;
+}
+
+export async function getRecentRecipes() {
+    return getRecipes(0, undefined, "recent");
+}
+
+export async function getPopularRecipes() {
+    return getRecipes(0, undefined, "popular");
 }
 
 export async function getFavoriteRecipes() {
@@ -204,7 +230,7 @@ export async function getRecipesByUserId(userId: string) {
 export async function getRecipeFavoriteState(userId: string, recipeId: number) {
     const db = getDb();
     const rows = await db
-        .select({ favorite: favorite.favorite })
+        .select({favorite: favorite.favorite})
         .from(favorite)
         .where(and(eq(favorite.userId, userId), eq(favorite.recipeId, recipeId)));
 
@@ -246,6 +272,62 @@ export async function toggleRecipeFavorite(userId: string, recipeId: number) {
                 ${favorite.favorite}`,
             },
         });
+}
+
+export async function incrementRecipeViewCount(recipeId: number) {
+    const db = getDb();
+    return db.update(recipes)
+        .set({viewCount: sql`${recipes.viewCount} + 1`})
+        .where(eq(recipes.id, recipeId));
+}
+
+export async function getRecipeRatingSummary(recipeId: number) {
+    const db = getDb();
+    const [row] = await db
+        .select({
+            average: sql<number>`COALESCE(AVG(${recipeRating.rating})::float, 0)`,
+            count: sql<number>`COUNT(${recipeRating.id})::int`,
+        })
+        .from(recipeRating)
+        .where(eq(recipeRating.recipeId, recipeId));
+
+    const count = row?.count ?? 0;
+
+    return {
+        average: count > 0 ? row?.average ?? 0 : null,
+        count,
+    };
+}
+
+export async function getUserRecipeRating(userId: string, recipeId: number) {
+    const db = getDb();
+    const [row] = await db
+        .select({rating: recipeRating.rating})
+        .from(recipeRating)
+        .where(and(eq(recipeRating.userId, userId), eq(recipeRating.recipeId, recipeId)));
+
+    return row?.rating ?? null;
+}
+
+export async function upsertRecipeRating(userId: string, recipeId: number, rating: number) {
+    const db = getDb();
+
+    await db
+        .insert(recipeRating)
+        .values({
+            userId,
+            recipeId,
+            rating,
+        })
+        .onConflictDoUpdate({
+            target: [recipeRating.recipeId, recipeRating.userId],
+            set: {
+                rating,
+                updatedAt: new Date(),
+            },
+        });
+
+    return getRecipeRatingSummary(recipeId);
 }
 
 export type Recipe = Awaited<ReturnType<typeof getRecipes>>[number];

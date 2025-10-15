@@ -24,6 +24,7 @@
 	"nav": {
 		"navigation": "Navigation",
 		"recipes": "Rezepte",
+        "explore": "Entdecken",
 		"favorites": "Favoriten",
 		"profile": "Profil",
 		"settings": "Einstellungen",
@@ -36,9 +37,11 @@
 			"steps": "Schritte",
 			"forServings": "Für {count} Portionen",
 			"servingsCount": "{count} Portionen",
-			"duration": "{count} Min",
-			"reviews": "{count} Bewertungen",
-			"similar": "Ähnliche Rezepte",
+				"duration": "{count} Min",
+				"reviews": "{count} Bewertungen",
+				"ratePrompt": "Bewerte dieses Rezept",
+				"rateSubtitle": "Wie hat dir das Rezept gefallen?",
+				"similar": "Ähnliche Rezepte",
 			"difficulty": {
 				"easy": "Einfach",
 				"medium": "Mittel",
@@ -49,6 +52,16 @@
 			"searchPlaceholder": "Rezepte suchen",
 			"difficultyPlaceholder": "Schwierigkeitsgrad auswählen",
 			"groupLabel": "Kategorien",
+            "cookTimePlaceholder": "Kochzeit auswählen",
+            "cookTimeGroupLabel": "Kochzeit",
+			"cookTime": {
+				"options": {
+					"any": "Alle Kochzeiten",
+					"upTo15": "Bis 15 Min",
+					"from15To30": "15-30 Min",
+					"from30To60": "30-60 Min"
+				}
+			},
 			"results": "{count} Rezepte gefunden",
 			"noRecipes": "Keine Rezepte gefunden",
 			"clearFilters": "Filter zurücksetzen"
@@ -119,8 +132,10 @@
 	"actions": {
 		"share": "Teilen",
 		"save": "Speichern",
+		"rate": "Bewerten",
 		"deleteRecipe": "Rezept löschen",
 		"edit": "Bearbeiten",
+		"cancel": "Abbrechen",
 		"delete": "Löschen",
 		"confirmDelete": "Sicher, dass Sie dieses Rezept löschen möchten?",
 		"saveRecipe": "Rezept speichern",

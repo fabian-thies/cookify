@@ -14,17 +14,22 @@
     const { user }: { user: PublicUser } = $props();
 </script>
 
-<nav class="bg-background shadow-xs h-18 w-full flex items-center justify-between px-4 md:px-8">
+<nav class="bg-background shadow-xs h-18 w-full flex items-center justify-between px-4 md:px-8 relative">
     <a href="/">
         <h1 class="text-xl md:text-2xl font-bold text-foreground">cookify</h1>
     </a>
 
     <!-- Desktop Navigation -->
-    <div class="hidden md:block">
+    <div class="hidden md:block absolute left-1/2 -translate-x-1/2">
         <NavigationMenu.Root>
             <NavigationMenu.List>
                 <NavigationMenu.Item>
                     <NavigationMenu.Link href="/">
+                        {m["nav.explore"]()}
+                    </NavigationMenu.Link>
+                </NavigationMenu.Item>
+                <NavigationMenu.Item>
+                    <NavigationMenu.Link href="/recipe/search">
                         {m["nav.recipes"]()}
                     </NavigationMenu.Link>
                 </NavigationMenu.Item>

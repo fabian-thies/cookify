@@ -24,6 +24,7 @@
   "nav": {
     "navigation": "Navegación",
     "recipes": "Recetas",
+    "explore": "Explorar",
     "favorites": "Favoritos",
     "profile": "Perfil",
     "settings": "Configuración",
@@ -35,10 +36,12 @@
       "ingredients": "Ingredientes",
       "steps": "Pasos",
       "forServings": "Para {count} personas",
-      "servingsCount": "{count} porciones",
-      "duration": "{count} min",
-      "reviews": "{count} reseñas",
-      "similar": "Recetas similares",
+			"servingsCount": "{count} porciones",
+			"duration": "{count} min",
+			"reviews": "{count} reseñas",
+			"ratePrompt": "Valora esta receta",
+			"rateSubtitle": "¿Qué te pareció la receta?",
+			"similar": "Recetas similares",
       "difficulty": {
         "easy": "Fácil",
         "medium": "Medio",
@@ -49,6 +52,16 @@
       "searchPlaceholder": "Buscar recetas",
       "difficultyPlaceholder": "Selecciona una dificultad",
       "groupLabel": "Categorías",
+      "cookTimePlaceholder": "Selecciona un tiempo de cocción",
+      "cookTimeGroupLabel": "Tiempo de cocción",
+      "cookTime": {
+        "options": {
+          "any": "Cualquier tiempo",
+          "upTo15": "Hasta 15 min",
+          "from15To30": "15-30 min",
+          "from30To60": "30-60 min"
+        }
+      },
       "results": "{count} recetas encontradas",
       "noRecipes": "No se encontraron recetas",
       "clearFilters": "Limpiar filtros"
@@ -116,17 +129,19 @@
   "profile": {
     "userRecipes": "Recetas de {username}"
   },
-  "actions": {
-    "share": "Compartir",
-    "save": "Guardar",
-    "edit": "Editar",
-    "delete": "Eliminar",
-    "deleteRecipe": "Eliminar receta",
-    "confirmDelete": "¿Estás seguro de que deseas eliminar esta receta?",
-    "saveRecipe": "Guardar receta",
-    "showPreview": "Mostrar vista previa",
-    "error": "Ocurrió un error. Por favor, inténtalo de nuevo."
-  },
+	"actions": {
+		"share": "Compartir",
+		"save": "Guardar",
+		"rate": "Calificar",
+		"edit": "Editar",
+		"cancel": "Cancelar",
+		"delete": "Eliminar",
+		"deleteRecipe": "Eliminar receta",
+		"confirmDelete": "¿Estás seguro de que deseas eliminar esta receta?",
+		"saveRecipe": "Guardar receta",
+		"showPreview": "Mostrar vista previa",
+		"error": "Ocurrió un error. Por favor, inténtalo de nuevo."
+	},
   "settings": {
     "profile": {
       "title": "Perfil",

@@ -24,6 +24,7 @@
 	"nav": {
 		"navigation": "Navigation",
 		"recipes": "Recipes",
+        "explore": "Explore",
 		"favorites": "Favorites",
 		"profile": "Profile",
 		"settings": "Settings",
@@ -38,6 +39,8 @@
 			"servingsCount": "{count} servings",
 			"duration": "{count} min",
 			"reviews": "{count} reviews",
+			"ratePrompt": "Rate this recipe",
+			"rateSubtitle": "How did you like the recipe?",
 			"similar": "Similar recipes",
 			"difficulty": {
 				"easy": "Easy",
@@ -49,6 +52,16 @@
 			"searchPlaceholder": "Search recipes",
 			"difficultyPlaceholder": "Select a difficulty",
 			"groupLabel": "Categories",
+			"cookTimePlaceholder": "Select a cook time",
+			"cookTimeGroupLabel": "Cook time",
+			"cookTime": {
+				"options": {
+					"any": "Any cook time",
+					"upTo15": "Up to 15 min",
+					"from15To30": "15-30 min",
+					"from30To60": "30-60 min"
+				}
+			},
 			"results": "{count} recipes found",
 			"noRecipes": "No recipes found",
 			"clearFilters": "Clear filters"
@@ -119,7 +132,9 @@
 	"actions": {
 		"share": "Share",
 		"save": "Save",
+		"rate": "Rate",
 		"edit": "Edit",
+		"cancel": "Cancel",
 		"delete": "Delete",
 		"deleteRecipe": "Delete recipe",
 		"confirmDelete": "Are you sure you want to delete this recipe?",

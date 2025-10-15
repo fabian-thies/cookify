@@ -1,4 +1,5 @@
 import { m } from "$lib/paraglide/messages";
+import {DIFFICULTIES} from "$lib/constants";
 
 export interface CreateRecipeInput {
     title: string;
@@ -17,8 +18,6 @@ export interface UpdateRecipeInput extends CreateRecipeInput {
     id: number;
 }
 
-export const DIFFICULTIES = ['easy', 'medium', 'hard'] as const;
-
 export type Difficulty = typeof DIFFICULTIES[number];
 
 export const difficultyLabels: Record<Difficulty, string> = {
@@ -26,3 +25,8 @@ export const difficultyLabels: Record<Difficulty, string> = {
     medium: m["recipe.common.difficulty.medium"](),
     hard: m["recipe.common.difficulty.hard"]()
 };
+
+export const difficultySelectOptions = DIFFICULTIES.map(difficulty => ({
+    value: difficulty,
+    label: difficultyLabels[difficulty]
+}));

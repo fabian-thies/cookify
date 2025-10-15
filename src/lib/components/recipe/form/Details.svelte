@@ -108,9 +108,9 @@
         </div>
         <div class="flex w-full flex-col gap-1.5">
             <div class="flex items-start gap-4">
-                {#if previewUrl}
+                {#if previewUrl || recipe?.image}
                     <div class="flex-shrink-0">
-                        <img src={previewUrl} alt="Preview" class="w-16 h-16 object-cover rounded-md border border-border">
+                        <img src={previewUrl || recipe?.image} alt="Preview" class="w-16 h-16 object-cover rounded-md border border-border">
                     </div>
                 {/if}
                 <div class="flex-1 flex flex-col gap-1.5">

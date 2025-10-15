@@ -1,11 +1,9 @@
-import {type Actions, fail, redirect} from "@sveltejs/kit";
-import * as auth from "$lib/server/auth";
-import type {PageServerLoad} from "../../../.svelte-kit/types/src/routes/(auth)/login/$types";
-import {getDifficulties, getRecipes} from "$lib/server/db/recipe";
+import type {PageServerLoad} from "./$types";
+import {getPopularRecipes, getRecentRecipes, getRecipes} from "$lib/server/db/recipe";
 
 export const load: PageServerLoad = async (event) => {
-    const recipes = await getRecipes();
-    const difficulties = await getDifficulties();
+    const recentRecipes = await getRecentRecipes();
+    const popularRecipes = await getPopularRecipes();
 
-    return {recipes, difficulties};
+    return {recentRecipes, popularRecipes};
 }

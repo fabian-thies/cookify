@@ -1,4 +1,4 @@
-export const LANGUAGES = ['en', 'de', 'es'] as const;
+import {LANGUAGES} from "$lib/constants";
 
 export type UserLanguage = typeof LANGUAGES[number];
 
