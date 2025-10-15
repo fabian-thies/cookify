@@ -15,8 +15,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 12
-    networks:
-      - cookify_net
 
   app:
     build:
@@ -31,12 +29,6 @@ services:
       db:
         condition: service_healthy
     restart: unless-stopped
-    networks:
-      - cookify_net
 
 volumes:
   pgdata:
-
-networks:
-  cookify_net:
-    driver: bridge
