@@ -19,6 +19,7 @@ COPY --from=build /app/scripts /app/scripts
 COPY --from=build /app/drizzle /app/drizzle
 
 RUN npm i --no-save tsx
+RUN apk add --no-cache curl
 
 EXPOSE 3000
 
