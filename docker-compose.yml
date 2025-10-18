@@ -15,8 +15,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 12
-    networks:
-      - cookify_net
 
   app:
     build:
@@ -25,19 +23,12 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL}
       NODE_ENV: ${NODE_ENV}
-      PORT: ${PORT}
       ORIGIN: ${ORIGIN}
       BODY_SIZE_LIMIT: ${BODY_SIZE_LIMIT:-25M}
     depends_on:
       db:
         condition: service_healthy
     restart: unless-stopped
-    networks:
-      - cookify_net
 
 volumes:
   pgdata:
-
-networks:
-  cookify_net:
-    driver: bridge
