@@ -4,7 +4,7 @@
     import RecipeCard from "$lib/components/recipe/widgets/RecipeCard.svelte";
     import type {Recipe} from "$lib/server/db/recipe";
     import {Button} from "$lib/components/ui/button";
-    import { m } from "$lib/paraglide/messages";
+    import {m} from "$lib/paraglide/messages";
     import {difficultySelectOptions} from "$lib/types/recipe";
 
     type Props = {
@@ -75,7 +75,8 @@
     {/if}
 
     {#if showFilters}
-        <Input type="search" placeholder={m["recipe.list.searchPlaceholder"]()} class="flex justify-center" bind:value={search}/>
+        <Input type="search" placeholder={m["recipe.list.searchPlaceholder"]()} class="flex justify-center"
+               bind:value={search}/>
 
         <div class="flex flex-wrap gap-2 pb-6">
             <SelectComponent
@@ -111,7 +112,7 @@
                 <p class="text-muted-foreground text-md">{m["recipe.list.noRecipes"]()}</p>
             </div>
         {:else}
-            <p class="text-muted-foreground">{m["recipe.list.results"]({ count: filteredRecipes.length })}</p>
+            <p class="text-muted-foreground">{m["recipe.list.results"]({count: filteredRecipes.length})}</p>
         {/if}
     </div>
 

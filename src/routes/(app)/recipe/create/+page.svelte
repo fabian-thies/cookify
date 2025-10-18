@@ -5,7 +5,7 @@
     import Steps from "$lib/components/recipe/form/Steps.svelte";
     import Details from "$lib/components/recipe/form/Details.svelte";
     import {Button} from "$lib/components/ui/button/index.js";
-    import { m } from "$lib/paraglide/messages";
+    import {m} from "$lib/paraglide/messages";
     import {goto, invalidateAll} from "$app/navigation";
     import {toast} from "svelte-sonner";
 
@@ -13,7 +13,7 @@
 </script>
 
 <div class="container mx-auto mt-14">
-    <form method="POST" action="?/createRecipe" enctype="multipart/form-data" use:enhance={() => {
+    <form action="?/createRecipe" enctype="multipart/form-data" method="POST" use:enhance={() => {
         return async ({ result }) => {
             if (result.type === 'success') {
                 const recipeId = result.data?.id;
@@ -38,10 +38,10 @@
             <div class="space-y-6">
                 <Details/>
                 <div class="flex flex-col gap-3 mt-6">
-                    <Button type="submit" class="w-full">
+                    <Button class="w-full" type="submit">
                         {m["actions.saveRecipe"]()}
                     </Button>
-                    <Button type="button" class="w-full" variant="outline" href={"/"}>
+                    <Button class="w-full" href={"/"} type="button" variant="outline">
                         {m["actions.cancel"]()}
                     </Button>
                 </div>

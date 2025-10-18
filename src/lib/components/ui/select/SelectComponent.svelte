@@ -33,7 +33,7 @@
     );
 </script>
 
-<Select.Root type="single" {name} bind:value {disabled} {id}>
+<Select.Root bind:value {disabled} {id} {name} type="single">
     <Select.Trigger class={className + " bg-background" }>
         {triggerContent}
     </Select.Trigger>

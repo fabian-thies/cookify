@@ -18,7 +18,7 @@ export const load: PageServerLoad = async (event) => {
     const steps = await getSteps(recipeId);
     const tags = await getTags(recipeId);
 
-    if(!recipe) {
+    if (!recipe) {
         error(404, {
             message: "Recipe not found",
         })
@@ -43,13 +43,13 @@ export const actions = {
         let imageUrl: string;
         if (picture && picture.size > 0) {
             if (picture.size > 15 * 1024 * 1024) {
-                return fail(400, { invalid: true, pictureTooLarge: true });
+                return fail(400, {invalid: true, pictureTooLarge: true});
             }
             try {
                 imageUrl = await saveImage(picture);
             } catch (e) {
                 console.error('Image save failed', e);
-                return fail(500, { internalError: true, imageSaveFailed: true });
+                return fail(500, {internalError: true, imageSaveFailed: true});
             }
         } else {
             const existing = await getRecipeById(Number(params.recipeId));

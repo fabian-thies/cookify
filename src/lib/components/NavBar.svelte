@@ -6,12 +6,12 @@
     import {Button} from "$lib/components/ui/button";
     import {Menu, Plus} from "lucide-svelte";
     import type {PublicUser} from "$lib/server/db/schema";
-    import { m } from "$lib/paraglide/messages.js";
+    import {m} from "$lib/paraglide/messages.js";
     import {Separator} from "$lib/components/ui/separator";
 
     let isOpen = $state(false);
 
-    const { user }: { user: PublicUser } = $props();
+    const {user}: { user: PublicUser } = $props();
 </script>
 
 <nav class="bg-background shadow-xs h-18 w-full flex items-center justify-between px-4 md:px-8 relative">
@@ -46,9 +46,9 @@
         <!-- Mobile Menu Button -->
         <Sheet.Root bind:open={isOpen}>
             <Sheet.Trigger class="md:hidden">
-                <Menu class="h-5 w-5" />
+                <Menu class="h-5 w-5"/>
             </Sheet.Trigger>
-            <Sheet.Content side="left" class="w-80">
+            <Sheet.Content class="w-80" side="left">
                 <Sheet.Header>
                     <Sheet.Title>{m["nav.navigation"]()}</Sheet.Title>
                 </Sheet.Header>
@@ -62,15 +62,15 @@
                     <a href="/recipe/create" onclick={() => isOpen = false}>
                         {m["nav.create"]()}
                     </a>
-                    <Separator />
+                    <Separator/>
                     <a href="/profile/{user.id}" onclick={() => isOpen = false}>
                         {m["nav.profile"]()}
                     </a>
                     <a href="/settings" onclick={() => isOpen = false}>
                         {m["nav.settings"]()}
                     </a>
-                    <form method="post" action="/logout" class="mt-4 text-destructive">
-                        <Button type="submit" variant="outline" class="w-full hover:cursor-pointer">
+                    <form action="/logout" class="mt-4 text-destructive" method="post">
+                        <Button class="w-full hover:cursor-pointer" type="submit" variant="outline">
                             {m["logout"]()}
                         </Button>
                     </form>
@@ -82,7 +82,7 @@
         {#if user}
             <a href="/recipe/create" class="hidden md:inline-block">
                 <Button variant="outline" class="mr-2">
-                    <Plus class="h-4 w-4 mr-2" />{m["nav.create"]()}
+                    <Plus class="h-4 w-4 mr-2"/>{m["nav.create"]()}
                 </Button>
             </a>
             <DropdownMenu.Root>

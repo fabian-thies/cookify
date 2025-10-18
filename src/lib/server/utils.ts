@@ -33,10 +33,14 @@ export const hashPassword = async (password: string): Promise<string> => {
 
 export const getDifficultyId = (difficulty: string): number => {
     switch (difficulty.toLowerCase()) {
-        case 'easy': return 1;
-        case 'medium': return 2;
-        case 'hard': return 3;
-        default: throw new Error('Invalid difficulty');
+        case 'easy':
+            return 1;
+        case 'medium':
+            return 2;
+        case 'hard':
+            return 3;
+        default:
+            throw new Error('Invalid difficulty');
     }
 }
 
@@ -59,7 +63,7 @@ const toArrayBuffer = (buf: Buffer): ArrayBuffer =>
     <ArrayBuffer>buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
 
 export async function saveImage(file: File): Promise<string> {
-    await fs.mkdir(uploadDir, { recursive: true });
+    await fs.mkdir(uploadDir, {recursive: true});
 
     const arr = await file.arrayBuffer();
     const input = Buffer.from(arr);

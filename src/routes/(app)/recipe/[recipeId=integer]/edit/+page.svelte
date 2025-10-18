@@ -5,7 +5,7 @@
     import Steps from "$lib/components/recipe/form/Steps.svelte";
     import Details from "$lib/components/recipe/form/Details.svelte";
     import {Button} from "$lib/components/ui/button/index.js";
-    import { m } from "$lib/paraglide/messages";
+    import {m} from "$lib/paraglide/messages";
     import {goto} from "$app/navigation";
     import {toast} from "svelte-sonner";
 
@@ -17,7 +17,7 @@
 </script>
 
 <div class="container mx-auto mt-14">
-    <form method="POST" action="?/updateRecipe" enctype="multipart/form-data" use:enhance={() => {
+    <form action="?/updateRecipe" enctype="multipart/form-data" method="POST" use:enhance={() => {
         return async ({ result }) => {
             if (result.type === 'success') {
                 const recipeId = result.data?.id;
@@ -35,17 +35,17 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="space-y-6 lg:col-span-2">
                 <General {recipe}/>
-                <Ingredients {recipe} {ingredients}/>
+                <Ingredients {ingredients} {recipe}/>
                 <Steps {steps}/>
             </div>
 
             <div class="space-y-6">
                 <Details {recipe}/>
                 <div class="flex flex-col gap-3 mt-6">
-                    <Button type="submit" class="w-full">
+                    <Button class="w-full" type="submit">
                         {m["actions.saveRecipe"]()}
                     </Button>
-                    <Button type="button" class="w-full" variant="outline" href={"/recipe/" + recipe.id}>
+                    <Button class="w-full" href={"/recipe/" + recipe.id} type="button" variant="outline">
                         {m["actions.cancel"]()}
                     </Button>
                 </div>

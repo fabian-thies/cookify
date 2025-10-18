@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { enhance } from '$app/forms';
+    import {enhance} from '$app/forms';
     import {Button} from "$lib/components/ui/button/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
     import * as Alert from "$lib/components/ui/alert/index.js";
@@ -8,7 +8,7 @@
     import {Input} from "$lib/components/ui/input/index.js";
     import {cn} from "$lib/utils.js";
     import type {HTMLAttributes} from "svelte/elements";
-    import { m } from "$lib/paraglide/messages.js";
+    import {m} from "$lib/paraglide/messages.js";
     import {page} from "$app/state";
 
     interface Props extends HTMLAttributes<HTMLDivElement> {
@@ -23,10 +23,10 @@
     const redirectTo = $derived(page.url.searchParams.get('redirectTo'));
 </script>
 
-<div class={cn("flex flex-col gap-6", className)} {...restProps}>
+<div {...restProps} class={cn("flex flex-col gap-6", className)}>
     {#if form?.message}
         <Alert.Root variant="destructive">
-            <CircleAlertIcon class="size-4" />
+            <CircleAlertIcon class="size-4"/>
             <Alert.Title>Error</Alert.Title>
             <Alert.Description>
                 {form.message}
@@ -43,9 +43,9 @@
             </Card.Description>
         </Card.Header>
         <Card.Content>
-            <form method="post" action="{isLogin ? '?/login' : '?/register'}" use:enhance>
+            <form action="{isLogin ? '?/login' : '?/register'}" method="post" use:enhance>
                 {#if redirectTo}
-                    <input type="hidden" name="redirectTo" value={redirectTo} />
+                    <input type="hidden" name="redirectTo" value={redirectTo}/>
                 {/if}
                 <div class="grid gap-6">
                     <div class="grid gap-6">
@@ -54,9 +54,9 @@
                             <Input
                                     id="username-{id}"
                                     name="username"
-                                    type="text"
                                     placeholder={m["login.enterUsername"]()}
                                     required
+                                    type="text"
                             />
                         </div>
                         {#if !isLogin}
@@ -74,16 +74,16 @@
                         <div class="grid gap-3">
                             <div class="flex items-center">
                                 <Label for="password-{id}">{m["login.password"]()}</Label>
-<!--                                {#if isLogin}
-                                    <a
-                                            href="##"
-                                            class="ml-auto text-sm underline-offset-4 hover:underline"
-                                    >
-                                        {m["login.forgotPassword"]()}
-                                    </a>
-                                {/if}-->
+                                <!--                                {#if isLogin}
+                                                                    <a
+                                                                            href="##"
+                                                                            class="ml-auto text-sm underline-offset-4 hover:underline"
+                                                                    >
+                                                                        {m["login.forgotPassword"]()}
+                                                                    </a>
+                                                                {/if}-->
                             </div>
-                            <Input id="password-{id}" name="password" type="password" required/>
+                            <Input id="password-{id}" name="password" required type="password"/>
                         </div>
                         {#if !isLogin}
                             <div class="grid gap-3">
@@ -97,16 +97,16 @@
                                 />
                             </div>
                         {/if}
-                        <Button type="submit" class="w-full">
+                        <Button class="w-full" type="submit">
                             {isLogin ? m["login.signIn"]() : m["login.createAccountButton"]()}
                         </Button>
                     </div>
                     <div class="text-center text-sm">
                         {isLogin ? m["login.noAccount"]() : m["login.haveAccount"]()}
                         <button
-                                type="button"
-                                onclick={() => isLogin = !isLogin}
                                 class="underline underline-offset-4 hover:no-underline cursor-pointer"
+                                onclick={() => isLogin = !isLogin}
+                                type="button"
                         >
                             {isLogin ? m["login.signUp"]() : m["login.signInLink"]()}
                         </button>

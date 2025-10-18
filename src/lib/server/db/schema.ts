@@ -2,19 +2,19 @@ import {integer, boolean, pgTable, primaryKey, serial, text, timestamp, unique} 
 import {DIFFICULTIES, LANGUAGES} from "../../constants";
 
 export const user = pgTable('user', {
-	id: text('id').primaryKey(),
-	email: text('email').notNull().unique(),
-	age: integer('age'),
-	username: text('username').notNull().unique(),
-	passwordHash: text('password_hash').notNull(),
+    id: text('id').primaryKey(),
+    email: text('email').notNull().unique(),
+    age: integer('age'),
+    username: text('username').notNull().unique(),
+    passwordHash: text('password_hash').notNull(),
     avatar: text('avatar'),
     language: text('language', {enum: [...LANGUAGES]}).notNull().default(LANGUAGES[0]),
 });
 
 export const session = pgTable('session', {
-	id: text('id').primaryKey(),
-	userId: text('user_id').notNull().references(() => user.id),
-	expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull()
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull().references(() => user.id),
+    expiresAt: timestamp('expires_at', {withTimezone: true, mode: 'date'}).notNull()
 });
 
 export const recipes = pgTable('recipes', {
@@ -58,10 +58,10 @@ export const steps = pgTable('steps', {
 });
 
 export const favorite = pgTable('favorite', {
-    id: serial('id').primaryKey(),
-    recipeId: integer('recipe_id').notNull().references(() => recipes.id),
-    userId: text('user_id').notNull().references(() => user.id),
-    favorite: boolean('favorite').notNull().default(false),
+        id: serial('id').primaryKey(),
+        recipeId: integer('recipe_id').notNull().references(() => recipes.id),
+        userId: text('user_id').notNull().references(() => user.id),
+        favorite: boolean('favorite').notNull().default(false),
     }, (t) => [
         unique('favorite_recipe_user_unique').on(t.recipeId, t.userId),
     ]

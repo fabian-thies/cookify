@@ -3,8 +3,8 @@ import {fail} from "@sveltejs/kit";
 import * as v from 'valibot';
 import {saveProfile, updatePassword} from "$lib/server/db/user";
 import {hashPassword, saveImage} from "$lib/server/utils";
-import { isUserLanguage } from "$lib/types/languages";
-import type { UserLanguage } from "$lib/types/languages";
+import {isUserLanguage} from "$lib/types/languages";
+import type {UserLanguage} from "$lib/types/languages";
 import {LANGUAGES} from "$lib/constants";
 
 const ProfileSchema = v.object({
@@ -41,7 +41,7 @@ export const actions = {
         const avatarInput = formData.get("avatar");
         let avatarUrl: string = locals.user.avatar ?? "";
 
-        if(avatarInput && avatarInput instanceof File && avatarInput.size > 0) {
+        if (avatarInput && avatarInput instanceof File && avatarInput.size > 0) {
             try {
                 avatarUrl = await saveImage(avatarInput);
             } catch (e) {
@@ -52,7 +52,7 @@ export const actions = {
 
         await saveProfile(locals.user.id, parsed.username, parsed.email, avatarUrl, parsed.language);
 
-        if(parsed.password && parsed.password.length > 0) {
+        if (parsed.password && parsed.password.length > 0) {
             await updatePassword(locals.user.id, await hashPassword(parsed.password))
         }
     }

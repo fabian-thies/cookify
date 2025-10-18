@@ -1,18 +1,18 @@
 <script lang="ts">
-    import { Label } from "$lib/components/ui/label/index.js";
-    import { Input } from "$lib/components/ui/input/index.js";
+    import {Label} from "$lib/components/ui/label/index.js";
+    import {Input} from "$lib/components/ui/input/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
-    import { m } from "$lib/paraglide/messages";
+    import {m} from "$lib/paraglide/messages";
     import {Clock, Users, X} from "lucide-svelte";
     import SelectComponent from "$lib/components/ui/select/SelectComponent.svelte";
     import {Badge} from "$lib/components/ui/badge";
 
-    const { recipe } = $props();
+    const {recipe} = $props();
 
     const difficulties = [
-        { value: "easy", label: m["recipe.common.difficulty.easy"]() },
-        { value: "medium", label: m["recipe.common.difficulty.medium"]() },
-        { value: "hard", label: m["recipe.common.difficulty.hard"]() }
+        {value: "easy", label: m["recipe.common.difficulty.easy"]()},
+        {value: "medium", label: m["recipe.common.difficulty.medium"]()},
+        {value: "hard", label: m["recipe.common.difficulty.hard"]()}
     ];
 
     type TagLike = { name: string };
@@ -68,22 +68,28 @@
     </Card.Header>
     <Card.Content class="flex flex-col gap-6">
         <div class="flex w-full flex-col gap-1.5">
-            <Label for="cookTime"><Clock size={18}/> {m["recipe.form.details.cookTimeLabel"]()}</Label>
-            <Input type="number" id="cookTime" name="cookTime" min="0" placeholder={m["recipe.form.details.cookTimePlaceholder"]()} required value={recipe?.cookingTime || ''}/>
+            <Label for="cookTime">
+                <Clock size={18}/> {m["recipe.form.details.cookTimeLabel"]()}</Label>
+            <Input id="cookTime" min="0" name="cookTime" placeholder={m["recipe.form.details.cookTimePlaceholder"]()}
+                   required type="number"
+                   value={recipe?.cookingTime || ''}/>
         </div>
         <div class="flex w-full flex-col gap-1.5">
-            <Label for="servings"><Users size={18}/> {m["recipe.form.details.servingsLabel"]()}</Label>
-            <Input type="number" id="servings" name="servings" min="1" placeholder={m["recipe.form.details.servingsPlaceholder"]()} required value={recipe?.servings || ''}/>
+            <Label for="servings">
+                <Users size={18}/> {m["recipe.form.details.servingsLabel"]()}</Label>
+            <Input id="servings" min="1" name="servings" placeholder={m["recipe.form.details.servingsPlaceholder"]()}
+                   required type="number"
+                   value={recipe?.servings || ''}/>
         </div>
         <div class="flex w-full flex-col gap-1.5">
             <Label for="difficulty">{m["recipe.form.details.difficultyGroupLabel"]()}</Label>
             <SelectComponent
+                    class="w-full"
+                    groupLabel={m["recipe.form.details.difficultyGroupLabel"]()}
                     id="difficulty"
                     name="difficulty"
                     options={difficulties}
-                    placeholder={m["recipe.form.details.difficultyPlaceholder"]()}
-                    groupLabel={m["recipe.form.details.difficultyGroupLabel"]()}
-                    class="w-full" value={recipe?.difficulty.toLowerCase() || ''}/>
+                    placeholder={m["recipe.form.details.difficultyPlaceholder"]()} value={recipe?.difficulty.toLowerCase() || ''}/>
         </div>
         <div class="flex w-full flex-col gap-1.5">
             <Label for="tagInput">{m["recipe.form.details.tagsLabel"]()}</Label>
@@ -110,12 +116,14 @@
             <div class="flex items-start gap-4">
                 {#if previewUrl || recipe?.image}
                     <div class="flex-shrink-0">
-                        <img src={previewUrl || recipe?.image} alt="Preview" class="w-16 h-16 object-cover rounded-md border border-border">
+                        <img src={previewUrl || recipe?.image} alt="Preview"
+                             class="w-16 h-16 object-cover rounded-md border border-border">
                     </div>
                 {/if}
                 <div class="flex-1 flex flex-col gap-1.5">
                     <Label for="picture">{m["recipe.form.details.previewLabel"]()}</Label>
-                    <Input id="picture" type="file" accept="image/*" name="picture" required={!recipe} bind:files={coverFile}/>
+                    <Input accept="image/*" bind:files={coverFile} id="picture" name="picture" required={!recipe}
+                           type="file"/>
                 </div>
             </div>
         </div>

@@ -1,26 +1,26 @@
 <script lang="ts">
-    import { Button } from "$lib/components/ui/button/index.js";
-    import { Label } from "$lib/components/ui/label/index.js";
+    import {Button} from "$lib/components/ui/button/index.js";
+    import {Label} from "$lib/components/ui/label/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
-    import { Textarea } from "$lib/components/ui/textarea";
-    import { Minus, Plus } from "lucide-svelte";
-    import { onMount } from "svelte";
-    import type { Step } from "$lib/server/db/schema";
-    import { m } from "$lib/paraglide/messages";
+    import {Textarea} from "$lib/components/ui/textarea";
+    import {Minus, Plus} from "lucide-svelte";
+    import {onMount} from "svelte";
+    import type {Step} from "$lib/server/db/schema";
+    import {m} from "$lib/paraglide/messages";
 
-    const { steps: stepsProp = [] } = $props();
+    const {steps: stepsProp = []} = $props();
 
     let steps: Step[] = $state(stepsProp);
 
     const addStep = () => {
-        steps = [...steps, { number: steps.length + 1, step: "" } as Step];
+        steps = [...steps, {number: steps.length + 1, step: ""} as Step];
     };
 
     const removeStep = (index: number) => {
         if (steps.length > 1) {
             steps = steps
                 .filter((_, i) => i !== index)
-                .map((it, i) => ({ ...it, number: i + 1 }));
+                .map((it, i) => ({...it, number: i + 1}));
         }
     };
 
@@ -47,7 +47,7 @@
                     placeholder={m["recipe.form.steps.stepPlaceholder"]()}
                     required
             />
-            <input type="hidden" name="instructions_step[]" value={item.number} />
+            <input type="hidden" name="instructions_step[]" value={item.number}/>
         </div>
 
         <div class="flex w-full max-w-10 flex-col gap-1.5">
@@ -59,7 +59,7 @@
                     disabled={steps.length === 1}
                     onclick={() => removeStep(index)}
             >
-                <Minus />
+                <Minus/>
             </Button>
         </div>
     </div>
@@ -80,12 +80,12 @@
 
     <Card.Footer>
         <Button
-                type="button"
-                variant="outline"
                 class="w-full hover:cursor-pointer"
                 onclick={addStep}
+                type="button"
+                variant="outline"
         >
-            <Plus />{m["recipe.form.steps.addButton"]()}
+            <Plus/>{m["recipe.form.steps.addButton"]()}
         </Button>
     </Card.Footer>
 </Card.Root>

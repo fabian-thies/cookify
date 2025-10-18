@@ -4,7 +4,7 @@
     import {Separator} from "$lib/components/ui/separator/index.js";
     import {Badge} from "$lib/components/ui/badge/index.js";
     import {Button, buttonVariants} from "$lib/components/ui/button/index.js";
-    import { m } from "$lib/paraglide/messages";
+    import {m} from "$lib/paraglide/messages";
     import {deleteRecipe, likeRecipe, rateRecipe} from "$lib/functions/recipe.remote";
     import {toast} from "svelte-sonner";
     import {goto} from "$app/navigation";
@@ -92,11 +92,11 @@
     <h1 class="text-4xl font-bold">{title}</h1>
     <div class="text-muted-foreground h-5 flex items-center gap-4 mb-4 mt-4">
         <div class="flex items-center gap-2">
-            <Star size={20} fill="#fbbf24" color="#fbbf24"/>
+            <Star color="#fbbf24" fill="#fbbf24" size={20}/>
             <span>{averageRating != null ? averageRating.toFixed(1) : "–"}</span>
         </div>
         <Separator orientation="vertical"/>
-        <p>{m["recipe.common.reviews"]({ count: ratingCount })}</p>
+        <p>{m["recipe.common.reviews"]({count: ratingCount})}</p>
     </div>
     <p class="text-lg text-muted-foreground mb-6">{description}
     </p>
@@ -105,14 +105,14 @@
         <div class="flex items-center flex-wrap gap-4 sm:gap-6 h-auto sm:h-5">
             <div class="flex items-center gap-2">
                 <Clock size={18}/>
-                <span class="font-medium">{m["recipe.common.duration"]({ count: cookingTime })}</span>
+                <span class="font-medium">{m["recipe.common.duration"]({count: cookingTime})}</span>
             </div>
-            <Separator orientation="vertical" class="hidden sm:block"/>
+            <Separator class="hidden sm:block" orientation="vertical"/>
             <div class="flex items-center gap-2">
                 <Users size={18}/>
-                <span class="font-medium">{m["recipe.common.servingsCount"]({ count: servings })}</span>
+                <span class="font-medium">{m["recipe.common.servingsCount"]({count: servings})}</span>
             </div>
-            <Separator orientation="vertical" class="hidden sm:block"/>
+            <Separator class="hidden sm:block" orientation="vertical"/>
             <div class="flex items-center gap-2">
                 <Badge variant="secondary">
                     {difficultyLabels[difficulty]}
@@ -122,13 +122,13 @@
         <div class="flex items-center flex-wrap gap-2">
             <Dialog.Root>
                 <Dialog.Trigger
-                    class={buttonVariants({ variant: "outline" }) + " flex-1 sm:flex-none min-w-0"}
+                        class={buttonVariants({ variant: "outline" }) + " flex-1 sm:flex-none min-w-0"}
                 >
                     <Star
-                        size={16}
-                        fill={userRating != null ? "#fbbf24" : "none"}
-                        color={userRating != null ? "#fbbf24" : "currentColor"}
-                        class="sm:w-[18px] sm:h-[18px]"
+                            class="sm:w-[18px] sm:h-[18px]"
+                            color={userRating != null ? "#fbbf24" : "currentColor"}
+                            fill={userRating != null ? "#fbbf24" : "none"}
+                            size={16}
                     />
                     <span class="hidden sm:inline">
                         {m["actions.rate"]()}
@@ -143,25 +143,25 @@
                     </Dialog.Header>
                     <div class="flex flex-col items-center gap-4">
                         <div
-                            class="flex items-center gap-1"
-                            role="group"
-                            onmouseleave={() => hoverRating = null}
+                                class="flex items-center gap-1"
+                                onmouseleave={() => hoverRating = null}
+                                role="group"
                         >
                             {#each stars as star}
                                 <button
-                                    type="button"
-                                    class="p-1 cursor-pointer disabled:cursor-not-allowed disabled:opacity-70"
-                                    onmouseenter={() => hoverRating = star}
-                                    onfocus={() => hoverRating = star}
-                                    onblur={() => hoverRating = null}
-                                    onmouseleave={() => hoverRating = null}
-                                    onclick={() => handleRate(star)}
-                                    disabled={isSubmittingRating}
+                                        type="button"
+                                        class="p-1 cursor-pointer disabled:cursor-not-allowed disabled:opacity-70"
+                                        onmouseenter={() => hoverRating = star}
+                                        onfocus={() => hoverRating = star}
+                                        onblur={() => hoverRating = null}
+                                        onmouseleave={() => hoverRating = null}
+                                        onclick={() => handleRate(star)}
+                                        disabled={isSubmittingRating}
                                 >
                                     <Star
-                                        size={32}
-                                        fill={starFillColor(star)}
-                                        color={starStrokeColor(star)}
+                                            size={32}
+                                            fill={starFillColor(star)}
+                                            color={starStrokeColor(star)}
                                     />
                                 </button>
                             {/each}
@@ -169,27 +169,27 @@
                     </div>
                     <Dialog.Footer class="flex justify-end">
                         <Dialog.Close
-                            class={buttonVariants({ variant: "outline" })}
-                            onclick={() => hoverRating = null}
+                                class={buttonVariants({ variant: "outline" })}
+                                onclick={() => hoverRating = null}
                         >
                             {m["actions.cancel"]()}
                         </Dialog.Close>
                     </Dialog.Footer>
                 </Dialog.Content>
             </Dialog.Root>
-            <Button variant="outline" class="flex-1 sm:flex-none min-w-0">
+            <Button class="flex-1 sm:flex-none min-w-0" variant="outline">
                 <Share2 class="w-4 h-4 sm:w-5 sm:h-5"/>
                 <span class="hidden sm:inline">{m["actions.share"]()}</span>
             </Button>
-            <Button onclick={async () => {
+            <Button class="flex-1 sm:flex-none min-w-0" onclick={async () => {
             try {
                 isFavorite = !isFavorite;
                 await likeRecipe({recipeId});
             } catch (e) {
                 toast.error(m["actions.error"]());
             }
-        }} class="flex-1 sm:flex-none min-w-0">
-                <Heart fill={isFavorite ? "white" : "none"} class="w-4 h-4 sm:w-5 sm:h-5"/>
+        }}>
+                <Heart class="w-4 h-4 sm:w-5 sm:h-5" fill={isFavorite ? "white" : "none"}/>
                 <span class="hidden sm:inline">{m["actions.save"]()}</span>
             </Button>
             {#if recipeOwner}
@@ -226,6 +226,6 @@
         </div>
     </div>
     <div class="mb-6">
-        <img class="w-full h-96 object-cover rounded-lg shadow-lg border" src={image} alt="">
+        <img alt="" class="w-full h-96 object-cover rounded-lg shadow-lg border" src={image}>
     </div>
 </div>

@@ -13,13 +13,13 @@ import {error} from "@sveltejs/kit";
 export const load: PageServerLoad = async (event) => {
     const recipeId = Number(event.params.recipeId);
 
-    if(Number.isNaN(recipeId)) {
+    if (Number.isNaN(recipeId)) {
         throw error(400, 'Wrong Recipe-ID');
     }
 
     const recipe = await getRecipeById(recipeId);
 
-    if(recipe === null) {
+    if (recipe === null) {
         throw error(404, 'Recipe not found')
     }
 

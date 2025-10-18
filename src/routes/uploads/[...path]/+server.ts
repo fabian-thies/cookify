@@ -1,7 +1,7 @@
-import { error, type RequestHandler } from '@sveltejs/kit';
+import {error, type RequestHandler} from '@sveltejs/kit';
 import path from 'node:path';
-import { Readable } from 'node:stream';
-import { createReadStream } from 'node:fs';
+import {Readable} from 'node:stream';
+import {createReadStream} from 'node:fs';
 
 const uploadsDir = path.resolve(process.cwd(), 'uploads');
 
@@ -15,7 +15,7 @@ const MIME_TYPES: Record<string, string> = {
     '.webp': 'image/webp'
 };
 
-export const GET: RequestHandler = async ({ params }) => {
+export const GET: RequestHandler = async ({params}) => {
     const slug = params.path;
     if (!slug) throw error(404, 'Not found');
 

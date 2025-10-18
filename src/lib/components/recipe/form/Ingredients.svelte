@@ -5,10 +5,10 @@
     import * as Card from "$lib/components/ui/card/index.js";
     import {Minus, Plus} from "lucide-svelte";
     import {onMount} from "svelte";
-    import { m } from "$lib/paraglide/messages";
+    import {m} from "$lib/paraglide/messages";
     import type {Ingredient} from "$lib/server/db/schema";
 
-    const { recipe, ingredients: ingredientsProp = [] } = $props();
+    const {recipe, ingredients: ingredientsProp = []} = $props();
 
     type IngredientDraft = {
         id: number | null;
@@ -25,7 +25,7 @@
     const addIngredient = () => {
         ingredients = [
             ...ingredients,
-            { id: null, recipeId: recipe?.id, name: "", quantity: null, unit: "" }
+            {id: null, recipeId: recipe?.id, name: "", quantity: null, unit: ""}
         ];
     };
 
@@ -84,7 +84,7 @@
                     disabled={ingredients.length === 1}
                     onclick={() => removeIngredient(index)}
             >
-                <Minus />
+                <Minus/>
             </Button>
         </div>
     </div>
@@ -102,8 +102,8 @@
         {/each}
     </Card.Content>
     <Card.Footer>
-        <Button type="button" variant="outline" class="w-full hover:cursor-pointer" onclick={addIngredient}>
-            <Plus />{m["recipe.form.ingredients.addButton"]()}
+        <Button class="w-full hover:cursor-pointer" onclick={addIngredient} type="button" variant="outline">
+            <Plus/>{m["recipe.form.ingredients.addButton"]()}
         </Button>
     </Card.Footer>
 </Card.Root>

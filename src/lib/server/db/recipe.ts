@@ -285,8 +285,11 @@ export async function getRecipeRatingSummary(recipeId: number) {
     const db = getDb();
     const [row] = await db
         .select({
-            average: sql<number>`COALESCE(AVG(${recipeRating.rating})::float, 0)`,
-            count: sql<number>`COUNT(${recipeRating.id})::int`,
+            average: sql<number>`COALESCE
+                (AVG(${recipeRating.rating})::float, 0)`,
+            count: sql<number>`COUNT
+                (${recipeRating.id})
+                ::int`,
         })
         .from(recipeRating)
         .where(eq(recipeRating.recipeId, recipeId));

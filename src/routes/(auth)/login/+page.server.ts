@@ -10,103 +10,103 @@ import {validateEmail, validatePassword, validateUsername} from "$lib/utils";
 import {hashPassword} from "$lib/server/utils";
 
 export const load: PageServerLoad = async (event) => {
-	if (event.locals.user) {
-		return redirect(302, '/');
-	}
+    if (event.locals.user) {
+        return redirect(302, '/');
+    }
 
-	return {};
+    return {};
 };
 
 export const actions: Actions = {
-        login: async (event) => {
-                const formData = await event.request.formData();
-                const username = formData.get('username');
-                const password = formData.get('password');
-                const redirectTo = formData.get('redirectTo');
+    login: async (event) => {
+        const formData = await event.request.formData();
+        const username = formData.get('username');
+        const password = formData.get('password');
+        const redirectTo = formData.get('redirectTo');
 
-                if (!validateUsername(username)) {
-                        return fail(400, { message: 'Invalid username (min 3, max 31 characters, alphanumeric only)' });
-                }
-                if (!validatePassword(password)) {
-                        return fail(400, { message: 'Invalid password (min 6, max 255 characters)' });
-                }
+        if (!validateUsername(username)) {
+            return fail(400, {message: 'Invalid username (min 3, max 31 characters, alphanumeric only)'});
+        }
+        if (!validatePassword(password)) {
+            return fail(400, {message: 'Invalid password (min 6, max 255 characters)'});
+        }
 
-                const db = getDb();
-                const results = await db
-                        .select()
-                        .from(table.user)
-			.where(eq(table.user.username, username));
+        const db = getDb();
+        const results = await db
+            .select()
+            .from(table.user)
+            .where(eq(table.user.username, username));
 
-		const existingUser = results.at(0);
-		if (!existingUser) {
-			return fail(400, { message: 'Incorrect username or password' });
-		}
+        const existingUser = results.at(0);
+        if (!existingUser) {
+            return fail(400, {message: 'Incorrect username or password'});
+        }
 
-		const validPassword = await verify(existingUser.passwordHash, password, {
-			memoryCost: 19456,
-			timeCost: 2,
-			outputLen: 32,
-			parallelism: 1,
-		});
-		if (!validPassword) {
-			return fail(400, { message: 'Incorrect username or password' });
-		}
+        const validPassword = await verify(existingUser.passwordHash, password, {
+            memoryCost: 19456,
+            timeCost: 2,
+            outputLen: 32,
+            parallelism: 1,
+        });
+        if (!validPassword) {
+            return fail(400, {message: 'Incorrect username or password'});
+        }
 
-		const sessionToken = auth.generateSessionToken();
-		const session = await auth.createSession(sessionToken, existingUser.id);
-		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
+        const sessionToken = auth.generateSessionToken();
+        const session = await auth.createSession(sessionToken, existingUser.id);
+        auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
         if (redirectTo && typeof redirectTo === 'string' && redirectTo.startsWith('/') && !redirectTo.startsWith('//')) {
             return redirect(302, redirectTo);
         }
 
-		return redirect(302, '/');
-	},
-	register: async (event) => {
-		const formData = await event.request.formData();
-		const username = formData.get('username');
-		const email = formData.get('email');
-		const password = formData.get('password');
-		const confirmPassword = formData.get('confirmPassword');
-		const redirectTo = formData.get('redirectTo');
+        return redirect(302, '/');
+    },
+    register: async (event) => {
+        const formData = await event.request.formData();
+        const username = formData.get('username');
+        const email = formData.get('email');
+        const password = formData.get('password');
+        const confirmPassword = formData.get('confirmPassword');
+        const redirectTo = formData.get('redirectTo');
 
-		if (!validateUsername(username)) {
-			return fail(400, { message: 'Invalid username' });
-		}
-		if (!validatePassword(password)) {
-			return fail(400, { message: 'Invalid password' });
-		}
-		if (password != confirmPassword) {
-			return fail(400, { message: 'Passwords do not match'})
-		}
-                if (!validateEmail(email)) {
-                        return fail(400, {message: 'Invalid email'})
-                }
+        if (!validateUsername(username)) {
+            return fail(400, {message: 'Invalid username'});
+        }
+        if (!validatePassword(password)) {
+            return fail(400, {message: 'Invalid password'});
+        }
+        if (password != confirmPassword) {
+            return fail(400, {message: 'Passwords do not match'})
+        }
+        if (!validateEmail(email)) {
+            return fail(400, {message: 'Invalid email'})
+        }
 
-                const userId = generateUserId();
-                const passwordHash = await hashPassword(password);
-                const db = getDb();
+        const userId = generateUserId();
+        const passwordHash = await hashPassword(password);
+        const db = getDb();
 
-                try {
-                        await db.insert(table.user).values({id: userId, username, passwordHash, email});
+        try {
+            await db.insert(table.user).values({id: userId, username, passwordHash, email});
 
-			const sessionToken = auth.generateSessionToken();
-			const session = await auth.createSession(sessionToken, userId);
-			auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
-		} catch {
-			return fail(500, { message: 'An error has occurred' });
-		}
+            const sessionToken = auth.generateSessionToken();
+            const session = await auth.createSession(sessionToken, userId);
+            auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
+        } catch {
+            return fail(500, {message: 'An error has occurred'});
+        }
 
-		if (redirectTo && typeof redirectTo === 'string' && redirectTo.startsWith('/') && !redirectTo.startsWith('//')) {
-			return redirect(302, redirectTo);
-		}
+        if (redirectTo && typeof redirectTo === 'string' && redirectTo.startsWith('/') && !redirectTo.startsWith('//')) {
+            return redirect(302, redirectTo);
+        }
 
-		return redirect(302, '/');
-	},
+        return redirect(302, '/');
+    },
 };
 
 function generateUserId() {
-	// ID with 120 bits of entropy, or about the same as UUID v4.
-	const bytes = crypto.getRandomValues(new Uint8Array(15));
+    // ID with 120 bits of entropy, or about the same as UUID v4.
+    const bytes = crypto.getRandomValues(new Uint8Array(15));
     return encodeBase32LowerCase(bytes);
 }

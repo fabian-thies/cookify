@@ -1,8 +1,8 @@
 <script lang="ts">
     import * as Card from "$lib/components/ui/card/index.js";
-    import { m } from "$lib/paraglide/messages";
+    import {m} from "$lib/paraglide/messages";
 
-    const { servings, ingredients } = $props<{
+    const {servings, ingredients} = $props<{
         servings: number;
         ingredients: { id: number; name: string; quantity: number; unit: string }[];
     }>();
@@ -14,7 +14,7 @@
     };
 </script>
 
-{#snippet IngredientItem({ name, quantity, unit }: IngredientParam)}
+{#snippet IngredientItem({name, quantity, unit}: IngredientParam)}
     <li class="flex items-start gap-3 py-1">
     <span class="font-semibold text-primary min-w-[60px] text-sm">
       {quantity}{unit ? ` ${unit}` : ''}
@@ -27,7 +27,7 @@
     <Card.Header class="flex items-center gap-4">
         <Card.Title class="flex flex-col gap-2">
             <h1 class="text-lg font-bold">{m["recipe.common.ingredients"]()}</h1>
-            <p class="text-sm text-muted-foreground">{m["recipe.common.forServings"]({ count: servings })}</p>
+            <p class="text-sm text-muted-foreground">{m["recipe.common.forServings"]({count: servings})}</p>
         </Card.Title>
     </Card.Header>
 
@@ -43,5 +43,5 @@
         </ul>
     </Card.Content>
 
-    <Card.Footer />
+    <Card.Footer/>
 </Card.Root>

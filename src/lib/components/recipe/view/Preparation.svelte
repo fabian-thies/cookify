@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { Button } from "$lib/components/ui/button/index.js";
-    import { Label } from "$lib/components/ui/label/index.js";
+    import {Button} from "$lib/components/ui/button/index.js";
+    import {Label} from "$lib/components/ui/label/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
-    import { Textarea } from "$lib/components/ui/textarea";
-    import { m } from "$lib/paraglide/messages";
+    import {Textarea} from "$lib/components/ui/textarea";
+    import {m} from "$lib/paraglide/messages";
     import {Plus} from "lucide-svelte";
 
     type StepParam = {
@@ -12,11 +12,11 @@
         number: number
     };
 
-    const { steps } = $props<{
+    const {steps} = $props<{
         steps: StepParam[];
     }>();
 </script>
-{#snippet Step({ id, step, number }: StepParam)}
+{#snippet Step({id, step, number}: StepParam)}
     <div class="flex flex-row gap-6">
         <div class="flex w-full max-w-10 flex-col gap-1.5">
             <div class="flex flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full items-center justify-center text-sm font-medium">
