@@ -93,7 +93,22 @@ export const actions: Actions = {
             const sessionToken = auth.generateSessionToken();
             const session = await auth.createSession(sessionToken, userId);
             auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
-        } catch {
+        } catch(e: unknown) {
+            const pgCode = (e as any)?.cause?.code as string | undefined;
+            const constraint = (e as any)?.cause?.constraint_name as string | undefined;
+
+            if (pgCode === "23505") {
+                if(constraint === "user_email_unique") {
+                    return fail(400, {message: 'This email address is already registered.'});
+                }
+                if(constraint === "user_username_unique") {
+                    return fail(400, {message: 'Dieser Benutzername ist bereits vergeben.'});
+                }
+
+                return fail(400, {message: 'An entry with this data already exists.'});
+            }
+
+            console.error('Registration failed:', e);
             return fail(500, {message: 'An error has occurred'});
         }
 
