@@ -21,7 +21,7 @@
     </h2>
     <div class="flex justify-between gap-6">
         {#if (recipes && recipes.length > 0)}
-            <Carousel.Root class="w-full flex justify-center" opts={{ align: "start", loop: true, }}>
+            <Carousel.Root class="w-full flex justify-center" opts={{ align: "start", loop: true }}>
                 <Carousel.Content class="-ml-1">
                     {#each recipes as recipe}
                         <Carousel.Item class="pl-2 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">

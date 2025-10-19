@@ -29,7 +29,7 @@
         <img alt="" class="h-full w-full object-cover" src={image}>
     </Card.Header>
     <Card.Content class="flex-1">
-        <h1 class="font-bold text-lg text-card-foreground">{title}</h1>
+        <h1 class="font-medium text-lg text-card-foreground">{title}</h1>
         <p class="text-sm pt-2 text-muted-foreground">{description}</p>
         <div class="flex gap-2 pt-2 justify-between">
             <span class="text-sm text-muted-foreground flex flex-row gap-1 items-center">
