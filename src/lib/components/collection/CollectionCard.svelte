@@ -6,9 +6,10 @@
         collectionId: number;
         title: string;
         image: string;
+        recipeCount: number;
     };
 
-    let {collectionId, title, image}: Props = $props();
+    let {collectionId, title, image, recipeCount}: Props = $props();
 </script>
 
 <a href="/collection/{collectionId}">
@@ -32,7 +33,7 @@
                 <h1 class="font-medium text-lg text-card-foreground">{title}</h1>
                 <span class="text-sm text-muted-foreground flex flex-row gap-1 items-center">
                 <Bookmark size={18}/>
-                30
+                    {recipeCount}
             </span>
             </div>
         </Card.Content>

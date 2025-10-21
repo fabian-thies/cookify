@@ -60,6 +60,7 @@
     let userRating = $state<number | null>(initialUserRating);
     let hoverRating = $state<number | null>(null);
     let isSubmittingRating = $state(false);
+    let showDeleteDialog = $state(false);
     const stars = [1, 2, 3, 4, 5] as const;
 
     async function handleRate(value: number) {
@@ -248,7 +249,7 @@
                                             </div>
                                         {:else}
                                             {#each collections as collection}
-                                                <DropdownMenu.Item class="flex items-center gap-3" onclick={createCollectionOnClick}>
+                                                <DropdownMenu.Item class="flex items-center gap-3">
                                                     <span class="inline">{collection.title}</span>
                                                 </DropdownMenu.Item>
                                             {/each}
@@ -257,7 +258,7 @@
                                         <div class="px-4 py-2 text-sm text-red-500">{m["actions.error"]}</div>
                                     {/await}
                                     <DropdownMenu.Separator/>
-                                    <DropdownMenu.Item>
+                                    <DropdownMenu.Item onclick={createCollectionOnClick}>
                                         <Plus class="w-4 h-4 sm:w-5 sm:h-5"/>
                                         <span class="inline">Neue Kollektion</span></DropdownMenu.Item>
                                 </DropdownMenu.SubContent>
@@ -268,26 +269,9 @@
                             <span class="inline">{m["actions.share"]()}</span>
                         </DropdownMenu.Item>
                         {#if recipeOwner}
-                            <DropdownMenu.Item>
-                                <Dialog.Root>
-                                    <Dialog.Trigger class="flex items-center gap-3">
-                                        <Trash2 size={16} class="sm:w-[18px] sm:h-[18px]"/>
-                                        <span class="inline">{m["actions.delete"]()}</span>
-                                    </Dialog.Trigger>
-                                    <Dialog.Content>
-                                        <Dialog.Header>
-                                            <Dialog.Title>{m["actions.deleteRecipe"]()}</Dialog.Title>
-                                            <Dialog.Description>
-                                                {m["actions.confirmDelete"]()}
-                                            </Dialog.Description>
-                                        </Dialog.Header>
-                                        <Dialog.Footer>
-                                            {m["actions.deleteRecipe"]()}
-                                            <Button type="submit"
-                                                    onclick={deleteRecipeOnClick}>{m["actions.deleteRecipe"]()}</Button>
-                                        </Dialog.Footer>
-                                    </Dialog.Content>
-                                </Dialog.Root>
+                            <DropdownMenu.Item class="flex items-center gap-3" onclick={() => showDeleteDialog = true}>
+                                <Trash2 size={16} class="sm:w-[18px] sm:h-[18px]"/>
+                                <span class="inline">{m["actions.delete"]()}</span>
                             </DropdownMenu.Item>
                         {/if}
                     </DropdownMenu.Group>
@@ -299,3 +283,22 @@
         <img alt="" class="w-full h-96 object-cover rounded-lg shadow-lg border" src={image}>
     </div>
 </div>
+
+{#if showDeleteDialog}
+    <Dialog.Root bind:open={showDeleteDialog}>
+        <Dialog.Content>
+            <Dialog.Header>
+                <Dialog.Title>{m["actions.deleteRecipe"]()}</Dialog.Title>
+                <Dialog.Description>
+                    {m["actions.confirmDelete"]()}
+                </Dialog.Description>
+            </Dialog.Header>
+            <Dialog.Footer>
+                <Dialog.Close class={buttonVariants({ variant: "outline" })}>
+                    {m["actions.cancel"]()}
+                </Dialog.Close>
+                <Button type="button" onclick={deleteRecipeOnClick}>{m["actions.deleteRecipe"]()}</Button>
+            </Dialog.Footer>
+        </Dialog.Content>
+    </Dialog.Root>
+{/if}

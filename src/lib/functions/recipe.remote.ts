@@ -75,12 +75,16 @@ export const createCollection = command(v.object({
         v.maxLength(100)
     )
 }), async ({title}) => {
-    const {locals} = getRequestEvent();
+    const {locals, params} = getRequestEvent();
     const userId = locals.user?.id;
 
     if (!userId) {
         throw new Error('User not authenticated');
     }
 
-    return createCollectionInDb(userId, title);
+    if(!params.recipeId) {
+        throw new Error('Recipe ID not provided');
+    }
+
+    return createCollectionInDb(userId, title, Number(params.recipeId));
 });

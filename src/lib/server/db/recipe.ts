@@ -1,6 +1,6 @@
 import {getDb} from "$lib/server/db/index";
 import {
-    collections,
+    collections, collectionToRecipe,
     difficulty,
     difficultyToRecipe,
     favorite,
@@ -337,16 +337,30 @@ export async function upsertRecipeRating(userId: string, recipeId: number, ratin
 export async function getCollections(userId: string) {
     const db = getDb();
 
-    return db.select().from(collections).where(eq(collections.userId, userId));
+    return db.select({
+        ...getTableColumns(collections),
+        recipeCount: sql<number>`COALESCE(COUNT(${collectionToRecipe.id})::int, 0)`,
+    })
+        .from(collections)
+        .leftJoin(collectionToRecipe, eq(collectionToRecipe.collectionId, collections.id))
+        .where(eq(collections.userId, userId))
+        .groupBy(collections.id, collections.userId, collections.title);
 }
 
-export async function createCollectionInDb(userId: string, title: string) {
+export async function createCollectionInDb(userId: string, title: string, recipeId: number) {
     const db = getDb();
 
-    return db.insert(collections).values({
+    const [collection] = await db.insert(collections).values({
         userId,
         title,
     }).returning({id: collections.id, title: collections.title});
+
+    await db.insert(collectionToRecipe).values({
+        recipeId,
+        collectionId: collection.id
+    });
+
+    return collection;
 }
 
 export type Recipe = Awaited<ReturnType<typeof getRecipes>>[number];
