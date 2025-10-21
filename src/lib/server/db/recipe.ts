@@ -1,5 +1,6 @@
 import {getDb} from "$lib/server/db/index";
 import {
+    collections,
     difficulty,
     difficultyToRecipe,
     favorite,
@@ -207,8 +208,8 @@ export async function getRecipeById(id: number) {
             difficulty: difficulty.difficulty,
         })
         .from(recipes)
-        .leftJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
-        .leftJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
+        .innerJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
+        .innerJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
         .where(eq(recipes.id, id));
 
     return result[0] ?? null;
@@ -331,6 +332,12 @@ export async function upsertRecipeRating(userId: string, recipeId: number, ratin
         });
 
     return getRecipeRatingSummary(recipeId);
+}
+
+export async function getCollections() {
+    const db = getDb();
+
+    return db.select().from(collections);
 }
 
 export type Recipe = Awaited<ReturnType<typeof getRecipes>>[number];

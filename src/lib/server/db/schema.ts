@@ -32,7 +32,7 @@ export const recipes = pgTable('recipes', {
 
 export const difficulty = pgTable('difficulty', {
     id: serial('id').primaryKey().notNull(),
-    difficulty: text('difficulty', {enum: [...DIFFICULTIES]}).notNull(),
+    difficulty: text('difficulty', {enum: [...DIFFICULTIES]}).notNull().default(DIFFICULTIES[0]),
 });
 
 export const difficultyToRecipe = pgTable('difficulty_to_recipe', {
