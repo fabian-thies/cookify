@@ -1,9 +1,10 @@
 import * as v from 'valibot';
-import {command, getRequestEvent} from '$app/server';
+import {command, getRequestEvent, query} from '$app/server';
 import {
     toggleRecipeFavorite,
     deleteRecipe as deleteRecipeFromDb,
-    upsertRecipeRating
+    upsertRecipeRating,
+    getCollections as getCollectionsFromDb
 } from '$lib/server/db/recipe';
 
 export const likeRecipe = command(v.object({
@@ -54,4 +55,8 @@ export const rateRecipe = command(v.object({
         count: summary.count,
         rating,
     };
+});
+
+export const getCollections = query(async () => {
+    return getCollectionsFromDb();
 });

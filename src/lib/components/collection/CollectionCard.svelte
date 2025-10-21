@@ -1,6 +1,6 @@
 <script lang="ts">
     import * as Card from "$lib/components/ui/card";
-    import {ChefHat} from "lucide-svelte";
+    import {Bookmark} from "lucide-svelte";
 
     type Props = {
         collectionId: number;
@@ -12,7 +12,7 @@
 </script>
 
 <a href="/collection/{collectionId}">
-    <Card.Root class="flex h-full w-full flex-col overflow-hidden rounded-lg bg-card p-4 gap-4 maxs-w-xs">
+    <Card.Root class="flex h-full flex-col overflow-hidden rounded-lg bg-card p-4 gap-4">
         <Card.Header class="relative h-42 overflow-hidden p-0 rounded-lg">
             <img alt="" class="h-full w-full object-cover" src={image}>
         </Card.Header>
@@ -31,7 +31,7 @@
             <div class="flex justify-between mt-5">
                 <h1 class="font-medium text-lg text-card-foreground">{title}</h1>
                 <span class="text-sm text-muted-foreground flex flex-row gap-1 items-center">
-                <ChefHat size={18}/>
+                <Bookmark size={18}/>
                 30
             </span>
             </div>

@@ -2,13 +2,12 @@ import type {PageServerLoad} from "./$types";
 import {
     getIngredients,
     getRecipeById,
-    getRecipeFavoriteState,
     getSteps,
     getTags,
     updateRecipe
 } from "$lib/server/db/recipe";
-import {type Actions, error, fail, redirect, type RequestEvent} from "@sveltejs/kit";
-import {parseRecipeFormData, saveImage, validateInputEmpty} from "$lib/server/utils";
+import {type Actions, error, fail, type RequestEvent} from "@sveltejs/kit";
+import {parseRecipeFormData, saveImage} from "$lib/server/utils";
 
 export const load: PageServerLoad = async (event) => {
     const recipeId = Number(event.params.recipeId);

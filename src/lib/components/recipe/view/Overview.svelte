@@ -1,6 +1,20 @@
 <script lang="ts">
-    import {Clock, Delete, Edit, Heart, Recycle, Share2, Star, Trash, Trash2, Users} from "lucide-svelte";
+    import {
+        Clock,
+        Delete,
+        Edit,
+        Ellipsis,
+        Heart,
+        Plus,
+        Recycle,
+        Share2,
+        Star,
+        Trash,
+        Trash2,
+        Users
+    } from "lucide-svelte";
     import * as Dialog from "$lib/components/ui/dialog/index.js";
+    import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import {Separator} from "$lib/components/ui/separator/index.js";
     import {Badge} from "$lib/components/ui/badge/index.js";
     import {Button, buttonVariants} from "$lib/components/ui/button/index.js";
@@ -86,9 +100,28 @@
 
         return star <= activeRating ? "#fbbf24" : "#9ca3af";
     }
+
+    async function deleteRecipeOnClick() {
+        try {
+            await deleteRecipe({recipeId});
+
+            await goto("/");
+        } catch (e) {
+            toast.error(m["actions.error"]());
+        }
+    }
+
+    async function likeRecipeOnClick() {
+        try {
+            isFavorite = !isFavorite;
+            await likeRecipe({recipeId});
+        } catch (e) {
+            toast.error(m["actions.error"]());
+        }
+    }
 </script>
 
-<div class="w-full">
+<div class="w-full mt-18">
     <h1 class="text-4xl font-bold">{title}</h1>
     <div class="text-muted-foreground h-5 flex items-center gap-4 mb-4 mt-4">
         <div class="flex items-center gap-2">
@@ -122,8 +155,7 @@
         <div class="flex items-center flex-wrap gap-2">
             <Dialog.Root>
                 <Dialog.Trigger
-                        class={buttonVariants({ variant: "outline" }) + " flex-1 sm:flex-none min-w-0"}
-                >
+                        class={buttonVariants({ variant: "outline" }) + " flex-1 sm:flex-none min-w-0"}>
                     <Star
                             class="sm:w-[18px] sm:h-[18px]"
                             color={userRating != null ? "#fbbf24" : "currentColor"}
@@ -145,8 +177,7 @@
                         <div
                                 class="flex items-center gap-1"
                                 onmouseleave={() => hoverRating = null}
-                                role="group"
-                        >
+                                role="group">
                             {#each stars as star}
                                 <button
                                         type="button"
@@ -156,8 +187,7 @@
                                         onblur={() => hoverRating = null}
                                         onmouseleave={() => hoverRating = null}
                                         onclick={() => handleRate(star)}
-                                        disabled={isSubmittingRating}
-                                >
+                                        disabled={isSubmittingRating}>
                                     <Star
                                             size={32}
                                             fill={starFillColor(star)}
@@ -170,59 +200,77 @@
                     <Dialog.Footer class="flex justify-end">
                         <Dialog.Close
                                 class={buttonVariants({ variant: "outline" })}
-                                onclick={() => hoverRating = null}
-                        >
+                                onclick={() => hoverRating = null}>
                             {m["actions.cancel"]()}
                         </Dialog.Close>
                     </Dialog.Footer>
                 </Dialog.Content>
             </Dialog.Root>
-            <Button class="flex-1 sm:flex-none min-w-0" variant="outline">
-                <Share2 class="w-4 h-4 sm:w-5 sm:h-5"/>
-                <span class="hidden sm:inline">{m["actions.share"]()}</span>
-            </Button>
-            <Button class="flex-1 sm:flex-none min-w-0" onclick={async () => {
-            try {
-                isFavorite = !isFavorite;
-                await likeRecipe({recipeId});
-            } catch (e) {
-                toast.error(m["actions.error"]());
-            }
-        }}>
+            <Button class="flex-1 sm:flex-none min-w-0" onclick={likeRecipeOnClick}>
                 <Heart class="w-4 h-4 sm:w-5 sm:h-5" fill={isFavorite ? "white" : "none"}/>
-                <span class="hidden sm:inline">{m["actions.save"]()}</span>
+                <span class="inline">{m["actions.save"]()}</span>
             </Button>
-            {#if recipeOwner}
-                <Button variant="outline" href="/recipe/{recipeId}/edit" class="flex-1 sm:flex-none min-w-0">
-                    <Edit size={16} class="sm:w-[18px] sm:h-[18px]"/>
-                    <span class="hidden sm:inline">{m["actions.edit"]()}</span>
-                </Button>
-                <Dialog.Root>
-                    <Dialog.Trigger class={buttonVariants({ variant: "outline" }) + " flex-1 sm:flex-none min-w-0"}>
-                        <Trash2 size={16} class="sm:w-[18px] sm:h-[18px]"/>
-                        <span class="hidden sm:inline">{m["actions.delete"]()}</span>
-                    </Dialog.Trigger>
-                    <Dialog.Content>
-                        <Dialog.Header>
-                            <Dialog.Title>{m["actions.deleteRecipe"]()}</Dialog.Title>
-                            <Dialog.Description>
-                                {m["actions.confirmDelete"]()}
-                            </Dialog.Description>
-                        </Dialog.Header>
-                        <Dialog.Footer>
-                            <Button type="submit" onclick={async () => {
-                                try {
-                                    await deleteRecipe({recipeId});
-
-                                    await goto("/");
-                                } catch (e) {
-                                    toast.error(m["actions.error"]());
-                                }
-                            }}>{m["actions.deleteRecipe"]()}</Button>
-                        </Dialog.Footer>
-                    </Dialog.Content>
-                </Dialog.Root>
-            {/if}
+            <DropdownMenu.Root>
+                <DropdownMenu.Trigger>
+                    <Button variant="ghost">
+                        <Ellipsis/>
+                    </Button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content>
+                    <DropdownMenu.Group>
+                        {#if recipeOwner}
+                            <DropdownMenu.Item>
+                                <a href="/recipe/{recipeId}/edit" class="flex items-center gap-3">
+                                    <Edit size={16} class="sm:w-[18px] sm:h-[18px]"/>
+                                    <span class="inline">{m["actions.edit"]()}</span>
+                                </a>
+                            </DropdownMenu.Item>
+                        {/if}
+                        <DropdownMenu.Group>
+                            <DropdownMenu.Sub>
+                                <DropdownMenu.SubTrigger>
+                                    <Plus class="w-4 h-4 sm:w-5 sm:h-5"/>
+                                    <span class="inline">Kollektionen</span>
+                                </DropdownMenu.SubTrigger>
+                                <DropdownMenu.SubContent>
+                                    <DropdownMenu.Item></DropdownMenu.Item>
+                                    <DropdownMenu.Separator/>
+                                    <DropdownMenu.Item>
+                                        <Plus class="w-4 h-4 sm:w-5 sm:h-5"/>
+                                        <span class="inline">Neue Kollektion</span></DropdownMenu.Item>
+                                </DropdownMenu.SubContent>
+                            </DropdownMenu.Sub>
+                        </DropdownMenu.Group>
+                        <DropdownMenu.Item class="flex items-center gap-3">
+                            <Share2 class="w-4 h-4 sm:w-5 sm:h-5"/>
+                            <span class="inline">{m["actions.share"]()}</span>
+                        </DropdownMenu.Item>
+                        {#if recipeOwner}
+                            <DropdownMenu.Item>
+                                <Dialog.Root>
+                                    <Dialog.Trigger class="flex items-center gap-3">
+                                        <Trash2 size={16} class="sm:w-[18px] sm:h-[18px]"/>
+                                        <span class="inline">{m["actions.delete"]()}</span>
+                                    </Dialog.Trigger>
+                                    <Dialog.Content>
+                                        <Dialog.Header>
+                                            <Dialog.Title>{m["actions.deleteRecipe"]()}</Dialog.Title>
+                                            <Dialog.Description>
+                                                {m["actions.confirmDelete"]()}
+                                            </Dialog.Description>
+                                        </Dialog.Header>
+                                        <Dialog.Footer>
+                                            {m["actions.deleteRecipe"]()}
+                                            <Button type="submit"
+                                                    onclick={deleteRecipeOnClick}>{m["actions.deleteRecipe"]()}</Button>
+                                        </Dialog.Footer>
+                                    </Dialog.Content>
+                                </Dialog.Root>
+                            </DropdownMenu.Item>
+                        {/if}
+                    </DropdownMenu.Group>
+                </DropdownMenu.Content>
+            </DropdownMenu.Root>
         </div>
     </div>
     <div class="mb-6">

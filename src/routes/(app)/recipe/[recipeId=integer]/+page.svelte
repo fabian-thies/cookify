@@ -8,7 +8,6 @@
 
     const {data}: PageProps = $props();
     const recipe = data.recipe;
-
     const recipeOwner = data.user!.id === recipe.userId;
 </script>
 
@@ -21,5 +20,3 @@
         <Preparation steps={recipe.steps}/>
     </div>
 </div>
-
-<RecipeCarousel class="mt-12" title={m["recipe.common.similar"]()}/>
