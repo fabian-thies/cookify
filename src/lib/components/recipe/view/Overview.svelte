@@ -19,7 +19,7 @@
     import {Badge} from "$lib/components/ui/badge/index.js";
     import {Button, buttonVariants} from "$lib/components/ui/button/index.js";
     import {m} from "$lib/paraglide/messages";
-    import {deleteRecipe, likeRecipe, rateRecipe} from "$lib/functions/recipe.remote";
+    import {createCollection, deleteRecipe, getCollections, likeRecipe, rateRecipe} from "$lib/functions/recipe.remote";
     import {toast} from "svelte-sonner";
     import {goto} from "$app/navigation";
     import {type Difficulty, difficultyLabels} from "$lib/types/recipe";
@@ -115,6 +115,14 @@
         try {
             isFavorite = !isFavorite;
             await likeRecipe({recipeId});
+        } catch (e) {
+            toast.error(m["actions.error"]());
+        }
+    }
+
+    async function createCollectionOnClick() {
+        try {
+            await createCollection({title: "Collection"});
         } catch (e) {
             toast.error(m["actions.error"]());
         }
@@ -233,7 +241,21 @@
                                     <span class="inline">Kollektionen</span>
                                 </DropdownMenu.SubTrigger>
                                 <DropdownMenu.SubContent>
-                                    <DropdownMenu.Item></DropdownMenu.Item>
+                                    {#await getCollections() then collections}
+                                        {#if collections.length === 0}
+                                            <div class="px-4 py-2 text-sm text-muted-foreground">
+                                                Keine Kollektionen
+                                            </div>
+                                        {:else}
+                                            {#each collections as collection}
+                                                <DropdownMenu.Item class="flex items-center gap-3" onclick={createCollectionOnClick}>
+                                                    <span class="inline">{collection.title}</span>
+                                                </DropdownMenu.Item>
+                                            {/each}
+                                        {/if}
+                                    {:catch error}
+                                        <div class="px-4 py-2 text-sm text-red-500">{m["actions.error"]}</div>
+                                    {/await}
                                     <DropdownMenu.Separator/>
                                     <DropdownMenu.Item>
                                         <Plus class="w-4 h-4 sm:w-5 sm:h-5"/>

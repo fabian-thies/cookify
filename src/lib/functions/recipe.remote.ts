@@ -4,7 +4,7 @@ import {
     toggleRecipeFavorite,
     deleteRecipe as deleteRecipeFromDb,
     upsertRecipeRating,
-    getCollections as getCollectionsFromDb
+    getCollections as getCollectionsFromDb, createCollectionInDb
 } from '$lib/server/db/recipe';
 
 export const likeRecipe = command(v.object({
@@ -58,5 +58,29 @@ export const rateRecipe = command(v.object({
 });
 
 export const getCollections = query(async () => {
-    return getCollectionsFromDb();
+    const {locals} = getRequestEvent();
+    const userId = locals.user?.id;
+
+    if (!userId) {
+        throw new Error('User not authenticated');
+    }
+
+    return getCollectionsFromDb(userId);
+});
+
+export const createCollection = command(v.object({
+    title: v.pipe(
+        v.string(),
+        v.minLength(1),
+        v.maxLength(100)
+    )
+}), async ({title}) => {
+    const {locals} = getRequestEvent();
+    const userId = locals.user?.id;
+
+    if (!userId) {
+        throw new Error('User not authenticated');
+    }
+
+    return createCollectionInDb(userId, title);
 });

@@ -334,10 +334,19 @@ export async function upsertRecipeRating(userId: string, recipeId: number, ratin
     return getRecipeRatingSummary(recipeId);
 }
 
-export async function getCollections() {
+export async function getCollections(userId: string) {
     const db = getDb();
 
-    return db.select().from(collections);
+    return db.select().from(collections).where(eq(collections.userId, userId));
+}
+
+export async function createCollectionInDb(userId: string, title: string) {
+    const db = getDb();
+
+    return db.insert(collections).values({
+        userId,
+        title,
+    }).returning({id: collections.id, title: collections.title});
 }
 
 export type Recipe = Awaited<ReturnType<typeof getRecipes>>[number];
