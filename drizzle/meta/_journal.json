@@ -43,6 +43,13 @@
       "when": 1760892460333,
       "tag": "0005_narrow_joshua_kane",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1761075209454,
+      "tag": "0006_chief_the_order",
+      "breakpoints": true
     }
   ]
 }
