@@ -14,6 +14,7 @@ import {
 import {getDifficultyId} from "$lib/server/utils";
 import {and, desc, eq, getTableColumns, sql} from "drizzle-orm";
 import type {CreateRecipeInput, UpdateRecipeInput} from "$lib/types/recipe";
+import {getRequestEvent} from "$app/server";
 
 export async function createRecipe({
                                        title,
@@ -179,6 +180,34 @@ export async function getRecipes(offset = 0, limit?: number, orderBy?: "recent" 
     return query;
 }
 
+export async function getCollectionRecipes(collectionId: number) {
+    const db = getDb();
+
+    if (!collectionId) {
+        throw new Error('Collection ID is required');
+    }
+
+    const [collectionRow] = await db
+        .select({ title: collections.title })
+        .from(collections)
+        .where(eq(collections.id, collectionId));
+
+    const recipesResult = await db.select({
+        ...getTableColumns(recipes),
+        difficulty: difficulty.difficulty,
+    })
+        .from(recipes)
+        .innerJoin(collectionToRecipe, eq(collectionToRecipe.recipeId, recipes.id))
+        .innerJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
+        .innerJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
+        .where(eq(collectionToRecipe.collectionId, collectionId));
+
+    return {
+        collectionTitle: collectionRow?.title ?? null,
+        recipes: recipesResult,
+    };
+}
+
 export async function getRecentRecipes() {
     return getRecipes(0, undefined, "recent");
 }
@@ -334,21 +363,100 @@ export async function upsertRecipeRating(userId: string, recipeId: number, ratin
     return getRecipeRatingSummary(recipeId);
 }
 
-export async function getCollections(userId: string) {
+export async function getCollections(userId: string, recipeId?: number) {
     const db = getDb();
 
-    return db.select({
-        ...getTableColumns(collections),
-        recipeCount: sql<number>`COALESCE(COUNT(${collectionToRecipe.id})::int, 0)`,
-    })
+    if (!userId) {
+        throw new Error('User ID is required.');
+    }
+
+    return db
+        .select({
+            ...getTableColumns(collections),
+            recipeCount: sql<number>`COALESCE(COUNT(${collectionToRecipe.id})::int, 0)`,
+            isInCollection:
+                recipeId != null
+                    ? sql<boolean>`COALESCE(EXISTS (
+                SELECT 1
+                FROM ${collectionToRecipe}
+                WHERE ${collectionToRecipe.collectionId} = ${collections.id}
+                  AND ${collectionToRecipe.recipeId} = ${recipeId}
+              ), false)`
+                    : sql<boolean>`false`,
+        })
         .from(collections)
-        .leftJoin(collectionToRecipe, eq(collectionToRecipe.collectionId, collections.id))
+        .leftJoin(
+            collectionToRecipe,
+            eq(collectionToRecipe.collectionId, collections.id)
+        )
         .where(eq(collections.userId, userId))
         .groupBy(collections.id, collections.userId, collections.title);
 }
 
+export async function setCollectionTitle(collectionId: number, title: string) {
+    const db = getDb();
+    const {params} = getRequestEvent();
+
+    if (!collectionId) {
+        throw new Error('Collection ID is required.');
+    }
+
+    const [collection] = await db
+        .select({ userId: collections.userId })
+        .from(collections)
+        .where(eq(collections.id, collectionId));
+
+    if (!collection) {
+        throw new Error('Collection not found.');
+    }
+
+    if (collection.userId !== userId) {
+        throw new Error('Insufficient permissions');
+    }
+
+    const [updated] = await db
+        .update(collections)
+        .set({title: title})
+        .where(eq(collections.id, collectionId))
+        .returning({id: collections.id, title: collections.title});
+
+    return updated;
+}
+
+export async function toggleRecipeInCollection(recipeId: number, collectionId: number) {
+    const db = getDb();
+
+    if (!recipeId || !collectionId) {
+        throw new Error('Recipe ID and Collection ID are required.');
+    }
+
+    const [existing] = await db
+        .select({id: collectionToRecipe.id})
+        .from(collectionToRecipe)
+        .where(and(
+            eq(collectionToRecipe.recipeId, recipeId),
+            eq(collectionToRecipe.collectionId, collectionId)
+        ));
+
+    if (existing) {
+        await db
+            .delete(collectionToRecipe)
+            .where(eq(collectionToRecipe.id, existing.id));
+        return {isInCollection: false};
+    } else {
+        const [inserted] = await db
+            .insert(collectionToRecipe)
+            .values({recipeId, collectionId})
+            .returning({id: collectionToRecipe.id});
+        return {isInCollection: true, id: inserted.id};
+    }
+}
 export async function createCollectionInDb(userId: string, title: string, recipeId: number) {
     const db = getDb();
+
+    if(!userId || !title || !recipeId) {
+        throw new Error('User ID, title and recipe ID are required.');
+    }
 
     const [collection] = await db.insert(collections).values({
         userId,

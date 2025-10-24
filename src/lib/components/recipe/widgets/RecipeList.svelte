@@ -106,15 +106,13 @@
             {/if}
         </div>
     {/if}
-    <div class="pb-2">
-        {#if filteredRecipes.length === 0}
-            <div class="flex flex-col items-center justify-center py-6 text-center">
-                <p class="text-muted-foreground text-md">{m["recipe.list.noRecipes"]()}</p>
-            </div>
-        {:else}
-            <p class="text-muted-foreground">{m["recipe.list.results"]({count: filteredRecipes.length})}</p>
-        {/if}
-    </div>
+    {#if filteredRecipes.length === 0}
+        <div class="flex flex-col items-center justify-center py-6 text-center">
+            <p class="text-muted-foreground text-md">{m["recipe.list.noRecipes"]()}</p>
+        </div>
+    {:else}
+        <p class="text-muted-foreground">{m["recipe.list.results"]({count: filteredRecipes.length})}</p>
+    {/if}
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 place-items-center">
         {#each filteredRecipes as recipe (recipe.id)}

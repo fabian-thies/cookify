@@ -8,13 +8,17 @@
     import {m} from "$lib/paraglide/messages";
     import {goto, invalidateAll} from "$app/navigation";
     import {toast} from "svelte-sonner";
+    import {Spinner} from "$lib/components/ui/spinner/index.js";
 
     const {form} = $props();
+
+    let creating = $state(false);
 </script>
 
 <div class="container mx-auto mt-14">
     <form action="?/createRecipe" enctype="multipart/form-data" method="POST" use:enhance={() => {
         return async ({ result }) => {
+            creating = false;
             if (result.type === 'success') {
                 const recipeId = result.data?.id;
 
@@ -23,6 +27,7 @@
                 if (recipeId) {
                     await goto(`/recipe/${recipeId}`);
                 }
+
             } else {
                 toast.error(m["recipe.createError"]());
             }
@@ -38,8 +43,12 @@
             <div class="space-y-6">
                 <Details/>
                 <div class="flex flex-col gap-3 mt-6">
-                    <Button class="w-full" type="submit">
-                        {m["actions.saveRecipe"]()}
+                    <Button class="w-full" type="submit" onclick={() => creating = true}>
+                        {#if creating}
+                            <Spinner/>
+                        {:else}
+                            {m["actions.saveRecipe"]()}
+                        {/if}
                     </Button>
                     <Button class="w-full" href={"/"} type="button" variant="outline">
                         {m["actions.cancel"]()}

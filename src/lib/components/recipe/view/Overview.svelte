@@ -18,11 +18,21 @@
     import {Separator} from "$lib/components/ui/separator/index.js";
     import {Badge} from "$lib/components/ui/badge/index.js";
     import {Button, buttonVariants} from "$lib/components/ui/button/index.js";
+    import {Checkbox} from "$lib/components/ui/checkbox/index.js";
     import {m} from "$lib/paraglide/messages";
-    import {createCollection, deleteRecipe, getCollections, likeRecipe, rateRecipe} from "$lib/functions/recipe.remote";
+    import {
+        createCollection,
+        deleteRecipe,
+        getCollections,
+        getCollectionsForRecipe,
+        likeRecipe,
+        rateRecipe, toggleRecipeInCollection
+    } from "$lib/functions/recipe.remote";
     import {toast} from "svelte-sonner";
     import {goto} from "$app/navigation";
     import {type Difficulty, difficultyLabels} from "$lib/types/recipe";
+    import {Label} from "$lib/components/ui/label";
+    import {Spinner} from "$lib/components/ui/spinner";
 
     type props = {
         id: number
@@ -242,16 +252,22 @@
                                     <span class="inline">Kollektionen</span>
                                 </DropdownMenu.SubTrigger>
                                 <DropdownMenu.SubContent>
-                                    {#await getCollections() then collections}
+                                    {#await getCollectionsForRecipe()}
+                                        <div class="px-4 py-2 flex justify-center text-muted-foreground">
+                                            <Spinner/>
+                                        </div>
+                                    {:then collections}
                                         {#if collections.length === 0}
-                                            <div class="px-4 py-2 text-sm text-muted-foreground">
-                                                Keine Kollektionen
+                                            <div class="px-4 py-2 text-sm text-muted-foreground">Keine Kollektionen
                                             </div>
                                         {:else}
                                             {#each collections as collection}
-                                                <DropdownMenu.Item class="flex items-center gap-3">
-                                                    <span class="inline">{collection.title}</span>
-                                                </DropdownMenu.Item>
+                                                <DropdownMenu.Group>
+                                                    <DropdownMenu.CheckboxItem checked={collection.isInCollection}
+                                                                               onclick={async () => {await toggleRecipeInCollection({collectionId: collection.id})}}>
+                                                        {collection.title}
+                                                    </DropdownMenu.CheckboxItem>
+                                                </DropdownMenu.Group>
                                             {/each}
                                         {/if}
                                     {:catch error}

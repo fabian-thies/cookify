@@ -4,7 +4,9 @@ import {
     toggleRecipeFavorite,
     deleteRecipe as deleteRecipeFromDb,
     upsertRecipeRating,
-    getCollections as getCollectionsFromDb, createCollectionInDb
+    getCollections as getCollectionsFromDb, createCollectionInDb,
+    toggleRecipeInCollection as toggleRecipeInCollectionInDb,
+    setCollectionTitle as setCollectionTitleInDb
 } from '$lib/server/db/recipe';
 
 export const likeRecipe = command(v.object({
@@ -66,6 +68,48 @@ export const getCollections = query(async () => {
     }
 
     return getCollectionsFromDb(userId);
+});
+
+export const setCollectionTitle = command(v.object({
+    title: v.string()
+}), async ({title}) => {
+    if (!title) {
+        throw new Error('Collection title is required');
+    }
+
+    return(setCollectionTitleInDb(title));
+});
+
+export const getCollectionsForRecipe = query(async () => {
+    const {locals, params} = getRequestEvent();
+    const userId = locals.user?.id;
+    const recipeId = Number(params.recipeId);
+
+    if (!userId) {
+        throw new Error('User not authenticated');
+    }
+
+    if (!recipeId) {
+        throw new Error('Recipe ID not provided');
+    }
+
+    return getCollectionsFromDb(userId, recipeId);
+});
+
+export const toggleRecipeInCollection = command(v.object({
+    collectionId: v.number()
+}), async ({collectionId}) => {
+    const {locals, params} = getRequestEvent();
+
+    if (!params.recipeId) {
+        throw new Error('Recipe ID not provided');
+    }
+
+    if (!collectionId) {
+        throw new Error('Collection ID not provided');
+    }
+
+    return toggleRecipeInCollectionInDb(Number(params.recipeId), collectionId);
 });
 
 export const createCollection = command(v.object({
