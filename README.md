@@ -7,8 +7,6 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
 
 </div>
 
----
-
 ## Features
 
 - **User Accounts**
@@ -25,8 +23,6 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
     - Organize everything with custom recipe collections.
 - **Multilingual Support**
     - Use Cookify in your preferred language: **English**, **German**, or **Spanish**.
-
----
 
 ## Installation
 
@@ -51,8 +47,6 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
     ```bash
     docker compose up -d --build
     ```
-
----
 
 ### Configuration Notes
 
