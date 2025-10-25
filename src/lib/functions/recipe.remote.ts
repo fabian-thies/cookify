@@ -74,7 +74,7 @@ export const getCollections = query(async () => {
         throw new Error('User not authenticated');
     }
 
-    return getCollectionsFromDb(userId);
+    return getCollectionsFromDb(userId, undefined, 4);
 });
 
 export const setCollectionTitle = command(v.object({

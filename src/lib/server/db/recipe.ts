@@ -402,13 +402,14 @@ export async function upsertRecipeRating(userId: string, recipeId: number, ratin
     return getRecipeRatingSummary(recipeId);
 }
 
-export async function getCollections(userId: string, recipeId?: number) {
+export async function getCollections(userId: string, recipeId?: number, thumbnailLimit = 3) {
     const db = getDb();
 
     if (!userId) {
         throw new Error('User ID is required.');
     }
 
+    // TODO
     return db
         .select({
             ...getTableColumns(collections),
@@ -418,10 +419,18 @@ export async function getCollections(userId: string, recipeId?: number) {
                     ? sql<boolean>`COALESCE(EXISTS (
                 SELECT 1
                 FROM ${collectionToRecipe}
-                WHERE ${collectionToRecipe.collectionId} = ${collections.id}
-                  AND ${collectionToRecipe.recipeId} = ${recipeId}
-              ), false)`
+                        WHERE ${collectionToRecipe.collectionId} = ${collections.id}
+                        AND ${collectionToRecipe.recipeId} = ${recipeId}
+                        ), false)`
                     : sql<boolean>`false`,
+            thumbnails: sql<string[]>`COALESCE(ARRAY(
+                SELECT ${recipes.image}
+                FROM ${collectionToRecipe}
+                JOIN ${recipes} ON ${recipes.id} = ${collectionToRecipe.recipeId}
+                WHERE ${collectionToRecipe.collectionId} = ${collections.id}
+                ORDER BY ${recipes.createdAt} DESC
+                LIMIT ${thumbnailLimit}
+            ), ARRAY[]::text[])`,
         })
         .from(collections)
         .leftJoin(
