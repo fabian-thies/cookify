@@ -4,7 +4,8 @@ import {
     toggleRecipeFavorite,
     deleteRecipe as deleteRecipeFromDb,
     upsertRecipeRating,
-    getCollections as getCollectionsFromDb, createCollectionInDb,
+    getCollections as getCollectionsFromDb,
+    createCollection as createCollectionInDb,
     toggleRecipeInCollection as toggleRecipeInCollectionInDb,
     setCollectionTitle as setCollectionTitleInDb,
     deleteCollection as deleteCollectionFromDb

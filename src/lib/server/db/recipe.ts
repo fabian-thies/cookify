@@ -512,7 +512,7 @@ export async function toggleRecipeInCollection(recipeId: number, collectionId: n
         return {isInCollection: true, id: inserted.id};
     }
 }
-export async function createCollectionInDb(userId: string, title: string, recipeId: number) {
+export async function createCollection(userId: string, title: string, recipeId: number) {
     const db = getDb();
 
     if(!userId || !title || !recipeId) {
