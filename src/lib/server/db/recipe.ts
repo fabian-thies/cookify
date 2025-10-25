@@ -208,7 +208,7 @@ export async function getCollectionRecipes(collectionId: number) {
         recipes: recipesResult,
     };
 
-    if(collectionRecipes.recipes.length <= 0 || !collectionRecipes.userId) {
+    if(!collectionRecipes.userId) {
         throw new Error('Collection not found or has no recipes.');
     }
 
