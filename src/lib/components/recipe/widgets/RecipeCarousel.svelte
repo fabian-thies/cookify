@@ -15,7 +15,7 @@
     const {class: className, title, recipes}: Props = $props();
 </script>
 
-<div class={`w-full ${className}`}>
+<div class={`w-full px-4 ${className}`}>
     <h2 class="text-2xl font-bold mb-6">
         { title }
     </h2>
@@ -24,7 +24,7 @@
             <Carousel.Root class="w-full flex justify-center" opts={{ align: "start", loop: true }}>
                 <Carousel.Content class="-ml-1">
                     {#each recipes as recipe}
-                        <Carousel.Item class="pl-2 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                        <Carousel.Item class="pl-1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
                             <div class="p-1">
                                 <RecipeCard id={recipe.id} title={recipe.title} description={recipe.description}
                                             image={recipe.image}
