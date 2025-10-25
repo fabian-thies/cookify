@@ -128,7 +128,7 @@
 		}
 	},
 	"profile": {
-		"userRecipes": "{username}s Rezepte"
+		"userRecipes": "Rezepte von {username}"
 	},
 	"actions": {
 		"share": "Teilen",

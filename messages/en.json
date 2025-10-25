@@ -128,7 +128,7 @@
 		}
 	},
   "profile": {
-    "userRecipes": "{username}'s recipes"
+    "userRecipes": "Recipes by {username}"
   },
   "collection": {
     "editDialog": {
