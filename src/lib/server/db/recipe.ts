@@ -81,6 +81,8 @@ export async function deleteRecipe(userId: string, recipeId: number) {
     }
 
     await db.delete(favorite).where(eq(favorite.recipeId, recipeId));
+    await db.delete(recipeRating).where(eq(recipeRating.recipeId, recipeId));
+    await db.delete(collectionToRecipe).where(eq(collectionToRecipe.recipeId, recipeId));
     await db.delete(difficultyToRecipe).where(eq(difficultyToRecipe.recipeId, recipeId));
     await db.delete(ingredients).where(eq(ingredients.recipeId, recipeId));
     await db.delete(stepsTable).where(eq(stepsTable.recipeId, recipeId));
