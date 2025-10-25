@@ -26,7 +26,7 @@
     "recipes": "Recetas",
     "explore": "Explorar",
     "favorites": "Favoritos",
-    "collection": "Colección",
+    "collection": "“Colecciones",
     "profile": "Perfil",
     "settings": "Configuración",
     "login": "Iniciar sesión",
@@ -131,6 +131,7 @@
     "userRecipes": "Recetas de {username}"
   },
   "collection": {
+    "noCollections": "Aún no hay colecciones.",
     "editDialog": {
       "title": "Editar colección",
       "titleLabel": "Título"

@@ -26,7 +26,7 @@
 		"recipes": "Rezepte",
         "explore": "Entdecken",
 		"favorites": "Favoriten",
-		"collection": "Kollektion",
+		"collection": "Kollektionen",
 		"profile": "Profil",
 		"settings": "Einstellungen",
 		"login": "Anmelden",
@@ -177,6 +177,7 @@
 		}
  	},
 	  "collection": {
+    "noCollections": "Noch keine Kollektionen vorhanden.",
     "editDialog": {
       "title": "Kollektion bearbeiten",
       "titleLabel": "Titel"
