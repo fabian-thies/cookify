@@ -129,9 +129,20 @@
   "profile": {
     "userRecipes": "Recetas de {username}"
   },
-	"actions": {
-		"share": "Compartir",
-		"save": "Guardar",
+  "collection": {
+    "editDialog": {
+      "title": "Editar colección",
+      "titleLabel": "Título"
+    },
+    "deleteDialog": {
+      "title": "Eliminar colección",
+      "description": "¿Estás seguro de que deseas eliminar esta colección?",
+      "confirm": "Eliminar colección"
+    }
+  },
+  "actions": {
+    "share": "Compartir",
+    "save": "Guardar",
 		"rate": "Calificar",
 		"edit": "Editar",
 		"cancel": "Cancelar",

@@ -86,10 +86,10 @@
     <Dialog.Root bind:open={showEditDialog}>
         <Dialog.Content>
             <Dialog.Header>
-                <Dialog.Title>Kollektion bearbeiten</Dialog.Title>
+                <Dialog.Title>{m["collection.editDialog.title"]()}</Dialog.Title>
             </Dialog.Header>
             <div class="grid gap-2 py-4">
-                <Label for="title">Titel</Label>
+                <Label for="title">{m["collection.editDialog.titleLabel"]()}</Label>
                 <Input id="title" name="title" bind:value={newTitle} required/>
             </div>
             <Dialog.Footer>
@@ -112,9 +112,9 @@
     <Dialog.Root bind:open={showDeleteDialog}>
         <Dialog.Content>
             <Dialog.Header>
-                <Dialog.Title>{m["actions.deleteRecipe"]()}</Dialog.Title>
+                <Dialog.Title>{m["collection.deleteDialog.title"]()}</Dialog.Title>
                 <Dialog.Description>
-                    {m["actions.confirmDelete"]()}
+                    {m["collection.deleteDialog.description"]()}
                 </Dialog.Description>
             </Dialog.Header>
             <Dialog.Footer>
@@ -122,7 +122,7 @@
                     {m["actions.cancel"]()}
                 </Dialog.Close>
                 <Button type="button"
-                        onclick={async () => {await deleteCollectionOnClick()}}>{m["actions.deleteRecipe"]()}</Button>
+                        onclick={async () => {await deleteCollectionOnClick()}}>{m["collection.deleteDialog.confirm"]()}</Button>
             </Dialog.Footer>
         </Dialog.Content>
     </Dialog.Root>

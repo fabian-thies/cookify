@@ -174,5 +174,16 @@
 			"saved": "Erfolgreich gespeichert",
 			"error": "Fehler beim Speichern, bitte versuchen Sie es erneut."
 		}
-	}
+ 	},
+	  "collection": {
+    "editDialog": {
+      "title": "Kollektion bearbeiten",
+      "titleLabel": "Titel"
+    },
+    "deleteDialog": {
+      "title": "Kollektion löschen",
+      "description": "Sicher, dass Sie diese Kollektion löschen möchten?",
+      "confirm": "Kollektion löschen"
+    }
+  }
 }
