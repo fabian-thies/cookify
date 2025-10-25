@@ -9,10 +9,10 @@ import {
 import {type Actions, error, fail, type RequestEvent} from "@sveltejs/kit";
 import {parseRecipeFormData, saveImage} from "$lib/server/utils";
 
-export const load: PageServerLoad = async (event) => {
-    const recipeId = Number(event.params.recipeId);
+export const load: PageServerLoad = async ({params, locals}) => {
+    const recipeId = Number(params.recipeId);
 
-    const recipe = await getRecipeById(Number(event.params.recipeId));
+    const recipe = await getRecipeById(Number(params.recipeId));
     const ingredients = await getIngredients(recipeId);
     const steps = await getSteps(recipeId);
     const tags = await getTags(recipeId);
@@ -21,6 +21,12 @@ export const load: PageServerLoad = async (event) => {
         error(404, {
             message: "Recipe not found",
         })
+    }
+
+    if(recipe.userId !== locals.user?.id) {
+        throw error(403, {
+            message: "You do not have permission to edit this recipe",
+        });
     }
 
     return {recipe: {...recipe, ingredients, steps, tags}}
@@ -63,6 +69,10 @@ export const actions = {
                 image: imageUrl
             });
         } catch (e) {
+            if(e instanceof Error && e.message === "Insufficient permissions") {
+                return fail(403, {forbidden: true});
+            }
+
             console.error(e);
             return fail(500, {internalError: true});
         }

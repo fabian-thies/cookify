@@ -104,6 +104,19 @@ export async function updateRecipe({
                                        image
                                    }: UpdateRecipeInput) {
     const db = getDb();
+
+    const [existingRecipe] = await db.select({userId: recipes.userId})
+        .from(recipes)
+        .where(eq(recipes.id, id));
+
+    if (!existingRecipe) {
+        throw new Error('Recipe not found');
+    }
+
+    if (existingRecipe.userId !== userId) {
+        throw new Error('Insufficient permissions');
+    }
+
     await db.update(recipes)
         .set({
             title,
