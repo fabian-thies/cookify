@@ -6,11 +6,13 @@
     import {Button} from "$lib/components/ui/button";
     import {m} from "$lib/paraglide/messages";
     import {difficultySelectOptions} from "$lib/types/recipe";
+    import type {Snippet} from "svelte";
 
     type Props = {
         recipes: Recipe[];
         title?: string;
         showFilters?: boolean;
+        actions? : Snippet;
     };
 
     const cookTimeFilters = [
@@ -38,7 +40,7 @@
 
     const cookTimeSelectOptions = cookTimeFilters.map(({value, label}) => ({value, label}));
 
-    let {recipes, title, showFilters = true}: Props = $props();
+    let {recipes, title, showFilters = true, actions}: Props = $props();
 
     let search = $state("");
     let selectedDifficulty = $state("");
@@ -70,8 +72,18 @@
 </script>
 
 <div class="flex flex-col gap-4 p-4 mt-6">
-    {#if title}
-        <h1 class="font-bold text-3xl mb-2">{title}</h1>
+    {#if title || actions}
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            {#if title}
+                <h1 class="font-bold text-3xl mb-0">{title}</h1>
+            {/if}
+
+            {#if actions}
+                <div class="flex items-center gap-2">
+                    {@render actions?.()}
+                </div>
+            {/if}
+        </div>
     {/if}
 
     {#if showFilters}

@@ -6,7 +6,8 @@ import {
     upsertRecipeRating,
     getCollections as getCollectionsFromDb, createCollectionInDb,
     toggleRecipeInCollection as toggleRecipeInCollectionInDb,
-    setCollectionTitle as setCollectionTitleInDb
+    setCollectionTitle as setCollectionTitleInDb,
+    deleteCollection as deleteCollectionFromDb
 } from '$lib/server/db/recipe';
 
 export const likeRecipe = command(v.object({
@@ -59,6 +60,12 @@ export const rateRecipe = command(v.object({
     };
 });
 
+export const deleteCollection = command(v.object({
+    collectionId: v.number()
+}), async ({collectionId}) => {
+    return await deleteCollectionFromDb(collectionId);
+});
+
 export const getCollections = query(async () => {
     const {locals} = getRequestEvent();
     const userId = locals.user?.id;
@@ -71,13 +78,18 @@ export const getCollections = query(async () => {
 });
 
 export const setCollectionTitle = command(v.object({
-    title: v.string()
-}), async ({title}) => {
+    title: v.string(),
+    collectionId: v.number()
+}), async ({title, collectionId}) => {
     if (!title) {
         throw new Error('Collection title is required');
     }
 
-    return(setCollectionTitleInDb(title));
+    if(!collectionId) {
+        throw new Error('Collection ID is required');
+    }
+
+    return(setCollectionTitleInDb(collectionId, title));
 });
 
 export const getCollectionsForRecipe = query(async () => {

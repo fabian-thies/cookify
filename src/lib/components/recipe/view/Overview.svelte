@@ -1,15 +1,12 @@
 <script lang="ts">
     import {
         Clock,
-        Delete,
         Edit,
         Ellipsis,
         Heart,
         Plus,
-        Recycle,
         Share2,
         Star,
-        Trash,
         Trash2,
         Users
     } from "lucide-svelte";

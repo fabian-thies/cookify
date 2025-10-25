@@ -188,7 +188,7 @@ export async function getCollectionRecipes(collectionId: number) {
     }
 
     const [collectionRow] = await db
-        .select({ title: collections.title })
+        .select({ title: collections.title, userId: collections.userId })
         .from(collections)
         .where(eq(collections.id, collectionId));
 
@@ -202,10 +202,49 @@ export async function getCollectionRecipes(collectionId: number) {
         .innerJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
         .where(eq(collectionToRecipe.collectionId, collectionId));
 
-    return {
-        collectionTitle: collectionRow?.title ?? null,
+    const collectionRecipes = {
+        collectionTitle: collectionRow?.title,
+        userId: collectionRow?.userId,
         recipes: recipesResult,
     };
+
+    if(collectionRecipes.recipes.length <= 0 || !collectionRecipes.userId) {
+        throw new Error('Collection not found or has no recipes.');
+    }
+
+    return {
+        collectionTitle: collectionRow?.title,
+        userId: collectionRow?.userId,
+        recipes: recipesResult,
+    };
+}
+
+export async function deleteCollection(collectionId: number) {
+    const db = getDb();
+    const {locals} = getRequestEvent();
+
+    if (!collectionId) {
+        throw new Error('Collection ID is required');
+    }
+
+    const [collectionRow] = await db
+        .select({ userId: collections.userId })
+        .from(collections)
+        .where(eq(collections.id, collectionId));
+
+    if(!collectionRow) {
+        throw new Error('Collection not found.');
+    }
+
+    if(collectionRow.userId !== locals.user?.id) {
+        throw new Error('Insufficient permissions');
+    }
+
+    await db.delete(collectionToRecipe).where(eq(collectionToRecipe.collectionId, collectionId));
+
+    return db.delete(collections)
+        .where(eq(collections.id, collectionId))
+        .returning({id: collections.id});
 }
 
 export async function getRecentRecipes() {
@@ -395,7 +434,7 @@ export async function getCollections(userId: string, recipeId?: number) {
 
 export async function setCollectionTitle(collectionId: number, title: string) {
     const db = getDb();
-    const {params} = getRequestEvent();
+    const {locals} = getRequestEvent();
 
     if (!collectionId) {
         throw new Error('Collection ID is required.');
@@ -410,7 +449,7 @@ export async function setCollectionTitle(collectionId: number, title: string) {
         throw new Error('Collection not found.');
     }
 
-    if (collection.userId !== userId) {
+    if (collection.userId !== locals.user?.id) {
         throw new Error('Insufficient permissions');
     }
 
