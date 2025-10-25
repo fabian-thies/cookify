@@ -1,38 +1,78 @@
-# sv
+<div style="text-align: center;">
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+# Cookify - Your Personal Recipe App
 
-## Creating a project
+**Discover, save, and organize all your favorite recipes in one place.**
+Upload photos, rate dishes, build collections, and find inspiration in your own digital cookbook.
 
-If you're seeing this, you've probably already done this step. Congrats!
+</div>
 
-```sh
-# create a new project in the current directory
-npx sv create
+---
 
-# create a new project in my-app
-npx sv create my-app
-```
+## Features
 
-## Developing
+- **User Accounts**
+    - Create your own account with login and registration.
+- **Recipe Management**
+    - Add, edit, and delete your favorite recipes.
+    - Include ingredients (with amounts and units), steps, servings, and cook time.
+    - Upload images to personalize your recipes.
+- **Smart Search & Filters**
+    - Easily search and filter recipes (e.g., by difficulty or cook time).
+- **Favorites & Ratings**
+    - Mark favorites and rate recipes you love.
+- **Personal Collections**
+    - Organize everything with custom recipe collections.
+- **Multilingual Support**
+    - Use Cookify in your preferred language: **English**, **German**, or **Spanish**.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+---
 
-```sh
-npm run dev
+## Installation
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+### Using Docker
 
-## Building
+1. Create a `.env` file for Docker Compose, for example:
 
-To create a production version of your app:
+    ```dotenv
+    # App
+    NODE_ENV=production
+    ORIGIN=http://localhost:3000
+    DATABASE_URL=postgres://cookify:secret@db:5432/cookify
 
-```sh
-npm run build
-```
+    # Postgres DB
+    POSTGRES_USER=cookify
+    POSTGRES_PASSWORD=secret
+    POSTGRES_DB=cookify
+    ```
 
-You can preview the production build with `npm run preview`.
+2. Start the containers:
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+    ```bash
+    docker compose up -d --build
+    ```
+
+---
+
+### Configuration Notes
+
+* The **app container** exposes port **3000**.
+  To access it from your host, add a port mapping under `app` in your `docker-compose.yml`:
+
+  ```yaml
+  services:
+    app:
+      ports:
+        - "3000:3000"
+  ```
+
+* File uploads are persisted in the `./uploads` directory (mounted into the container).
+
+* Database **migrations** run automatically on container start (`scripts/migrate.ts`).
+
+* **Coolify Deployment:**
+  The provided `docker-compose.yml` works out of the box with **Coolify**. Just make sure your domain in Coolify is forwarded to the app’s exposed port (`3000`).
+
+<div style="text-align: center; margin-top: 3rem;">
+    Made with ❤️ and Svelte.
+</div>
