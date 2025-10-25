@@ -38,6 +38,11 @@
                         {m["nav.favorites"]()}
                     </NavigationMenu.Link>
                 </NavigationMenu.Item>
+                <NavigationMenu.Item>
+                    <NavigationMenu.Link href="/collection">
+                        {m["nav.collection"]()}
+                    </NavigationMenu.Link>
+                </NavigationMenu.Item>
             </NavigationMenu.List>
         </NavigationMenu.Root>
     </div>
@@ -58,6 +63,9 @@
                     </a>
                     <a href="/favorites" onclick={() => isOpen = false}>
                         {m["nav.favorites"]()}
+                    </a>
+                    <a href="/collection" onclick={() => isOpen = false}>
+                        {m["nav.collection"]()}
                     </a>
                     <a href="/recipe/create" onclick={() => isOpen = false}>
                         {m["nav.create"]()}
