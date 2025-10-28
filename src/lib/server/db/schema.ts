@@ -9,6 +9,7 @@ export const user = pgTable('user', {
     passwordHash: text('password_hash').notNull(),
     avatar: text('avatar'),
     language: text('language', {enum: [...LANGUAGES]}).notNull().default(LANGUAGES[0]),
+    administrator: boolean('administrator').notNull().default(false)
 });
 
 export const session = pgTable('session', {
