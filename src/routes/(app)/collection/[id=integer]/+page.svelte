@@ -60,7 +60,7 @@
     {#snippet actions()}
         <DropdownMenu.Root>
             <DropdownMenu.Trigger>
-                <Button variant="ghost">
+                <Button variant="outline">
                     <Ellipsis/>
                 </Button>
             </DropdownMenu.Trigger>

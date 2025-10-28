@@ -137,7 +137,7 @@
     }
 </script>
 
-<div class="w-full mt-18">
+<div class="w-full mt-4 md:mt-18">
     <h1 class="text-4xl font-bold">{title}</h1>
     <div class="text-muted-foreground h-5 flex items-center gap-4 mb-4 mt-4">
         <div class="flex items-center gap-2">
