@@ -16,3 +16,19 @@ export async function updatePassword(userId: string, passwordHash: string) {
         .set({passwordHash})
         .where(eq(user.id, userId));
 }
+
+export async function getUsers() {
+    const db = getDb();
+
+    return db.select(
+        {
+            id: user.id,
+            email: user.email,
+            age: user.age,
+            username: user.username,
+            administrator: user.administrator,
+            avatar: user.avatar,
+            language: user.language
+        }
+    ).from(user);
+}
