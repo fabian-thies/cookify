@@ -57,6 +57,13 @@
       "when": 1761611235639,
       "tag": "0007_nostalgic_doctor_doom",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1761922445840,
+      "tag": "0008_previous_hobgoblin",
+      "breakpoints": true
     }
   ]
 }
