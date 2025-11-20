@@ -4,7 +4,7 @@
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
     import * as Sheet from "$lib/components/ui/sheet";
     import {Button} from "$lib/components/ui/button";
-    import {Menu, Plus} from "lucide-svelte";
+    import {Menu, Plus, ShieldCheck, User as UserIcon, Settings as SettingsIcon} from "lucide-svelte";
     import type {PublicUser} from "$lib/server/db/schema";
     import {m} from "$lib/paraglide/messages.js";
     import {Separator} from "$lib/components/ui/separator";
@@ -115,12 +115,20 @@
                     </DropdownMenu.Label>
                     <DropdownMenu.Separator/>
                     <DropdownMenu.Group>
-                        <DropdownMenu.Item>
+                        <DropdownMenu.Item class="flex items-center gap-2">
+                            <UserIcon class="size-4 text-muted-foreground"/>
                             <a href="/profile/{user.id}">{m["nav.profile"]()}</a>
                         </DropdownMenu.Item>
-                        <DropdownMenu.Item>
+                        <DropdownMenu.Item class="flex items-center gap-2">
+                            <SettingsIcon class="size-4 text-muted-foreground"/>
                             <a href="/settings">{m["nav.settings"]()}</a>
                         </DropdownMenu.Item>
+                        {#if user.administrator}
+                            <DropdownMenu.Item class="flex items-center gap-2">
+                                <ShieldCheck class="size-4 text-muted-foreground"/>
+                                <a href="/administration">Administration</a>
+                            </DropdownMenu.Item>
+                        {/if}
                     </DropdownMenu.Group>
                     <DropdownMenu.Separator/>
                     <DropdownMenu.Item class="text-destructive">
