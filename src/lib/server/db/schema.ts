@@ -12,6 +12,13 @@ export const user = pgTable('user', {
     administrator: boolean('administrator').notNull().default(false)
 });
 
+export const siteSettings = pgTable('site_settings', {
+    id: serial('id').primaryKey(),
+    key: text('key').notNull().unique(),
+    value: text('value').notNull(),
+    updatedAt: timestamp('updated_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow()
+});
+
 export const session = pgTable('session', {
     id: text('id').primaryKey(),
     userId: text('user_id').notNull().references(() => user.id),
@@ -111,3 +118,4 @@ export type Tag = typeof tags.$inferSelect;
 export type RecipeRating = typeof recipeRating.$inferSelect;
 export type Collection = typeof collections.$inferSelect;
 export type CollectionToRecipe = typeof collectionToRecipe.$inferSelect;
+export type SiteSettings = typeof siteSettings.$inferSelect;
