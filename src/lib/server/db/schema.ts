@@ -35,7 +35,8 @@ export const recipes = pgTable('recipes', {
     cookingTime: integer('cooking_time').notNull(),
     servings: integer('servings').notNull(),
     userId: text('user_id').notNull().references(() => user.id),
-    viewCount: integer('view_count').notNull().default(0)
+    viewCount: integer('view_count').notNull().default(0),
+    visibility: text('visibility', {enum: ['public', 'private']}).notNull().default('public'),
 });
 
 export const difficulty = pgTable('difficulty', {
