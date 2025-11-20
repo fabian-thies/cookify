@@ -111,7 +111,15 @@
 				"difficultyGroupLabel": "Schwierigkeitsgrad",
 				"tagsLabel": "Schlagwörter",
 				"tagsPlaceholder": "Tag eingeben und Enter drücken",
-				"previewLabel": "Vorschaubild"
+				"previewLabel": "Vorschaubild",
+				"visibility": {
+					"label": "Sichtbarkeit",
+					"placeholder": "Sichtbarkeit auswählen",
+					"options": {
+						"public": "Öffentlich",
+						"private": "Privat"
+					}
+				}
 			}
 		},
 		"saveSuccess": "Rezept erfolgreich gespeichert!",
@@ -187,5 +195,40 @@
       "description": "Sicher, dass Sie diese Kollektion löschen möchten?",
       "confirm": "Kollektion löschen"
     }
-  }
+  },
+	"admin": {
+		"title": "Administration",
+		"description": "Verwalte globale Einstellungen und Benutzer.",
+		"tabs": {
+			"general": "Allgemein",
+			"users": "Benutzer"
+		},
+		"security": {
+			"title": "Sicherheit",
+			"allowRegistrations": "Registrierungen erlauben"
+		},
+		"save": "Änderungen speichern",
+		"saving": "Speichere...",
+		"users": {
+			"title": "Benutzer",
+			"actions": {
+				"label": "Aktionen",
+				"editEmail": "E-Mail bearbeiten",
+				"editPassword": "Passwort ändern",
+				"deleteUser": "Benutzer löschen",
+				"emailDescription": "Aktualisiere die E-Mail-Adresse für {username}.",
+				"passwordDescription": "Wähle ein neues Passwort für {username}.",
+				"passwordPlaceholder": "Mindestens 6 Zeichen",
+				"saveEmail": "E-Mail speichern",
+				"savePassword": "Passwort speichern",
+				"emailUpdated": "E-Mail aktualisiert",
+				"passwordUpdated": "Passwort aktualisiert",
+				"userDeleted": "Benutzer gelöscht",
+				"errorEmail": "E-Mail konnte nicht aktualisiert werden",
+				"errorPassword": "Passwort konnte nicht aktualisiert werden",
+				"errorDelete": "Benutzer konnte nicht gelöscht werden",
+				"deleteDescription": "Dies entfernt {username}. Diese Aktion kann nicht rückgängig gemacht werden."
+			}
+		}
+	}
 }

@@ -12,6 +12,7 @@ export interface CreateRecipeInput {
     steps: string[];
     tags: string[];
     image: string;
+    visibility: "public" | "private";
 }
 
 export interface UpdateRecipeInput extends CreateRecipeInput {

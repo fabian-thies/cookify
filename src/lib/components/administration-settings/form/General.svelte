@@ -44,14 +44,14 @@
 
 <Card.Root class="w-full">
     <Card.Header>
-        <Card.Title>Administration</Card.Title>
-        <Card.Description>Verwalte globale Einstellungen und Benutzer.</Card.Description>
+        <Card.Title>{m["admin.title"]()}</Card.Title>
+        <Card.Description>{m["admin.description"]()}</Card.Description>
     </Card.Header>
     <Card.Content>
         <Tabs.Root value="account" class="">
             <Tabs.List>
-                <Tabs.Trigger value="account">General</Tabs.Trigger>
-                <Tabs.Trigger value="users">Users</Tabs.Trigger>
+                <Tabs.Trigger value="account">{m["admin.tabs.general"]()}</Tabs.Trigger>
+                <Tabs.Trigger value="users">{m["admin.tabs.users"]()}</Tabs.Trigger>
             </Tabs.List>
 
             <Tabs.Content value="account" class="mt-4">
@@ -59,11 +59,11 @@
                     <div class="space-y-4">
                         <div class="flex items-center gap-2">
                             <ShieldCheck size={16} class="text-muted-foreground" />
-                            <h3 class="text-sm font-medium">Security</h3>
+                            <h3 class="text-sm font-medium">{m["admin.security.title"]()}</h3>
                         </div>
                         <div class="flex items-center gap-3">
                             <Checkbox id="allow_registrations" bind:checked={allowRegistration} />
-                            <Label for="allow_registrations">Allow registrations</Label>
+                            <Label for="allow_registrations">{m["admin.security.allowRegistrations"]()}</Label>
                         </div>
                     </div>
                 </form>
@@ -73,7 +73,7 @@
                 <div class="space-y-3">
                     <div class="flex items-center gap-2">
                         <Users size={16} class="text-muted-foreground" />
-                        <h3 class="text-sm font-medium">Users</h3>
+                        <h3 class="text-sm font-medium">{m["admin.users.title"]()}</h3>
                     </div>
                     <DataTable data={users} {columns} />
                 </div>
@@ -82,7 +82,7 @@
     </Card.Content>
     <Card.Footer class="flex-col gap-2 items-start">
         <Button type="submit" form="admin-general" disabled={isSavingSettings}>
-            {isSavingSettings ? "Saving..." : "Save changes"}
+            {isSavingSettings ? m["admin.saving"]() : m["admin.save"]()}
         </Button>
     </Card.Footer>
 </Card.Root>

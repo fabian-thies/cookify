@@ -23,6 +23,12 @@ export const load: PageServerLoad = async (event) => {
         throw error(404, 'Recipe not found')
     }
 
+    const viewerId = event.locals.user?.id;
+
+    if (recipe.visibility === "private" && recipe.userId !== viewerId && !event.locals.user?.administrator) {
+        throw error(403, 'Recipe is private');
+    }
+
     await incrementRecipeViewCount(recipeId);
 
     const [steps, ingredients, isFavorite, ratingSummary, userRating] = await Promise.all([

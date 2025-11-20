@@ -12,6 +12,7 @@
     import {toast} from "svelte-sonner";
     import {setUserEmail, setUserPassword, removeUser} from "$lib/functions/user.remote";
     import type {PublicUser} from "$lib/server/db/schema";
+    import {m} from "$lib/paraglide/messages";
 
     type Props = {
         user: PublicUser;
@@ -41,10 +42,10 @@
             isUpdatingEmail = true;
             await setUserEmail({userId: user.id, email});
             onUserUpdated?.({...user, email});
-            toast.success("Email updated");
+            toast.success(m["admin.users.actions.emailUpdated"]());
             emailDialogOpen = false;
         } catch (e) {
-            const message = e instanceof Error ? e.message : "Failed to update email";
+            const message = e instanceof Error ? e.message : m["admin.users.actions.errorEmail"]();
             toast.error(message);
         } finally {
             isUpdatingEmail = false;
@@ -57,11 +58,11 @@
         try {
             isUpdatingPassword = true;
             await setUserPassword({userId: user.id, password});
-            toast.success("Password updated");
+            toast.success(m["admin.users.actions.passwordUpdated"]());
             password = "";
             passwordDialogOpen = false;
         } catch (e) {
-            const message = e instanceof Error ? e.message : "Failed to update password";
+            const message = e instanceof Error ? e.message : m["admin.users.actions.errorPassword"]();
             toast.error(message);
         } finally {
             isUpdatingPassword = false;
@@ -73,10 +74,10 @@
             isDeletingUser = true;
             await removeUser({userId: user.id});
             onUserDeleted?.(user.id);
-            toast.success("User deleted");
+            toast.success(m["admin.users.actions.userDeleted"]());
             deleteDialogOpen = false;
         } catch (e) {
-            const message = e instanceof Error ? e.message : "Failed to delete user";
+            const message = e instanceof Error ? e.message : m["admin.users.actions.errorDelete"]();
             toast.error(message);
         } finally {
             isDeletingUser = false;
@@ -100,15 +101,15 @@
     </DropdownMenu.Trigger>
     <DropdownMenu.Content>
         <DropdownMenu.Group>
-            <DropdownMenu.Label>Actions</DropdownMenu.Label>
+            <DropdownMenu.Label>{m["admin.users.actions.label"]()}</DropdownMenu.Label>
             <DropdownMenu.Item onclick={() => emailDialogOpen = true}>
-                Edit Email
+                {m["admin.users.actions.editEmail"]()}
             </DropdownMenu.Item>
             <DropdownMenu.Item onclick={() => passwordDialogOpen = true}>
-                Edit Password
+                {m["admin.users.actions.editPassword"]()}
             </DropdownMenu.Item>
             <DropdownMenu.Item onclick={() => deleteDialogOpen = true}>
-                Delete User
+                {m["admin.users.actions.deleteUser"]()}
             </DropdownMenu.Item>
         </DropdownMenu.Group>
     </DropdownMenu.Content>
@@ -118,25 +119,25 @@
     <Dialog.Content class="sm:max-w-[425px]">
         <Dialog.Header>
             <Dialog.Title class="flex items-center gap-2">
-                <MailIcon class="size-4" /> Edit email
+                <MailIcon class="size-4" /> {m["admin.users.actions.editEmail"]()}
             </Dialog.Title>
             <Dialog.Description>
-                Update the email address for {user.username}.
+                {m["admin.users.actions.emailDescription"]({username: user.username})}
             </Dialog.Description>
         </Dialog.Header>
         <div class="space-y-2">
-            <Label for="email-{user.id}">Email</Label>
+            <Label for="email-{user.id}">{m["login.email"]()}</Label>
             <Input id="email-{user.id}" type="email" bind:value={email} />
         </div>
         <Dialog.Footer class="gap-2">
             <Dialog.Close asChild>
-                <Button variant="outline" type="button">Cancel</Button>
+                <Button variant="outline" type="button">{m["actions.cancel"]()}</Button>
             </Dialog.Close>
             <Button type="button" onclick={saveEmail} disabled={isUpdatingEmail} class="gap-2">
                 {#if isUpdatingEmail}
                     <LoaderIcon class="size-4 animate-spin" />
                 {/if}
-                Save email
+                {m["admin.users.actions.saveEmail"]()}
             </Button>
         </Dialog.Footer>
     </Dialog.Content>
@@ -146,30 +147,30 @@
     <Dialog.Content class="sm:max-w-[425px]">
         <Dialog.Header>
             <Dialog.Title class="flex items-center gap-2">
-                <KeyIcon class="size-4" /> Set new password
+                <KeyIcon class="size-4" /> {m["admin.users.actions.editPassword"]()}
             </Dialog.Title>
             <Dialog.Description>
-                Choose a new password for {user.username}.
+                {m["admin.users.actions.passwordDescription"]({username: user.username})}
             </Dialog.Description>
         </Dialog.Header>
         <div class="space-y-2">
-            <Label for="password-{user.id}">Password</Label>
+            <Label for="password-{user.id}">{m["login.password"]()}</Label>
             <Input
                     id="password-{user.id}"
                     type="password"
-                    placeholder="At least 6 characters"
+                    placeholder={m["admin.users.actions.passwordPlaceholder"]()}
                     bind:value={password}
             />
         </div>
         <Dialog.Footer class="gap-2">
             <Dialog.Close asChild>
-                <Button variant="outline" type="button">Cancel</Button>
+                <Button variant="outline" type="button">{m["actions.cancel"]()}</Button>
             </Dialog.Close>
             <Button type="button" onclick={savePassword} disabled={isUpdatingPassword} class="gap-2">
                 {#if isUpdatingPassword}
                     <LoaderIcon class="size-4 animate-spin" />
                 {/if}
-                Save password
+                {m["admin.users.actions.savePassword"]()}
             </Button>
         </Dialog.Footer>
     </Dialog.Content>
@@ -180,21 +181,21 @@
         <Dialog.Header>
             <Dialog.Title class="flex items-center gap-2 text-destructive">
                 <TrashIcon class="size-4" />
-                Delete user
+                {m["admin.users.actions.deleteUser"]()}
             </Dialog.Title>
             <Dialog.Description>
-                This removes {user.username}. This action cannot be undone.
+                {m["admin.users.actions.deleteDescription"]({username: user.username})}
             </Dialog.Description>
         </Dialog.Header>
         <Dialog.Footer class="gap-2">
             <Dialog.Close asChild>
-                <Button variant="outline" type="button">Cancel</Button>
+                <Button variant="outline" type="button">{m["actions.cancel"]()}</Button>
             </Dialog.Close>
             <Button variant="destructive" type="button" onclick={deleteUser} disabled={isDeletingUser} class="gap-2">
                 {#if isDeletingUser}
                     <LoaderIcon class="size-4 animate-spin" />
                 {/if}
-                Delete
+                {m["actions.delete"]()}
             </Button>
         </Dialog.Footer>
     </Dialog.Content>

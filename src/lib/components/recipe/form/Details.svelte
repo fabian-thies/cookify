@@ -14,6 +14,10 @@
         {value: "medium", label: m["recipe.common.difficulty.medium"]()},
         {value: "hard", label: m["recipe.common.difficulty.hard"]()}
     ];
+    const visibilityOptions = [
+        {value: "public", label: m["recipe.form.details.visibility.options.public"]()},
+        {value: "private", label: m["recipe.form.details.visibility.options.private"]()},
+    ];
 
     type TagLike = { name: string };
 
@@ -90,6 +94,16 @@
                     name="difficulty"
                     options={difficulties}
                     placeholder={m["recipe.form.details.difficultyPlaceholder"]()} value={recipe?.difficulty.toLowerCase() || ''}/>
+        </div>
+        <div class="flex w-full flex-col gap-1.5">
+            <Label for="visibility">{m["recipe.form.details.visibility.label"]()}</Label>
+            <SelectComponent
+                    class="w-full"
+                    id="visibility"
+                    name="visibility"
+                    options={visibilityOptions}
+                    placeholder={m["recipe.form.details.visibility.placeholder"]()}
+                    value={recipe?.visibility ?? "public"}/>
         </div>
         <div class="flex w-full flex-col gap-1.5">
             <Label for="tagInput">{m["recipe.form.details.tagsLabel"]()}</Label>

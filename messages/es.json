@@ -111,7 +111,15 @@
         "difficultyGroupLabel": "Dificultad",
         "tagsLabel": "Etiquetas",
         "tagsPlaceholder": "Introduce una etiqueta y presiona Enter",
-        "previewLabel": "Imagen de portada"
+        "previewLabel": "Imagen de portada",
+        "visibility": {
+          "label": "Visibilidad",
+          "placeholder": "Selecciona visibilidad",
+          "options": {
+            "public": "Pública",
+            "private": "Privada"
+          }
+        }
       }
     },
     "saveSuccess": "¡Receta guardada con éxito!",
@@ -154,7 +162,7 @@
 		"saveRecipe": "Guardar receta",
 		"showPreview": "Mostrar vista previa",
 		"error": "Ocurrió un error. Por favor, inténtalo de nuevo."
-	},
+  },
   "settings": {
     "profile": {
       "title": "Perfil",
@@ -186,6 +194,41 @@
       "save": "Guardar perfil",
       "saved": "Guardado con éxito",
       "error": "Ocurrió un error. Por favor, inténtalo de nuevo."
+    }
+  },
+  "admin": {
+    "title": "Administración",
+    "description": "Gestiona ajustes globales y usuarios.",
+    "tabs": {
+      "general": "General",
+      "users": "Usuarios"
+    },
+    "security": {
+      "title": "Seguridad",
+      "allowRegistrations": "Permitir registros"
+    },
+    "save": "Guardar cambios",
+    "saving": "Guardando...",
+    "users": {
+      "title": "Usuarios",
+      "actions": {
+        "label": "Acciones",
+        "editEmail": "Editar correo",
+        "editPassword": "Cambiar contraseña",
+        "deleteUser": "Eliminar usuario",
+        "emailDescription": "Actualiza el correo de {username}.",
+        "passwordDescription": "Elige una nueva contraseña para {username}.",
+        "passwordPlaceholder": "Al menos 6 caracteres",
+        "saveEmail": "Guardar correo",
+        "savePassword": "Guardar contraseña",
+        "emailUpdated": "Correo actualizado",
+        "passwordUpdated": "Contraseña actualizada",
+        "userDeleted": "Usuario eliminado",
+        "errorEmail": "No se pudo actualizar el correo",
+        "errorPassword": "No se pudo actualizar la contraseña",
+        "errorDelete": "No se pudo eliminar al usuario",
+        "deleteDescription": "Esto elimina a {username}. Esta acción no se puede deshacer."
+      }
     }
   }
 }

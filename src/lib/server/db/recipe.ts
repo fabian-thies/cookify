@@ -26,7 +26,8 @@ export async function createRecipe({
                                        ingredientsList,
                                        steps,
                                        tags,
-                                       image
+                                       image,
+                                       visibility
                                    }: CreateRecipeInput) {
     const db = getDb();
     const result = await db.insert(recipes).values({
@@ -35,7 +36,8 @@ export async function createRecipe({
         image,
         cookingTime: cookTime,
         servings,
-        userId: userId
+        userId: userId,
+        visibility
     }).returning({id: recipes.id});
 
     await db.insert(difficultyToRecipe).values({recipeId: result[0].id, difficultyId: getDifficultyId(difficulty)});
@@ -103,7 +105,8 @@ export async function updateRecipe({
                                        ingredientsList,
                                        steps,
                                        tags,
-                                       image
+                                       image,
+                                       visibility
                                    }: UpdateRecipeInput) {
     const db = getDb();
 
@@ -128,6 +131,7 @@ export async function updateRecipe({
             servings,
             userId,
             updatedAt: new Date(),
+            visibility
         })
         .where(eq(recipes.id, id));
 
@@ -167,7 +171,7 @@ export async function updateRecipe({
     return {id};
 }
 
-export async function getRecipes(offset = 0, limit?: number, orderBy?: "recent" | "popular") {
+export async function getRecipes(offset = 0, limit?: number, orderBy?: "recent" | "popular", includePrivate = false) {
     const db = getDb();
     let query = db.select({
         ...getTableColumns(recipes),
@@ -178,6 +182,10 @@ export async function getRecipes(offset = 0, limit?: number, orderBy?: "recent" 
         .innerJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
         .offset(offset)
         .$dynamic();
+
+    if (!includePrivate) {
+        query = query.where(eq(recipes.visibility, "public"));
+    }
 
     if (limit) {
         query = query.limit(limit);
@@ -280,7 +288,7 @@ export async function getFavoriteRecipes() {
         .innerJoin(favorite, eq(favorite.recipeId, recipes.id))
         .leftJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
         .leftJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
-        .where(eq(favorite.favorite, true));
+        .where(and(eq(favorite.favorite, true), eq(recipes.visibility, "public")));
 }
 
 export async function getRecipeById(id: number) {
@@ -298,17 +306,25 @@ export async function getRecipeById(id: number) {
     return result[0] ?? null;
 }
 
-export async function getRecipesByUserId(userId: string) {
+export async function getRecipesByUserId(userId: string, includePrivate = false) {
     const db = getDb();
 
-    return db.select({
+    let query = db.select({
         ...getTableColumns(recipes),
         difficulty: difficulty.difficulty,
     })
         .from(recipes)
         .leftJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
         .leftJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
-        .where(eq(recipes.userId, userId));
+        .$dynamic();
+
+    const conditions = [eq(recipes.userId, userId)];
+
+    if (!includePrivate) {
+        conditions.push(eq(recipes.visibility, "public"));
+    }
+
+    return query.where(and(...conditions));
 }
 
 export async function getRecipeFavoriteState(userId: string, recipeId: number) {

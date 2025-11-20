@@ -111,7 +111,15 @@
 				"difficultyGroupLabel": "Difficulty",
 				"tagsLabel": "Tags",
 				"tagsPlaceholder": "Enter a tag and press Enter",
-				"previewLabel": "Cover image"
+				"previewLabel": "Cover image",
+				"visibility": {
+					"label": "Visibility",
+					"placeholder": "Select visibility",
+					"options": {
+						"public": "Public",
+						"private": "Private"
+					}
+				}
 			}
 		},
 		"saveSuccess": "Recipe saved successfully!",
@@ -142,11 +150,11 @@
       "confirm": "Delete collection"
     }
   },
-  "actions": {
-    "share": "Share",
-    "save": "Save",
-    "rate": "Rate",
-    "edit": "Edit",
+	"actions": {
+		"share": "Share",
+		"save": "Save",
+		"rate": "Rate",
+		"edit": "Edit",
     "cancel": "Cancel",
     "delete": "Delete",
     "deleteRecipe": "Delete recipe",
@@ -188,6 +196,41 @@
 			"save": "Save profile",
 			"saved": "Successfully saved",
 			"error": "An error occurred. Please try again."
+		}
+	},
+	"admin": {
+		"title": "Administration",
+		"description": "Manage global settings and users.",
+		"tabs": {
+			"general": "General",
+			"users": "Users"
+		},
+		"security": {
+			"title": "Security",
+			"allowRegistrations": "Allow registrations"
+		},
+		"save": "Save changes",
+		"saving": "Saving...",
+		"users": {
+			"title": "Users",
+			"actions": {
+				"label": "Actions",
+				"editEmail": "Edit email",
+				"editPassword": "Edit password",
+				"deleteUser": "Delete user",
+				"emailDescription": "Update the email address for {username}.",
+				"passwordDescription": "Choose a new password for {username}.",
+				"passwordPlaceholder": "At least 6 characters",
+				"saveEmail": "Save email",
+				"savePassword": "Save password",
+				"emailUpdated": "Email updated",
+				"passwordUpdated": "Password updated",
+				"userDeleted": "User deleted",
+				"errorEmail": "Failed to update email",
+				"errorPassword": "Failed to update password",
+				"errorDelete": "Failed to delete user",
+				"deleteDescription": "This removes {username}. This action cannot be undone."
+			}
 		}
 	}
 }

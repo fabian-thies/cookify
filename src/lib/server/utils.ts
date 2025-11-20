@@ -107,6 +107,8 @@ export function parseRecipeFormData(formData: FormData) {
     const cookTime: number = Number(formData.get("cookTime"));
     const servings: number = Number(formData.get("servings"));
     const difficulty: string = formData.get("difficulty")?.toString() ?? "";
+    const visibilityRaw = formData.get("visibility")?.toString() ?? "public";
+    const visibility = visibilityRaw === "private" ? "private" : "public";
 
     validateInputEmpty(title, description, cookTime, servings, difficulty);
 
@@ -169,6 +171,7 @@ export function parseRecipeFormData(formData: FormData) {
         difficulty,
         ingredientsList,
         steps: stepsArr,
-        tags: tagsArr
+        tags: tagsArr,
+        visibility
     };
 }
