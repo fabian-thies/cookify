@@ -1,6 +1,9 @@
 <script lang="ts">
     import LoginForm from "$lib/components/LoginForm.svelte";
     import {Apple} from 'lucide-svelte';
+
+    const {data} = $props();
+    const allowRegistrations = data.allowRegistrations ?? true;
 </script>
 <div class="flex min-h-screen flex-col items-center justify-center gap-6 px-4 md:px-0">
     <div class="flex w-full max-w-sm flex-col gap-6">
@@ -12,6 +15,6 @@
             </div>
             Cookify
         </a>
-        <LoginForm isLogin={true}/>
+        <LoginForm isLogin={true} {allowRegistrations}/>
     </div>
 </div>

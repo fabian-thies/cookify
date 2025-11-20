@@ -2,30 +2,42 @@
     import * as Tabs from "$lib/components/ui/tabs/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
-    import { Input } from "$lib/components/ui/input/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
-    import * as Separator from "$lib/components/ui/separator/index.js";
-    import SelectComponent from "$lib/components/ui/select/SelectComponent.svelte";
     import { m } from "$lib/paraglide/messages";
-    import { Languages, ShieldCheck, Users } from "lucide-svelte";
+    import { ShieldCheck, Users } from "lucide-svelte";
 
-    import {columns} from "../../../../routes/(app)/administration/columns";
+    import {createColumns} from "../../../../routes/(app)/administration/columns";
     import DataTable from "../../../../routes/(app)/administration/data-table.svelte";
     import {Checkbox} from "$lib/components/ui/checkbox";
     import {updateAllowRegistrations} from "$lib/functions/site.remote";
     import {toast} from "svelte-sonner";
+    import type {PublicUser} from "$lib/server/db/schema";
 
-    const { users } = $props();
+    const { users: initialUsers, allowRegistration: initialAllowRegistration = true } = $props();
 
-    let allowRegistration = $state(true);
+    let allowRegistration = $state(initialAllowRegistration);
+    let isSavingSettings = $state(false);
+    let users = $state<PublicUser[]>([...initialUsers]);
+
+    const columns = createColumns({
+        onUserUpdated: (updatedUser) => {
+            users = users.map((user) => user.id === updatedUser.id ? {...user, ...updatedUser} : user);
+        },
+        onUserDeleted: (id) => {
+            users = users.filter((user) => user.id !== id);
+        }
+    });
 
     async function saveSettings() {
         try {
+            isSavingSettings = true;
             await updateAllowRegistrations({value: allowRegistration});
 
             toast.success(m["settings.profile.saved"]());
         } catch (e) {
             toast.error(m["settings.profile.error"]());
+        } finally {
+            isSavingSettings = false;
         }
     }
 </script>
@@ -43,7 +55,7 @@
             </Tabs.List>
 
             <Tabs.Content value="account" class="mt-4">
-                <form id="admin-general" class="space-y-6" onsubmit={saveSettings}>
+                <form id="admin-general" class="space-y-6" on:submit|preventDefault={saveSettings}>
                     <div class="space-y-4">
                         <div class="flex items-center gap-2">
                             <ShieldCheck size={16} class="text-muted-foreground" />
@@ -69,6 +81,8 @@
         </Tabs.Root>
     </Card.Content>
     <Card.Footer class="flex-col gap-2 items-start">
-        <Button type="submit" form="admin-general">Save changes</Button>
+        <Button type="submit" form="admin-general" disabled={isSavingSettings}>
+            {isSavingSettings ? "Saving..." : "Save changes"}
+        </Button>
     </Card.Footer>
 </Card.Root>

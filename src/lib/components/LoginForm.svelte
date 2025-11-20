@@ -14,13 +14,22 @@
     interface Props extends HTMLAttributes<HTMLDivElement> {
         class?: string;
         isLogin?: boolean;
+        allowRegistrations?: boolean;
     }
 
-    let {class: className, isLogin = $bindable(false), ...restProps}: Props = $props();
+    let {class: className, isLogin = $bindable(false), allowRegistrations = true, ...restProps}: Props = $props();
     const id = $props.id();
 
     const form = $derived(page.form);
     const redirectTo = $derived(page.url.searchParams.get('redirectTo'));
+
+    $effect(() => {
+        if (!allowRegistrations) {
+            isLogin = true;
+        }
+    });
+
+    const effectiveIsLogin = $derived(allowRegistrations ? isLogin : true);
 </script>
 
 <div {...restProps} class={cn("flex flex-col gap-6", className)}>
@@ -36,14 +45,14 @@
     <Card.Root>
         <Card.Header class="text-center">
             <Card.Title class="text-xl">
-                {isLogin ? m["login.welcomeBack"]() : m["login.createAccount"]()}
+                {effectiveIsLogin ? m["login.welcomeBack"]() : m["login.createAccount"]()}
             </Card.Title>
             <Card.Description>
-                {isLogin ? m["login.signInToContinue"]() : m["login.enterDetailsToStart"]()}
+                {effectiveIsLogin ? m["login.signInToContinue"]() : m["login.enterDetailsToStart"]()}
             </Card.Description>
         </Card.Header>
         <Card.Content>
-            <form action="{isLogin ? '?/login' : '?/register'}" method="post" use:enhance>
+            <form action="{effectiveIsLogin ? '?/login' : '?/register'}" method="post" use:enhance>
                 {#if redirectTo}
                     <input type="hidden" name="redirectTo" value={redirectTo}/>
                 {/if}
@@ -59,7 +68,7 @@
                                     type="text"
                             />
                         </div>
-                        {#if !isLogin}
+                        {#if !effectiveIsLogin}
                             <div class="grid gap-3">
                                 <Label for="email-{id}">{m["login.email"]()}</Label>
                                 <Input
@@ -85,7 +94,7 @@
                             </div>
                             <Input id="password-{id}" name="password" required type="password"/>
                         </div>
-                        {#if !isLogin}
+                        {#if !effectiveIsLogin}
                             <div class="grid gap-3">
                                 <Label for="confirm-password-{id}">{m["login.confirmPassword"]()}</Label>
                                 <Input
@@ -98,17 +107,22 @@
                             </div>
                         {/if}
                         <Button class="w-full" type="submit">
-                            {isLogin ? m["login.signIn"]() : m["login.createAccountButton"]()}
+                            {effectiveIsLogin ? m["login.signIn"]() : m["login.createAccountButton"]()}
                         </Button>
                     </div>
-                    <div class="text-center text-sm">
-                        {isLogin ? m["login.noAccount"]() : m["login.haveAccount"]()}
+                    <div class="text-center text-sm text-muted-foreground">
+                        {#if allowRegistrations}
+                            {effectiveIsLogin ? m["login.noAccount"]() : m["login.haveAccount"]()}
+                        {:else}
+                            Registrations are currently disabled.
+                        {/if}
                         <button
                                 class="underline underline-offset-4 hover:no-underline cursor-pointer"
-                                onclick={() => isLogin = !isLogin}
+                                onclick={() => allowRegistrations && (isLogin = !isLogin)}
                                 type="button"
+                                disabled={!allowRegistrations}
                         >
-                            {isLogin ? m["login.signUp"]() : m["login.signInLink"]()}
+                            {allowRegistrations ? (effectiveIsLogin ? m["login.signUp"]() : m["login.signInLink"]()) : m["login.signIn"]()}
                         </button>
                     </div>
                 </div>

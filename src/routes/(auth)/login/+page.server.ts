@@ -1,4 +1,4 @@
-import {hash, verify} from '@node-rs/argon2';
+import {verify} from '@node-rs/argon2';
 import {encodeBase32LowerCase} from '@oslojs/encoding';
 import {type Actions, fail, redirect} from '@sveltejs/kit';
 import {eq} from 'drizzle-orm';
@@ -8,13 +8,16 @@ import * as table from '$lib/server/db/schema';
 import type {PageServerLoad} from "./$types";
 import {validateEmail, validatePassword, validateUsername} from "$lib/utils";
 import {hashPassword} from "$lib/server/utils";
+import {getAllowRegistrations} from "$lib/server/db/site";
 
 export const load: PageServerLoad = async (event) => {
     if (event.locals.user) {
         return redirect(302, '/');
     }
 
-    return {};
+    const allowRegistrations = await getAllowRegistrations();
+
+    return {allowRegistrations};
 };
 
 export const actions: Actions = {
@@ -69,6 +72,11 @@ export const actions: Actions = {
         const password = formData.get('password');
         const confirmPassword = formData.get('confirmPassword');
         const redirectTo = formData.get('redirectTo');
+
+        const allowRegistrations = await getAllowRegistrations();
+        if (!allowRegistrations) {
+            return fail(403, {message: 'Registrations are currently disabled.'});
+        }
 
         if (!validateUsername(username)) {
             return fail(400, {message: 'Invalid username'});

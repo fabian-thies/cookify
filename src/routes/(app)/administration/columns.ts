@@ -1,9 +1,14 @@
 import type { ColumnDef } from "@tanstack/table-core";
-import type {PublicUser, User} from "$lib/server/db/schema";
+import type {PublicUser} from "$lib/server/db/schema";
 import {renderComponent} from "$lib/components/ui/data-table";
 import DataTableActions from "./data-table-actions.svelte";
 
-export const columns: ColumnDef<PublicUser>[] = [
+export type UserTableHandlers = {
+    onUserUpdated?: (user: PublicUser) => void;
+    onUserDeleted?: (id: string) => void;
+};
+
+export const createColumns = (handlers: UserTableHandlers = {}): ColumnDef<PublicUser>[] => [
     {
         accessorKey: "id",
         header: "ID",
@@ -19,12 +24,17 @@ export const columns: ColumnDef<PublicUser>[] = [
     {
         accessorKey: "administrator",
         header: "Administrator",
+        cell: ({row}) => row.original.administrator ? "Yes" : "No",
     },
     {
         id: "actions",
         header: "Actions",
         cell: ({row}) => {
-            return renderComponent(DataTableActions, {id: row.original.id});
+            return renderComponent(DataTableActions, {
+                user: row.original,
+                onUserUpdated: handlers.onUserUpdated,
+                onUserDeleted: handlers.onUserDeleted,
+            });
         },
     },
 ];

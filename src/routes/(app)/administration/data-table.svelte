@@ -5,7 +5,6 @@
         FlexRender,
     } from "$lib/components/ui/data-table/index.js";
     import * as Table from "$lib/components/ui/table/index.js";
-    import {Input} from "$lib/components/ui/input";
 
     type DataTableProps<TData, TValue> = {
         columns: ColumnDef<TData, TValue>[];
