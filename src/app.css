@@ -1,9 +1,31 @@
 @import "tailwindcss";
-
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+@font-face {
+    font-family: "Sora";
+    src: url("/fonts/Sora/Sora-VariableFont_wght.ttf") format("truetype");
+    font-display: swap;
+    font-weight: 100 800;
+    font-style: normal;
+}
 
+@font-face {
+    font-family: "Playfair Display";
+    src: url("/fonts/Playfair_Display/PlayfairDisplay-VariableFont_wght.ttf") format("truetype");
+    font-display: swap;
+    font-weight: 400 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Playfair Display";
+    src: url("/fonts/Playfair_Display/PlayfairDisplay-Italic-VariableFont_wght.ttf") format("truetype");
+    font-display: swap;
+    font-weight: 400 900;
+    font-style: italic;
+}
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
     --radius: 0.65rem;
@@ -118,6 +140,18 @@
     }
 
     body {
-        @apply bg-background text-foreground;
+        @apply bg-background text-foreground antialiased;
+        font-family: "Sora", "Inter", system-ui, -apple-system, sans-serif;
+        min-height: 100vh;
+    }
+
+    h1, h2, h3 {
+        font-family: "Playfair Display", "Sora", "Inter", system-ui, sans-serif;
+        letter-spacing: -0.01em;
+    }
+
+    ::selection {
+        background-color: color-mix(in oklab, var(--primary) 75%, transparent);
+        color: var(--primary-foreground);
     }
 }
