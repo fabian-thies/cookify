@@ -3,7 +3,7 @@
     import {Label} from "$lib/components/ui/label/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
     import {Textarea} from "$lib/components/ui/textarea";
-    import {Minus, Plus} from "lucide-svelte";
+    import {Plus, Trash} from "lucide-svelte";
     import {onMount} from "svelte";
     import type {Step} from "$lib/server/db/schema";
     import {m} from "$lib/paraglide/messages";
@@ -59,7 +59,7 @@
                     disabled={steps.length === 1}
                     onclick={() => removeStep(index)}
             >
-                <Minus/>
+                <Trash/>
             </Button>
         </div>
     </div>

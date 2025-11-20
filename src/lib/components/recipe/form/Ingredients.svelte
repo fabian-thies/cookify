@@ -3,7 +3,7 @@
     import {Label} from "$lib/components/ui/label/index.js";
     import {Input} from "$lib/components/ui/input/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
-    import {Minus, Plus} from "lucide-svelte";
+    import {Plus, Trash} from "lucide-svelte";
     import {onMount} from "svelte";
     import {m} from "$lib/paraglide/messages";
     import type {Ingredient} from "$lib/server/db/schema";
@@ -75,8 +75,7 @@
                     required
             />
         </div>
-        <div class="flex w-full md:max-w-10 flex-col gap-x-1.5">
-            <Label>&nbsp;</Label>
+        <div class="flex w-full md:max-w-10 flex-col gap-x-1.5 justify-end">
             <Button
                     variant="outline"
                     class="hover:cursor-pointer"
@@ -84,7 +83,7 @@
                     disabled={ingredients.length === 1}
                     onclick={() => removeIngredient(index)}
             >
-                <Minus/>
+                <Trash/>
             </Button>
         </div>
     </div>
