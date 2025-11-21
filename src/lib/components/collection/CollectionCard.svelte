@@ -38,7 +38,7 @@
                 {/each}
             </div>
             <div class="flex justify-between mt-5">
-                <h1 class="font-medium text-lg text-card-foreground">{title}</h1>
+                <h1 class="font-bold tracking-wide text-lg text-card-foreground">{title}</h1>
                 <span class="text-sm text-muted-foreground flex flex-row gap-1 items-center">
                 <Bookmark size={18}/>
                     {recipeCount}

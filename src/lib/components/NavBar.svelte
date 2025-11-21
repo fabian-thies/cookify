@@ -14,9 +14,11 @@
     const {user}: { user: PublicUser } = $props();
 </script>
 
-<nav class="bg-background shadow-xs h-18 w-full flex items-center justify-between px-4 md:px-8 relative">
-    <a href="/">
-        <h1 class="text-xl md:text-2xl font-bold text-foreground">cookify</h1>
+<nav class="sticky top-3 z-40 mx-auto mt-2 flex w-full max-w-6xl items-center justify-between rounded-2xl border border-border/70 bg-card/80 px-4 py-2 shadow-xl backdrop-blur-xl md:px-6">
+    <a href="/" class="flex items-center gap-2 rounded-xl px-2 py-1 transition hover:border-transparent hover:opacity-90">
+        <h2 class="cookify text-xl md:text-2xl font-semibold">
+            cookify
+        </h2>
     </a>
 
     <!-- Desktop Navigation -->
@@ -50,10 +52,10 @@
     <div class="flex items-center gap-2 md:gap-4">
         <!-- Mobile Menu Button -->
         <Sheet.Root bind:open={isOpen}>
-            <Sheet.Trigger class="md:hidden">
+            <Sheet.Trigger class="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border/70 bg-card/80 shadow-sm backdrop-blur transition hover:border-primary/50">
                 <Menu class="h-5 w-5"/>
             </Sheet.Trigger>
-            <Sheet.Content class="w-80" side="left">
+            <Sheet.Content class="w-80 bg-card/95 backdrop-blur-xl border-l border-border/70" side="left">
                 <Sheet.Header>
                     <Sheet.Title>{m["nav.navigation"]()}</Sheet.Title>
                 </Sheet.Header>

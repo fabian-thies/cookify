@@ -86,7 +86,11 @@
     <Dialog.Root bind:open={showEditDialog}>
         <Dialog.Content>
             <Dialog.Header>
-                <Dialog.Title>{m["collection.editDialog.title"]()}</Dialog.Title>
+                <Dialog.Title>
+                    <h2>
+                        {m["collection.editDialog.title"]()}
+                    </h2>
+                </Dialog.Title>
             </Dialog.Header>
             <div class="grid gap-2 py-4">
                 <Label for="title">{m["collection.editDialog.titleLabel"]()}</Label>

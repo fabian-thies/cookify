@@ -68,7 +68,9 @@
 <Card.Root class="w-full">
     <Card.Header class="flex items-center gap-4">
         <Card.Title class="text-lg font-bold flex flex-row items-center gap-2">
-            {m["recipe.form.steps.title"]()}
+            <h2>
+                {m["recipe.form.steps.title"]()}
+            </h2>
         </Card.Title>
     </Card.Header>
 

@@ -92,7 +92,9 @@
 <Card.Root class="w-full">
     <Card.Header class="flex items-center gap-4">
         <Card.Title class="text-lg font-bold flex flex-row items-center gap-2">
-            {m["recipe.form.ingredients.title"]()}
+            <h2>
+                {m["recipe.form.ingredients.title"]()}
+            </h2>
         </Card.Title>
     </Card.Header>
     <Card.Content class="flex flex-col gap-6">
