@@ -4,6 +4,7 @@
         Edit,
         Ellipsis,
         Heart,
+        Link2Off,
         Plus,
         Share2,
         Star,
@@ -15,20 +16,19 @@
     import {Separator} from "$lib/components/ui/separator/index.js";
     import {Badge} from "$lib/components/ui/badge/index.js";
     import {Button, buttonVariants} from "$lib/components/ui/button/index.js";
-    import {Checkbox} from "$lib/components/ui/checkbox/index.js";
     import {m} from "$lib/paraglide/messages";
     import {
         createCollection,
         deleteRecipe,
-        getCollections,
         getCollectionsForRecipe,
         likeRecipe,
-        rateRecipe, toggleRecipeInCollection
+        rateRecipe, toggleRecipeInCollection,
+        enableRecipeShare,
+        disableRecipeShare
     } from "$lib/functions/recipe.remote";
     import {toast} from "svelte-sonner";
     import {goto} from "$app/navigation";
     import {type Difficulty, difficultyLabels} from "$lib/types/recipe";
-    import {Label} from "$lib/components/ui/label";
     import {Spinner} from "$lib/components/ui/spinner";
 
     type props = {
@@ -44,7 +44,10 @@
         recipeOwner: boolean,
         averageRating: number | null,
         ratingCount: number,
-        userRating: number | null
+        userRating: number | null,
+        readonly?: boolean,
+        sharePath?: string,
+        shareEnabled?: boolean
     };
 
     let {
@@ -59,7 +62,10 @@
         recipeOwner,
         averageRating: initialAverageRating,
         ratingCount: initialRatingCount,
-        userRating: initialUserRating
+        userRating: initialUserRating,
+        readonly = false,
+        sharePath,
+        shareEnabled = false
     }: props = $props();
 
     let averageRating = $state<number | null>(initialAverageRating);
@@ -67,11 +73,15 @@
     let userRating = $state<number | null>(initialUserRating);
     let hoverRating = $state<number | null>(null);
     let isSubmittingRating = $state(false);
+    let isSharing = $state(false);
+    let isUpdatingShare = $state(false);
     let showDeleteDialog = $state(false);
     const stars = [1, 2, 3, 4, 5] as const;
+    let sharePathState = $state<string | null>(sharePath ?? null);
+    let isShareEnabled = $state(shareEnabled || !!sharePathState);
 
     async function handleRate(value: number) {
-        if (isSubmittingRating || value < 1 || value > 5) {
+        if (readonly || isSubmittingRating || value < 1 || value > 5) {
             return;
         }
 
@@ -120,6 +130,10 @@
     }
 
     async function likeRecipeOnClick() {
+        if (readonly) {
+            return;
+        }
+
         try {
             isFavorite = !isFavorite;
             await likeRecipe({recipeId});
@@ -133,6 +147,96 @@
             await createCollection({title: "Collection"});
         } catch (e) {
             toast.error(m["actions.error"]());
+        }
+    }
+
+    async function ensureSharePath(): Promise<string | null> {
+        if (sharePathState) {
+            return sharePathState;
+        }
+
+        if (!recipeOwner) {
+            toast.error("Kein Freigabelink verfügbar");
+            return null;
+        }
+
+        if (readonly) {
+            return null;
+        }
+
+        try {
+            isUpdatingShare = true;
+            const response = await enableRecipeShare({recipeId});
+            const path = response.shareToken ? `/share/${response.shareToken}` : null;
+            sharePathState = path;
+            isShareEnabled = !!path;
+            return path;
+        } catch (error) {
+            toast.error(m["actions.error"]());
+            return null;
+        } finally {
+            isUpdatingShare = false;
+        }
+    }
+
+    async function disableShareOnClick() {
+        if (readonly || isUpdatingShare || !recipeOwner) {
+            return;
+        }
+
+        try {
+            isUpdatingShare = true;
+            await disableRecipeShare({recipeId});
+            sharePathState = null;
+            isShareEnabled = false;
+            toast.success("Freigabe deaktiviert");
+        } catch (error) {
+            toast.error(m["actions.error"]());
+        } finally {
+            isUpdatingShare = false;
+        }
+    }
+
+    async function shareRecipeOnClick() {
+        if (isSharing) {
+            return;
+        }
+
+        const path = await ensureSharePath();
+
+        if (!path) {
+            return;
+        }
+
+        const shareUrl = `${location.origin}${path}`;
+
+        try {
+            isSharing = true;
+
+            if (navigator.share && navigator.canShare?.({url: shareUrl})) {
+                await navigator.share({
+                    title,
+                    text: description,
+                    url: shareUrl
+                });
+                toast.success("Link geteilt");
+                return;
+            }
+
+            if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(shareUrl);
+                toast.success("Link kopiert");
+                return;
+            }
+
+            toast.error(m["actions.error"]());
+        } catch (error) {
+            if ((error as DOMException)?.name === "AbortError") {
+                return;
+            }
+            toast.error(m["actions.error"]());
+        } finally {
+            isSharing = false;
         }
     }
 </script>
@@ -169,127 +273,144 @@
             </div>
         </div>
         <div class="flex items-center flex-wrap gap-2">
-            <Dialog.Root>
-                <Dialog.Trigger
-                        class={buttonVariants({ variant: "outline" }) + " flex-1 sm:flex-none min-w-0"}>
-                    <Star
-                            class="sm:w-[18px] sm:h-[18px]"
-                            color={userRating != null ? "#fbbf24" : "currentColor"}
-                            fill={userRating != null ? "#fbbf24" : "none"}
-                            size={16}
-                    />
-                    <span class="hidden sm:inline">
-                        {m["actions.rate"]()}
-                    </span>
-                </Dialog.Trigger>
-                <Dialog.Content>
-                    <Dialog.Header>
-                        <Dialog.Title>{m["recipe.common.ratePrompt"]()}</Dialog.Title>
-                        <Dialog.Description>
-                            {m["recipe.common.rateSubtitle"]()}
-                        </Dialog.Description>
-                    </Dialog.Header>
-                    <div class="flex flex-col items-center gap-4">
-                        <div
-                                class="flex items-center gap-1"
-                                onmouseleave={() => hoverRating = null}
-                                role="group">
-                            {#each stars as star}
-                                <button
-                                        type="button"
-                                        class="p-1 cursor-pointer disabled:cursor-not-allowed disabled:opacity-70"
-                                        onmouseenter={() => hoverRating = star}
-                                        onfocus={() => hoverRating = star}
-                                        onblur={() => hoverRating = null}
-                                        onmouseleave={() => hoverRating = null}
-                                        onclick={() => handleRate(star)}
-                                        disabled={isSubmittingRating}>
-                                    <Star
-                                            size={32}
-                                            fill={starFillColor(star)}
-                                            color={starStrokeColor(star)}
-                                    />
-                                </button>
-                            {/each}
+            {#if readonly}
+                <Button class="flex-1 sm:flex-none min-w-0" variant="secondary" onclick={shareRecipeOnClick}
+                        disabled={isSharing || isUpdatingShare || !sharePathState}>
+                    <Share2 class="w-4 h-4 sm:w-5 sm:h-5"/>
+                    <span class="inline">{m["actions.share"]()}</span>
+                </Button>
+            {:else}
+                <Dialog.Root>
+                    <Dialog.Trigger
+                            class={buttonVariants({ variant: "outline" }) + " flex-1 sm:flex-none min-w-0"}>
+                        <Star
+                                class="sm:w-[18px] sm:h-[18px]"
+                                color={userRating != null ? "#fbbf24" : "currentColor"}
+                                fill={userRating != null ? "#fbbf24" : "none"}
+                                size={16}
+                        />
+                        <span class="hidden sm:inline">
+                            {m["actions.rate"]()}
+                        </span>
+                    </Dialog.Trigger>
+                    <Dialog.Content>
+                        <Dialog.Header>
+                            <Dialog.Title>{m["recipe.common.ratePrompt"]()}</Dialog.Title>
+                            <Dialog.Description>
+                                {m["recipe.common.rateSubtitle"]()}
+                            </Dialog.Description>
+                        </Dialog.Header>
+                        <div class="flex flex-col items-center gap-4">
+                            <div
+                                    class="flex items-center gap-1"
+                                    onmouseleave={() => hoverRating = null}
+                                    role="group">
+                                {#each stars as star}
+                                    <button
+                                            type="button"
+                                            class="p-1 cursor-pointer disabled:cursor-not-allowed disabled:opacity-70"
+                                            onmouseenter={() => hoverRating = star}
+                                            onfocus={() => hoverRating = star}
+                                            onblur={() => hoverRating = null}
+                                            onmouseleave={() => hoverRating = null}
+                                            onclick={() => handleRate(star)}
+                                            disabled={isSubmittingRating}>
+                                        <Star
+                                                size={32}
+                                                fill={starFillColor(star)}
+                                                color={starStrokeColor(star)}
+                                        />
+                                    </button>
+                                {/each}
+                            </div>
                         </div>
-                    </div>
-                    <Dialog.Footer class="flex justify-end">
-                        <Dialog.Close
-                                class={buttonVariants({ variant: "outline" })}
-                                onclick={() => hoverRating = null}>
-                            {m["actions.cancel"]()}
-                        </Dialog.Close>
-                    </Dialog.Footer>
-                </Dialog.Content>
-            </Dialog.Root>
-            <Button class="flex-1 sm:flex-none min-w-0" onclick={likeRecipeOnClick}>
-                <Heart class="w-4 h-4 sm:w-5 sm:h-5" fill={isFavorite ? "white" : "none"}/>
-                <span class="inline">{m["actions.save"]()}</span>
-            </Button>
-            <DropdownMenu.Root>
-                <DropdownMenu.Trigger>
-                    <Button variant="ghost">
-                        <Ellipsis/>
-                    </Button>
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content>
-                    <DropdownMenu.Group>
-                        {#if recipeOwner}
-                            <DropdownMenu.Item>
-                                <a href="/recipe/{recipeId}/edit" class="flex items-center gap-3">
-                                    <Edit size={16} class="sm:w-[18px] sm:h-[18px]"/>
-                                    <span class="inline">{m["actions.edit"]()}</span>
-                                </a>
-                            </DropdownMenu.Item>
-                        {/if}
+                        <Dialog.Footer class="flex justify-end">
+                            <Dialog.Close
+                                    class={buttonVariants({ variant: "outline" })}
+                                    onclick={() => hoverRating = null}>
+                                {m["actions.cancel"]()}
+                            </Dialog.Close>
+                        </Dialog.Footer>
+                    </Dialog.Content>
+                </Dialog.Root>
+                <Button class="flex-1 sm:flex-none min-w-0" onclick={likeRecipeOnClick}>
+                    <Heart class="w-4 h-4 sm:w-5 sm:h-5" fill={isFavorite ? "white" : "none"}/>
+                    <span class="inline">{m["actions.save"]()}</span>
+                </Button>
+                <DropdownMenu.Root>
+                    <DropdownMenu.Trigger>
+                        <Button variant="ghost">
+                            <Ellipsis/>
+                        </Button>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content>
                         <DropdownMenu.Group>
-                            <DropdownMenu.Sub>
-                                <DropdownMenu.SubTrigger>
-                                    <Plus class="w-4 h-4 sm:w-5 sm:h-5"/>
-                                    <span class="inline">Kollektionen</span>
-                                </DropdownMenu.SubTrigger>
-                                <DropdownMenu.SubContent>
-                                    {#await getCollectionsForRecipe()}
-                                        <div class="px-4 py-2 flex justify-center text-muted-foreground">
-                                            <Spinner/>
-                                        </div>
-                                    {:then collections}
-                                        {#if collections.length === 0}
-                                            <div class="px-4 py-2 text-sm text-muted-foreground">Keine Kollektionen
-                                            </div>
-                                        {:else}
-                                            {#each collections as collection}
-                                                <DropdownMenu.Group>
-                                                    <DropdownMenu.CheckboxItem checked={collection.isInCollection}
-                                                                               onclick={async () => {await toggleRecipeInCollection({collectionId: collection.id})}}>
-                                                        {collection.title}
-                                                    </DropdownMenu.CheckboxItem>
-                                                </DropdownMenu.Group>
-                                            {/each}
-                                        {/if}
-                                    {:catch error}
-                                        <div class="px-4 py-2 text-sm text-red-500">{m["actions.error"]}</div>
-                                    {/await}
-                                    <DropdownMenu.Separator/>
-                                    <DropdownMenu.Item onclick={createCollectionOnClick}>
+                            {#if recipeOwner}
+                                <DropdownMenu.Item>
+                                    <a href="/recipe/{recipeId}/edit" class="flex items-center gap-3">
+                                        <Edit size={16} class="sm:w-[18px] sm:h-[18px]"/>
+                                        <span class="inline">{m["actions.edit"]()}</span>
+                                    </a>
+                                </DropdownMenu.Item>
+                            {/if}
+                            <DropdownMenu.Group>
+                                <DropdownMenu.Sub>
+                                    <DropdownMenu.SubTrigger>
                                         <Plus class="w-4 h-4 sm:w-5 sm:h-5"/>
-                                        <span class="inline">Neue Kollektion</span></DropdownMenu.Item>
-                                </DropdownMenu.SubContent>
-                            </DropdownMenu.Sub>
-                        </DropdownMenu.Group>
-                        <DropdownMenu.Item class="flex items-center gap-3">
-                            <Share2 class="w-4 h-4 sm:w-5 sm:h-5"/>
-                            <span class="inline">{m["actions.share"]()}</span>
-                        </DropdownMenu.Item>
-                        {#if recipeOwner}
-                            <DropdownMenu.Item class="flex items-center gap-3" onclick={() => showDeleteDialog = true}>
-                                <Trash2 size={16} class="sm:w-[18px] sm:h-[18px]"/>
-                                <span class="inline">{m["actions.delete"]()}</span>
+                                        <span class="inline">Kollektionen</span>
+                                    </DropdownMenu.SubTrigger>
+                                    <DropdownMenu.SubContent>
+                                        {#await getCollectionsForRecipe()}
+                                            <div class="px-4 py-2 flex justify-center text-muted-foreground">
+                                                <Spinner/>
+                                            </div>
+                                        {:then collections}
+                                            {#if collections.length === 0}
+                                                <div class="px-4 py-2 text-sm text-muted-foreground">Keine Kollektionen
+                                                </div>
+                                            {:else}
+                                                {#each collections as collection}
+                                                    <DropdownMenu.Group>
+                                                        <DropdownMenu.CheckboxItem checked={collection.isInCollection}
+                                                                                   onclick={async () => {await toggleRecipeInCollection({collectionId: collection.id})}}>
+                                                            {collection.title}
+                                                        </DropdownMenu.CheckboxItem>
+                                                    </DropdownMenu.Group>
+                                                {/each}
+                                            {/if}
+                                        {:catch error}
+                                            <div class="px-4 py-2 text-sm text-red-500">{m["actions.error"]}</div>
+                                        {/await}
+                                        <DropdownMenu.Separator/>
+                                        <DropdownMenu.Item onclick={createCollectionOnClick}>
+                                            <Plus class="w-4 h-4 sm:w-5 sm:h-5"/>
+                                            <span class="inline">Neue Kollektion</span></DropdownMenu.Item>
+                                    </DropdownMenu.SubContent>
+                                </DropdownMenu.Sub>
+                            </DropdownMenu.Group>
+                            <DropdownMenu.Item class="flex items-center gap-3" onclick={shareRecipeOnClick}
+                                               disabled={isSharing || isUpdatingShare || (!sharePathState && !recipeOwner)}>
+                                <Share2 class="w-4 h-4 sm:w-5 sm:h-5"/>
+                                <span class="inline">{m["actions.share"]()}</span>
                             </DropdownMenu.Item>
-                        {/if}
-                    </DropdownMenu.Group>
-                </DropdownMenu.Content>
-            </DropdownMenu.Root>
+                            {#if recipeOwner && isShareEnabled}
+                                <DropdownMenu.Item class="flex items-center gap-3"
+                                                   onclick={disableShareOnClick}
+                                                   disabled={isUpdatingShare}>
+                                    <Link2Off class="w-4 h-4 sm:w-5 sm:h-5"/>
+                                    <span class="inline">Freigabe beenden</span>
+                                </DropdownMenu.Item>
+                            {/if}
+                            {#if recipeOwner}
+                                <DropdownMenu.Item class="flex items-center gap-3" onclick={() => showDeleteDialog = true}>
+                                    <Trash2 size={16} class="sm:w-[18px] sm:h-[18px]"/>
+                                    <span class="inline">{m["actions.delete"]()}</span>
+                                </DropdownMenu.Item>
+                            {/if}
+                        </DropdownMenu.Group>
+                    </DropdownMenu.Content>
+                </DropdownMenu.Root>
+            {/if}
         </div>
     </div>
     <div class="mb-6">

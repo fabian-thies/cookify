@@ -15,6 +15,7 @@ import {getDifficultyId} from "$lib/server/utils";
 import {and, desc, eq, getTableColumns, sql} from "drizzle-orm";
 import type {CreateRecipeInput, UpdateRecipeInput} from "$lib/types/recipe";
 import {getRequestEvent} from "$app/server";
+import {randomUUID} from "crypto";
 
 export async function createRecipe({
                                        title,
@@ -304,6 +305,79 @@ export async function getRecipeById(id: number) {
         .where(eq(recipes.id, id));
 
     return result[0] ?? null;
+}
+
+export async function getRecipeByShareToken(token: string) {
+    const db = getDb();
+    const [row] = await db
+        .select({
+            ...getTableColumns(recipes),
+            difficulty: difficulty.difficulty,
+        })
+        .from(recipes)
+        .innerJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
+        .innerJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
+        .where(and(eq(recipes.shareToken, token), eq(recipes.shareEnabled, true)));
+
+    return row ?? null;
+}
+
+export async function enableRecipeShare(userId: string, recipeId: number) {
+    const db = getDb();
+    const [recipe] = await db
+        .select({ownerId: recipes.userId})
+        .from(recipes)
+        .where(eq(recipes.id, recipeId));
+
+    if (!recipe) {
+        throw new Error("Recipe not found");
+    }
+
+    if (recipe.ownerId !== userId) {
+        throw new Error("Insufficient permissions");
+    }
+
+    const token = randomUUID().replace(/-/g, "");
+
+    const [updated] = await db
+        .update(recipes)
+        .set({
+            shareEnabled: true,
+            shareToken: token,
+            updatedAt: new Date()
+        })
+        .where(eq(recipes.id, recipeId))
+        .returning({shareToken: recipes.shareToken, shareEnabled: recipes.shareEnabled});
+
+    return updated;
+}
+
+export async function disableRecipeShare(userId: string, recipeId: number) {
+    const db = getDb();
+    const [recipe] = await db
+        .select({ownerId: recipes.userId})
+        .from(recipes)
+        .where(eq(recipes.id, recipeId));
+
+    if (!recipe) {
+        throw new Error("Recipe not found");
+    }
+
+    if (recipe.ownerId !== userId) {
+        throw new Error("Insufficient permissions");
+    }
+
+    const [updated] = await db
+        .update(recipes)
+        .set({
+            shareEnabled: false,
+            shareToken: null,
+            updatedAt: new Date()
+        })
+        .where(eq(recipes.id, recipeId))
+        .returning({shareToken: recipes.shareToken, shareEnabled: recipes.shareEnabled});
+
+    return updated;
 }
 
 export async function getRecipesByUserId(userId: string, includePrivate = false) {

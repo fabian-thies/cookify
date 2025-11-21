@@ -24,12 +24,16 @@ export const load: PageServerLoad = async (event) => {
     }
 
     const viewerId = event.locals.user?.id;
+    const isAdmin = event.locals.user?.administrator;
+    const isOwner = recipe.userId === viewerId || !!isAdmin;
 
-    if (recipe.visibility === "private" && recipe.userId !== viewerId && !event.locals.user?.administrator) {
+    if (recipe.visibility === "private" && !isOwner) {
         throw error(403, 'Recipe is private');
     }
 
     await incrementRecipeViewCount(recipeId);
+    const sharePath = isOwner && recipe.shareEnabled && recipe.shareToken ? `/share/${recipe.shareToken}` : null;
+    const {shareToken, ...recipeWithoutToken} = recipe;
 
     const [steps, ingredients, isFavorite, ratingSummary, userRating] = await Promise.all([
         getSteps(recipeId),
@@ -41,7 +45,8 @@ export const load: PageServerLoad = async (event) => {
 
     return {
         recipe: {
-            ...recipe,
+            ...recipeWithoutToken,
+            sharePath,
             isFavorite,
             ingredients,
             steps,

@@ -8,7 +8,9 @@ import {
     createCollection as createCollectionInDb,
     toggleRecipeInCollection as toggleRecipeInCollectionInDb,
     setCollectionTitle as setCollectionTitleInDb,
-    deleteCollection as deleteCollectionFromDb
+    deleteCollection as deleteCollectionFromDb,
+    enableRecipeShare as enableRecipeShareInDb,
+    disableRecipeShare as disableRecipeShareInDb
 } from '$lib/server/db/recipe';
 
 export const likeRecipe = command(v.object({
@@ -144,4 +146,30 @@ export const createCollection = command(v.object({
     }
 
     return createCollectionInDb(userId, title, Number(params.recipeId));
+});
+
+export const enableRecipeShare = command(v.object({
+    recipeId: v.number()
+}), async ({recipeId}) => {
+    const {locals} = getRequestEvent();
+    const userId = locals.user?.id;
+
+    if (!userId) {
+        throw new Error('User not authenticated');
+    }
+
+    return enableRecipeShareInDb(userId, recipeId);
+});
+
+export const disableRecipeShare = command(v.object({
+    recipeId: v.number()
+}), async ({recipeId}) => {
+    const {locals} = getRequestEvent();
+    const userId = locals.user?.id;
+
+    if (!userId) {
+        throw new Error('User not authenticated');
+    }
+
+    return disableRecipeShareInDb(userId, recipeId);
 });

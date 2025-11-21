@@ -71,6 +71,13 @@
       "when": 1763678888855,
       "tag": "0009_colossal_ghost_rider",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1763768217458,
+      "tag": "0010_bizarre_longshot",
+      "breakpoints": true
     }
   ]
 }
