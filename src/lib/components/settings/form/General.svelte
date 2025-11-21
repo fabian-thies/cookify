@@ -49,7 +49,7 @@
     ];
 </script>
 
-<Card.Root class="w-full">
+<Card.Root class="w-full mt-6">
     <Card.Header>
         <Card.Title>{m["settings.profile.title"]()}</Card.Title>
         <Card.Description>{m["settings.profile.description"]()}</Card.Description>
