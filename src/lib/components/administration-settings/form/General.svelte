@@ -28,13 +28,14 @@
         }
     });
 
-    async function saveSettings() {
+    async function saveSettings(e: SubmitEvent) {
+        e.preventDefault();
         try {
             isSavingSettings = true;
             await updateAllowRegistrations({value: allowRegistration});
 
             toast.success(m["settings.profile.saved"]());
-        } catch (e) {
+        } catch (error) {
             toast.error(m["settings.profile.error"]());
         } finally {
             isSavingSettings = false;
@@ -42,7 +43,7 @@
     }
 </script>
 
-<Card.Root class="w-full">
+<Card.Root class="w-full mt-6">
     <Card.Header>
         <Card.Title>{m["admin.title"]()}</Card.Title>
         <Card.Description>{m["admin.description"]()}</Card.Description>
@@ -55,7 +56,7 @@
             </Tabs.List>
 
             <Tabs.Content value="account" class="mt-4">
-                <form id="admin-general" class="space-y-6" on:submit|preventDefault={saveSettings}>
+                <form id="admin-general" class="space-y-6" onsubmit={saveSettings}>
                     <div class="space-y-4">
                         <div class="flex items-center gap-2">
                             <ShieldCheck size={16} class="text-muted-foreground" />
