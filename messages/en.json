@@ -195,7 +195,17 @@
 			"confirmPasswordPlaceholder": "Repeat password",
 			"save": "Save profile",
 			"saved": "Successfully saved",
-			"error": "An error occurred. Please try again."
+			"error": "An error occurred. Please try again.",
+			"delete": {
+				"title": "Delete account",
+				"description": "Permanently remove your account, saved recipes and collections. This cannot be undone.",
+				"cta": "Delete account",
+				"confirmTitle": "Confirm deletion",
+				"confirmDescription": "Please confirm you want to permanently delete your account.",
+				"typeToConfirm": "Type {username} to confirm.",
+				"confirmLabel": "Confirmation",
+				"confirmPlaceholder": "Enter {username} to continue"
+			}
 		}
 	},
 	"admin": {

@@ -6,11 +6,12 @@
     import * as Card from "$lib/components/ui/card/index.js";
     import * as Avatar from "$lib/components/ui/avatar/index.js";
     import * as Separator from "$lib/components/ui/separator/index.js";
+    import * as Dialog from "$lib/components/ui/dialog/index.js";
     import type {PublicUser} from "$lib/server/db/schema";
-    import {Camera, Eye, EyeOff, Languages, Lock} from "lucide-svelte";
+    import {Camera, Eye, EyeOff, Languages, Lock, Trash2} from "lucide-svelte";
     import SelectComponent from "$lib/components/ui/select/SelectComponent.svelte";
 
-    const {user}: { user: PublicUser } = $props();
+    const {user, formId = 'settings-form'}: { user: PublicUser, formId?: string } = $props();
 
     let fileInput: HTMLInputElement;
     let selectedFile = $state<File | null>(null);
@@ -40,6 +41,15 @@
     });
 
     let selectedLanguage = $state(user.language || 'en');
+    let confirmDeleteOpen = $state(false);
+    let deleteConfirmInput = $state('');
+    let canDelete = $derived(deleteConfirmInput === user.username);
+
+    $effect(() => {
+        if (!confirmDeleteOpen) {
+            deleteConfirmInput = '';
+        }
+    });
 
     // TODO: Combine with db schema enum
     const languageOptions = [
@@ -185,6 +195,79 @@
                             </Button>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <Separator.Root class="my-2"/>
+
+            <div class="rounded-lg border border-destructive/50 bg-destructive/5 p-4">
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2">
+                        <Trash2 class="text-destructive" size={16}/>
+                        <h3 class="text-sm font-medium text-destructive">
+                            {m["settings.profile.delete.title"]()}
+                        </h3>
+                    </div>
+                    <p class="text-sm text-muted-foreground">
+                        {m["settings.profile.delete.description"]()}
+                    </p>
+                    <Dialog.Root bind:open={confirmDeleteOpen}>
+                        <Dialog.Trigger>
+                            {#snippet child({ props })}
+                                <Button
+                                        {...props}
+                                        class="w-fit"
+                                        type="button"
+                                variant="destructive"
+                                >
+                                {m["settings.profile.delete.cta"]()}
+                                </Button>
+                            {/snippet}
+                        </Dialog.Trigger>
+                        <Dialog.Content class="sm:max-w-md">
+                            <Dialog.Header>
+                                <Dialog.Title>{m["settings.profile.delete.confirmTitle"]()}</Dialog.Title>
+                                <Dialog.Description class="space-y-1">
+                                    <p>{m["settings.profile.delete.confirmDescription"]()}</p>
+                                </Dialog.Description>
+                            </Dialog.Header>
+                            <div class="space-y-4 mt-3">
+                                <Label for="delete-confirm">
+                                    <div class="flex flex-col gap-2">
+                                        {m["settings.profile.delete.confirmLabel"]()}
+                                        <p class="text-xs text-muted-foreground">
+                                            {m["settings.profile.delete.typeToConfirm"]({username: user.username})}
+                                        </p>
+                                    </div>
+                                </Label>
+                                <Input
+                                        autocomplete="off"
+                                        bind:value={deleteConfirmInput}
+                                        id="delete-confirm"
+                                        placeholder={m["settings.profile.delete.confirmPlaceholder"]({username: user.username})}
+                                        type="text"
+                                />
+                            </div>
+                            <Dialog.Footer class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+                                <Dialog.Close>
+                                    <Button variant="outline" type="button">
+                                        {m["actions.cancel"]()}
+                                    </Button>
+                                </Dialog.Close>
+                                <Button
+                                        aria-disabled={!canDelete}
+                                        disabled={!canDelete}
+                                        form={formId}
+                                        formaction="?/delete"
+                                        formmethod="POST"
+                                        formnovalidate
+                                        type="submit"
+                                        variant="destructive">
+                                    {m["settings.profile.delete.cta"]()}
+                                </Button>
+                            </Dialog.Footer>
+                        </Dialog.Content>
+                    </Dialog.Root>
                 </div>
             </div>
         </div>

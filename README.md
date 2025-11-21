@@ -66,7 +66,3 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
 
 * **Coolify Deployment:**
   The provided `docker-compose.yml` works out of the box with **Coolify**. Just make sure your domain in Coolify is forwarded to the app’s exposed port (`3000`).
-
-<div style="text-align: center; margin-top: 3rem;">
-    Made with ❤️ and Svelte.
-</div>

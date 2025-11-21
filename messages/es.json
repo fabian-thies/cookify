@@ -193,7 +193,17 @@
       "confirmPasswordPlaceholder": "Repite la contraseña",
       "save": "Guardar perfil",
       "saved": "Guardado con éxito",
-      "error": "Ocurrió un error. Por favor, inténtalo de nuevo."
+      "error": "Ocurrió un error. Por favor, inténtalo de nuevo.",
+      "delete": {
+        "title": "Eliminar cuenta",
+        "description": "Elimina tu cuenta y todo su contenido (recetas y colecciones) de forma permanente. Esta acción no se puede deshacer.",
+        "cta": "Eliminar cuenta",
+        "confirmTitle": "Confirmar eliminación",
+        "confirmDescription": "Confirma que deseas eliminar tu cuenta de forma permanente.",
+        "typeToConfirm": "Escribe {username} para confirmar.",
+        "confirmLabel": "Confirmación",
+        "confirmPlaceholder": "Ingresa {username} para continuar"
+      }
     }
   },
   "admin": {

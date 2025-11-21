@@ -181,7 +181,17 @@
 			"confirmPasswordPlaceholder": "Passwort wiederholen",
 			"save": "Profil speichern",
 			"saved": "Erfolgreich gespeichert",
-			"error": "Fehler beim Speichern, bitte versuchen Sie es erneut."
+			"error": "Fehler beim Speichern, bitte versuchen Sie es erneut.",
+			"delete": {
+				"title": "Konto löschen",
+				"description": "Entfernt dein Konto sowie gespeicherte Rezepte und Kollektionen dauerhaft. Diese Aktion kann nicht rückgängig gemacht werden.",
+				"cta": "Konto löschen",
+				"confirmTitle": "Löschen bestätigen",
+				"confirmDescription": "Bestätige, dass du dein Konto dauerhaft löschen möchtest.",
+				"typeToConfirm": "Gib {username} ein, um zu bestätigen.",
+				"confirmLabel": "Bestätigung",
+				"confirmPlaceholder": "Bitte {username} eingeben"
+			}
 		}
  	},
 	  "collection": {

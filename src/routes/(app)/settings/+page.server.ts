@@ -1,11 +1,12 @@
 import type {RequestEvent} from "@sveltejs/kit";
-import {fail} from "@sveltejs/kit";
+import {fail, redirect} from "@sveltejs/kit";
 import * as v from 'valibot';
-import {saveProfile, updatePassword} from "$lib/server/db/user";
+import {deleteUserAccount, saveProfile, updatePassword} from "$lib/server/db/user";
 import {hashPassword, saveImage} from "$lib/server/utils";
 import {isUserLanguage} from "$lib/types/languages";
 import type {UserLanguage} from "$lib/types/languages";
 import {LANGUAGES} from "$lib/constants";
+import {deleteSessionTokenCookie, invalidateSession} from "$lib/server/auth";
 
 const ProfileSchema = v.object({
     username: v.string(),
@@ -55,5 +56,17 @@ export const actions = {
         if (parsed.password && parsed.password.length > 0) {
             await updatePassword(locals.user.id, await hashPassword(parsed.password))
         }
+    },
+    delete: async (event: RequestEvent) => {
+        if (!event.locals.user) return fail(401);
+
+        await deleteUserAccount(event.locals.user.id);
+
+        if (event.locals.session) {
+            await invalidateSession(event.locals.session.id);
+        }
+        deleteSessionTokenCookie(event);
+
+        throw redirect(303, '/login');
     }
 };

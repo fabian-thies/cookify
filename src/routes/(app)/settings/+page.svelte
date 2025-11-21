@@ -1,6 +1,6 @@
 <script>
     import {enhance} from '$app/forms';
-    import {invalidateAll} from '$app/navigation';
+    import {goto, invalidateAll} from '$app/navigation';
     import General from "$lib/components/settings/form/General.svelte";
     import {toast} from "svelte-sonner";
     import {m} from "$lib/paraglide/messages";
@@ -12,22 +12,28 @@
     const language = user.language;
 </script>
 <form
+        id="settings-form"
         action="?/save"
         enctype="multipart/form-data"
         method="POST"
         use:enhance={() => {
         return async ({ result }) => {
+            if (result.type === 'redirect') {
+                return goto(result.location, { replaceState: true });
+            }
+
             if (result.type === 'success') {
                 await invalidateAll();
 
-                if(user.language !== language) {
+                if (user.language !== language) {
                     setLocale(user.language);
                 }
 
                 toast.success(m["settings.profile.saved"]());
-            } else {
-                toast.error(m["settings.profile.error"]());
+                return;
             }
+
+            toast.error(m["settings.profile.error"]());
         }}}>
 
     <General {user}/>
