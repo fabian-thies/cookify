@@ -2,9 +2,24 @@ import {sequence} from '@sveltejs/kit/hooks';
 import * as auth from '$lib/server/auth';
 import type {Handle} from '@sveltejs/kit';
 import {paraglideMiddleware} from '$lib/paraglide/server';
+import {setLocale} from "$lib/paraglide/runtime";
+import {getLocaleByUserId} from "$lib/server/db/user";
 
-const handleParaglide: Handle = ({event, resolve}) => paraglideMiddleware(event.request, ({request, locale}) => {
+const handleParaglide: Handle = async ({event, resolve}) => paraglideMiddleware(event.request, async ({
+                                                                                                          request,
+                                                                                                          locale
+                                                                                                      }) => {
     event.request = request;
+
+    if (event.cookies.get("PARAGLIDE_LOCALE") && event.locals.user) {
+        const currentLocale = await getLocaleByUserId(event.locals.user.id);
+
+        event.cookies.set('PARAGLIDE_LOCALE', currentLocale, {
+            path: '/',
+            httpOnly: false,
+            sameSite: 'lax'
+        });
+    }
 
     return resolve(event, {
         transformPageChunk: ({html}) => html.replace('%paraglide.lang%', locale)
@@ -33,4 +48,4 @@ const handleAuth: Handle = async ({event, resolve}) => {
     return resolve(event);
 };
 
-export const handle: Handle = sequence(handleParaglide, handleAuth);
+export const handle: Handle = sequence(handleAuth, handleParaglide);

@@ -71,3 +71,11 @@ export async function deleteUserAccount(userId: string) {
 
     return db.delete(user).where(eq(user.id, userId));
 }
+
+export async function getLocaleByUserId(userId: string) {
+    const db = getDb();
+
+    const rows = await db.select({language: user.language}).from(user).where(eq(user.id, userId)).limit(1);
+
+    return rows[0]?.language ?? "en";
+}
