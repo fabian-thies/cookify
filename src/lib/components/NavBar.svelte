@@ -60,7 +60,7 @@
                     <Sheet.Title>{m["nav.navigation"]()}</Sheet.Title>
                 </Sheet.Header>
                 <div class="flex flex-col gap-4 mt-6 m-6 text-lg">
-                    <a href="/" onclick={() => isOpen = false}>
+                    <a href="/recipe/search" onclick={() => isOpen = false}>
                         {m["nav.recipes"]()}
                     </a>
                     <a href="/favorites" onclick={() => isOpen = false}>
