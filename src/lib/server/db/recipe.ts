@@ -17,6 +17,12 @@ import type {CreateRecipeInput, UpdateRecipeInput} from "$lib/types/recipe";
 import {getRequestEvent} from "$app/server";
 import {randomUUID} from "crypto";
 
+const tagListSubquery = sql<string[]>`COALESCE(ARRAY(
+    SELECT ${tagsTable.name}
+    FROM ${tagsTable}
+    WHERE ${tagsTable.recipeId} = ${recipes.id}
+), ARRAY[]::text[])`;
+
 export async function createRecipe({
                                        title,
                                        description,
@@ -177,6 +183,7 @@ export async function getRecipes(offset = 0, limit?: number, orderBy?: "recent" 
     let query = db.select({
         ...getTableColumns(recipes),
         difficulty: difficulty.difficulty,
+        tags: tagListSubquery,
     })
         .from(recipes)
         .innerJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
@@ -219,6 +226,7 @@ export async function getCollectionRecipes(collectionId: number) {
     const recipesResult = await db.select({
         ...getTableColumns(recipes),
         difficulty: difficulty.difficulty,
+        tags: tagListSubquery,
     })
         .from(recipes)
         .innerJoin(collectionToRecipe, eq(collectionToRecipe.recipeId, recipes.id))
@@ -284,6 +292,7 @@ export async function getFavoriteRecipes() {
     return db.select({
         ...getTableColumns(recipes),
         difficulty: difficulty.difficulty,
+        tags: tagListSubquery,
     })
         .from(recipes)
         .innerJoin(favorite, eq(favorite.recipeId, recipes.id))
@@ -298,6 +307,7 @@ export async function getRecipeById(id: number) {
         .select({
             ...getTableColumns(recipes),
             difficulty: difficulty.difficulty,
+            tags: tagListSubquery,
         })
         .from(recipes)
         .innerJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
@@ -386,6 +396,7 @@ export async function getRecipesByUserId(userId: string, includePrivate = false)
     let query = db.select({
         ...getTableColumns(recipes),
         difficulty: difficulty.difficulty,
+        tags: tagListSubquery,
     })
         .from(recipes)
         .leftJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))

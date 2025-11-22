@@ -55,6 +55,8 @@
       "groupLabel": "Categorías",
       "cookTimePlaceholder": "Selecciona un tiempo de cocción",
       "cookTimeGroupLabel": "Tiempo de cocción",
+      "tagsPlaceholder": "Selecciona una etiqueta",
+      "tagsGroupLabel": "Etiquetas",
       "cookTime": {
         "options": {
           "any": "Cualquier tiempo",

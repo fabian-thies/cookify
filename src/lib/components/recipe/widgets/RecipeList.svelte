@@ -45,7 +45,20 @@
     let search = $state("");
     let selectedDifficulty = $state("");
     let selectedCookTime = $state("");
-    let filterActive = $derived(!!search || !!selectedDifficulty || !!selectedCookTime);
+    let selectedTag = $state("");
+
+    const availableTags = $derived.by(() => {
+        const tags = new Set<string>();
+        for (const recipe of recipes) {
+            (recipe.tags ?? []).forEach(tag => tag && tags.add(tag));
+        }
+
+        return Array.from(tags)
+            .sort((a, b) => a.localeCompare(b))
+            .map(tag => ({value: tag, label: tag}));
+    });
+
+    let filterActive = $derived(!!search || !!selectedDifficulty || !!selectedCookTime || !!selectedTag);
 
     const filteredRecipes = $derived.by(() => {
         return recipes.filter(recipe => {
@@ -60,7 +73,10 @@
             const selectedFilter = cookTimeFilters.find(({value}) => value === selectedCookTime);
             const matchesCookTime = selectedFilter ? selectedFilter.matches(cookTime) : true;
 
-            return matchesSearch && matchesDifficulty && matchesCookTime;
+            const recipeTags = recipe.tags ?? [];
+            const matchesTags = !selectedTag || recipeTags.some(tag => tag.toLowerCase() === selectedTag.toLowerCase());
+
+            return matchesSearch && matchesDifficulty && matchesCookTime && matchesTags;
         });
     });
 
@@ -68,6 +84,7 @@
         search = "";
         selectedDifficulty = "";
         selectedCookTime = "";
+        selectedTag = "";
     };
 </script>
 
@@ -106,6 +123,15 @@
                     name="cookTime"
                     class=""
                     bind:value={selectedCookTime}
+            />
+            <SelectComponent
+                    options={availableTags}
+                    placeholder={m["recipe.list.tagsPlaceholder"]()}
+                    groupLabel={m["recipe.list.tagsGroupLabel"]()}
+                    name="tags"
+                    class=""
+                    bind:value={selectedTag}
+                    disabled={availableTags.length === 0}
             />
             {#if filterActive}
                 <Button
