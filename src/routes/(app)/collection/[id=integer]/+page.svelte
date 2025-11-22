@@ -6,7 +6,7 @@
         getCollectionsForRecipe, setCollectionTitle,
         toggleRecipeInCollection
     } from "$lib/functions/recipe.remote";
-    import {Edit, Ellipsis, Plus, Share2, Trash2} from "lucide-svelte";
+    import {Edit, PencilIcon, Trash2} from "lucide-svelte";
     import {Spinner} from "$lib/components/ui/spinner/index";
     import {Button, buttonVariants} from "$lib/components/ui/button/index";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
@@ -50,6 +50,8 @@
 
             showEditDialog = false;
             isSaving = false;
+
+            toast.success(m["settings.profile.saved"]());
         } catch (e) {
             toast.error(m["actions.error"]());
         }
@@ -61,7 +63,7 @@
         <DropdownMenu.Root>
             <DropdownMenu.Trigger>
                 <Button variant="outline">
-                    <Ellipsis/>
+                    <PencilIcon></PencilIcon>
                 </Button>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content>
