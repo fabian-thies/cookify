@@ -79,6 +79,11 @@
                     <a href="/settings" onclick={() => isOpen = false}>
                         {m["nav.settings"]()}
                     </a>
+                    {#if user.administrator}
+                        <a href="/administration" onclick={() => isOpen = false}>
+                            Administration
+                        </a>
+                    {/if}
                     <form action="/logout" class="mt-4 text-destructive" method="post">
                         <Button class="w-full hover:cursor-pointer" type="submit" variant="outline">
                             {m["logout"]()}
