@@ -22,7 +22,7 @@
 </script>
 
 <Card.Root class="flex h-full w-full flex-col overflow-hidden rounded-lg bg-card pt-0">
-    <Card.Header class="relative h-52 overflow-hidden p-0">
+    <Card.Header class="relative aspect-video w-full overflow-hidden p-0">
         <Badge class="absolute right-3 top-3" variant="secondary">
             {difficultyLabels[difficulty] ?? difficulty}
         </Badge>

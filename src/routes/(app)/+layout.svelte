@@ -12,6 +12,6 @@
 
 <Toaster position="top-center" richColors/>
 
-<div class="container mx-auto max-w-6xl px-3 sm:px-5 pb-12 pt-4">
+<div class="container mx-auto max-w-7xl px-4 sm:px-6 pb-12 pt-4">
     {@render children()}
 </div>
