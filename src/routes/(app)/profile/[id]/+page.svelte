@@ -12,4 +12,4 @@
 </script>
 
 
-<RecipeList {difficulties} {recipes} showFilters={false} title={m["profile.userRecipes"]({username: user.username})}/>
+<RecipeList userId={user.id} {recipes} showFilters={false} title={m["profile.userRecipes"]({username: user.username})}/>

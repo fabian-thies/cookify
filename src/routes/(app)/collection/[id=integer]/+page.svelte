@@ -18,7 +18,9 @@
     import {Input} from "$lib/components/ui/input";
 
     const {data} = $props();
+
     const collectionOwner = data.user!.id === data.collection.userId;
+    const userId = data.user.id;
 
     let showDeleteDialog = $state(false);
     let showEditDialog = $state(false);
@@ -58,7 +60,7 @@
     }
 </script>
 
-<RecipeList recipes={data.collection.recipes} title={data.collection.collectionTitle} showFilters={false}>
+<RecipeList {userId} recipes={data.collection.recipes} title={data.collection.collectionTitle} showFilters={false}>
     {#snippet actions()}
         <DropdownMenu.Root>
             <DropdownMenu.Trigger>

@@ -7,6 +7,7 @@
 
     const recipes = data.recipes;
     const difficulties = data.difficulties;
+    const userId = data.user.id;
 </script>
 
-<RecipeList {difficulties} {recipes} title={m["routes.favorites.title"]()}/>
+<RecipeList {userId} {difficulties} {recipes} title={m["routes.favorites.title"]()}/>

@@ -55,8 +55,16 @@
 			"groupLabel": "Kategorien",
             "cookTimePlaceholder": "Kochzeit auswählen",
             "cookTimeGroupLabel": "Kochzeit",
+			"authorPlaceholder": "Autor auswählen",
+			"authorGroupLabel": "Autor",
 			"tagsPlaceholder": "Schlagwörter auswählen",
 			"tagsGroupLabel": "Schlagwörter",
+			"author": {
+				"options": {
+					"all": "Alle",
+					"user": "Meine"
+				}
+			},
 			"cookTime": {
 				"options": {
 					"any": "Alle Kochzeiten",

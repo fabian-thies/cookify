@@ -55,8 +55,16 @@
       "groupLabel": "Categorías",
       "cookTimePlaceholder": "Selecciona un tiempo de cocción",
       "cookTimeGroupLabel": "Tiempo de cocción",
+      "authorPlaceholder": "Selecciona un autor",
+      "authorGroupLabel": "Autor",
       "tagsPlaceholder": "Selecciona una etiqueta",
       "tagsGroupLabel": "Etiquetas",
+      "author": {
+        "options": {
+          "all": "Todos",
+          "user": "Míos"
+        }
+      },
       "cookTime": {
         "options": {
           "any": "Cualquier tiempo",

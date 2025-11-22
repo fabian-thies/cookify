@@ -10,6 +10,7 @@
 
     type Props = {
         recipes: Recipe[];
+        userId: string;
         title?: string;
         showFilters?: boolean;
         actions? : Snippet;
@@ -39,13 +40,18 @@
     ] as const;
 
     const cookTimeSelectOptions = cookTimeFilters.map(({value, label}) => ({value, label}));
+    const authorSelectOptions = [
+        {value: "all", label: m["recipe.list.author.options.all"]()},
+        {value: "user", label: m["recipe.list.author.options.user"]()}
+    ];
 
-    let {recipes, title, showFilters = true, actions}: Props = $props();
+    let {userId, recipes, title, showFilters = true, actions}: Props = $props();
 
     let search = $state("");
     let selectedDifficulty = $state("");
     let selectedCookTime = $state("");
     let selectedTag = $state("");
+    let author = $state("");
 
     const availableTags = $derived.by(() => {
         const tags = new Set<string>();
@@ -58,7 +64,7 @@
             .map(tag => ({value: tag, label: tag}));
     });
 
-    let filterActive = $derived(!!search || !!selectedDifficulty || !!selectedCookTime || !!selectedTag);
+    let filterActive = $derived(!!search || !!selectedDifficulty || !!selectedCookTime || !!selectedTag || !!author);
 
     const filteredRecipes = $derived.by(() => {
         return recipes.filter(recipe => {
@@ -76,7 +82,12 @@
             const recipeTags = recipe.tags ?? [];
             const matchesTags = !selectedTag || recipeTags.some(tag => tag.toLowerCase() === selectedTag.toLowerCase());
 
-            return matchesSearch && matchesDifficulty && matchesCookTime && matchesTags;
+            const matchesAuthor =
+                !author ||
+                author === "all" ||
+                (author === "user" && recipe.userId === userId);
+
+            return matchesSearch && matchesDifficulty && matchesCookTime && matchesTags && matchesAuthor;
         });
     });
 
@@ -85,6 +96,7 @@
         selectedDifficulty = "";
         selectedCookTime = "";
         selectedTag = "";
+        author = "";
     };
 </script>
 
@@ -132,6 +144,14 @@
                     class=""
                     bind:value={selectedTag}
                     disabled={availableTags.length === 0}
+            />
+            <SelectComponent
+                    options={authorSelectOptions}
+                    placeholder={m["recipe.list.authorPlaceholder"]()}
+                    groupLabel={m["recipe.list.authorGroupLabel"]()}
+                    name="tags"
+                    class=""
+                    bind:value={author}
             />
             {#if filterActive}
                 <Button

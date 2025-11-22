@@ -6,6 +6,7 @@
     const {data}: PageProps = $props();
 
     const recipes = data.recipes;
+    const userId = data.user.id;
 </script>
 
-<RecipeList {recipes} title={m["routes.home.title"]()}/>
+<RecipeList {userId} {recipes} title={m["routes.home.title"]()}/>
