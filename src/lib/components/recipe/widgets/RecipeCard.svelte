@@ -1,7 +1,5 @@
 <script lang="ts">
     import {Button} from "$lib/components/ui/button";
-    import {Label} from "$lib/components/ui/label";
-    import {Input} from "$lib/components/ui/input";
     import * as Card from "$lib/components/ui/card";
     import {m} from "$lib/paraglide/messages";
     import {Badge} from "$lib/components/ui/badge";
@@ -21,12 +19,12 @@
     let {id, title, description, image, servings, cookingTime, rating, difficulty}: Props = $props();
 </script>
 
-<Card.Root class="flex h-full w-full flex-col overflow-hidden rounded-lg bg-card pt-0">
+<Card.Root class="group flex h-full w-full flex-col overflow-hidden rounded-lg bg-card pt-0 hover:shadow-xl transition-all duration-300 hover:border-primary/20">
     <Card.Header class="relative aspect-video w-full overflow-hidden p-0">
         <Badge class="absolute right-3 top-3" variant="secondary">
             {difficultyLabels[difficulty] ?? difficulty}
         </Badge>
-        <img alt="" class="h-full w-full object-cover" src={image}>
+        <img alt="" class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" src={image}>
     </Card.Header>
     <Card.Content class="flex-1">
         <h1 class="font-medium text-lg text-card-foreground">{title}</h1>
@@ -47,12 +45,6 @@
             {/if}
             </span>
         </div>
-        <!--<div class="flex gap-2 pt-4">
-            <Badge variant="outline">Tags</Badge>
-            <Badge variant="outline">Tags</Badge>
-            <Badge variant="outline">Tags</Badge>
-            <Badge variant="outline">...</Badge>
-        </div>-->
     </Card.Content>
     <Card.Footer class="flex-col gap-2">
         <Button class="w-full" data-sveltekit-preload-data="hover" href="/recipe/{id}"

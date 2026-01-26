@@ -114,11 +114,16 @@
     };
 </script>
 
-<div class="flex flex-col gap-4 p-4 mt-6">
+<div class="flex flex-col gap-6 p-4 sm:p-6 mt-4">
     {#if title || actions}
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             {#if title}
-                <h1 class="font-bold text-3xl mb-0">{title}</h1>
+                <div class="space-y-1">
+                    <h1 class="font-bold text-4xl tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
+                        {title}
+                    </h1>
+                    <div class="h-1 w-20 bg-gradient-to-r from-primary to-primary/50 rounded-full"></div>
+                </div>
             {/if}
 
             {#if actions}
@@ -130,41 +135,45 @@
     {/if}
 
     {#if showFilters}
-        <!-- Search Bar and Filter Button -->
-        <div class="flex gap-2 items-center">
-            <Input
-                type="search"
-                placeholder={m["recipe.list.searchPlaceholder"]()}
-                class="flex-1"
-                bind:value={search}
-            />
+        <div class="flex gap-3 items-center">
+            <div class="relative flex-1">
+                <Input
+                    type="search"
+                    placeholder={m["recipe.list.searchPlaceholder"]()}
+                    class="pl-10 h-11 bg-background/50 backdrop-blur-sm border-border/50 focus:border-primary/50 transition-all duration-200 shadow-sm hover:shadow-md"
+                    bind:value={search}
+                />
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+
             <Popover.Root bind:open={filterPopoverOpen}>
-                <Popover.Trigger class={buttonVariants({ variant: "outline" }) + " relative"}>
+                <Popover.Trigger class={buttonVariants({ variant: "outline" }) + " relative h-11 px-4 shadow-sm hover:shadow-md transition-all duration-200 border-border/50 hover:border-primary/50 bg-background/50 backdrop-blur-sm"}>
                     <SlidersHorizontal class="h-4 w-4 mr-2"/>
-                    <span class="hidden sm:inline">Filter</span>
+                    <span class="hidden sm:inline font-medium">Filter</span>
                     {#if activeFilterCount > 0}
-                        <Badge variant="secondary" class="ml-2 px-1.5 py-0.5 text-xs">
+                        <Badge variant="default" class="ml-2 px-2 py-0.5 text-xs bg-primary/90 hover:bg-primary shadow-sm">
                             {activeFilterCount}
                         </Badge>
                     {/if}
                 </Popover.Trigger>
-                <Popover.Content class="w-80 max-h-[calc(100vh-200px)] overflow-y-auto" align="end">
-                    <div class="flex flex-col gap-4">
+                <Popover.Content class="w-80 max-h-[calc(100vh-200px)] overflow-y-auto backdrop-blur-xl bg-popover/95 border-border/50 shadow-xl" align="end">
+                    <div class="flex flex-col gap-5">
                         <div class="space-y-2">
-                            <h4 class="font-semibold text-sm flex items-center gap-2">
-                                <Filter class="h-4 w-4"/>
+                            <h4 class="font-semibold text-base flex items-center gap-2">
+                                <Filter class="h-5 w-5 text-primary"/>
                                 {m["recipe.list.filterTitle"]()}
                             </h4>
-                            <p class="text-xs text-muted-foreground">
+                            <p class="text-sm text-muted-foreground leading-relaxed">
                                 {m["recipe.list.filterDescription"]()}
                             </p>
                         </div>
 
-                        <Separator/>
+                        <Separator class="bg-border/50"/>
 
-                        <!-- Difficulty Filter -->
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium">
+                        <div class="space-y-3">
+                            <label class="text-sm font-semibold text-foreground">
                                 {m["recipe.list.groupLabel"]()}
                             </label>
                             <SelectComponent
@@ -177,9 +186,8 @@
                             />
                         </div>
 
-                        <!-- Cook Time Filter -->
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium">
+                        <div class="space-y-3">
+                            <label class="text-sm font-semibold text-foreground">
                                 {m["recipe.list.cookTimeGroupLabel"]()}
                             </label>
                             <SelectComponent
@@ -192,9 +200,8 @@
                             />
                         </div>
 
-                        <!-- Tags Filter -->
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium">
+                        <div class="space-y-3">
+                            <label class="text-sm font-semibold text-foreground">
                                 {m["recipe.list.tagsGroupLabel"]()}
                             </label>
                             <SelectComponent
@@ -208,9 +215,8 @@
                             />
                         </div>
 
-                        <!-- Author Filter -->
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium">
+                        <div class="space-y-3">
+                            <label class="text-sm font-semibold text-foreground">
                                 {m["recipe.list.authorGroupLabel"]()}
                             </label>
                             <SelectComponent
@@ -224,12 +230,12 @@
                         </div>
 
                         {#if filterActive}
-                            <Separator/>
+                            <Separator class="bg-border/50"/>
                             <Button
                                 onclick={clearFilters}
                                 variant="outline"
                                 size="sm"
-                                class="w-full"
+                                class="w-full shadow-sm hover:shadow-md transition-all duration-200"
                             >
                                 <X class="h-4 w-4 mr-2"/>
                                 {m["recipe.list.clearFilters"]()}
@@ -240,49 +246,52 @@
             </Popover.Root>
         </div>
 
-        <!-- Active Filters Display -->
         {#if filterActive}
-            <div class="flex flex-wrap gap-2 items-center">
-                <span class="text-sm text-muted-foreground">{m["recipe.list.activeFilters"]()}</span>
+            <div class="flex flex-wrap gap-2 items-center bg-muted/30 p-4 rounded-lg border border-border/50 backdrop-blur-sm">
+                <span class="text-sm font-medium text-muted-foreground">{m["recipe.list.activeFilters"]()}</span>
                 {#if selectedDifficulty}
-                    <Badge variant="secondary" class="gap-1">
+                    <Badge variant="secondary" class="gap-1.5 pl-3 pr-2 py-1.5 shadow-sm hover:shadow-md transition-all duration-200">
                         {difficultySelectOptions.find(d => d.value === selectedDifficulty)?.label}
                         <button
                             onclick={() => selectedDifficulty = ""}
-                            class="ml-1 hover:bg-muted-foreground/20 rounded-full"
+                            class="ml-1 hover:bg-destructive/20 rounded-full p-0.5 transition-colors duration-150"
+                            aria-label="Remove filter"
                         >
                             <X class="h-3 w-3"/>
                         </button>
                     </Badge>
                 {/if}
                 {#if selectedCookTime}
-                    <Badge variant="secondary" class="gap-1">
+                    <Badge variant="secondary" class="gap-1.5 pl-3 pr-2 py-1.5 shadow-sm hover:shadow-md transition-all duration-200">
                         {cookTimeSelectOptions.find(c => c.value === selectedCookTime)?.label}
                         <button
                             onclick={() => selectedCookTime = ""}
-                            class="ml-1 hover:bg-muted-foreground/20 rounded-full"
+                            class="ml-1 hover:bg-destructive/20 rounded-full p-0.5 transition-colors duration-150"
+                            aria-label="Remove filter"
                         >
                             <X class="h-3 w-3"/>
                         </button>
                     </Badge>
                 {/if}
                 {#if selectedTag}
-                    <Badge variant="secondary" class="gap-1">
+                    <Badge variant="secondary" class="gap-1.5 pl-3 pr-2 py-1.5 shadow-sm hover:shadow-md transition-all duration-200">
                         {selectedTag}
                         <button
                             onclick={() => selectedTag = ""}
-                            class="ml-1 hover:bg-muted-foreground/20 rounded-full"
+                            class="ml-1 hover:bg-destructive/20 rounded-full p-0.5 transition-colors duration-150"
+                            aria-label="Remove filter"
                         >
                             <X class="h-3 w-3"/>
                         </button>
                     </Badge>
                 {/if}
                 {#if author && author !== "all"}
-                    <Badge variant="secondary" class="gap-1">
+                    <Badge variant="secondary" class="gap-1.5 pl-3 pr-2 py-1.5 shadow-sm hover:shadow-md transition-all duration-200">
                         {authorSelectOptions.find(a => a.value === author)?.label}
                         <button
                             onclick={() => author = ""}
-                            class="ml-1 hover:bg-muted-foreground/20 rounded-full"
+                            class="ml-1 hover:bg-destructive/20 rounded-full p-0.5 transition-colors duration-150"
+                            aria-label="Remove filter"
                         >
                             <X class="h-3 w-3"/>
                         </button>
@@ -292,22 +301,32 @@
                     onclick={clearFilters}
                     variant="ghost"
                     size="sm"
-                    class="h-7 text-xs"
+                    class="h-8 text-xs ml-auto hover:bg-destructive/10 hover:text-destructive transition-all duration-200"
                 >
                     {m["recipe.list.clearAll"]()}
                 </Button>
             </div>
         {/if}
     {/if}
+
     {#if filteredRecipes.length === 0}
-        <div class="flex flex-col items-center justify-center py-6 text-center">
-            <p class="text-muted-foreground text-md">{m["recipe.list.noRecipes"]()}</p>
+        <div class="flex flex-col items-center justify-center py-16 text-center">
+            <div class="w-16 h-16 mb-4 rounded-full bg-muted flex items-center justify-center">
+                <svg class="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <p class="text-muted-foreground text-lg font-medium">{m["recipe.list.noRecipes"]()}</p>
         </div>
     {:else}
-        <p class="text-muted-foreground">{m["recipe.list.results"]({count: filteredRecipes.length})}</p>
+        <div class="flex items-center justify-between">
+            <p class="text-sm font-medium text-muted-foreground">
+                {m["recipe.list.results"]({count: filteredRecipes.length})}
+            </p>
+        </div>
     {/if}
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 place-items-center">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 place-items-stretch">
         {#each filteredRecipes as recipe (recipe.id)}
             <RecipeCard {...recipe}/>
         {/each}

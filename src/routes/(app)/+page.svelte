@@ -18,7 +18,7 @@
     });
 </script>
 
-<div class="flex flex-col gap-16 p-4 sm:p-6 mt-6">
-    <RecipeCarousel recipes={popularRecipes} title={m["routes.home.popularRecipes"]()}/>
-    <RecipeCarousel recipes={recentRecipes} title={m["routes.home.recentlyAdded"]()}/>
+<div class="flex flex-col gap-20 p-4 sm:p-6 mt-8 mb-12">
+    <RecipeCarousel recipes={popularRecipes} title={m["routes.home.popularRecipes"]()} class="animate-fade-in"/>
+    <RecipeCarousel recipes={recentRecipes} title={m["routes.home.recentlyAdded"]()} class="animate-fade-in-delay"/>
 </div>
