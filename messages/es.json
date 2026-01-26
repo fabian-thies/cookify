@@ -1,6 +1,7 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
   "logout": "Cerrar sesión",
+  "loading": "Cargando...",
   "login": {
     "welcomeBack": "Bienvenido de nuevo",
     "createAccount": "Crear una cuenta",
@@ -171,7 +172,13 @@
 		"confirmDelete": "¿Estás seguro de que deseas eliminar esta receta?",
 		"saveRecipe": "Guardar receta",
 		"showPreview": "Mostrar vista previa",
-		"error": "Ocurrió un error. Por favor, inténtalo de nuevo."
+		"error": "Ocurrió un error. Por favor, inténtalo de nuevo.",
+		"loadRecipeError": "No se pudo cargar la receta",
+		"loadCollectionError": "No se pudo cargar la colección",
+		"noShareLink": "No hay enlace para compartir disponible",
+		"shareDisabled": "Compartir desactivado",
+		"linkShared": "Enlace compartido",
+		"linkCopied": "Enlace copiado"
   },
   "settings": {
     "profile": {

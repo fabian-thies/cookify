@@ -1,7 +1,7 @@
 import type {RequestEvent} from "@sveltejs/kit";
 import {fail, redirect} from "@sveltejs/kit";
 import * as v from 'valibot';
-import {deleteUserAccount, saveProfile, updatePassword} from "$lib/server/db/user";
+import {saveProfile, updatePassword, deleteUserAccount} from "$lib/server/db/user";
 import {hashPassword, saveImage} from "$lib/server/utils";
 import {isUserLanguage} from "$lib/types/languages";
 import type {UserLanguage} from "$lib/types/languages";
@@ -51,16 +51,35 @@ export const actions = {
             }
         }
 
-        await saveProfile(locals.user.id, parsed.username, parsed.email, avatarUrl, parsed.language);
+        try {
+            await saveProfile(
+                locals.user.id,
+                parsed.username,
+                parsed.email,
+                avatarUrl,
+                parsed.language
+            );
 
-        if (parsed.password && parsed.password.length > 0) {
-            await updatePassword(locals.user.id, await hashPassword(parsed.password))
+            if (parsed.password && parsed.password.length > 0) {
+                const passwordHash = await hashPassword(parsed.password);
+                await updatePassword(locals.user.id, passwordHash);
+            }
+
+            return {success: true};
+        } catch (e) {
+            console.error("Failed to save profile:", e);
+            return fail(500, {internalError: true});
         }
     },
     delete: async (event: RequestEvent) => {
         if (!event.locals.user) return fail(401);
 
-        await deleteUserAccount(event.locals.user.id);
+        try {
+            await deleteUserAccount(event.locals.user.id);
+        } catch (e) {
+            console.error("Failed to delete account:", e);
+            return fail(500, {internalError: true});
+        }
 
         if (event.locals.session) {
             await invalidateSession(event.locals.session.id);

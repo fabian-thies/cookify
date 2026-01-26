@@ -8,16 +8,12 @@ import * as table from '$lib/server/db/schema';
 import type {PageServerLoad} from "./$types";
 import {validateEmail, validatePassword, validateUsername} from "$lib/utils";
 import {hashPassword} from "$lib/server/utils";
-import {getAllowRegistrations} from "$lib/server/db/site";
+import {getAllowRegistrations} from "$lib/functions/site.remote";
 
 export const load: PageServerLoad = async (event) => {
     if (event.locals.user) {
         return redirect(302, '/');
     }
-
-    const allowRegistrations = await getAllowRegistrations();
-
-    return {allowRegistrations};
 };
 
 export const actions: Actions = {

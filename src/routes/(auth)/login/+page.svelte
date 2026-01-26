@@ -1,9 +1,15 @@
 <script lang="ts">
     import LoginForm from "$lib/components/LoginForm.svelte";
     import {Apple} from 'lucide-svelte';
+    import {getAllowRegistrations} from "$lib/functions/site.remote";
 
-    const {data} = $props();
-    const allowRegistrations = data.allowRegistrations ?? true;
+    let allowRegistrations = $state(true);
+
+    $effect(() => {
+        getAllowRegistrations().then((result) => {
+            allowRegistrations = result;
+        });
+    });
 </script>
 <div class="flex min-h-screen flex-col items-center justify-center gap-6 px-4 md:px-0">
     <div class="flex w-full max-w-sm flex-col gap-6">

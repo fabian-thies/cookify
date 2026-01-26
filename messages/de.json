@@ -1,6 +1,7 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
 	"logout": "Abmelden",
+	"loading": "Lädt...",
 	"login": {
 		"welcomeBack": "Willkommen zurück",
 		"createAccount": "Konto erstellen",
@@ -159,7 +160,13 @@
 		"confirmDelete": "Sicher, dass Sie dieses Rezept löschen möchten?",
 		"saveRecipe": "Rezept speichern",
 		"showPreview": "Vorschau anzeigen",
-		"error": "Etwas ist schief gelaufen. Bitte versuchen Sie es erneut."
+		"error": "Etwas ist schief gelaufen. Bitte versuchen Sie es erneut.",
+		"loadRecipeError": "Rezept konnte nicht geladen werden",
+		"loadCollectionError": "Collection konnte nicht geladen werden",
+		"noShareLink": "Kein Freigabelink verfügbar",
+		"shareDisabled": "Freigabe deaktiviert",
+		"linkShared": "Link geteilt",
+		"linkCopied": "Link kopiert"
 	},
 	"settings": {
 		"profile": {

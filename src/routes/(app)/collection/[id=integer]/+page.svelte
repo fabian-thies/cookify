@@ -4,7 +4,8 @@
         deleteCollection,
         deleteRecipe,
         getCollectionsForRecipe, setCollectionTitle,
-        toggleRecipeInCollection
+        toggleRecipeInCollection,
+        getCollectionRecipes
     } from "$lib/functions/recipe.remote";
     import {Edit, PencilIcon, Trash2} from "lucide-svelte";
     import {Spinner} from "$lib/components/ui/spinner/index";
@@ -16,22 +17,38 @@
     import {toast} from "svelte-sonner";
     import {Label} from "$lib/components/ui/label";
     import {Input} from "$lib/components/ui/input";
+    import {page} from "$app/stores";
 
     const {data} = $props();
 
-    const collectionOwner = data.user!.id === data.collection.userId;
+    let collection = $state(null);
+    let collectionOwner = $state(false);
+    let loading = $state(true);
     const userId = data.user.id;
 
     let showDeleteDialog = $state(false);
     let showEditDialog = $state(false);
 
     // Edit Variables
-    let newTitle = $state(data.collection.collectionTitle);
+    let newTitle = $state("");
     let isSaving = $state(false);
+
+    $effect(() => {
+        const collectionId = Number($page.params.id);
+        getCollectionRecipes({collectionId}).then((result) => {
+            collection = {...result, id: collectionId};
+            collectionOwner = data.user!.id === result.userId;
+            newTitle = result.collectionTitle;
+            loading = false;
+        }).catch((error) => {
+            console.error('Failed to load collection:', error);
+            toast.error(m.actions.loadCollectionError());
+        });
+    });
 
     async function deleteCollectionOnClick() {
         try {
-            await deleteCollection({collectionId: data.collection.id});
+            await deleteCollection({collectionId: collection.id});
 
             await goto("/collection");
         } catch (e) {
@@ -45,10 +62,14 @@
 
             await setCollectionTitle({
                 title: newTitle,
-                collectionId: data.collection.id
+                collectionId: collection.id
             });
 
-            await invalidateAll();
+            // Reload collection data
+            const collectionId = Number($page.params.id);
+            const result = await getCollectionRecipes({collectionId});
+            collection = {...result, id: collectionId};
+            newTitle = result.collectionTitle;
 
             showEditDialog = false;
             isSaving = false;
@@ -60,7 +81,12 @@
     }
 </script>
 
-<RecipeList {userId} recipes={data.collection.recipes} title={data.collection.collectionTitle} showFilters={false}>
+{#if loading}
+    <div class="flex items-center justify-center py-12">
+        <div class="text-muted-foreground">{m.loading()}</div>
+    </div>
+{:else if collection}
+    <RecipeList {userId} recipes={collection.recipes} title={collection.collectionTitle} showFilters={false}>
     {#snippet actions()}
         <DropdownMenu.Root>
             <DropdownMenu.Trigger>
@@ -85,6 +111,7 @@
         </DropdownMenu.Root>
     {/snippet}
 </RecipeList>
+{/if}
 
 {#if showEditDialog}
     <Dialog.Root bind:open={showEditDialog}>

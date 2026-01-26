@@ -1,6 +1,6 @@
-import {command, getRequestEvent} from "$app/server";
+import {command, getRequestEvent, query} from "$app/server";
 import * as v from "valibot";
-import {updatePassword, updateUserEmail, deleteUserAccount} from "$lib/server/db/user";
+import {updatePassword, updateUserEmail, deleteUserAccount, getUsers as getUsersFromDb, getLocaleByUserId as getLocaleByUserIdFromDb, saveProfile as saveProfileInDb, updatePassword as updatePasswordInDb, deleteUserAccount as deleteUserAccountFromDb} from "$lib/server/db/user";
 import {hashPassword} from "$lib/server/utils";
 
 function ensureAdmin() {
@@ -55,4 +55,62 @@ export const removeUser = command(v.object({
     await deleteUserAccount(userId);
 
     return {id: userId};
+});
+
+export const getUsers = query(async () => {
+    const {locals} = getRequestEvent();
+    if (!locals.user?.administrator) {
+        throw new Error('Not authorized');
+    }
+    return await getUsersFromDb();
+});
+
+export const getLocaleByUserId = query(v.object({
+    userId: v.string()
+}), async ({userId}) => {
+    return await getLocaleByUserIdFromDb(userId);
+});
+
+export const saveProfile = command(v.object({
+    username: v.pipe(v.string(), v.minLength(1)),
+    email: v.pipe(v.string(), v.email()),
+    avatar: v.string(),
+    language: v.picklist(['en', 'de', 'es'])
+}), async (data) => {
+    const {locals} = getRequestEvent();
+
+    if (!locals.user) {
+        throw new Error('User not authenticated');
+    }
+
+    return await saveProfileInDb(
+        locals.user.id,
+        data.username,
+        data.email,
+        data.avatar,
+        data.language
+    );
+});
+
+export const updateUserPassword = command(v.object({
+    password: v.pipe(v.string(), v.minLength(6), v.maxLength(255))
+}), async ({password}) => {
+    const {locals} = getRequestEvent();
+
+    if (!locals.user) {
+        throw new Error('User not authenticated');
+    }
+
+    const hash = await hashPassword(password);
+    return await updatePasswordInDb(locals.user.id, hash);
+});
+
+export const deleteOwnAccount = command(v.object({}), async () => {
+    const {locals} = getRequestEvent();
+
+    if (!locals.user) {
+        throw new Error('User not authenticated');
+    }
+
+    return await deleteUserAccountFromDb(locals.user.id);
 });

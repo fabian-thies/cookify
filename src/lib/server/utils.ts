@@ -101,14 +101,30 @@ export async function saveImage(file: File): Promise<string> {
     return `/uploads/${fileName}`;
 }
 
-export function parseRecipeFormData(formData: FormData) {
+export function parseRecipeFormData(formData: FormData): {
+    title: string;
+    description: string;
+    cookTime: number;
+    servings: number;
+    difficulty: "easy" | "medium" | "hard";
+    ingredientsList: { amount: number; unit: string; name: string }[];
+    steps: string[];
+    tags: string[];
+    visibility: "public" | "private";
+} {
     const title: string = formData.get("title")?.toString() ?? "";
     const description: string = formData.get("description")?.toString() ?? "";
     const cookTime: number = Number(formData.get("cookTime"));
     const servings: number = Number(formData.get("servings"));
-    const difficulty: string = formData.get("difficulty")?.toString() ?? "";
+    const difficultyRaw: string = formData.get("difficulty")?.toString() ?? "";
     const visibilityRaw = formData.get("visibility")?.toString() ?? "public";
-    const visibility = visibilityRaw === "private" ? "private" : "public";
+
+    // Validate and cast difficulty
+    if (!["easy", "medium", "hard"].includes(difficultyRaw)) {
+        throw new Error("Invalid difficulty level");
+    }
+    const difficulty = difficultyRaw as "easy" | "medium" | "hard";
+    const visibility = visibilityRaw === "private" ? "private" : "public" as "public" | "private";
 
     validateInputEmpty(title, description, cookTime, servings, difficulty);
 

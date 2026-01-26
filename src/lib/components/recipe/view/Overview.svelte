@@ -156,7 +156,7 @@
         }
 
         if (!recipeOwner) {
-            toast.error("Kein Freigabelink verfügbar");
+            toast.error(m.actions.noShareLink());
             return null;
         }
 
@@ -189,7 +189,7 @@
             await disableRecipeShare({recipeId});
             sharePathState = null;
             isShareEnabled = false;
-            toast.success("Freigabe deaktiviert");
+            toast.success(m.actions.shareDisabled());
         } catch (error) {
             toast.error(m["actions.error"]());
         } finally {
@@ -219,13 +219,13 @@
                     text: description,
                     url: shareUrl
                 });
-                toast.success("Link geteilt");
+                toast.success(m.actions.linkShared());
                 return;
             }
 
             if (navigator.clipboard?.writeText) {
                 await navigator.clipboard.writeText(shareUrl);
-                toast.success("Link kopiert");
+                toast.success(m.actions.linkCopied());
                 return;
             }
 

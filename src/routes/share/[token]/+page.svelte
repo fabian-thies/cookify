@@ -3,24 +3,43 @@
     import Ingredients from "$lib/components/recipe/view/Ingredients.svelte";
     import Overview from "$lib/components/recipe/view/Overview.svelte";
     import type {PageProps} from "./$types";
+    import {getSharedRecipeDetails} from "$lib/functions/recipe.remote";
+    import {page} from "$app/stores";
+    import {m} from "$lib/paraglide/messages";
 
     const {data}: PageProps = $props();
-    const recipe = data.recipe;
+
+    let recipe = $state<any>(null);
+
+    $effect(() => {
+        const token = $page.params.token;
+        getSharedRecipeDetails({token, incrementView: true}).then((result) => {
+            recipe = result;
+        }).catch((error) => {
+            console.error('Failed to load shared recipe:', error);
+        });
+    });
 </script>
 
-<Overview
-        {...recipe}
-        recipeOwner={false}
-        isFavorite={false}
-        userRating={null}
-        readonly={true}
-        sharePath={recipe.sharePath}
-/>
-<div class="grid lg:grid-cols-3 gap-8">
-    <div class="lg:col-span-1">
-        <Ingredients ingredients={recipe.ingredients} servings={recipe.servings}/>
+{#if recipe}
+    <Overview
+            {...recipe}
+            recipeOwner={false}
+            isFavorite={false}
+            userRating={null}
+            readonly={true}
+            sharePath={recipe.sharePath}
+    />
+    <div class="grid lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-1">
+            <Ingredients ingredients={recipe.ingredients} servings={recipe.servings}/>
+        </div>
+        <div class="lg:col-span-2">
+            <Preparation steps={recipe.steps}/>
+        </div>
     </div>
-    <div class="lg:col-span-2">
-        <Preparation steps={recipe.steps}/>
+{:else}
+    <div class="flex items-center justify-center py-12">
+        <div class="text-muted-foreground">{m.loading()}</div>
     </div>
-</div>
+{/if}
