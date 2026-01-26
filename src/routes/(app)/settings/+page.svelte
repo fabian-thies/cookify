@@ -11,30 +11,40 @@
     const user = $derived(data.user);
     const language = user.language;
 </script>
-<form
-        id="settings-form"
-        action="?/save"
-        enctype="multipart/form-data"
-        method="POST"
-        use:enhance={() => {
-        return async ({ result }) => {
-            if (result.type === 'redirect') {
-                return goto(result.location, { replaceState: true });
-            }
 
-            if (result.type === 'success') {
-                await invalidateAll();
+<div class="flex flex-col gap-6 p-4 sm:p-6 mt-4">
+    <div class="space-y-1">
+        <h1 class="font-bold text-4xl tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
+            {m["nav.settings"]()}
+        </h1>
+        <div class="h-1 w-20 bg-gradient-to-r from-primary to-primary/50 rounded-full"></div>
+    </div>
 
-                if (user.language !== language) {
-                    setLocale(user.language);
+    <form
+            id="settings-form"
+            action="?/save"
+            enctype="multipart/form-data"
+            method="POST"
+            use:enhance={() => {
+            return async ({ result }) => {
+                if (result.type === 'redirect') {
+                    return goto(result.location, { replaceState: true });
                 }
 
-                toast.success(m["settings.profile.saved"]());
-                return;
-            }
+                if (result.type === 'success') {
+                    await invalidateAll();
 
-            toast.error(m["settings.profile.error"]());
-        }}}>
+                    if (user.language !== language) {
+                        setLocale(user.language);
+                    }
 
-    <General {user}/>
-</form>
+                    toast.success(m["settings.profile.saved"]());
+                    return;
+                }
+
+                toast.error(m["settings.profile.error"]());
+            }}}>
+
+        <General {user}/>
+    </form>
+</div>
