@@ -362,7 +362,7 @@
                                 <DropdownMenu.Sub>
                                     <DropdownMenu.SubTrigger>
                                         <Plus class="w-4 h-4 sm:w-5 sm:h-5"/>
-                                        <span class="inline">Kollektionen</span>
+                                        <span class="inline">{m["actions.collections"]()}</span>
                                     </DropdownMenu.SubTrigger>
                                     <DropdownMenu.SubContent>
                                         {#await getCollectionsForRecipe()}
@@ -371,7 +371,7 @@
                                             </div>
                                         {:then collections}
                                             {#if collections.length === 0}
-                                                <div class="px-4 py-2 text-sm text-muted-foreground">Keine Kollektionen
+                                                <div class="px-4 py-2 text-sm text-muted-foreground">{m["actions.noCollectionsAvailable"]()}
                                                 </div>
                                             {:else}
                                                 {#each collections as collection}
@@ -389,7 +389,7 @@
                                         <DropdownMenu.Separator/>
                                         <DropdownMenu.Item onclick={createCollectionOnClick}>
                                             <Plus class="w-4 h-4 sm:w-5 sm:h-5"/>
-                                            <span class="inline">Neue Kollektion</span></DropdownMenu.Item>
+                                            <span class="inline">{m["actions.newCollection"]()}</span></DropdownMenu.Item>
                                     </DropdownMenu.SubContent>
                                 </DropdownMenu.Sub>
                             </DropdownMenu.Group>
@@ -403,7 +403,7 @@
                                                    onclick={disableShareOnClick}
                                                    disabled={isUpdatingShare}>
                                     <Link2Off class="w-4 h-4 sm:w-5 sm:h-5"/>
-                                    <span class="inline">Freigabe beenden</span>
+                                    <span class="inline">{m["actions.disableSharing"]()}</span>
                                 </DropdownMenu.Item>
                             {/if}
                             {#if recipeOwner}

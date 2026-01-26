@@ -140,7 +140,9 @@
   },
   "routes": {
     "home": {
-      "title": "Recetas"
+      "title": "Recetas",
+      "popularRecipes": "Recetas populares",
+      "recentlyAdded": "Añadidas recientemente"
     },
     "favorites": {
       "title": "Favoritos"
@@ -178,7 +180,11 @@
 		"noShareLink": "No hay enlace para compartir disponible",
 		"shareDisabled": "Compartir desactivado",
 		"linkShared": "Enlace compartido",
-		"linkCopied": "Enlace copiado"
+		"linkCopied": "Enlace copiado",
+		"collections": "Colecciones",
+		"noCollectionsAvailable": "Sin colecciones",
+		"newCollection": "Nueva colección",
+		"disableSharing": "Desactivar compartir"
   },
   "settings": {
     "profile": {
