@@ -60,6 +60,11 @@
 			"authorGroupLabel": "Author",
 			"tagsPlaceholder": "Select a tag",
 			"tagsGroupLabel": "Tags",
+			"filterTitle": "Filter & Sort",
+			"filterDescription": "Refine your recipe search",
+			"showResults": "Show results",
+			"activeFilters": "Active filters:",
+			"clearAll": "Clear all",
 			"author": {
 				"options": {
 					"all": "All",

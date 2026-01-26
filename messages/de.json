@@ -60,6 +60,11 @@
 			"authorGroupLabel": "Autor",
 			"tagsPlaceholder": "Schlagwörter auswählen",
 			"tagsGroupLabel": "Schlagwörter",
+			"filterTitle": "Filter & Sortierung",
+			"filterDescription": "Verfeinere deine Rezeptsuche",
+			"showResults": "Anzeigen",
+			"activeFilters": "Aktive Filter:",
+			"clearAll": "Alle löschen",
 			"author": {
 				"options": {
 					"all": "Alle",

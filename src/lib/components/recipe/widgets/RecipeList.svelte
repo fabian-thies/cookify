@@ -3,10 +3,14 @@
     import SelectComponent from "$lib/components/ui/select/SelectComponent.svelte";
     import RecipeCard from "$lib/components/recipe/widgets/RecipeCard.svelte";
     import type {Recipe} from "$lib/server/db/recipe";
-    import {Button} from "$lib/components/ui/button";
+    import {Button, buttonVariants} from "$lib/components/ui/button";
     import {m} from "$lib/paraglide/messages";
     import {difficultySelectOptions} from "$lib/types/recipe";
     import type {Snippet} from "svelte";
+    import * as Popover from "$lib/components/ui/popover";
+    import {Badge} from "$lib/components/ui/badge";
+    import {Filter, X, SlidersHorizontal} from "lucide-svelte";
+    import {Separator} from "$lib/components/ui/separator";
 
     type Props = {
         recipes: Recipe[];
@@ -52,6 +56,16 @@
     let selectedCookTime = $state("");
     let selectedTag = $state("");
     let author = $state("");
+    let filterPopoverOpen = $state(false);
+
+    const activeFilterCount = $derived.by(() => {
+        let count = 0;
+        if (selectedDifficulty) count++;
+        if (selectedCookTime) count++;
+        if (selectedTag) count++;
+        if (author && author !== "all") count++;
+        return count;
+    });
 
     const availableTags = $derived.by(() => {
         const tags = new Set<string>();
@@ -116,53 +130,174 @@
     {/if}
 
     {#if showFilters}
-        <Input type="search" placeholder={m["recipe.list.searchPlaceholder"]()} class="flex justify-center"
-               bind:value={search}/>
+        <!-- Search Bar and Filter Button -->
+        <div class="flex gap-2 items-center">
+            <Input
+                type="search"
+                placeholder={m["recipe.list.searchPlaceholder"]()}
+                class="flex-1"
+                bind:value={search}
+            />
+            <Popover.Root bind:open={filterPopoverOpen}>
+                <Popover.Trigger class={buttonVariants({ variant: "outline" }) + " relative"}>
+                    <SlidersHorizontal class="h-4 w-4 mr-2"/>
+                    <span class="hidden sm:inline">Filter</span>
+                    {#if activeFilterCount > 0}
+                        <Badge variant="secondary" class="ml-2 px-1.5 py-0.5 text-xs">
+                            {activeFilterCount}
+                        </Badge>
+                    {/if}
+                </Popover.Trigger>
+                <Popover.Content class="w-80 max-h-[calc(100vh-200px)] overflow-y-auto" align="end">
+                    <div class="flex flex-col gap-4">
+                        <div class="space-y-2">
+                            <h4 class="font-semibold text-sm flex items-center gap-2">
+                                <Filter class="h-4 w-4"/>
+                                {m["recipe.list.filterTitle"]()}
+                            </h4>
+                            <p class="text-xs text-muted-foreground">
+                                {m["recipe.list.filterDescription"]()}
+                            </p>
+                        </div>
 
-        <div class="flex flex-wrap gap-2 pb-6">
-            <SelectComponent
-                    options={difficultySelectOptions}
-                    placeholder={m["recipe.list.difficultyPlaceholder"]()}
-                    groupLabel={m["recipe.list.groupLabel"]()}
-                    name="category"
-                    class=""
-                    bind:value={selectedDifficulty}
-            />
-            <SelectComponent
-                    options={cookTimeSelectOptions}
-                    placeholder={m["recipe.list.cookTimePlaceholder"]()}
-                    groupLabel={m["recipe.list.cookTimeGroupLabel"]()}
-                    name="cookTime"
-                    class=""
-                    bind:value={selectedCookTime}
-            />
-            <SelectComponent
-                    options={availableTags}
-                    placeholder={m["recipe.list.tagsPlaceholder"]()}
-                    groupLabel={m["recipe.list.tagsGroupLabel"]()}
-                    name="tags"
-                    class=""
-                    bind:value={selectedTag}
-                    disabled={availableTags.length === 0}
-            />
-            <SelectComponent
-                    options={authorSelectOptions}
-                    placeholder={m["recipe.list.authorPlaceholder"]()}
-                    groupLabel={m["recipe.list.authorGroupLabel"]()}
-                    name="tags"
-                    class=""
-                    bind:value={author}
-            />
-            {#if filterActive}
-                <Button
-                        class="btn btn-outline btn-secondary"
-                        onclick={clearFilters}
-                        variant="outline"
-                >
-                    { m["recipe.list.clearFilters"]() }
-                </Button>
-            {/if}
+                        <Separator/>
+
+                        <!-- Difficulty Filter -->
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium">
+                                {m["recipe.list.groupLabel"]()}
+                            </label>
+                            <SelectComponent
+                                options={difficultySelectOptions}
+                                placeholder={m["recipe.list.difficultyPlaceholder"]()}
+                                groupLabel={m["recipe.list.groupLabel"]()}
+                                name="category"
+                                class="w-full"
+                                bind:value={selectedDifficulty}
+                            />
+                        </div>
+
+                        <!-- Cook Time Filter -->
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium">
+                                {m["recipe.list.cookTimeGroupLabel"]()}
+                            </label>
+                            <SelectComponent
+                                options={cookTimeSelectOptions}
+                                placeholder={m["recipe.list.cookTimePlaceholder"]()}
+                                groupLabel={m["recipe.list.cookTimeGroupLabel"]()}
+                                name="cookTime"
+                                class="w-full"
+                                bind:value={selectedCookTime}
+                            />
+                        </div>
+
+                        <!-- Tags Filter -->
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium">
+                                {m["recipe.list.tagsGroupLabel"]()}
+                            </label>
+                            <SelectComponent
+                                options={availableTags}
+                                placeholder={m["recipe.list.tagsPlaceholder"]()}
+                                groupLabel={m["recipe.list.tagsGroupLabel"]()}
+                                name="tags"
+                                class="w-full"
+                                bind:value={selectedTag}
+                                disabled={availableTags.length === 0}
+                            />
+                        </div>
+
+                        <!-- Author Filter -->
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium">
+                                {m["recipe.list.authorGroupLabel"]()}
+                            </label>
+                            <SelectComponent
+                                options={authorSelectOptions}
+                                placeholder={m["recipe.list.authorPlaceholder"]()}
+                                groupLabel={m["recipe.list.authorGroupLabel"]()}
+                                name="author"
+                                class="w-full"
+                                bind:value={author}
+                            />
+                        </div>
+
+                        {#if filterActive}
+                            <Separator/>
+                            <Button
+                                onclick={clearFilters}
+                                variant="outline"
+                                size="sm"
+                                class="w-full"
+                            >
+                                <X class="h-4 w-4 mr-2"/>
+                                {m["recipe.list.clearFilters"]()}
+                            </Button>
+                        {/if}
+                    </div>
+                </Popover.Content>
+            </Popover.Root>
         </div>
+
+        <!-- Active Filters Display -->
+        {#if filterActive}
+            <div class="flex flex-wrap gap-2 items-center">
+                <span class="text-sm text-muted-foreground">{m["recipe.list.activeFilters"]()}</span>
+                {#if selectedDifficulty}
+                    <Badge variant="secondary" class="gap-1">
+                        {difficultySelectOptions.find(d => d.value === selectedDifficulty)?.label}
+                        <button
+                            onclick={() => selectedDifficulty = ""}
+                            class="ml-1 hover:bg-muted-foreground/20 rounded-full"
+                        >
+                            <X class="h-3 w-3"/>
+                        </button>
+                    </Badge>
+                {/if}
+                {#if selectedCookTime}
+                    <Badge variant="secondary" class="gap-1">
+                        {cookTimeSelectOptions.find(c => c.value === selectedCookTime)?.label}
+                        <button
+                            onclick={() => selectedCookTime = ""}
+                            class="ml-1 hover:bg-muted-foreground/20 rounded-full"
+                        >
+                            <X class="h-3 w-3"/>
+                        </button>
+                    </Badge>
+                {/if}
+                {#if selectedTag}
+                    <Badge variant="secondary" class="gap-1">
+                        {selectedTag}
+                        <button
+                            onclick={() => selectedTag = ""}
+                            class="ml-1 hover:bg-muted-foreground/20 rounded-full"
+                        >
+                            <X class="h-3 w-3"/>
+                        </button>
+                    </Badge>
+                {/if}
+                {#if author && author !== "all"}
+                    <Badge variant="secondary" class="gap-1">
+                        {authorSelectOptions.find(a => a.value === author)?.label}
+                        <button
+                            onclick={() => author = ""}
+                            class="ml-1 hover:bg-muted-foreground/20 rounded-full"
+                        >
+                            <X class="h-3 w-3"/>
+                        </button>
+                    </Badge>
+                {/if}
+                <Button
+                    onclick={clearFilters}
+                    variant="ghost"
+                    size="sm"
+                    class="h-7 text-xs"
+                >
+                    {m["recipe.list.clearAll"]()}
+                </Button>
+            </div>
+        {/if}
     {/if}
     {#if filteredRecipes.length === 0}
         <div class="flex flex-col items-center justify-center py-6 text-center">
