@@ -76,9 +76,16 @@
     let isSharing = $state(false);
     let isUpdatingShare = $state(false);
     let showDeleteDialog = $state(false);
+    let showRatingDialog = $state(false);
     const stars = [1, 2, 3, 4, 5] as const;
     let sharePathState = $state<string | null>(sharePath ?? null);
     let isShareEnabled = $state(shareEnabled || !!sharePathState);
+
+    $effect(() => {
+        if (showRatingDialog) {
+            hoverRating = null;
+        }
+    });
 
     async function handleRate(value: number) {
         if (readonly || isSubmittingRating || value < 1 || value > 5) {
@@ -280,7 +287,7 @@
                     <span class="inline">{m["actions.share"]()}</span>
                 </Button>
             {:else}
-                <Dialog.Root>
+                <Dialog.Root bind:open={showRatingDialog}>
                     <Dialog.Trigger
                             class={buttonVariants({ variant: "outline" }) + " flex-1 sm:flex-none min-w-0"}>
                         <Star
@@ -310,8 +317,6 @@
                                             type="button"
                                             class="p-1 cursor-pointer disabled:cursor-not-allowed disabled:opacity-70"
                                             onmouseenter={() => hoverRating = star}
-                                            onfocus={() => hoverRating = star}
-                                            onblur={() => hoverRating = null}
                                             onmouseleave={() => hoverRating = null}
                                             onclick={() => handleRate(star)}
                                             disabled={isSubmittingRating}>
