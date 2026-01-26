@@ -14,15 +14,15 @@
     const {user}: { user: PublicUser } = $props();
 </script>
 
-<nav class="sticky top-3 z-40 mx-auto mt-2 flex w-[calc(100%-2rem)] max-w-6xl items-center justify-between rounded-2xl border border-border/70 bg-card/80 px-4 py-2 shadow-xl backdrop-blur-xl md:px-6">
+<nav class="sticky top-3 z-40 mx-auto mt-2 flex w-[calc(100%-2rem)] max-w-6xl items-center justify-between rounded-2xl border border-border/70 bg-card/80 px-4 py-2 shadow-xl backdrop-blur-xl lg:px-6">
     <a href="/" class="flex items-center gap-2 rounded-xl px-2 py-1 transition hover:border-transparent hover:opacity-90">
-        <h2 class="cookify text-xl md:text-2xl font-semibold">
+        <h2 class="cookify text-xl lg:text-2xl font-semibold">
             cookify
         </h2>
     </a>
 
     <!-- Desktop Navigation -->
-    <div class="hidden md:block absolute left-1/2 -translate-x-1/2">
+    <div class="hidden lg:block absolute left-1/2 -translate-x-1/2">
         <NavigationMenu.Root>
             <NavigationMenu.List>
                 <NavigationMenu.Item>
@@ -49,10 +49,10 @@
         </NavigationMenu.Root>
     </div>
 
-    <div class="flex items-center gap-2 md:gap-4">
+    <div class="flex items-center gap-2 lg:gap-4">
         <!-- Mobile Menu Button -->
         <Sheet.Root bind:open={isOpen}>
-            <Sheet.Trigger class="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-xl transition hover:opacity-70">
+            <Sheet.Trigger class="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-xl transition hover:opacity-70">
                 <Menu class="h-5 w-5"/>
             </Sheet.Trigger>
             <Sheet.Content class="w-80 bg-card/95 backdrop-blur-xl border-l border-border/70" side="left">
@@ -95,19 +95,19 @@
 
         <!-- User Avatar Dropdown -->
         {#if user}
-            <a href="/recipe/create" class="hidden md:inline-block">
+            <a href="/recipe/create" class="hidden lg:inline-block">
                 <Button variant="outline" class="mr-2">
                     <Plus class="h-4 w-4 mr-2"/>{m["nav.create"]()}
                 </Button>
             </a>
             <DropdownMenu.Root>
-                <DropdownMenu.Trigger class="hidden md:block">
-                    <Avatar.Root class="cursor-pointer h-8 w-8 md:h-10 md:w-10">
+                <DropdownMenu.Trigger class="hidden lg:block">
+                    <Avatar.Root class="cursor-pointer h-8 w-8 lg:h-10 lg:w-10">
                         <Avatar.Image src={user.avatar}/>
                         <Avatar.Fallback>{user.username.slice(0, 2)}</Avatar.Fallback>
                     </Avatar.Root>
                 </DropdownMenu.Trigger>
-                <DropdownMenu.Content align="end" sideOffset={8} class="w-56 hidden md:block">
+                <DropdownMenu.Content align="end" sideOffset={8} class="w-56 hidden lg:block">
                     <DropdownMenu.Label class="font-normal">
                         <div class="flex items-center gap-2">
                             <Avatar.Root class="h-8 w-8">
@@ -148,7 +148,7 @@
                 </DropdownMenu.Content>
             </DropdownMenu.Root>
         {:else}
-            <div class="hidden md:block">
+            <div class="hidden lg:block">
                 <a href="/login">
                     <Button variant="ghost">{m["nav.login"]()}</Button>
                 </a>
