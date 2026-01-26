@@ -21,7 +21,12 @@
 
     const {data} = $props();
 
-    let collection = $state(null);
+    let collection = $state({
+        id: Number($page.params.id),
+        collectionTitle: m["nav.collection"](),
+        recipes: [],
+        userId: null
+    });
     let collectionOwner = $state(false);
     let loading = $state(true);
     const userId = data.user.id;
@@ -29,11 +34,11 @@
     let showDeleteDialog = $state(false);
     let showEditDialog = $state(false);
 
-    // Edit Variables
     let newTitle = $state("");
     let isSaving = $state(false);
 
     $effect(() => {
+        loading = true;
         const collectionId = Number($page.params.id);
         getCollectionRecipes({collectionId}).then((result) => {
             collection = {...result, id: collectionId};
@@ -43,6 +48,7 @@
         }).catch((error) => {
             console.error('Failed to load collection:', error);
             toast.error(m.actions.loadCollectionError());
+            loading = false;
         });
     });
 
@@ -81,12 +87,8 @@
     }
 </script>
 
-{#if loading}
-    <div class="flex items-center justify-center py-12">
-        <div class="text-muted-foreground">{m.loading()}</div>
-    </div>
-{:else if collection}
-    <RecipeList {userId} recipes={collection.recipes} title={collection.collectionTitle} showFilters={false}>
+{#if collection}
+    <RecipeList {userId} recipes={collection.recipes} title={collection.collectionTitle} showFilters={false} loading={loading}>
     {#snippet actions()}
         <DropdownMenu.Root>
             <DropdownMenu.Trigger>
