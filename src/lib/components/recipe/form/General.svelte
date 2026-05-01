@@ -5,7 +5,7 @@
     import {ChefHat} from "lucide-svelte";
     import {m} from "$lib/paraglide/messages";
 
-    const {recipe} = $props();
+    const {recipe}: {recipe?: any} = $props();
 </script>
 
 <Card.Root class="w-full">

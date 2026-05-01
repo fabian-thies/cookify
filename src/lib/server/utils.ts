@@ -144,9 +144,6 @@ export function parseRecipeFormData(formData: FormData): {
 
     for (const unit of formData.getAll("ingredients_unit[]")) {
         const str = unit.toString();
-        if (str.trim() === "") {
-            throw new Error("invalid");
-        }
         units.push(str);
     }
 

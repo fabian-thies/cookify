@@ -15,6 +15,7 @@
         class?: string;
         disabled?: boolean;
         id?: string;
+        required?: boolean;
     }
 
     let {
@@ -25,7 +26,8 @@
         name,
         class: className = "w-[180px]",
         disabled = false,
-        id
+        id,
+        required = false
     }: Props = $props();
 
     const triggerContent = $derived(
@@ -33,7 +35,8 @@
     );
 </script>
 
-<Select.Root bind:value {disabled} {id} {name} type="single">
+ <Select.Root bind:value {disabled} {id} {name} type="single">
+    <input type="hidden" name={name} value={value} required={required}/>
     <Select.Trigger class={className + " bg-background" }>
         {triggerContent}
     </Select.Trigger>

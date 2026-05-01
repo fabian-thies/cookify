@@ -25,7 +25,7 @@
 	"nav": {
 		"navigation": "Navigation",
 		"recipes": "Recipes",
-        "explore": "Explore",
+		"explore": "Explore",
 		"favorites": "Favorites",
 		"collection": "Collections",
 		"profile": "Profile",
@@ -104,7 +104,7 @@
 				"title": "Ingredients",
 				"quantityLabel": "Quantity",
 				"quantityPlaceholder": "e.g. 500",
-				"unitLabel": "Unit",
+				"unitLabel": "Unit (optional)",
 				"unitPlaceholder": "e.g. g, ml, pieces",
 				"nameLabel": "Ingredient",
 				"namePlaceholder": "e.g. pasta, eggs, bacon",
@@ -141,7 +141,19 @@
 		"saveSuccess": "Recipe saved successfully!",
 		"saveError": "Error saving recipe.",
 		"createSuccess": "Recipe created successfully!",
-		"createError": "Error creating recipe."
+		"createError": "Error creating recipe.",
+		"import": {
+			"title": "Import Recipe",
+			"description": "Import a recipe from a URL.",
+			"button": "Import",
+			"urlLabel": "Recipe URL",
+			"urlPlaceholder": "https://www.allrecipes.com/recipe/...",
+			"urlRequired": "Please enter a URL.",
+			"invalidUrl": "Please enter a valid URL.",
+			"noRecipe": "No recipe found on this page.",
+			"scrapeError": "Failed to import the recipe.",
+			"success": "Recipe imported successfully!"
+		}
 	},
 	"routes": {
 		"home": {
@@ -153,46 +165,46 @@
 			"title": "Favorites"
 		}
 	},
-  "profile": {
-    "userRecipes": "Recipes by {username}"
-  },
-  "collection": {
-    "noCollections": "No collections yet.",
-    "editDialog": {
-      "title": "Edit collection",
-      "titleLabel": "Title"
-    },
-    "deleteDialog": {
-      "title": "Delete collection",
-      "description": "Are you sure you want to delete this collection?",
-      "confirm": "Delete collection"
-    }
-  },
+	"profile": {
+		"userRecipes": "Recipes by {username}"
+	},
+	"collection": {
+		"noCollections": "No collections yet.",
+		"editDialog": {
+			"title": "Edit collection",
+			"titleLabel": "Title"
+		},
+		"deleteDialog": {
+			"title": "Delete collection",
+			"description": "Are you sure you want to delete this collection?",
+			"confirm": "Delete collection"
+		}
+	},
 	"actions": {
 		"share": "Share",
 		"save": "Save",
 		"rate": "Rate",
 		"edit": "Edit",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "deleteRecipe": "Delete recipe",
-    "deleteCollection": "Delete collection",
-    "confirmDelete": "Are you sure you want to delete this recipe?",
-    "confirmDeleteCollection": "Are you sure you want to delete this collection?",
-    "saveRecipe": "Save recipe",
-    "showPreview": "Show preview",
-    "error": "An error occurred. Please try again.",
-    "loadRecipeError": "Failed to load recipe",
-    "loadCollectionError": "Failed to load collection",
-    "noShareLink": "No share link available",
-    "shareDisabled": "Sharing disabled",
-    "linkShared": "Link shared",
-    "linkCopied": "Link copied",
-    "collections": "Collections",
-    "noCollectionsAvailable": "No collections",
-    "newCollection": "New collection",
-    "disableSharing": "Disable sharing"
-  },
+		"cancel": "Cancel",
+		"delete": "Delete",
+		"deleteRecipe": "Delete recipe",
+		"deleteCollection": "Delete collection",
+		"confirmDelete": "Are you sure you want to delete this recipe?",
+		"confirmDeleteCollection": "Are you sure you want to delete this collection?",
+		"saveRecipe": "Save recipe",
+		"showPreview": "Show preview",
+		"error": "An error occurred. Please try again.",
+		"loadRecipeError": "Failed to load recipe",
+		"loadCollectionError": "Failed to load collection",
+		"noShareLink": "No share link available",
+		"shareDisabled": "Sharing disabled",
+		"linkShared": "Link shared",
+		"linkCopied": "Link copied",
+		"collections": "Collections",
+		"noCollectionsAvailable": "No collections",
+		"newCollection": "New collection",
+		"disableSharing": "Disable sharing"
+	},
 	"settings": {
 		"profile": {
 			"title": "Profile",

@@ -8,7 +8,7 @@
     import {m} from "$lib/paraglide/messages";
     import type {Ingredient} from "$lib/server/db/schema";
 
-    const {recipe, ingredients: ingredientsProp = []} = $props();
+    const {recipe, ingredients: ingredientsProp = []}: {recipe?: any; ingredients?: any[]} = $props();
 
     type IngredientDraft = {
         id: number | null;
@@ -21,6 +21,12 @@
     type IngredientLike = Ingredient | IngredientDraft;
 
     let ingredients: IngredientLike[] = $state(ingredientsProp);
+
+    $effect(() => {
+        if (ingredientsProp.length > 0) {
+            ingredients = ingredientsProp;
+        }
+    });
 
     const addIngredient = () => {
         ingredients = [
@@ -54,14 +60,13 @@
             />
         </div>
         <div class="flex w-full flex-col gap-1.5">
-            <Label for="ingredients-{index}-unit">Einheit</Label>
+            <Label for="ingredients-{index}-unit">{m["recipe.form.ingredients.unitLabel"]()}</Label>
             <Input
                     type="text"
                     id="ingredients-{index}-unit"
                     name="ingredients_unit[]"
-                    bind:value={item.unit}
+                    value={item.unit || ''}
                     placeholder={m["recipe.form.ingredients.unitPlaceholder"]()}
-                    required
             />
         </div>
         <div class="flex w-full flex-col gap-1.5">

@@ -7,7 +7,7 @@
     import SelectComponent from "$lib/components/ui/select/SelectComponent.svelte";
     import {Badge} from "$lib/components/ui/badge";
 
-    const {recipe} = $props();
+    const {recipe, tags: tagsProp}: {recipe?: any; tags?: string[]} = $props();
 
     const difficulties = [
         {value: "easy", label: m["recipe.common.difficulty.easy"]()},
@@ -22,7 +22,13 @@
     type TagLike = { name: string };
 
     let tagInput = $state("");
-    let tags = $state<string[]>(recipe?.tags?.map((t: TagLike) => t.name) ?? []);
+    let tags = $state<string[]>(recipe?.tags?.map((t: TagLike) => t.name) ?? tagsProp ?? []);
+
+    $effect(() => {
+        if (tagsProp && tagsProp.length > 0) {
+            tags = [...tagsProp];
+        }
+    });
     let coverFile = $state<FileList | undefined>(undefined);
     let previewUrl = $state<string>("");
 
@@ -95,7 +101,8 @@
                     id="difficulty"
                     name="difficulty"
                     options={difficulties}
-                    placeholder={m["recipe.form.details.difficultyPlaceholder"]()} value={recipe?.difficulty.toLowerCase() || ''}/>
+                    placeholder={m["recipe.form.details.difficultyPlaceholder"]()} value={recipe?.difficulty.toLowerCase() || ''}
+                    required/>
         </div>
         <div class="flex w-full flex-col gap-1.5">
             <Label for="visibility">{m["recipe.form.details.visibility.label"]()}</Label>

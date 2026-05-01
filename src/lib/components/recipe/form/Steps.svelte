@@ -8,9 +8,15 @@
     import type {Step} from "$lib/server/db/schema";
     import {m} from "$lib/paraglide/messages";
 
-    const {steps: stepsProp = []} = $props();
+    const {steps: stepsProp = []}: {steps?: any[]} = $props();
 
     let steps: Step[] = $state(stepsProp);
+
+    $effect(() => {
+        if (stepsProp.length > 0) {
+            steps = stepsProp;
+        }
+    });
 
     const addStep = () => {
         steps = [...steps, {number: steps.length + 1, step: ""} as Step];

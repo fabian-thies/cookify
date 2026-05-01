@@ -25,7 +25,7 @@
 	"nav": {
 		"navigation": "Navigation",
 		"recipes": "Rezepte",
-        "explore": "Entdecken",
+		"explore": "Entdecken",
 		"favorites": "Favoriten",
 		"collection": "Kollektionen",
 		"profile": "Profil",
@@ -39,11 +39,11 @@
 			"steps": "Schritte",
 			"forServings": "Für {count} Portionen",
 			"servingsCount": "{count} Portionen",
-				"duration": "{count} Min",
-				"reviews": "{count} Bewertungen",
-				"ratePrompt": "Bewerte dieses Rezept",
-				"rateSubtitle": "Wie hat dir das Rezept gefallen?",
-				"similar": "Ähnliche Rezepte",
+			"duration": "{count} Min",
+			"reviews": "{count} Bewertungen",
+			"ratePrompt": "Bewerte dieses Rezept",
+			"rateSubtitle": "Wie hat dir das Rezept gefallen?",
+			"similar": "Ähnliche Rezepte",
 			"difficulty": {
 				"easy": "Einfach",
 				"medium": "Mittel",
@@ -54,8 +54,8 @@
 			"searchPlaceholder": "Rezepte suchen",
 			"difficultyPlaceholder": "Schwierigkeitsgrad auswählen",
 			"groupLabel": "Kategorien",
-            "cookTimePlaceholder": "Kochzeit auswählen",
-            "cookTimeGroupLabel": "Kochzeit",
+			"cookTimePlaceholder": "Kochzeit auswählen",
+			"cookTimeGroupLabel": "Kochzeit",
 			"authorPlaceholder": "Autor auswählen",
 			"authorGroupLabel": "Autor",
 			"tagsPlaceholder": "Schlagwörter auswählen",
@@ -104,7 +104,7 @@
 				"title": "Zutaten",
 				"quantityLabel": "Menge",
 				"quantityPlaceholder": "z.B. 500",
-				"unitLabel": "Einheit",
+				"unitLabel": "Einheit (optional)",
 				"unitPlaceholder": "z.B. g, ml, Stück",
 				"nameLabel": "Zutat",
 				"namePlaceholder": "z.B. Nudeln, Eier, Speck",
@@ -141,7 +141,19 @@
 		"saveSuccess": "Rezept erfolgreich gespeichert!",
 		"saveError": "Fehler beim Speichern des Rezepts.",
 		"createSuccess": "Rezept erfolgreich erstellt!",
-		"createError": "Fehler beim Erstellen des Rezepts."
+		"createError": "Fehler beim Erstellen des Rezepts.",
+		"import": {
+			"title": "Rezept importieren",
+			"description": "Importiere ein Rezept von einer URL.",
+			"button": "Importieren",
+			"urlLabel": "Rezept-URL",
+			"urlPlaceholder": "https://www.chefkoch.de/rezepte/...",
+			"urlRequired": "Bitte gib eine URL ein.",
+			"invalidUrl": "Bitte gib eine gueltige URL ein.",
+			"noRecipe": "Kein Rezept auf dieser Seite gefunden.",
+			"scrapeError": "Rezept konnte nicht importiert werden.",
+			"success": "Rezept erfolgreich importiert!"
+		}
 	},
 	"routes": {
 		"home": {
@@ -221,19 +233,19 @@
 				"confirmPlaceholder": "Bitte {username} eingeben"
 			}
 		}
- 	},
-	  "collection": {
-    "noCollections": "Noch keine Kollektionen vorhanden.",
-    "editDialog": {
-      "title": "Kollektion bearbeiten",
-      "titleLabel": "Titel"
-    },
-    "deleteDialog": {
-      "title": "Kollektion löschen",
-      "description": "Sicher, dass Sie diese Kollektion löschen möchten?",
-      "confirm": "Kollektion löschen"
-    }
-  },
+	},
+	"collection": {
+		"noCollections": "Noch keine Kollektionen vorhanden.",
+		"editDialog": {
+			"title": "Kollektion bearbeiten",
+			"titleLabel": "Titel"
+		},
+		"deleteDialog": {
+			"title": "Kollektion löschen",
+			"description": "Sicher, dass Sie diese Kollektion löschen möchten?",
+			"confirm": "Kollektion löschen"
+		}
+	},
 	"admin": {
 		"title": "Administration",
 		"description": "Verwalte globale Einstellungen und Benutzer.",
