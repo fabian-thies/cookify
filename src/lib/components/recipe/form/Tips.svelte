@@ -4,7 +4,6 @@
     import * as Card from "$lib/components/ui/card/index.js";
     import {Textarea} from "$lib/components/ui/textarea";
     import {Plus, Trash} from "lucide-svelte";
-    import {onMount} from "svelte";
     import type {Tip} from "$lib/server/db/schema";
     import {m} from "$lib/paraglide/messages";
 
@@ -24,14 +23,9 @@
     };
 
     const removeTip = (index: number) => {
-        if (tips.length > 1) {
-            tips = tips.filter((_, i) => i !== index);
-        }
+        tips = tips.filter((_, i) => i !== index);
     };
 
-    onMount(() => {
-        if (tips.length <= 0) addTip();
-    });
 </script>
 
 {#snippet tipRow(item: TipDraft, index: number)}
@@ -43,7 +37,6 @@
                     name="tips[]"
                     bind:value={item.tip}
                     placeholder={m["recipe.form.tips.tipPlaceholder"]()}
-                    required
             />
         </div>
 
@@ -53,7 +46,6 @@
                     type="button"
                     variant="outline"
                     class="hover:cursor-pointer"
-                    disabled={tips.length === 1}
                     onclick={() => removeTip(index)}
             >
                 <Trash/>
