@@ -17,14 +17,22 @@ export interface ScrapedRecipe {
     sourceUrl: string;
 }
 
-function parseIsoDuration(iso: string | undefined | null): number | null {
-    if (!iso) return null;
-    const match = iso.match(/^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/);
+function parseCookTime(value: unknown): number | null {
+    if (value === null || value === undefined) return null;
+    if (typeof value === 'number') return value;
+    const str = String(value).trim();
+    if (!str) return null;
+    // Plain number (minutes)
+    const num = Number(str);
+    if (!isNaN(num) && num > 0) return Math.round(num);
+    // ISO 8601 duration (PT1H30M, PT45M, P0DT0H25M, etc.)
+    const match = str.match(/^P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/);
     if (!match) return null;
-    const hours = parseInt(match[1] || '0', 10);
-    const minutes = parseInt(match[2] || '0', 10);
-    const seconds = parseInt(match[3] || '0', 10);
-    return hours * 60 + minutes + Math.round(seconds / 60);
+    const days = parseInt(match[1] || '0', 10);
+    const hours = parseInt(match[2] || '0', 10);
+    const minutes = parseInt(match[3] || '0', 10);
+    const seconds = parseInt(match[4] || '0', 10);
+    return days * 1440 + hours * 60 + minutes + Math.round(seconds / 60);
 }
 
 function parseServings(value: string | number | undefined | null): number | null {
@@ -138,15 +146,22 @@ function extractFromJsonLd(jsonLd: Record<string, unknown>): ScrapedRecipe | nul
         image = (imageData as Record<string, unknown>)['url'] as string || null;
     }
 
-    const cookTime = parseIsoDuration(
-        (jsonLd['cookTime'] as string) || (jsonLd['totalTime'] as string) || (jsonLd['prepTime'] as string)
-    );
+    const cookTime = parseCookTime(jsonLd['cookTime']) 
+        ?? parseCookTime(jsonLd['totalTime']) 
+        ?? parseCookTime(jsonLd['prepTime']);
 
-    const servings = parseServings(String(jsonLd['recipeYield'] || jsonLd['yield'] || ''));
+    const servings = parseServings(String(jsonLd['recipeYield'] ?? jsonLd['yield'] ?? ''));
 
-    const difficulty = typeof jsonLd['recipeDifficulty'] === 'string'
-        ? (jsonLd['recipeDifficulty'] as string).toLowerCase()
-        : null;
+    const difficulty = (() => {
+        const d = jsonLd['recipeDifficulty'];
+        if (typeof d === 'string') return d.toLowerCase();
+        if (typeof d === 'number') {
+            if (d <= 1) return 'easy';
+            if (d <= 2) return 'medium';
+            return 'hard';
+        }
+        return null;
+    })();
 
     const rawIngredients = Array.isArray(jsonLd['recipeIngredient']) ? jsonLd['recipeIngredient'] : [];
     const ingredients = (rawIngredients as string[]).map(parseIngredient);
@@ -154,19 +169,33 @@ function extractFromJsonLd(jsonLd: Record<string, unknown>): ScrapedRecipe | nul
     const instructions = jsonLd['recipeInstructions'];
     let steps: string[] = [];
 
-    if (typeof instructions === 'string') {
-        steps = [instructions];
-    } else if (Array.isArray(instructions)) {
-        steps = (instructions as Record<string, unknown>[]).map((item) => {
-            if (typeof item === 'string') return item;
-            if (typeof item === 'object') {
-                return (item as Record<string, unknown>)['text'] as string
-                    || (item as Record<string, unknown>)['name'] as string
-                    || '';
+    function extractStepsFromInstructions(data: unknown): string[] {
+        if (typeof data === 'string') {
+            return data.split(/\n{2,}/).map(s => s.trim()).filter(Boolean);
+        }
+        if (!Array.isArray(data)) return [];
+
+        const result: string[] = [];
+        for (const item of data as unknown[]) {
+            if (typeof item === 'string') {
+                result.push(...item.split(/\n{2,}/).map(s => s.trim()).filter(Boolean));
+            } else if (typeof item === 'object' && item !== null) {
+                const obj = item as Record<string, unknown>;
+                // Handle HowToSection with nested itemListElement
+                if (Array.isArray(obj['itemListElement'])) {
+                    result.push(...extractStepsFromInstructions(obj['itemListElement']));
+                } else {
+                    const text = (obj['text'] as string) || (obj['name'] as string) || '';
+                    if (text) {
+                        result.push(...text.split(/\n{2,}/).map(s => s.trim()).filter(Boolean));
+                    }
+                }
             }
-            return String(item);
-        }).filter(Boolean);
+        }
+        return result;
     }
+
+    steps = extractStepsFromInstructions(instructions);
 
     const tags: string[] = [];
     const categories = jsonLd['recipeCategory'];
