@@ -28,14 +28,41 @@
         required = false
     }: Props = $props();
 
+    let invalid = $state(false);
+    let triggerRef: HTMLButtonElement | null = $state(null);
+
+    $effect(() => {
+        if (value) {
+            invalid = false;
+        }
+    });
+
+    $effect(() => {
+        if (!required) return;
+
+        const handleSubmit = (event: Event) => {
+            const form = event.target;
+            if (!(form instanceof HTMLFormElement) || !triggerRef || !form.contains(triggerRef)) return;
+            if (!value) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                invalid = true;
+                triggerRef.focus();
+            }
+        };
+
+        window.addEventListener("submit", handleSubmit, true);
+        return () => window.removeEventListener("submit", handleSubmit, true);
+    });
+
     const triggerContent = $derived(
         options.find((option) => option.value === value)?.label ?? placeholder
     );
 </script>
 
  <Select.Root bind:value {disabled} {name} type="single">
-    <input type="hidden" name={name} value={value} required={required}/>
-    <Select.Trigger class={className + " bg-background" }>
+    <input type="hidden" name={name} value={value}/>
+    <Select.Trigger class={className + " bg-background"} aria-invalid={invalid || undefined} bind:ref={triggerRef}>
         {triggerContent}
     </Select.Trigger>
     <Select.Content>
