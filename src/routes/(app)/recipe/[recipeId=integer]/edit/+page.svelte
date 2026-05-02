@@ -39,6 +39,7 @@
         </div>
     {:else if recipe}
         <form action="?/updateRecipe" enctype="multipart/form-data" method="POST" use:enhance={() => {
+            updating = true;
             return async ({ result }) => {
                 updating = false;
                 if (result.type === 'success') {
@@ -64,7 +65,7 @@
                 <div class="space-y-6">
                     <Details {recipe}/>
                     <div class="flex flex-col gap-3 mt-6">
-                        <Button class="w-full" type="submit" onclick={() => updating = true}>
+                        <Button class="w-full" type="submit" >
                             {#if updating}
                                 <Spinner/>
                             {:else}

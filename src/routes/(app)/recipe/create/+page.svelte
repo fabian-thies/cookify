@@ -101,6 +101,7 @@
 
 <div class="container mx-auto mt-14">
     <form action="?/createRecipe" enctype="multipart/form-data" method="POST" use:enhance={() => {
+        creating = true;
         return async ({ result }) => {
             creating = false;
             if (result.type === 'success') {
@@ -128,7 +129,7 @@
                 <Details tags={tags}/>
                 <div class="flex flex-col gap-3 mt-6">
                     <ImportDialog onImport={handleImport}/>
-                    <Button class="w-full" type="submit" onclick={() => creating = true}>
+                    <Button class="w-full" type="submit">
                         {#if creating}
                             <Spinner/>
                         {:else}
