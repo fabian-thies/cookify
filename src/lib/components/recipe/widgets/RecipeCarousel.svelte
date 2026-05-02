@@ -26,7 +26,7 @@
     <div class="flex justify-between gap-6">
         {#if (recipes && recipes.length > 0)}
             <Carousel.Root class="w-full" opts={{ align: "start", loop: true }}>
-                <Carousel.Content>
+                <Carousel.Content class="items-start">
                     {#each recipes as recipe}
                         <Carousel.Item class="md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
                             <RecipeCard

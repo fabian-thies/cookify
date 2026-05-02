@@ -90,6 +90,10 @@
 			"preparation": {
 				"title": "Preparación",
 				"subtitle": "Instrucciones paso a paso"
+			},
+			"tips": {
+				"title": "Consejos",
+				"subtitle": "Sugerencias útiles para esta receta"
 			}
 		},
 		"form": {
@@ -136,6 +140,12 @@
 						"private": "Privada"
 					}
 				}
+			},
+			"tips": {
+				"title": "Consejos",
+				"tipLabel": "Consejo",
+				"tipPlaceholder": "p. ej. Deja reposar la masa en la nevera toda la noche",
+				"addButton": "Agregar consejo"
 			}
 		},
 		"saveSuccess": "¡Receta guardada con éxito!",

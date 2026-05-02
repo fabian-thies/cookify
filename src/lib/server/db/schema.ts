@@ -84,6 +84,12 @@ export const tags = pgTable('tags', {
     name: text('name').notNull(),
 });
 
+export const tips = pgTable('tips', {
+    id: serial('id').primaryKey(),
+    recipeId: integer('recipe_id').notNull().references(() => recipes.id),
+    tip: text('tip').notNull(),
+});
+
 export const recipeRating = pgTable('recipe_rating', {
     id: serial('id').primaryKey(),
     recipeId: integer('recipe_id').notNull().references(() => recipes.id),
@@ -119,6 +125,7 @@ export type DifficultyToRecipe = typeof difficultyToRecipe.$inferSelect;
 export type Favorite = typeof favorite.$inferSelect;
 export type Tag = typeof tags.$inferSelect;
 export type RecipeRating = typeof recipeRating.$inferSelect;
+export type Tip = typeof tips.$inferSelect;
 export type Collection = typeof collections.$inferSelect;
 export type CollectionToRecipe = typeof collectionToRecipe.$inferSelect;
 export type SiteSettings = typeof siteSettings.$inferSelect;

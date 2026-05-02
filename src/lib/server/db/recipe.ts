@@ -9,7 +9,8 @@ import {
     recipes,
     steps,
     steps as stepsTable,
-    tags as tagsTable
+    tags as tagsTable,
+    tips as tipsTable
 } from "$lib/server/db/schema";
 import {getDifficultyId} from "$lib/server/utils";
 import {and, desc, eq, getTableColumns, sql} from "drizzle-orm";
@@ -32,6 +33,7 @@ export async function createRecipe({
                                        difficulty,
                                        ingredientsList,
                                        steps,
+                                       tips,
                                        tags,
                                        image,
                                        visibility
@@ -75,6 +77,15 @@ export async function createRecipe({
         );
     }
 
+    if (tips.length > 0) {
+        await db.insert(tipsTable).values(
+            tips.map((tip) => ({
+                recipeId: result[0].id,
+                tip,
+            }))
+        );
+    }
+
     return result;
 }
 
@@ -96,6 +107,7 @@ export async function deleteRecipe(userId: string, recipeId: number) {
     await db.delete(ingredients).where(eq(ingredients.recipeId, recipeId));
     await db.delete(stepsTable).where(eq(stepsTable.recipeId, recipeId));
     await db.delete(tagsTable).where(eq(tagsTable.recipeId, recipeId));
+    await db.delete(tipsTable).where(eq(tipsTable.recipeId, recipeId));
     return db.delete(recipes)
         .where(and(eq(recipes.id, recipeId), eq(recipes.userId, userId)))
         .returning({id: recipes.id});
@@ -111,6 +123,7 @@ export async function updateRecipe({
                                        difficulty,
                                        ingredientsList,
                                        steps,
+                                       tips,
                                        tags,
                                        image,
                                        visibility
@@ -171,6 +184,16 @@ export async function updateRecipe({
             tags.map((tag) => ({
                 recipeId: id,
                 name: tag,
+            }))
+        );
+    }
+
+    await db.delete(tipsTable).where(eq(tipsTable.recipeId, id));
+    if (tips.length > 0) {
+        await db.insert(tipsTable).values(
+            tips.map((tip) => ({
+                recipeId: id,
+                tip,
             }))
         );
     }
@@ -435,6 +458,11 @@ export async function getIngredients(recipeId: number) {
 export async function getTags(recipeId: number) {
     const db = getDb();
     return db.select(getTableColumns(tagsTable)).from(tagsTable).where(eq(tagsTable.recipeId, recipeId));
+}
+
+export async function getTips(recipeId: number) {
+    const db = getDb();
+    return db.select(getTableColumns(tipsTable)).from(tipsTable).where(eq(tipsTable.recipeId, recipeId));
 }
 
 export async function getDifficulties() {

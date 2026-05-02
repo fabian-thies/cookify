@@ -11,6 +11,7 @@ export interface CreateRecipeInput {
     ingredientsList: { name: string; amount: number; unit: string }[];
     steps: string[];
     tags: string[];
+    tips: string[];
     image: string;
     visibility: "public" | "private";
 }

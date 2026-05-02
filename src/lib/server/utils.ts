@@ -110,6 +110,7 @@ export function parseRecipeFormData(formData: FormData): {
     ingredientsList: { amount: number; unit: string; name: string }[];
     steps: string[];
     tags: string[];
+    tips: string[];
     visibility: "public" | "private";
 } {
     const title: string = formData.get("title")?.toString() ?? "";
@@ -133,6 +134,7 @@ export function parseRecipeFormData(formData: FormData): {
     const names: string[] = [];
     const stepsArr: string[] = [];
     const tagsArr: string[] = [];
+    const tipsArr: string[] = [];
 
     for (const amount of formData.getAll("ingredients_amount[]")) {
         const num = Number(amount);
@@ -170,6 +172,13 @@ export function parseRecipeFormData(formData: FormData): {
         }
     }
 
+    for (const tip of formData.getAll("tips[]")) {
+        const str = tip.toString().trim();
+        if (str !== "") {
+            tipsArr.push(str);
+        }
+    }
+
     const ingredientsList = amounts.map((amount, index) => ({
         amount: amount,
         unit: units[index],
@@ -185,6 +194,7 @@ export function parseRecipeFormData(formData: FormData): {
         ingredientsList,
         steps: stepsArr,
         tags: tagsArr,
+        tips: tipsArr,
         visibility
     };
 }

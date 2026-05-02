@@ -1,5 +1,6 @@
 <script lang="ts">
     import Preparation from "$lib/components/recipe/view/Preparation.svelte";
+import Tips from "$lib/components/recipe/view/Tips.svelte";
     import Ingredients from "$lib/components/recipe/view/Ingredients.svelte";
     import Overview from "$lib/components/recipe/view/Overview.svelte";
     import type {PageProps} from "./$types";
@@ -36,6 +37,7 @@
         </div>
         <div class="lg:col-span-2">
             <Preparation steps={recipe.steps}/>
+            <Tips tips={recipe.tips}/>
         </div>
     </div>
 {:else}

@@ -90,6 +90,10 @@
 			"preparation": {
 				"title": "Preparation",
 				"subtitle": "Step-by-step instructions"
+			},
+			"tips": {
+				"title": "Tips",
+				"subtitle": "Helpful hints for this recipe"
 			}
 		},
 		"form": {
@@ -136,6 +140,12 @@
 						"private": "Private"
 					}
 				}
+			},
+			"tips": {
+				"title": "Tips",
+				"tipLabel": "Tip",
+				"tipPlaceholder": "e.g. Let the dough rest in the fridge overnight",
+				"addButton": "Add tip"
 			}
 		},
 		"saveSuccess": "Recipe saved successfully!",

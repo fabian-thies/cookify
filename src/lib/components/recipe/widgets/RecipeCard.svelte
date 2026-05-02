@@ -19,7 +19,7 @@
     let {id, title, description, image, servings, cookingTime, rating, difficulty}: Props = $props();
 </script>
 
-<Card.Root class="flex h-full w-full flex-col overflow-hidden rounded-lg bg-card pt-0 pb-0 gap-0 shadow-sm">
+<Card.Root class="flex w-full flex-col overflow-hidden rounded-lg bg-card pt-0 pb-0 gap-0 shadow-sm">
     <Card.Header class="relative aspect-video w-full overflow-hidden p-0">
         <Badge class="absolute right-3 top-3" variant="secondary">
             {difficultyLabels[difficulty] ?? difficulty}

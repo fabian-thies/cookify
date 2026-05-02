@@ -3,6 +3,7 @@
     import General from "$lib/components/recipe/form/General.svelte";
     import Ingredients from "$lib/components/recipe/form/Ingredients.svelte";
     import Steps from "$lib/components/recipe/form/Steps.svelte";
+    import Tips from "$lib/components/recipe/form/Tips.svelte";
     import Details from "$lib/components/recipe/form/Details.svelte";
     import {Button} from "$lib/components/ui/button/index.js";
     import {m} from "$lib/paraglide/messages";
@@ -11,13 +12,14 @@
     import {Spinner} from "$lib/components/ui/spinner/index.js";
     import {getRecipeForEdit} from "$lib/functions/recipe.remote";
     import {page} from "$app/stores";
-    import type {Ingredient, Step} from "$lib/server/db/schema";
+    import type {Ingredient, Step, Tip} from "$lib/server/db/schema";
 
     type RecipeData = Awaited<ReturnType<typeof getRecipeForEdit>>;
 
     let recipe: RecipeData | null = $state(null);
     let ingredients = $state<Ingredient[]>([]);
     let steps = $state<Step[]>([]);
+    let tips = $state<Tip[]>([]);
     let updating = $state(false);
     let loading = $state(true);
 
@@ -27,6 +29,7 @@
             recipe = result;
             ingredients = result.ingredients;
             steps = result.steps;
+            tips = result.tips;
             loading = false;
         }).catch((error) => {
             console.error('Failed to load recipe:', error);
@@ -63,6 +66,7 @@
                     <General {recipe}/>
                     <Ingredients {ingredients} {recipe}/>
                     <Steps {steps}/>
+                    <Tips {tips}/>
                 </div>
 
                 <div class="space-y-6">

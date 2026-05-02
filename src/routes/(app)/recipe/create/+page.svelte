@@ -3,6 +3,7 @@
     import General from "$lib/components/recipe/form/General.svelte";
     import Ingredients from "$lib/components/recipe/form/Ingredients.svelte";
     import Steps from "$lib/components/recipe/form/Steps.svelte";
+    import Tips from "$lib/components/recipe/form/Tips.svelte";
     import Details from "$lib/components/recipe/form/Details.svelte";
     import {Button} from "$lib/components/ui/button/index.js";
     import {m} from "$lib/paraglide/messages";
@@ -28,6 +29,7 @@
     let ingredients = $state<{id: number | null; recipeId: number; name: string; quantity: number | null; unit: string}[]>([]);
     let steps = $state<{number: number; step: string}[]>([]);
     let tags = $state<string[]>([]);
+    let tips = $state<{id: number | null; recipeId: number; tip: string}[]>([]);
 
     function handleImport(recipe: ScrapedRecipe) {
         const formEl = document.querySelector('form') as HTMLFormElement;
@@ -71,6 +73,16 @@
 
         if (recipe.tags.length > 0) {
             tags = [...recipe.tags];
+        }
+
+        // @ts-ignore
+        if (recipe.tips && recipe.tips.length > 0) {
+            // @ts-ignore
+            tips = recipe.tips.map((t: any) => ({
+                id: null,
+                recipeId: 0,
+                tip: t.tip || t
+            }));
         }
 
         if (recipe.image) {
@@ -123,6 +135,7 @@
                 <General/>
                 <Ingredients ingredients={ingredients}/>
                 <Steps steps={steps}/>
+                <Tips tips={tips}/>
             </div>
 
             <div class="space-y-6">

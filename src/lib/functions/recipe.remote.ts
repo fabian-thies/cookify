@@ -22,6 +22,7 @@ import {
     getSteps as getStepsFromDb,
     getIngredients as getIngredientsFromDb,
     getTags as getTagsFromDb,
+    getTips as getTipsFromDb,
     getRecipeFavoriteState as getRecipeFavoriteStateFromDb,
     getRecipeRatingSummary as getRecipeRatingSummaryFromDb,
     getUserRecipeRating as getUserRecipeRatingFromDb,
@@ -342,10 +343,11 @@ export const getRecipeDetails = query(v.object({
     const sharePath = isOwner && recipe.shareEnabled && recipe.shareToken ? `/share/${recipe.shareToken}` : null;
     const {shareToken, ...recipeWithoutToken} = recipe;
 
-    const [steps, ingredients, ratingSummary] = await Promise.all([
+    const [steps, ingredients, ratingSummary, tips] = await Promise.all([
         getStepsFromDb(recipeId),
         getIngredientsFromDb(recipeId),
-        getRecipeRatingSummaryFromDb(recipeId)
+        getRecipeRatingSummaryFromDb(recipeId),
+        getTipsFromDb(recipeId)
     ]);
 
     let isFavorite = false;
@@ -366,7 +368,8 @@ export const getRecipeDetails = query(v.object({
         steps,
         averageRating: ratingSummary.average,
         ratingCount: ratingSummary.count,
-        userRating
+        userRating,
+        tips
     };
 });
 
@@ -384,17 +387,19 @@ export const getRecipeForEdit = query(v.object({
         throw new Error('You do not have permission to edit this recipe');
     }
 
-    const [ingredients, steps, tags] = await Promise.all([
+    const [ingredients, steps, tags, tips] = await Promise.all([
         getIngredientsFromDb(recipeId),
         getStepsFromDb(recipeId),
-        getTagsFromDb(recipeId)
+        getTagsFromDb(recipeId),
+        getTipsFromDb(recipeId)
     ]);
 
     return {
         ...recipe,
         ingredients,
         steps,
-        tags
+        tags,
+        tips
     };
 });
 
@@ -412,16 +417,18 @@ export const getSharedRecipeDetails = query(v.object({
         await incrementRecipeViewCount(recipe.id);
     }
 
-    const [steps, ingredients, ratingSummary] = await Promise.all([
+    const [steps, ingredients, ratingSummary, tips] = await Promise.all([
         getStepsFromDb(recipe.id),
         getIngredientsFromDb(recipe.id),
-        getRecipeRatingSummaryFromDb(recipe.id)
+        getRecipeRatingSummaryFromDb(recipe.id),
+        getTipsFromDb(recipe.id)
     ]);
 
     return {
         ...recipe,
         ingredients,
         steps,
+        tips,
         averageRating: ratingSummary.average,
         ratingCount: ratingSummary.count,
         userRating: null,
@@ -444,6 +451,7 @@ export const createRecipe = command(v.object({
     })),
     steps: v.array(v.pipe(v.string(), v.minLength(1))),
     tags: v.array(v.pipe(v.string(), v.minLength(1))),
+    tips: v.array(v.pipe(v.string(), v.minLength(1))),
     image: v.pipe(v.string(), v.minLength(1)),
     visibility: v.picklist(['public', 'private'])
 }), async (data) => {
@@ -473,6 +481,7 @@ export const updateRecipe = command(v.object({
     })),
     steps: v.array(v.pipe(v.string(), v.minLength(1))),
     tags: v.array(v.pipe(v.string(), v.minLength(1))),
+    tips: v.array(v.pipe(v.string(), v.minLength(1))),
     image: v.pipe(v.string(), v.minLength(1)),
     visibility: v.picklist(['public', 'private'])
 }), async (data) => {

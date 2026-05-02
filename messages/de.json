@@ -90,6 +90,10 @@
 			"preparation": {
 				"title": "Zubereitung",
 				"subtitle": "Schritt für Schritt Anleitung"
+			},
+			"tips": {
+				"title": "Tipps",
+				"subtitle": "Nützliche Hinweise für dieses Rezept"
 			}
 		},
 		"form": {
@@ -136,6 +140,12 @@
 						"private": "Privat"
 					}
 				}
+			},
+			"tips": {
+				"title": "Tipps",
+				"tipLabel": "Tipp",
+				"tipPlaceholder": "z.B. Den Teig über Nacht im Kühlschrank ruhen lassen",
+				"addButton": "Tipp hinzufügen"
 			}
 		},
 		"saveSuccess": "Rezept erfolgreich gespeichert!",
