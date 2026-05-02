@@ -10,7 +10,7 @@
     const {tips: tipsProp = []}: {tips?: any[]} = $props();
 
     type TipDraft = { id: number | null; recipeId: number; tip: string };
-    let tips: TipDraft[] = $state(tipsProp);
+    let tips: TipDraft[] = $state(tipsProp.length > 0 ? tipsProp : [{id: null, recipeId: 0, tip: ""} as TipDraft]);
 
     $effect(() => {
         if (tipsProp.length > 0) {

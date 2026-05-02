@@ -1,11 +1,14 @@
 <script lang="ts">
     import {Label} from "$lib/components/ui/label/index.js";
     import {Input} from "$lib/components/ui/input/index.js";
+    import {Textarea} from "$lib/components/ui/textarea";
     import * as Card from "$lib/components/ui/card/index.js";
     import {ChefHat} from "lucide-svelte";
     import {m} from "$lib/paraglide/messages";
 
     const {recipe}: {recipe?: any} = $props();
+
+    let description = $state(recipe?.description ?? '');
 </script>
 
 <Card.Root class="w-full">
@@ -25,9 +28,8 @@
         </div>
         <div class="flex w-full flex-col gap-1.5">
             <Label for="description">{m["recipe.form.general.descriptionLabel"]()}</Label>
-            <Input id="description" name="description" placeholder={m["recipe.form.general.descriptionPlaceholder"]()}
-                   required type="text"
-                   value={recipe?.description || ''}/>
+            <Textarea id="description" name="description" placeholder={m["recipe.form.general.descriptionPlaceholder"]()}
+                   bind:value={description} />
         </div>
     </Card.Content>
 </Card.Root>
