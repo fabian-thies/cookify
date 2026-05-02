@@ -9,7 +9,8 @@
         Share2,
         Star,
         Trash2,
-        Users
+        Users,
+        ChefHat
     } from "lucide-svelte";
     import * as Dialog from "$lib/components/ui/dialog/index.js";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
@@ -342,6 +343,10 @@
                     <Heart class="w-4 h-4 sm:w-5 sm:h-5" fill={isFavorite ? "white" : "none"}/>
                     <span class="inline">{m["actions.save"]()}</span>
                 </Button>
+                <Button href="/recipe/{recipeId}/cook" class="flex-1 sm:flex-none min-w-0" variant="default">
+                        <ChefHat class="w-4 h-4 sm:w-5 sm:h-5"/>
+                        <span class="inline">{m["recipe.cookMode.title"]()}</span>
+                    </Button>
                 <DropdownMenu.Root>
                     <DropdownMenu.Trigger>
                         <Button variant="ghost">

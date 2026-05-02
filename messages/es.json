@@ -163,6 +163,21 @@
 			"noRecipe": "No se encontro ninguna receta en esta pagina.",
 			"scrapeError": "No se pudo importar la receta.",
 			"success": "Receta importada con exito!"
+		},
+		"cookMode": {
+			"title": "Modo Cocina",
+			"step": "Paso {current} de {total}",
+			"next": "Siguiente",
+			"previous": "Anterior",
+			"finish": "¡Listo!",
+			"timer": "Temporizador",
+			"startTimer": "Iniciar",
+			"pauseTimer": "Pausa",
+			"resetTimer": "Reiniciar",
+			"setMinutes": "Minutos",
+			"ingredients": "Ingredientes",
+			"exit": "Salir",
+			"noSteps": "No hay pasos disponibles"
 		}
 	},
 	"routes": {

@@ -163,6 +163,21 @@
 			"noRecipe": "No recipe found on this page.",
 			"scrapeError": "Failed to import the recipe.",
 			"success": "Recipe imported successfully!"
+		},
+		"cookMode": {
+			"title": "Cook Mode",
+			"step": "Step {current} of {total}",
+			"next": "Next",
+			"previous": "Previous",
+			"finish": "Done!",
+			"timer": "Timer",
+			"startTimer": "Start Timer",
+			"pauseTimer": "Pause",
+			"resetTimer": "Reset",
+			"setMinutes": "Minutes",
+			"ingredients": "Ingredients",
+			"exit": "Exit",
+			"noSteps": "No steps available"
 		}
 	},
 	"routes": {
