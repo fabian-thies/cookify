@@ -1,5 +1,6 @@
 <script lang="ts">
     import Preparation from "$lib/components/recipe/view/Preparation.svelte";
+    import SimilarRecipes from "$lib/components/recipe/view/SimilarRecipes.svelte";
 import Tips from "$lib/components/recipe/view/Tips.svelte";
     import Ingredients from "$lib/components/recipe/view/Ingredients.svelte";
     import Overview from "$lib/components/recipe/view/Overview.svelte";
@@ -36,6 +37,7 @@ import Tips from "$lib/components/recipe/view/Tips.svelte";
             <Tips tips={recipe.tips}/>
         </div>
     </div>
+    <SimilarRecipes recipeId={recipe.id}/>
 {:else}
     <div class="flex items-center justify-center py-12">
         <div class="text-muted-foreground">{m.loading()}</div>

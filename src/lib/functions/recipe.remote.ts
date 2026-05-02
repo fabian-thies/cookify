@@ -29,7 +29,8 @@ import {
     getCollectionRecipes as getCollectionRecipesFromDb,
     createRecipe as createRecipeInDb,
     updateRecipe as updateRecipeInDb,
-    incrementRecipeViewCount
+    incrementRecipeViewCount,
+    getSimilarRecipes as getSimilarRecipesFromDb
 } from '$lib/server/db/recipe';
 
 export const likeRecipe = command(v.object({
@@ -496,4 +497,11 @@ export const updateRecipe = command(v.object({
         ...data,
         userId: locals.user.id
     });
+});
+
+export const getSimilarRecipes = query(v.object({
+    recipeId: v.number(),
+    limit: v.optional(v.number(), 6)
+}), async ({recipeId, limit}) => {
+    return getSimilarRecipesFromDb(recipeId, limit);
 });

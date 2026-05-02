@@ -13,7 +13,7 @@ import {
     tips as tipsTable
 } from "$lib/server/db/schema";
 import {getDifficultyId} from "$lib/server/utils";
-import {and, desc, eq, getTableColumns, sql} from "drizzle-orm";
+ import {and, desc, eq, getTableColumns, ne, sql} from "drizzle-orm";
 import type {CreateRecipeInput, UpdateRecipeInput} from "$lib/types/recipe";
 import {getRequestEvent} from "$app/server";
 import {randomUUID} from "crypto";
@@ -665,3 +665,61 @@ export async function createCollection(userId: string, title: string, recipeId: 
 
 export type Recipe = Awaited<ReturnType<typeof getRecipes>>[number];
 export type Difficulty = Awaited<ReturnType<typeof getDifficulties>>[number];
+
+export async function getSimilarRecipes(recipeId: number, limit = 6) {
+    const db = getDb();
+
+    // Fetch the current recipe's tags and difficulty
+    const currentRecipe = await getRecipeById(recipeId);
+    if (!currentRecipe) {
+        return [];
+    }
+
+    const currentTags: string[] = currentRecipe.tags ?? [];
+    const currentDifficulty: string = currentRecipe.difficulty;
+
+    // If no tags and no difficulty, we can't find similar recipes
+    if (currentTags.length === 0 && !currentDifficulty) {
+        return [];
+    }
+
+    // Build similarity score using SQL:
+    // - shared tag count: number of tags that overlap with current recipe's tags
+    // - difficulty match: +1 if same difficulty
+    // Weight tags more heavily (x2) since they indicate topical similarity
+    const sharedTagCount = currentTags.length > 0
+        ? sql<number>`(
+            SELECT COUNT(*)::int
+            FROM ${tagsTable}
+            WHERE ${tagsTable.recipeId} = ${recipes.id}
+            AND ${tagsTable.name} IN (${sql.join(currentTags.map(t => sql`${t}`), sql`, `)})
+        )`
+        : sql<number>`0`;
+
+    const difficultyMatch = sql<number>`CASE WHEN ${difficulty.difficulty} = ${currentDifficulty} THEN 1 ELSE 0 END`;
+
+    const similarityScore = sql<number>`(${sharedTagCount}) * 2 + ${difficultyMatch}`;
+
+    const similarRecipes = await db
+        .select({
+            ...getTableColumns(recipes),
+            difficulty: difficulty.difficulty,
+            tags: tagListSubquery,
+            similarityScore,
+        })
+        .from(recipes)
+        .innerJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
+        .innerJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
+        .where(
+            and(
+                ne(recipes.id, recipeId),
+                eq(recipes.visibility, 'public')
+            )
+        )
+        .having(sql`(${sharedTagCount}) * 2 + ${difficultyMatch} > 0`)
+        .groupBy(recipes.id, difficulty.difficulty)
+        .orderBy(desc(similarityScore), desc(recipes.createdAt))
+        .limit(limit);
+
+    return similarRecipes;
+}
