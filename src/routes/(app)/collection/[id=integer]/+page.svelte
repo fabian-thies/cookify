@@ -47,7 +47,7 @@
             loading = false;
         }).catch((error) => {
             console.error('Failed to load collection:', error);
-            toast.error(m.actions.loadCollectionError());
+            toast.error(m["actions.loadCollectionError"]());
             loading = false;
         });
     });

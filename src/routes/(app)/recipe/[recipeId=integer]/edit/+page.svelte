@@ -27,7 +27,7 @@
             loading = false;
         }).catch((error) => {
             console.error('Failed to load recipe:', error);
-            toast.error(m.actions.loadRecipeError());
+            toast.error(m["actions.loadRecipeError"]());
         });
     });
 </script>
