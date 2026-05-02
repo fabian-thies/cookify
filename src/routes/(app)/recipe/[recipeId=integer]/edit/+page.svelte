@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import {enhance} from '$app/forms';
     import General from "$lib/components/recipe/form/General.svelte";
     import Ingredients from "$lib/components/recipe/form/Ingredients.svelte";
@@ -11,10 +11,13 @@
     import {Spinner} from "$lib/components/ui/spinner/index.js";
     import {getRecipeForEdit} from "$lib/functions/recipe.remote";
     import {page} from "$app/stores";
+    import type {Ingredient, Step} from "$lib/server/db/schema";
 
-    let recipe = $state(null);
-    let ingredients = $state([]);
-    let steps = $state([]);
+    type RecipeData = Awaited<ReturnType<typeof getRecipeForEdit>>;
+
+    let recipe: RecipeData | null = $state(null);
+    let ingredients = $state<Ingredient[]>([]);
+    let steps = $state<Step[]>([]);
     let updating = $state(false);
     let loading = $state(true);
 

@@ -3,15 +3,23 @@ import CollectionCard from "$lib/components/collection/CollectionCard.svelte";
 import CollectionCardSkeleton from "$lib/components/collection/CollectionCardSkeleton.svelte";
 import {getCollections} from "$lib/functions/recipe.remote";
 import {m} from "$lib/paraglide/messages";
-import type {Collection} from "$lib/server/db/schema";
 
-let collections = $state<Collection[]>([]);
+type CollectionWithMeta = {
+    id: number;
+    userId: string;
+    title: string;
+    recipeCount: number;
+    isInCollection: boolean;
+    thumbnails: string[];
+};
+
+let collections = $state<CollectionWithMeta[]>([]);
 let loading = $state(true);
 
 $effect(() => {
     loading = true;
     getCollections().then((result) => {
-        collections = result;
+        collections = result as CollectionWithMeta[];
         loading = false;
     });
 });

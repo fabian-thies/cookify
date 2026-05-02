@@ -2,8 +2,9 @@
     import General from "$lib/components/administration-settings/form/General.svelte";
     import {getUsers} from "$lib/functions/user.remote";
     import {getAllowRegistrations} from "$lib/functions/site.remote";
+    import type {PublicUser} from "$lib/server/db/schema";
 
-    let users = $state([]);
+    let users = $state<PublicUser[]>([]);
     let allowRegistrations = $state(true);
 
     $effect(() => {
@@ -11,7 +12,7 @@
             getUsers(),
             getAllowRegistrations()
         ]).then(([usersData, allowReg]) => {
-            users = usersData;
+            users = usersData as PublicUser[];
             allowRegistrations = allowReg;
         });
     });

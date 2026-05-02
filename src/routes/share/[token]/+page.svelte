@@ -12,7 +12,7 @@
     let recipe = $state<any>(null);
 
     $effect(() => {
-        const token = $page.params.token;
+        const token = $page.params.token!;
         getSharedRecipeDetails({token, incrementView: true}).then((result) => {
             recipe = result;
         }).catch((error) => {

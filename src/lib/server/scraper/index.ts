@@ -142,7 +142,7 @@ function extractFromJsonLd(jsonLd: Record<string, unknown>): ScrapedRecipe | nul
         (jsonLd['cookTime'] as string) || (jsonLd['totalTime'] as string) || (jsonLd['prepTime'] as string)
     );
 
-    const servings = parseServings(jsonLd['recipeYield'] || jsonLd['yield']);
+    const servings = parseServings(String(jsonLd['recipeYield'] || jsonLd['yield'] || ''));
 
     const difficulty = typeof jsonLd['recipeDifficulty'] === 'string'
         ? (jsonLd['recipeDifficulty'] as string).toLowerCase()

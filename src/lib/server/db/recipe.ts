@@ -296,8 +296,8 @@ export async function getFavoriteRecipes() {
     })
         .from(recipes)
         .innerJoin(favorite, eq(favorite.recipeId, recipes.id))
-        .leftJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
-        .leftJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
+        .innerJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
+        .innerJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
         .where(and(eq(favorite.favorite, true), eq(recipes.visibility, "public")));
 }
 

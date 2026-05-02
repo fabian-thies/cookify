@@ -18,15 +18,18 @@
     import {Label} from "$lib/components/ui/label";
     import {Input} from "$lib/components/ui/input";
     import {page} from "$app/stores";
+    import type {Recipe} from "$lib/server/db/recipe";
 
     const {data} = $props();
 
-    let collection = $state({
-        id: Number($page.params.id),
-        collectionTitle: m["nav.collection"](),
-        recipes: [],
-        userId: null
-    });
+    type CollectionData = {
+        id: number;
+        collectionTitle: string;
+        userId: string;
+        recipes: Recipe[];
+    };
+
+    let collection: CollectionData | null = $state(null);
     let collectionOwner = $state(false);
     let loading = $state(true);
     const userId = data.user.id;
@@ -54,7 +57,7 @@
 
     async function deleteCollectionOnClick() {
         try {
-            await deleteCollection({collectionId: collection.id});
+            await deleteCollection({collectionId: collection!.id});
 
             await goto("/collection");
         } catch (e) {
@@ -68,7 +71,7 @@
 
             await setCollectionTitle({
                 title: newTitle,
-                collectionId: collection.id
+                collectionId: collection!.id
             });
 
             // Reload collection data
@@ -88,7 +91,7 @@
 </script>
 
 {#if collection}
-    <RecipeList {userId} recipes={collection.recipes} title={collection.collectionTitle} showFilters={false} loading={loading}>
+    <RecipeList {userId} recipes={collection.recipes} title={collection.collectionTitle} showFilters={false}>
     {#snippet actions()}
         <DropdownMenu.Root>
             <DropdownMenu.Trigger>
@@ -112,7 +115,7 @@
             </DropdownMenu.Content>
         </DropdownMenu.Root>
     {/snippet}
-</RecipeList>
+    </RecipeList>
 {/if}
 
 {#if showEditDialog}

@@ -98,7 +98,6 @@
             <SelectComponent
                     class="w-full"
                     groupLabel={m["recipe.form.details.difficultyGroupLabel"]()}
-                    id="difficulty"
                     name="difficulty"
                     options={difficulties}
                     placeholder={m["recipe.form.details.difficultyPlaceholder"]()} value={recipe?.difficulty.toLowerCase() || ''}
@@ -108,7 +107,6 @@
             <Label for="visibility">{m["recipe.form.details.visibility.label"]()}</Label>
             <SelectComponent
                     class="w-full"
-                    id="visibility"
                     name="visibility"
                     options={visibilityOptions}
                     placeholder={m["recipe.form.details.visibility.placeholder"]()}

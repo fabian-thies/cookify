@@ -34,14 +34,14 @@
         const trimmedUrl = url.trim();
 
         if (!trimmedUrl) {
-            error = (m as any)['recipe.import.urlRequired']();
+            error = m["recipe.import.urlRequired"]();
             return;
         }
 
         try {
             new URL(trimmedUrl);
         } catch {
-            error = (m as any)['recipe.import.invalidUrl']();
+            error = m["recipe.import.invalidUrl"]();
             return;
         }
 
@@ -56,11 +56,10 @@
             });
 
             if (!response.ok) {
-                const data = await response.json();
                 if (response.status === 404) {
-                    error = (m as any)['recipe.import.noRecipe']();
+                    error = m["recipe.import.noRecipe"]();
                 } else {
-                    error = (m as any)['recipe.import.scrapeError']();
+                    error = m["recipe.import.scrapeError"]();
                 }
                 return;
             }
@@ -70,7 +69,7 @@
             open = false;
             url = '';
         } catch {
-            error = (m as any)['recipe.import.scrapeError']();
+            error = m["recipe.import.scrapeError"]();
         } finally {
             loading = false;
         }
@@ -84,24 +83,24 @@
     }
 </script>
 
-    <Dialog.Root bind:open>
+    <Dialog.Root bind:open onOpenChange={handleOpenChange}>
     <Dialog.Trigger class="w-full">
         <Button variant="outline" type="button" class="w-full">
-            {(m as any)['recipe.import.button']()}
+            {m["recipe.import.button"]()}
         </Button>
     </Dialog.Trigger>
-    <Dialog.Content onopenChange={handleOpenChange}>
+    <Dialog.Content>
         <Dialog.Header>
-            <Dialog.Title>{(m as any)['recipe.import.title']()}</Dialog.Title>
-            <Dialog.Description>{(m as any)['recipe.import.description']()}</Dialog.Description>
+            <Dialog.Title>{m["recipe.import.title"]()}</Dialog.Title>
+            <Dialog.Description>{m["recipe.import.description"]()}</Dialog.Description>
         </Dialog.Header>
         <div class="flex flex-col gap-4 py-4">
             <div class="flex flex-col gap-1.5">
-                <Label for="import-url">{(m as any)['recipe.import.urlLabel']()}</Label>
+                <Label for="import-url">{m["recipe.import.urlLabel"]()}</Label>
                 <Input
                     id="import-url"
                     bind:value={url}
-                    placeholder={(m as any)['recipe.import.urlPlaceholder']()}
+                    placeholder={m["recipe.import.urlPlaceholder"]()}
                     type="url"
                     disabled={loading}
                     onkeydown={(e) => {
@@ -118,13 +117,13 @@
         </div>
         <Dialog.Footer>
             <Button variant="outline" onclick={() => open = false} disabled={loading} type="button">
-                {m['actions.cancel']()}
+                {m["actions.cancel"]()}
             </Button>
             <Button onclick={handleImport} disabled={loading} type="button">
                 {#if loading}
                     <Spinner/>
                 {:else}
-                    {(m as any)['recipe.import.button']()}
+                    {m["recipe.import.button"]()}
                 {/if}
             </Button>
         </Dialog.Footer>

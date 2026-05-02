@@ -130,8 +130,10 @@
             <Input id="email-{user.id}" type="email" bind:value={email} />
         </div>
         <Dialog.Footer class="gap-2">
-            <Dialog.Close asChild>
-                <Button variant="outline" type="button">{m["actions.cancel"]()}</Button>
+            <Dialog.Close>
+                {#snippet child({ props })}
+                    <Button {...props} variant="outline" type="button">{m["actions.cancel"]()}</Button>
+                {/snippet}
             </Dialog.Close>
             <Button type="button" onclick={saveEmail} disabled={isUpdatingEmail} class="gap-2">
                 {#if isUpdatingEmail}
@@ -163,8 +165,10 @@
             />
         </div>
         <Dialog.Footer class="gap-2">
-            <Dialog.Close asChild>
-                <Button variant="outline" type="button">{m["actions.cancel"]()}</Button>
+            <Dialog.Close>
+                {#snippet child({ props })}
+                    <Button {...props} variant="outline" type="button">{m["actions.cancel"]()}</Button>
+                {/snippet}
             </Dialog.Close>
             <Button type="button" onclick={savePassword} disabled={isUpdatingPassword} class="gap-2">
                 {#if isUpdatingPassword}
@@ -188,8 +192,10 @@
             </Dialog.Description>
         </Dialog.Header>
         <Dialog.Footer class="gap-2">
-            <Dialog.Close asChild>
-                <Button variant="outline" type="button">{m["actions.cancel"]()}</Button>
+            <Dialog.Close>
+                {#snippet child({ props })}
+                    <Button {...props} variant="outline" type="button">{m["actions.cancel"]()}</Button>
+                {/snippet}
             </Dialog.Close>
             <Button variant="destructive" type="button" onclick={deleteUser} disabled={isDeletingUser} class="gap-2">
                 {#if isDeletingUser}
