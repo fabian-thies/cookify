@@ -47,11 +47,12 @@ function parseIngredient(raw: string): { name: string; amount: number | null; un
     const trimmed = raw.trim();
     if (!trimmed) return { name: '', amount: null, unit: '' };
     
+    const unitPattern = '(?:tbsp|tablespoon|tsp|teaspoon|cup|cups|ml|l|liter|g|kg|oz|ounce|lb|pound|pinch|dash|clove|cloves|slice|slices|piece|pieces|can|cans|bunch|handful|stick|sticks|sprig|sprigs|small|medium|large|pck|pk|el|tl|bund|prise|prisen|spritzer|würfel|stange|zehe|rolle|becher|tasse|flasche|tropfen|messerspitze|glas|dose|scheibe|st|stueck|stuck|riegel|tube|blatt|zweig|knolle|etwas)\\.?';
+    const unitRegex = new RegExp(`^(?<amount>\\d+(?:[\\/.,]\\d+)?(?:\\s+\\d+\\/\\d+)?)\\s*(?<unit>${unitPattern}\\s*)?(?<name>.+)`, 'i');
+    
     // Try common patterns without explicit unit like "2 Eier", "1 Prise Salz"
     const noUnitMatch = trimmed.match(/^(?<amount>\d+(?:[\/.,]\d+)?(?:\s+\d+\/\d+)?)\s+(?<name>.+)$/);
-    const unitMatch = trimmed.match(
-        /^(?<amount>\d+(?:[\/.,]\d+)?(?:\s+\d+\/\d+)?)\s*(?<unit>(?:tbsp|tablespoon|tsp|teaspoon|cup|cups|ml|l|liter|g|kg|oz|ounce|lb|pound|pinch|dash|clove|cloves|slice|slices|piece|pieces|can|cans|bunch|handful|stick|sticks|sprig|sprigs|small|medium|large)\.?\s*)?(?<name>.+)/i
-    );
+    const unitMatch = trimmed.match(unitRegex);
     
     // If a known unit was matched, use that result
     if (unitMatch && unitMatch.groups && unitMatch.groups.unit) {
@@ -75,9 +76,7 @@ function parseIngredient(raw: string): { name: string; amount: number | null; un
         return { name, amount, unit: '' };
     }
 
-    const match = trimmed.match(
-        /^(?<amount>\d+(?:[\/.,]\d+)?(?:\s+\d+\/\d+)?)\s*(?<unit>(?:tbsp|tablespoon|tsp|teaspoon|cup|cups|ml|l|liter|g|kg|oz|ounce|lb|pound|pinch|dash|clove|cloves|slice|slices|piece|pieces|can|cans|bunch|handful|stick|sticks|sprig|sprigs|small|medium|large)\.?\s*)?(?<name>.+)/i
-    );
+    const match = trimmed.match(unitRegex);
 
     if (match && match.groups) {
         const amountStr = match.groups.amount?.trim() || '';

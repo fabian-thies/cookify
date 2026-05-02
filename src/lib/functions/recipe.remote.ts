@@ -196,11 +196,10 @@ export const disableRecipeShare = command(v.object({
 export const getRecipes = query(v.optional(v.object({
     offset: v.optional(v.number(), 0),
     limit: v.optional(v.number()),
-    orderBy: v.optional(v.picklist(['recent', 'popular'])),
-    includePrivate: v.optional(v.boolean(), false)
+    orderBy: v.optional(v.picklist(['recent', 'popular']))
 })), async (params) => {
-    const {offset = 0, limit, orderBy, includePrivate = false} = params || {};
-    return await getRecipesFromDb(offset, limit, orderBy, includePrivate);
+    const {offset = 0, limit, orderBy} = params || {};
+    return await getRecipesFromDb(offset, limit, orderBy, false);
 });
 
 export const getRecentRecipes = query(async () => {
@@ -265,10 +264,12 @@ export const getRecipeByShareToken = query(v.object({
 });
 
 export const getRecipesByUserId = query(v.object({
-    userId: v.string(),
-    includePrivate: v.optional(v.boolean(), false)
-}), async ({userId, includePrivate}) => {
-    return await getRecipesByUserIdFromDb(userId, includePrivate);
+    userId: v.string()
+}), async ({userId}) => {
+    const {locals} = getRequestEvent();
+    const isOwner = locals.user?.id === userId;
+    const isAdmin = locals.user?.administrator;
+    return await getRecipesByUserIdFromDb(userId, isOwner || isAdmin);
 });
 
 export const getSteps = query(v.object({
