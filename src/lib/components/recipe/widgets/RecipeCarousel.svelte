@@ -3,7 +3,7 @@
     import * as Carousel from "$lib/components/ui/carousel";
     import type {HTMLAttributes} from "svelte/elements";
     import type {ComponentProps} from "svelte";
-    import type {Recipe} from "$lib/server/db/schema";
+    import type {Recipe} from "$lib/server/db/recipe";
     import {m} from "$lib/paraglide/messages";
 
     type Props = {
@@ -36,7 +36,8 @@
                                 image={recipe.image}
                                 servings={recipe.servings}
                                 cookingTime={recipe.cookingTime}
-                                difficulty="easy"
+                                difficulty={recipe.difficulty}
+                                tags={recipe.tags ?? []}
                             />
                         </Carousel.Item>
                     {/each}

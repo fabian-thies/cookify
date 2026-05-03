@@ -48,7 +48,8 @@
         userRating: number | null,
         readonly?: boolean,
         sharePath?: string,
-        shareEnabled?: boolean
+        shareEnabled?: boolean;
+        tags?: string[]
     };
 
     let {
@@ -66,7 +67,8 @@
         userRating: initialUserRating,
         readonly = false,
         sharePath,
-        shareEnabled = false
+        shareEnabled = false,
+        tags = []
     }: props = $props();
 
     let averageRating = $state<number | null>(initialAverageRating);
@@ -261,6 +263,14 @@
     </div>
     <p class="text-lg text-muted-foreground mb-6">{description}
     </p>
+
+    {#if tags.length > 0}
+        <div class="flex flex-wrap gap-2 mb-6">
+            {#each tags as tag}
+                <Badge variant="secondary">{tag}</Badge>
+            {/each}
+        </div>
+    {/if}
 
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4 sm:gap-0">
         <div class="flex items-center flex-wrap gap-4 sm:gap-6 h-auto sm:h-5">

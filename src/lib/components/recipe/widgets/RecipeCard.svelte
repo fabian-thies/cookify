@@ -15,8 +15,9 @@
         cookingTime: number;
         rating?: number;
         difficulty: Difficulty;
+        tags?: string[];
     };
-    let {id, title, description, image, servings, cookingTime, rating, difficulty}: Props = $props();
+    let {id, title, description, image, servings, cookingTime, rating, difficulty, tags = []}: Props = $props();
 </script>
 
 <Card.Root class="flex w-full flex-col overflow-hidden rounded-lg bg-card pt-0 pb-0 gap-0 shadow-sm">
@@ -29,6 +30,16 @@
     <Card.Content class="flex-1 px-4 pt-4">
         <h1 class="font-medium text-lg text-card-foreground">{title}</h1>
         <p class="text-sm pt-1.5 text-muted-foreground line-clamp-2">{description}</p>
+        {#if tags.length > 0}
+            <div class="flex flex-wrap gap-1.5 pt-2">
+                {#each tags.slice(0, 3) as tag}
+                    <Badge variant="outline" class="text-[10px] px-2 py-0.5">{tag}</Badge>
+                {/each}
+                {#if tags.length > 3}
+                    <Badge variant="outline" class="text-[10px] px-2 py-0.5">+{tags.length - 3}</Badge>
+                {/if}
+            </div>
+        {/if}
         <div class="flex gap-2 pt-3 mt-3 border-t border-border/50 justify-between">
             <span class="text-sm text-muted-foreground flex flex-row gap-1 items-center">
                 <Clock size={15} class="text-primary"/>
