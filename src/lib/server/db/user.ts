@@ -29,7 +29,7 @@ export async function updatePassword(userId: string, passwordHash: string) {
 export async function getUsers() {
     const db = getDb();
 
-    return db.select(
+    return await db.select(
         {
             id: user.id,
             email: user.email,

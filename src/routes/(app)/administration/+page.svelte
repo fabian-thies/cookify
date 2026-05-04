@@ -6,6 +6,7 @@
 
     let users = $state<PublicUser[]>([]);
     let allowRegistrations = $state(true);
+    let loading = $state(true);
 
     $effect(() => {
         Promise.all([
@@ -14,8 +15,19 @@
         ]).then(([usersData, allowReg]) => {
             users = usersData as PublicUser[];
             allowRegistrations = allowReg;
+        }).catch((err) => {
+            console.error('Failed to load administration data:', err);
+            users = [];
+        }).finally(() => {
+            loading = false;
         });
     });
 </script>
 
-<General {users} allowRegistration={allowRegistrations} />
+{#if loading}
+    <div class="flex items-center justify-center py-12">
+        <span class="text-muted-foreground">Loading…</span>
+    </div>
+{:else}
+    <General {users} allowRegistration={allowRegistrations} />
+{/if}
