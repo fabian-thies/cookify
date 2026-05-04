@@ -14,6 +14,7 @@ import {
     getRecipes as getRecipesFromDb,
     getRecentRecipes as getRecentRecipesFromDb,
     getPopularRecipes as getPopularRecipesFromDb,
+    getDiscoverRecipes as getDiscoverRecipesFromDb,
     getFavoriteRecipes as getFavoriteRecipesFromDb,
     getDifficulties as getDifficultiesFromDb,
     getRecipeById as getRecipeByIdFromDb,
@@ -209,6 +210,10 @@ export const getRecentRecipes = query(async () => {
 
 export const getPopularRecipes = query(async () => {
     return await getPopularRecipesFromDb();
+});
+
+export const getDiscoverRecipes = query(async () => {
+    return await getDiscoverRecipesFromDb();
 });
 
 export const getFavoriteRecipes = query(async () => {

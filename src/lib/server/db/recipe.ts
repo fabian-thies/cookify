@@ -201,7 +201,7 @@ export async function updateRecipe({
     return {id};
 }
 
-export async function getRecipes(offset = 0, limit?: number, orderBy?: "recent" | "popular", includePrivate = false) {
+export async function getRecipes(offset = 0, limit?: number, orderBy?: "recent" | "popular" | "random", includePrivate = false) {
     const db = getDb();
     let query = db.select({
         ...getTableColumns(recipes),
@@ -228,6 +228,9 @@ export async function getRecipes(offset = 0, limit?: number, orderBy?: "recent" 
             break;
         case "popular":
             query = query.orderBy(desc(recipes.viewCount))
+            break;
+        case "random":
+            query = query.orderBy(sql`RANDOM()`)
             break;
     }
 
@@ -308,6 +311,10 @@ export async function getRecentRecipes() {
 
 export async function getPopularRecipes() {
     return getRecipes(0, undefined, "popular");
+}
+
+export async function getDiscoverRecipes() {
+    return getRecipes(0, undefined, "random");
 }
 
 export async function getFavoriteRecipes() {

@@ -184,7 +184,8 @@
 		"home": {
 			"title": "Recipes",
 			"popularRecipes": "Popular recipes",
-			"recentlyAdded": "Recently added"
+			"recentlyAdded": "Recently added",
+			"discover": "Discover"
 		},
 		"favorites": {
 			"title": "Favorites"
