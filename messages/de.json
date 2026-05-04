@@ -276,7 +276,8 @@
 		"description": "Verwalte globale Einstellungen und Benutzer.",
 		"tabs": {
 			"general": "Allgemein",
-			"users": "Benutzer"
+			"users": "Benutzer",
+			"backups": "Backups"
 		},
 		"security": {
 			"title": "Sicherheit",
@@ -303,6 +304,46 @@
 				"errorPassword": "Passwort konnte nicht aktualisiert werden",
 				"errorDelete": "Benutzer konnte nicht gelöscht werden",
 				"deleteDescription": "Dies entfernt {username}. Diese Aktion kann nicht rückgängig gemacht werden."
+			}
+		},
+		"backups": {
+			"title": "Backups",
+			"export": {
+				"title": "Backup exportieren",
+				"description": "Lade ein vollständiges Backup aller Daten inklusive Rezepte, Benutzer und hochgeladener Bilder herunter.",
+				"button": "Backup erstellen",
+				"creating": "Backup wird erstellt...",
+				"success": "Backup erfolgreich erstellt",
+				"error": "Fehler beim Erstellen des Backups"
+			},
+			"import": {
+				"title": "Backup importieren",
+				"description": "Stelle Daten aus einer zuvor exportierten Backup-Datei wieder her. Dies ersetzt alle vorhandenen Daten.",
+				"selectFile": "Backup-Datei auswählen",
+				"noFile": "Keine Datei ausgewählt",
+				"uploading": "Backup wird analysiert...",
+				"previewTitle": "Backup-Vorschau",
+				"previewDescription": "Überprüfe den Inhalt dieses Backups vor der Wiederherstellung.",
+				"previewUsers": "Benutzer",
+				"previewRecipes": "Rezepte",
+				"previewCollections": "Kollektionen",
+				"previewImages": "Hochgeladene Bilder",
+				"previewSettings": "Einstellungen",
+				"previewIngredients": "Zutaten",
+				"previewSteps": "Schritte",
+				"previewFavorites": "Favoriten",
+				"previewRatings": "Bewertungen",
+				"previewTips": "Tipps",
+				"previewTags": "Schlagwörter",
+				"previewDifficulties": "Schwierigkeitsgrade",
+				"restoreButton": "Aus Backup wiederherstellen",
+				"restoring": "Wiederherstellung läuft...",
+				"restoreWarning": "Dies ersetzt dauerhaft alle vorhandenen Daten. Diese Aktion kann nicht rückgängig gemacht werden.",
+				"restoreConfirm": "Ja, aus Backup wiederherstellen",
+				"success": "Daten erfolgreich wiederhergestellt",
+				"error": "Fehler bei der Wiederherstellung",
+				"invalidFile": "Ungültige Backup-Datei",
+				"noData": "Keine gültigen Daten im Backup gefunden"
 			}
 		}
 	}

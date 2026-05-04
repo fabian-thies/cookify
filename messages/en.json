@@ -278,7 +278,8 @@
 		"description": "Manage global settings and users.",
 		"tabs": {
 			"general": "General",
-			"users": "Users"
+			"users": "Users",
+			"backups": "Backups"
 		},
 		"security": {
 			"title": "Security",
@@ -305,6 +306,46 @@
 				"errorPassword": "Failed to update password",
 				"errorDelete": "Failed to delete user",
 				"deleteDescription": "This removes {username}. This action cannot be undone."
+			}
+		},
+		"backups": {
+			"title": "Backups",
+			"export": {
+				"title": "Export Backup",
+				"description": "Download a complete backup of all data including recipes, users, and uploaded images.",
+				"button": "Create Backup",
+				"creating": "Creating backup...",
+				"success": "Backup created successfully",
+				"error": "Failed to create backup"
+			},
+			"import": {
+				"title": "Import Backup",
+				"description": "Restore data from a previously exported backup file. This will replace all existing data.",
+				"selectFile": "Select backup file",
+				"noFile": "No file selected",
+				"uploading": "Analyzing backup...",
+				"previewTitle": "Backup Preview",
+				"previewDescription": "Review the contents of this backup before restoring.",
+				"previewUsers": "Users",
+				"previewRecipes": "Recipes",
+				"previewCollections": "Collections",
+				"previewImages": "Uploaded images",
+				"previewSettings": "Settings",
+				"previewIngredients": "Ingredients",
+				"previewSteps": "Steps",
+				"previewFavorites": "Favorites",
+				"previewRatings": "Ratings",
+				"previewTips": "Tips",
+				"previewTags": "Tags",
+				"previewDifficulties": "Difficulties",
+				"restoreButton": "Restore from Backup",
+				"restoring": "Restoring...",
+				"restoreWarning": "This will permanently replace all existing data. This action cannot be undone.",
+				"restoreConfirm": "Yes, restore from backup",
+				"success": "Data restored successfully",
+				"error": "Failed to restore backup",
+				"invalidFile": "Invalid backup file",
+				"noData": "No valid data found in backup"
 			}
 		}
 	}

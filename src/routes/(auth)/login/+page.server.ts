@@ -92,7 +92,17 @@ export const actions: Actions = {
         const db = getDb();
 
         try {
-            await db.insert(table.user).values({id: userId, username, passwordHash, email});
+            // First registered user automatically becomes administrator
+            const existingUsers = await db.select().from(table.user).limit(1);
+            const isFirstUser = existingUsers.length === 0;
+
+            await db.insert(table.user).values({
+                id: userId,
+                username,
+                passwordHash,
+                email,
+                administrator: isFirstUser
+            });
 
             const sessionToken = auth.generateSessionToken();
             const session = await auth.createSession(sessionToken, userId);

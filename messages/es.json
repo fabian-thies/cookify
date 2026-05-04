@@ -276,7 +276,8 @@
 		"description": "Gestiona ajustes globales y usuarios.",
 		"tabs": {
 			"general": "General",
-			"users": "Usuarios"
+			"users": "Usuarios",
+			"backups": "Copias de seguridad"
 		},
 		"security": {
 			"title": "Seguridad",
@@ -303,6 +304,46 @@
 				"errorPassword": "No se pudo actualizar la contraseña",
 				"errorDelete": "No se pudo eliminar al usuario",
 				"deleteDescription": "Esto elimina a {username}. Esta acción no se puede deshacer."
+			}
+		},
+		"backups": {
+			"title": "Copias de seguridad",
+			"export": {
+				"title": "Exportar copia de seguridad",
+				"description": "Descarga una copia de seguridad completa de todos los datos, incluyendo recetas, usuarios e imágenes subidas.",
+				"button": "Crear copia de seguridad",
+				"creating": "Creando copia de seguridad...",
+				"success": "Copia de seguridad creada con éxito",
+				"error": "Error al crear la copia de seguridad"
+			},
+			"import": {
+				"title": "Importar copia de seguridad",
+				"description": "Restaura los datos desde un archivo de copia de seguridad exportado previamente. Esto reemplazará todos los datos existentes.",
+				"selectFile": "Seleccionar archivo de copia de seguridad",
+				"noFile": "Ningún archivo seleccionado",
+				"uploading": "Analizando copia de seguridad...",
+				"previewTitle": "Vista previa de la copia de seguridad",
+				"previewDescription": "Revisa el contenido de esta copia de seguridad antes de restaurarla.",
+				"previewUsers": "Usuarios",
+				"previewRecipes": "Recetas",
+				"previewCollections": "Colecciones",
+				"previewImages": "Imágenes subidas",
+				"previewSettings": "Configuración",
+				"previewIngredients": "Ingredientes",
+				"previewSteps": "Pasos",
+				"previewFavorites": "Favoritos",
+				"previewRatings": "Valoraciones",
+				"previewTips": "Consejos",
+				"previewTags": "Etiquetas",
+				"previewDifficulties": "Dificultades",
+				"restoreButton": "Restaurar desde copia de seguridad",
+				"restoring": "Restaurando...",
+				"restoreWarning": "Esto reemplazará permanentemente todos los datos existentes. Esta acción no se puede deshacer.",
+				"restoreConfirm": "Sí, restaurar desde copia de seguridad",
+				"success": "Datos restaurados con éxito",
+				"error": "Error al restaurar la copia de seguridad",
+				"invalidFile": "Archivo de copia de seguridad no válido",
+				"noData": "No se encontraron datos válidos en la copia de seguridad"
 			}
 		}
 	}
