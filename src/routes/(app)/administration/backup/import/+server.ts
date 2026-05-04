@@ -189,10 +189,11 @@ export const POST = async ({ locals, request }) => {
             }
         });
 
+        // TODO
         // Resynchronize serial sequences to prevent duplicate key errors on future inserts
         const serialTables = [
-            'siteSettings', 'recipes', 'difficulty', 'ingredients', 'steps',
-            'favorite', 'tags', 'tips', 'recipeRating', 'collections', 'collectionToRecipe'
+            'site_settings', 'recipes', 'difficulty', 'ingredients', 'steps',
+            'favorite', 'tags', 'tips', 'recipe_rating', 'collections', 'collection_to_recipe'
         ];
         for (const tableName of serialTables) {
             await db.execute(sql.raw(
