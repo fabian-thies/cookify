@@ -1,6 +1,6 @@
 import {command, getRequestEvent, query} from "$app/server";
 import * as v from "valibot";
-import {updatePassword, updateUserEmail, deleteUserAccount, getUsers as getUsersFromDb, getLocaleByUserId as getLocaleByUserIdFromDb, saveProfile as saveProfileInDb, updatePassword as updatePasswordInDb, deleteUserAccount as deleteUserAccountFromDb} from "$lib/server/db/user";
+import {updatePassword, updateUserEmail, deleteUserAccount, getUsers as getUsersFromDb, getUserById as getUserByIdFromDb, getLocaleByUserId as getLocaleByUserIdFromDb, saveProfile as saveProfileInDb, updatePassword as updatePasswordInDb, deleteUserAccount as deleteUserAccountFromDb} from "$lib/server/db/user";
 import {hashPassword} from "$lib/server/utils";
 
 function ensureAdmin() {
@@ -69,6 +69,12 @@ export const getLocaleByUserId = query(v.object({
     userId: v.string()
 }), async ({userId}) => {
     return await getLocaleByUserIdFromDb(userId);
+});
+
+export const getUserById = query(v.object({
+    userId: v.string()
+}), async ({userId}) => {
+    return await getUserByIdFromDb(userId);
 });
 
 export const saveProfile = command(v.object({

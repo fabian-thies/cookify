@@ -429,8 +429,8 @@ export async function getRecipesByUserId(userId: string, includePrivate = false)
         tags: tagListSubquery,
     })
         .from(recipes)
-        .leftJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
-        .leftJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
+        .innerJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
+        .innerJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
         .$dynamic();
 
     const conditions = [eq(recipes.userId, userId)];
