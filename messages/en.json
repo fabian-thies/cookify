@@ -1,353 +1,354 @@
 {
-	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"logout": "Logout",
-	"loading": "Loading...",
-	"login": {
-		"welcomeBack": "Welcome back",
-		"createAccount": "Create an account",
-		"signInToContinue": "Sign in to continue",
-		"enterDetailsToStart": "Enter your details to get started",
-		"username": "Username",
-		"email": "Email",
-		"password": "Password",
-		"confirmPassword": "Confirm Password",
-		"enterUsername": "Enter your username",
-		"emailPlaceholder": "name@example.com",
-		"confirmPasswordPlaceholder": "Confirm your password",
-		"forgotPassword": "Forgot your password?",
-		"signIn": "Sign In",
-		"createAccountButton": "Create Account",
-		"noAccount": "Don't have an account?",
-		"haveAccount": "Already have an account?",
-		"signUp": "Sign up",
-		"signInLink": "Sign in"
-	},
-	"nav": {
-		"navigation": "Navigation",
-		"recipes": "Recipes",
-		"explore": "Explore",
-		"favorites": "Favorites",
-		"collection": "Collections",
-		"profile": "Profile",
-		"settings": "Settings",
-		"login": "Login",
-		"create": "Create Recipe"
-	},
-	"recipe": {
-		"common": {
-			"ingredients": "Ingredients",
-			"steps": "Steps",
-			"forServings": "Serves {count}",
-			"servingsCount": "{count} servings",
-			"duration": "{count} min",
-			"reviews": "{count} reviews",
-			"ratePrompt": "Rate this recipe",
-			"rateSubtitle": "How did you like the recipe?",
-			"similar": "Similar recipes",
-			"difficulty": {
-				"easy": "Easy",
-				"medium": "Medium",
-				"hard": "Hard"
-			}
-		},
-		"list": {
-			"searchPlaceholder": "Search recipes",
-			"difficultyPlaceholder": "Select a difficulty",
-			"groupLabel": "Categories",
-			"cookTimePlaceholder": "Select a cook time",
-			"cookTimeGroupLabel": "Cook time",
-			"authorPlaceholder": "Select an author",
-			"authorGroupLabel": "Author",
-			"tagsPlaceholder": "Select a tag",
-			"tagsGroupLabel": "Tags",
-			"filterTitle": "Filter & Sort",
-			"filterDescription": "Refine your recipe search",
-			"showResults": "Show results",
-			"activeFilters": "Active filters:",
-			"clearAll": "Clear all",
-			"author": {
-				"options": {
-					"all": "All",
-					"user": "Mine"
-				}
-			},
-			"cookTime": {
-				"options": {
-					"any": "Any cook time",
-					"upTo15": "Up to 15 min",
-					"from15To30": "15-30 min",
-					"from30To60": "30-60 min"
-				}
-			},
-			"results": "{count} recipes found",
-			"noRecipes": "No recipes found",
-			"clearFilters": "Clear filters"
-		},
-		"card": {
-			"view": "View recipe"
-		},
-		"view": {
-			"preparation": {
-				"title": "Preparation",
-				"subtitle": "Step-by-step instructions"
-			},
-			"tips": {
-				"title": "Tips",
-				"subtitle": "Helpful hints for this recipe"
-			}
-		},
-		"form": {
-			"general": {
-				"title": "Basic information",
-				"nameLabel": "Recipe name",
-				"namePlaceholder": "e.g. Italian pasta carbonara",
-				"descriptionLabel": "Description",
-				"descriptionPlaceholder": "Briefly describe your recipe"
-			},
-			"ingredients": {
-				"title": "Ingredients",
-				"quantityLabel": "Quantity",
-				"quantityPlaceholder": "e.g. 500",
-				"unitLabel": "Unit (optional)",
-				"unitPlaceholder": "e.g. g, ml, pieces",
-				"nameLabel": "Ingredient",
-				"namePlaceholder": "e.g. pasta, eggs, bacon",
-				"addButton": "Add ingredient"
-			},
-			"steps": {
-				"title": "Steps",
-				"stepLabel": "Step",
-				"stepPlaceholder": "e.g. Peel and dice onions",
-				"addButton": "Add step"
-			},
-			"details": {
-				"title": "Recipe details",
-				"cookTimeLabel": "Cooking time (min)",
-				"cookTimePlaceholder": "e.g. 25",
-				"servingsLabel": "Servings",
-				"servingsPlaceholder": "e.g. 4",
-				"difficultyLabel": "Difficulty",
-				"difficultyPlaceholder": "Select difficulty",
-				"difficultyGroupLabel": "Difficulty",
-				"tagsLabel": "Tags",
-				"tagsPlaceholder": "Enter a tag and press Enter",
-				"previewLabel": "Cover image",
-				"visibility": {
-					"label": "Visibility",
-					"placeholder": "Select visibility",
-					"options": {
-						"public": "Public",
-						"private": "Private"
-					}
-				}
-			},
-			"tips": {
-				"title": "Tips",
-				"tipLabel": "Tip",
-				"tipPlaceholder": "e.g. Let the dough rest in the fridge overnight",
-				"addButton": "Add tip"
-			}
-		},
-		"saveSuccess": "Recipe saved successfully!",
-		"saveError": "Error saving recipe.",
-		"createSuccess": "Recipe created successfully!",
-		"createError": "Error creating recipe.",
-		"import": {
-			"title": "Import Recipe",
-			"description": "Import a recipe from a URL.",
-			"button": "Import",
-			"urlLabel": "Recipe URL",
-			"urlPlaceholder": "https://www.allrecipes.com/recipe/...",
-			"urlRequired": "Please enter a URL.",
-			"invalidUrl": "Please enter a valid URL.",
-			"noRecipe": "No recipe found on this page.",
-			"scrapeError": "Failed to import the recipe.",
-			"success": "Recipe imported successfully!"
-		},
-		"cookMode": {
-			"title": "Cook Mode",
-			"step": "Step {current} of {total}",
-			"next": "Next",
-			"previous": "Previous",
-			"finish": "Done!",
-			"timer": "Timer",
-			"startTimer": "Start Timer",
-			"pauseTimer": "Pause",
-			"resetTimer": "Reset",
-			"setMinutes": "Minutes",
-			"ingredients": "Ingredients",
-			"exit": "Exit",
-			"noSteps": "No steps available"
-		}
-	},
-	"routes": {
-		"home": {
-			"title": "Recipes",
-			"popularRecipes": "Popular recipes",
-			"recentlyAdded": "Recently added",
-			"discover": "Discover"
-		},
-		"favorites": {
-			"title": "Favorites"
-		}
-	},
-	"profile": {
-		"userRecipes": "Recipes by {username}"
-	},
-	"collection": {
-		"noCollections": "No collections yet.",
-		"editDialog": {
-			"title": "Edit collection",
-			"titleLabel": "Title"
-		},
-		"deleteDialog": {
-			"title": "Delete collection",
-			"description": "Are you sure you want to delete this collection?",
-			"confirm": "Delete collection"
-		}
-	},
-	"actions": {
-		"share": "Share",
-		"save": "Save",
-		"rate": "Rate",
-		"edit": "Edit",
-		"cancel": "Cancel",
-		"delete": "Delete",
-		"deleteRecipe": "Delete recipe",
-		"deleteCollection": "Delete collection",
-		"confirmDelete": "Are you sure you want to delete this recipe?",
-		"confirmDeleteCollection": "Are you sure you want to delete this collection?",
-		"saveRecipe": "Save recipe",
-		"showPreview": "Show preview",
-		"error": "An error occurred. Please try again.",
-		"loadRecipeError": "Failed to load recipe",
-		"loadCollectionError": "Failed to load collection",
-		"noShareLink": "No share link available",
-		"shareDisabled": "Sharing disabled",
-		"linkShared": "Link shared",
-		"linkCopied": "Link copied",
-		"collections": "Collections",
-		"noCollectionsAvailable": "No collections",
-		"newCollection": "New collection",
-		"disableSharing": "Disable sharing"
-	},
-	"settings": {
-		"profile": {
-			"title": "Profile",
-			"description": "Manage your personal information",
-			"changeAvatar": "Change avatar",
-			"username": "Username",
-			"usernamePlaceholder": "e.g. johnsmith",
-			"email": "Email",
-			"emailPlaceholder": "e.g. max@example.com",
-			"language": "Language",
-			"selectLanguage": "Select language",
-			"languages": {
-				"de": "German",
-				"en": "English",
-				"es": "Spanish"
-			},
-			"changePassword": "Change password",
-			"newPassword": "New password",
-			"newPasswordPlaceholder": "Enter a new password",
-			"passwordStrength": {
-				"weak": "Weak - at least 6 characters",
-				"medium": "Medium - at least 10 characters recommended",
-				"strong": "Strong"
-			},
-			"confirmPassword": "Confirm password",
-			"match": "Matches",
-			"mismatch": "Does not match",
-			"confirmPasswordPlaceholder": "Repeat password",
-			"save": "Save profile",
-			"saved": "Successfully saved",
-			"error": "An error occurred. Please try again.",
-			"delete": {
-				"title": "Delete account",
-				"description": "Permanently remove your account, saved recipes and collections. This cannot be undone.",
-				"cta": "Delete account",
-				"confirmTitle": "Confirm deletion",
-				"confirmDescription": "Please confirm you want to permanently delete your account.",
-				"typeToConfirm": "Type {username} to confirm.",
-				"confirmLabel": "Confirmation",
-				"confirmPlaceholder": "Enter {username} to continue"
-			}
-		}
-	},
-	"admin": {
-		"title": "Administration",
-		"description": "Manage global settings and users.",
-		"tabs": {
-			"general": "General",
-			"users": "Users",
-			"backups": "Backups"
-		},
-		"security": {
-			"title": "Security",
-			"allowRegistrations": "Allow registrations"
-		},
-		"save": "Save changes",
-		"saving": "Saving...",
-		"users": {
-			"title": "Users",
-			"actions": {
-				"label": "Actions",
-				"editEmail": "Edit email",
-				"editPassword": "Edit password",
-				"deleteUser": "Delete user",
-				"emailDescription": "Update the email address for {username}.",
-				"passwordDescription": "Choose a new password for {username}.",
-				"passwordPlaceholder": "At least 6 characters",
-				"saveEmail": "Save email",
-				"savePassword": "Save password",
-				"emailUpdated": "Email updated",
-				"passwordUpdated": "Password updated",
-				"userDeleted": "User deleted",
-				"errorEmail": "Failed to update email",
-				"errorPassword": "Failed to update password",
-				"errorDelete": "Failed to delete user",
-				"deleteDescription": "This removes {username}. This action cannot be undone."
-			}
-		},
-		"backups": {
-			"title": "Backups",
-			"export": {
-				"title": "Export Backup",
-				"description": "Download a complete backup of all data including recipes, users, and uploaded images.",
-				"button": "Create Backup",
-				"creating": "Creating backup...",
-				"success": "Backup created successfully",
-				"error": "Failed to create backup"
-			},
-			"import": {
-				"title": "Import Backup",
-				"description": "Restore data from a previously exported backup file. This will replace all existing data.",
-				"selectFile": "Select backup file",
-				"noFile": "No file selected",
-				"uploading": "Analyzing backup...",
-				"previewTitle": "Backup Preview",
-				"previewDescription": "Review the contents of this backup before restoring.",
-				"previewUsers": "Users",
-				"previewRecipes": "Recipes",
-				"previewCollections": "Collections",
-				"previewImages": "Uploaded images",
-				"previewSettings": "Settings",
-				"previewIngredients": "Ingredients",
-				"previewSteps": "Steps",
-				"previewFavorites": "Favorites",
-				"previewRatings": "Ratings",
-				"previewTips": "Tips",
-				"previewTags": "Tags",
-				"previewDifficulties": "Difficulties",
-				"restoreButton": "Restore from Backup",
-				"restoring": "Restoring...",
-				"restoreWarning": "This will permanently replace all existing data. This action cannot be undone.",
-				"restoreConfirm": "Yes, restore from backup",
-				"success": "Data restored successfully",
-				"error": "Failed to restore backup",
-				"invalidFile": "Invalid backup file",
-				"noData": "No valid data found in backup"
-			}
-		}
-	}
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "logout": "Logout",
+  "loading": "Loading...",
+  "login": {
+    "welcomeBack": "Welcome back",
+    "createAccount": "Create an account",
+    "signInToContinue": "Sign in to continue",
+    "enterDetailsToStart": "Enter your details to get started",
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "enterUsername": "Enter your username",
+    "emailPlaceholder": "name@example.com",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "forgotPassword": "Forgot your password?",
+    "signIn": "Sign In",
+    "createAccountButton": "Create Account",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "signUp": "Sign up",
+    "signInLink": "Sign in"
+  },
+  "nav": {
+    "navigation": "Navigation",
+    "recipes": "Recipes",
+    "explore": "Explore",
+    "favorites": "Favorites",
+    "collection": "Collections",
+    "profile": "Profile",
+    "settings": "Settings",
+    "login": "Login",
+    "create": "Create Recipe"
+  },
+  "recipe": {
+    "common": {
+      "ingredients": "Ingredients",
+      "steps": "Steps",
+      "forServings": "Serves {count}",
+      "servingsCount": "{count} servings",
+      "duration": "{count} min",
+      "reviews": "{count} reviews",
+      "ratePrompt": "Rate this recipe",
+      "rateSubtitle": "How did you like the recipe?",
+      "similar": "Similar recipes",
+      "difficulty": {
+        "easy": "Easy",
+        "medium": "Medium",
+        "hard": "Hard"
+      }
+    },
+    "list": {
+      "searchPlaceholder": "Search recipes",
+      "difficultyPlaceholder": "Select a difficulty",
+      "groupLabel": "Categories",
+      "cookTimePlaceholder": "Select a cook time",
+      "cookTimeGroupLabel": "Cook time",
+      "authorPlaceholder": "Select an author",
+      "authorGroupLabel": "Author",
+      "tagsPlaceholder": "Select a tag",
+      "tagsGroupLabel": "Tags",
+      "filterTitle": "Filter & Sort",
+      "filterDescription": "Refine your recipe search",
+      "showResults": "Show results",
+      "activeFilters": "Active filters:",
+      "clearAll": "Clear all",
+      "author": {
+        "options": {
+          "all": "All",
+          "user": "Mine"
+        }
+      },
+      "cookTime": {
+        "options": {
+          "any": "Any cook time",
+          "upTo15": "Up to 15 min",
+          "from15To30": "15-30 min",
+          "from30To60": "30-60 min"
+        }
+      },
+      "results": "{count} recipes found",
+      "noRecipes": "No recipes found",
+      "clearFilters": "Clear filters"
+    },
+    "card": {
+      "view": "View recipe"
+    },
+    "view": {
+      "preparation": {
+        "title": "Preparation",
+        "subtitle": "Step-by-step instructions"
+      },
+      "tips": {
+        "title": "Tips",
+        "subtitle": "Helpful hints for this recipe"
+      }
+    },
+    "form": {
+      "general": {
+        "title": "Basic information",
+        "nameLabel": "Recipe name",
+        "namePlaceholder": "e.g. Italian pasta carbonara",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "Briefly describe your recipe"
+      },
+      "ingredients": {
+        "title": "Ingredients",
+        "quantityLabel": "Quantity",
+        "quantityPlaceholder": "e.g. 500",
+        "unitLabel": "Unit (optional)",
+        "unitPlaceholder": "e.g. g, ml, pieces",
+        "nameLabel": "Ingredient",
+        "namePlaceholder": "e.g. pasta, eggs, bacon",
+        "addButton": "Add ingredient"
+      },
+      "steps": {
+        "title": "Steps",
+        "stepLabel": "Step",
+        "stepPlaceholder": "e.g. Peel and dice onions",
+        "addButton": "Add step"
+      },
+      "details": {
+        "title": "Recipe details",
+        "cookTimeLabel": "Cooking time (min)",
+        "cookTimePlaceholder": "e.g. 25",
+        "servingsLabel": "Servings",
+        "servingsPlaceholder": "e.g. 4",
+        "difficultyLabel": "Difficulty",
+        "difficultyPlaceholder": "Select difficulty",
+        "difficultyGroupLabel": "Difficulty",
+        "tagsLabel": "Tags",
+        "tagsPlaceholder": "Enter a tag and press Enter",
+        "previewLabel": "Cover image",
+        "visibility": {
+          "label": "Visibility",
+          "placeholder": "Select visibility",
+          "options": {
+            "public": "Public",
+            "private": "Private"
+          }
+        }
+      },
+      "tips": {
+        "title": "Tips",
+        "tipLabel": "Tip",
+        "tipPlaceholder": "e.g. Let the dough rest in the fridge overnight",
+        "addButton": "Add tip"
+      }
+    },
+    "saveSuccess": "Recipe saved successfully!",
+    "saveError": "Error saving recipe.",
+    "createSuccess": "Recipe created successfully!",
+    "createError": "Error creating recipe.",
+    "import": {
+      "title": "Import Recipe",
+      "description": "Import a recipe from a URL.",
+      "button": "Import",
+      "urlLabel": "Recipe URL",
+      "urlPlaceholder": "https://www.allrecipes.com/recipe/...",
+      "urlRequired": "Please enter a URL.",
+      "invalidUrl": "Please enter a valid URL.",
+      "noRecipe": "No recipe found on this page.",
+      "scrapeError": "Failed to import the recipe.",
+      "success": "Recipe imported successfully!"
+    },
+    "cookMode": {
+      "title": "Cook Mode",
+      "step": "Step {current} of {total}",
+      "next": "Next",
+      "previous": "Previous",
+      "finish": "Done!",
+      "timer": "Timer",
+      "startTimer": "Start Timer",
+      "pauseTimer": "Pause",
+      "resetTimer": "Reset",
+      "setMinutes": "Minutes",
+      "ingredients": "Ingredients",
+      "exit": "Exit",
+      "noSteps": "No steps available"
+    }
+  },
+  "routes": {
+    "home": {
+      "title": "Recipes",
+      "popularRecipes": "Popular recipes",
+      "recentlyAdded": "Recently added",
+      "discover": "Discover"
+    },
+    "favorites": {
+      "title": "Favorites"
+    }
+  },
+  "profile": {
+    "userRecipes": "Recipes by {username}",
+    "userNotFound": "User not found"
+  },
+  "collection": {
+    "noCollections": "No collections yet.",
+    "editDialog": {
+      "title": "Edit collection",
+      "titleLabel": "Title"
+    },
+    "deleteDialog": {
+      "title": "Delete collection",
+      "description": "Are you sure you want to delete this collection?",
+      "confirm": "Delete collection"
+    }
+  },
+  "actions": {
+    "share": "Share",
+    "save": "Save",
+    "rate": "Rate",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleteRecipe": "Delete recipe",
+    "deleteCollection": "Delete collection",
+    "confirmDelete": "Are you sure you want to delete this recipe?",
+    "confirmDeleteCollection": "Are you sure you want to delete this collection?",
+    "saveRecipe": "Save recipe",
+    "showPreview": "Show preview",
+    "error": "An error occurred. Please try again.",
+    "loadRecipeError": "Failed to load recipe",
+    "loadCollectionError": "Failed to load collection",
+    "noShareLink": "No share link available",
+    "shareDisabled": "Sharing disabled",
+    "linkShared": "Link shared",
+    "linkCopied": "Link copied",
+    "collections": "Collections",
+    "noCollectionsAvailable": "No collections",
+    "newCollection": "New collection",
+    "disableSharing": "Disable sharing"
+  },
+  "settings": {
+    "profile": {
+      "title": "Profile",
+      "description": "Manage your personal information",
+      "changeAvatar": "Change avatar",
+      "username": "Username",
+      "usernamePlaceholder": "e.g. johnsmith",
+      "email": "Email",
+      "emailPlaceholder": "e.g. max@example.com",
+      "language": "Language",
+      "selectLanguage": "Select language",
+      "languages": {
+        "de": "German",
+        "en": "English",
+        "es": "Spanish"
+      },
+      "changePassword": "Change password",
+      "newPassword": "New password",
+      "newPasswordPlaceholder": "Enter a new password",
+      "passwordStrength": {
+        "weak": "Weak - at least 6 characters",
+        "medium": "Medium - at least 10 characters recommended",
+        "strong": "Strong"
+      },
+      "confirmPassword": "Confirm password",
+      "match": "Matches",
+      "mismatch": "Does not match",
+      "confirmPasswordPlaceholder": "Repeat password",
+      "save": "Save profile",
+      "saved": "Successfully saved",
+      "error": "An error occurred. Please try again.",
+      "delete": {
+        "title": "Delete account",
+        "description": "Permanently remove your account, saved recipes and collections. This cannot be undone.",
+        "cta": "Delete account",
+        "confirmTitle": "Confirm deletion",
+        "confirmDescription": "Please confirm you want to permanently delete your account.",
+        "typeToConfirm": "Type {username} to confirm.",
+        "confirmLabel": "Confirmation",
+        "confirmPlaceholder": "Enter {username} to continue"
+      }
+    }
+  },
+  "admin": {
+    "title": "Administration",
+    "description": "Manage global settings and users.",
+    "tabs": {
+      "general": "General",
+      "users": "Users",
+      "backups": "Backups"
+    },
+    "security": {
+      "title": "Security",
+      "allowRegistrations": "Allow registrations"
+    },
+    "save": "Save changes",
+    "saving": "Saving...",
+    "users": {
+      "title": "Users",
+      "actions": {
+        "label": "Actions",
+        "editEmail": "Edit email",
+        "editPassword": "Edit password",
+        "deleteUser": "Delete user",
+        "emailDescription": "Update the email address for {username}.",
+        "passwordDescription": "Choose a new password for {username}.",
+        "passwordPlaceholder": "At least 6 characters",
+        "saveEmail": "Save email",
+        "savePassword": "Save password",
+        "emailUpdated": "Email updated",
+        "passwordUpdated": "Password updated",
+        "userDeleted": "User deleted",
+        "errorEmail": "Failed to update email",
+        "errorPassword": "Failed to update password",
+        "errorDelete": "Failed to delete user",
+        "deleteDescription": "This removes {username}. This action cannot be undone."
+      }
+    },
+    "backups": {
+      "title": "Backups",
+      "export": {
+        "title": "Export Backup",
+        "description": "Download a complete backup of all data including recipes, users, and uploaded images.",
+        "button": "Create Backup",
+        "creating": "Creating backup...",
+        "success": "Backup created successfully",
+        "error": "Failed to create backup"
+      },
+      "import": {
+        "title": "Import Backup",
+        "description": "Restore data from a previously exported backup file. This will replace all existing data.",
+        "selectFile": "Select backup file",
+        "noFile": "No file selected",
+        "uploading": "Analyzing backup...",
+        "previewTitle": "Backup Preview",
+        "previewDescription": "Review the contents of this backup before restoring.",
+        "previewUsers": "Users",
+        "previewRecipes": "Recipes",
+        "previewCollections": "Collections",
+        "previewImages": "Uploaded images",
+        "previewSettings": "Settings",
+        "previewIngredients": "Ingredients",
+        "previewSteps": "Steps",
+        "previewFavorites": "Favorites",
+        "previewRatings": "Ratings",
+        "previewTips": "Tips",
+        "previewTags": "Tags",
+        "previewDifficulties": "Difficulties",
+        "restoreButton": "Restore from Backup",
+        "restoring": "Restoring...",
+        "restoreWarning": "This will permanently replace all existing data. This action cannot be undone.",
+        "restoreConfirm": "Yes, restore from backup",
+        "success": "Data restored successfully",
+        "error": "Failed to restore backup",
+        "invalidFile": "Invalid backup file",
+        "noData": "No valid data found in backup"
+      }
+    }
+  }
 }

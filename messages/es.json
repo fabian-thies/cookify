@@ -1,351 +1,352 @@
 {
-	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"logout": "Cerrar sesión",
-	"loading": "Cargando...",
-	"login": {
-		"welcomeBack": "Bienvenido de nuevo",
-		"createAccount": "Crear una cuenta",
-		"signInToContinue": "Inicia sesión para continuar",
-		"enterDetailsToStart": "Ingresa tus datos para comenzar",
-		"username": "Nombre de usuario",
-		"email": "Correo electrónico",
-		"password": "Contraseña",
-		"confirmPassword": "Confirmar contraseña",
-		"enterUsername": "Ingresa tu nombre de usuario",
-		"emailPlaceholder": "nombre@ejemplo.com",
-		"confirmPasswordPlaceholder": "Confirma tu contraseña",
-		"forgotPassword": "¿Olvidaste tu contraseña?",
-		"signIn": "Iniciar sesión",
-		"createAccountButton": "Crear cuenta",
-		"noAccount": "¿No tienes una cuenta?",
-		"haveAccount": "¿Ya tienes una cuenta?",
-		"signUp": "Registrarse",
-		"signInLink": "Inicia sesión"
-	},
-	"nav": {
-		"navigation": "Navegación",
-		"recipes": "Recetas",
-		"explore": "Explorar",
-		"favorites": "Favoritos",
-		"collection": "“Colecciones",
-		"profile": "Perfil",
-		"settings": "Configuración",
-		"login": "Iniciar sesión",
-		"create": "Crear receta"
-	},
-	"recipe": {
-		"common": {
-			"ingredients": "Ingredientes",
-			"steps": "Pasos",
-			"forServings": "Para {count} personas",
-			"servingsCount": "{count} porciones",
-			"duration": "{count} min",
-			"reviews": "{count} reseñas",
-			"ratePrompt": "Valora esta receta",
-			"rateSubtitle": "¿Qué te pareció la receta?",
-			"similar": "Recetas similares",
-			"difficulty": {
-				"easy": "Fácil",
-				"medium": "Medio",
-				"hard": "Difícil"
-			}
-		},
-		"list": {
-			"searchPlaceholder": "Buscar recetas",
-			"difficultyPlaceholder": "Selecciona una dificultad",
-			"groupLabel": "Categorías",
-			"cookTimePlaceholder": "Selecciona un tiempo de cocción",
-			"cookTimeGroupLabel": "Tiempo de cocción",
-			"authorPlaceholder": "Selecciona un autor",
-			"authorGroupLabel": "Autor",
-			"tagsPlaceholder": "Selecciona una etiqueta",
-			"tagsGroupLabel": "Etiquetas",
-			"filterTitle": "Filtrar y ordenar",
-			"filterDescription": "Refina tu búsqueda de recetas",
-			"showResults": "Mostrar resultados",
-			"activeFilters": "Filtros activos:",
-			"clearAll": "Borrar todo",
-			"author": {
-				"options": {
-					"all": "Todos",
-					"user": "Míos"
-				}
-			},
-			"cookTime": {
-				"options": {
-					"any": "Cualquier tiempo",
-					"upTo15": "Hasta 15 min",
-					"from15To30": "15-30 min",
-					"from30To60": "30-60 min"
-				}
-			},
-			"results": "{count} recetas encontradas",
-			"noRecipes": "No se encontraron recetas",
-			"clearFilters": "Limpiar filtros"
-		},
-		"card": {
-			"view": "Ver receta"
-		},
-		"view": {
-			"preparation": {
-				"title": "Preparación",
-				"subtitle": "Instrucciones paso a paso"
-			},
-			"tips": {
-				"title": "Consejos",
-				"subtitle": "Sugerencias útiles para esta receta"
-			}
-		},
-		"form": {
-			"general": {
-				"title": "Información básica",
-				"nameLabel": "Nombre de la receta",
-				"namePlaceholder": "p. ej. pasta carbonara italiana",
-				"descriptionLabel": "Descripción",
-				"descriptionPlaceholder": "Describe brevemente tu receta"
-			},
-			"ingredients": {
-				"title": "Ingredientes",
-				"quantityLabel": "Cantidad",
-				"quantityPlaceholder": "p. ej. 500",
-				"unitLabel": "Unidad (opcional)",
-				"unitPlaceholder": "p. ej. g, ml, piezas",
-				"nameLabel": "Ingrediente",
-				"namePlaceholder": "p. ej. pasta, huevos, tocino",
-				"addButton": "Agregar ingrediente"
-			},
-			"steps": {
-				"title": "Pasos",
-				"stepLabel": "Paso",
-				"stepPlaceholder": "p. ej. Pelar y picar las cebollas",
-				"addButton": "Agregar paso"
-			},
-			"details": {
-				"title": "Detalles de la receta",
-				"cookTimeLabel": "Tiempo de cocción (min)",
-				"cookTimePlaceholder": "p. ej. 25",
-				"servingsLabel": "Porciones",
-				"servingsPlaceholder": "p. ej. 4",
-				"difficultyLabel": "Dificultad",
-				"difficultyPlaceholder": "Selecciona dificultad",
-				"difficultyGroupLabel": "Dificultad",
-				"tagsLabel": "Etiquetas",
-				"tagsPlaceholder": "Introduce una etiqueta y presiona Enter",
-				"previewLabel": "Imagen de portada",
-				"visibility": {
-					"label": "Visibilidad",
-					"placeholder": "Selecciona visibilidad",
-					"options": {
-						"public": "Pública",
-						"private": "Privada"
-					}
-				}
-			},
-			"tips": {
-				"title": "Consejos",
-				"tipLabel": "Consejo",
-				"tipPlaceholder": "p. ej. Deja reposar la masa en la nevera toda la noche",
-				"addButton": "Agregar consejo"
-			}
-		},
-		"saveSuccess": "¡Receta guardada con éxito!",
-		"saveError": "Error al guardar la receta.",
-		"createSuccess": "¡Receta creada con éxito!",
-		"createError": "Error al crear la receta.",
-		"import": {
-			"title": "Importar receta",
-			"description": "Importa una receta desde una URL.",
-			"button": "Importar",
-			"urlLabel": "URL de la receta",
-			"urlPlaceholder": "https://www.recetas.com/receta/...",
-			"urlRequired": "Por favor, ingresa una URL.",
-			"invalidUrl": "Por favor, ingresa una URL valida.",
-			"noRecipe": "No se encontro ninguna receta en esta pagina.",
-			"scrapeError": "No se pudo importar la receta.",
-			"success": "Receta importada con exito!"
-		},
-		"cookMode": {
-			"title": "Modo Cocina",
-			"step": "Paso {current} de {total}",
-			"next": "Siguiente",
-			"previous": "Anterior",
-			"finish": "¡Listo!",
-			"timer": "Temporizador",
-			"startTimer": "Iniciar",
-			"pauseTimer": "Pausa",
-			"resetTimer": "Reiniciar",
-			"setMinutes": "Minutos",
-			"ingredients": "Ingredientes",
-			"exit": "Salir",
-			"noSteps": "No hay pasos disponibles"
-		}
-	},
-	"routes": {
-		"home": {
-			"title": "Recetas",
-			"popularRecipes": "Recetas populares",
-			"recentlyAdded": "Añadidas recientemente",
-			"discover": "Descubrir"
-		},
-		"favorites": {
-			"title": "Favoritos"
-		}
-	},
-	"profile": {
-		"userRecipes": "Recetas de {username}"
-	},
-	"collection": {
-		"noCollections": "Aún no hay colecciones.",
-		"editDialog": {
-			"title": "Editar colección",
-			"titleLabel": "Título"
-		},
-		"deleteDialog": {
-			"title": "Eliminar colección",
-			"description": "¿Estás seguro de que deseas eliminar esta colección?",
-			"confirm": "Eliminar colección"
-		}
-	},
-	"actions": {
-		"share": "Compartir",
-		"save": "Guardar",
-		"rate": "Calificar",
-		"edit": "Editar",
-		"cancel": "Cancelar",
-		"delete": "Eliminar",
-		"deleteRecipe": "Eliminar receta",
-		"confirmDelete": "¿Estás seguro de que deseas eliminar esta receta?",
-		"saveRecipe": "Guardar receta",
-		"showPreview": "Mostrar vista previa",
-		"error": "Ocurrió un error. Por favor, inténtalo de nuevo.",
-		"loadRecipeError": "No se pudo cargar la receta",
-		"loadCollectionError": "No se pudo cargar la colección",
-		"noShareLink": "No hay enlace para compartir disponible",
-		"shareDisabled": "Compartir desactivado",
-		"linkShared": "Enlace compartido",
-		"linkCopied": "Enlace copiado",
-		"collections": "Colecciones",
-		"noCollectionsAvailable": "Sin colecciones",
-		"newCollection": "Nueva colección",
-		"disableSharing": "Desactivar compartir"
-	},
-	"settings": {
-		"profile": {
-			"title": "Perfil",
-			"description": "Administra tu información personal",
-			"changeAvatar": "Cambiar avatar",
-			"username": "Nombre de usuario",
-			"usernamePlaceholder": "p. ej. juanperez",
-			"email": "Correo electrónico",
-			"emailPlaceholder": "p. ej. max@ejemplo.com",
-			"language": "Idioma",
-			"selectLanguage": "Selecciona idioma",
-			"languages": {
-				"de": "Alemán",
-				"en": "Inglés",
-				"es": "Español"
-			},
-			"changePassword": "Cambiar contraseña",
-			"newPassword": "Nueva contraseña",
-			"newPasswordPlaceholder": "Ingresa una nueva contraseña",
-			"passwordStrength": {
-				"weak": "Débil - al menos 6 caracteres",
-				"medium": "Medio - se recomiendan al menos 10 caracteres",
-				"strong": "Fuerte"
-			},
-			"confirmPassword": "Confirmar contraseña",
-			"match": "Coincide",
-			"mismatch": "No coincide",
-			"confirmPasswordPlaceholder": "Repite la contraseña",
-			"save": "Guardar perfil",
-			"saved": "Guardado con éxito",
-			"error": "Ocurrió un error. Por favor, inténtalo de nuevo.",
-			"delete": {
-				"title": "Eliminar cuenta",
-				"description": "Elimina tu cuenta y todo su contenido (recetas y colecciones) de forma permanente. Esta acción no se puede deshacer.",
-				"cta": "Eliminar cuenta",
-				"confirmTitle": "Confirmar eliminación",
-				"confirmDescription": "Confirma que deseas eliminar tu cuenta de forma permanente.",
-				"typeToConfirm": "Escribe {username} para confirmar.",
-				"confirmLabel": "Confirmación",
-				"confirmPlaceholder": "Ingresa {username} para continuar"
-			}
-		}
-	},
-	"admin": {
-		"title": "Administración",
-		"description": "Gestiona ajustes globales y usuarios.",
-		"tabs": {
-			"general": "General",
-			"users": "Usuarios",
-			"backups": "Copias de seguridad"
-		},
-		"security": {
-			"title": "Seguridad",
-			"allowRegistrations": "Permitir registros"
-		},
-		"save": "Guardar cambios",
-		"saving": "Guardando...",
-		"users": {
-			"title": "Usuarios",
-			"actions": {
-				"label": "Acciones",
-				"editEmail": "Editar correo",
-				"editPassword": "Cambiar contraseña",
-				"deleteUser": "Eliminar usuario",
-				"emailDescription": "Actualiza el correo de {username}.",
-				"passwordDescription": "Elige una nueva contraseña para {username}.",
-				"passwordPlaceholder": "Al menos 6 caracteres",
-				"saveEmail": "Guardar correo",
-				"savePassword": "Guardar contraseña",
-				"emailUpdated": "Correo actualizado",
-				"passwordUpdated": "Contraseña actualizada",
-				"userDeleted": "Usuario eliminado",
-				"errorEmail": "No se pudo actualizar el correo",
-				"errorPassword": "No se pudo actualizar la contraseña",
-				"errorDelete": "No se pudo eliminar al usuario",
-				"deleteDescription": "Esto elimina a {username}. Esta acción no se puede deshacer."
-			}
-		},
-		"backups": {
-			"title": "Copias de seguridad",
-			"export": {
-				"title": "Exportar copia de seguridad",
-				"description": "Descarga una copia de seguridad completa de todos los datos, incluyendo recetas, usuarios e imágenes subidas.",
-				"button": "Crear copia de seguridad",
-				"creating": "Creando copia de seguridad...",
-				"success": "Copia de seguridad creada con éxito",
-				"error": "Error al crear la copia de seguridad"
-			},
-			"import": {
-				"title": "Importar copia de seguridad",
-				"description": "Restaura los datos desde un archivo de copia de seguridad exportado previamente. Esto reemplazará todos los datos existentes.",
-				"selectFile": "Seleccionar archivo de copia de seguridad",
-				"noFile": "Ningún archivo seleccionado",
-				"uploading": "Analizando copia de seguridad...",
-				"previewTitle": "Vista previa de la copia de seguridad",
-				"previewDescription": "Revisa el contenido de esta copia de seguridad antes de restaurarla.",
-				"previewUsers": "Usuarios",
-				"previewRecipes": "Recetas",
-				"previewCollections": "Colecciones",
-				"previewImages": "Imágenes subidas",
-				"previewSettings": "Configuración",
-				"previewIngredients": "Ingredientes",
-				"previewSteps": "Pasos",
-				"previewFavorites": "Favoritos",
-				"previewRatings": "Valoraciones",
-				"previewTips": "Consejos",
-				"previewTags": "Etiquetas",
-				"previewDifficulties": "Dificultades",
-				"restoreButton": "Restaurar desde copia de seguridad",
-				"restoring": "Restaurando...",
-				"restoreWarning": "Esto reemplazará permanentemente todos los datos existentes. Esta acción no se puede deshacer.",
-				"restoreConfirm": "Sí, restaurar desde copia de seguridad",
-				"success": "Datos restaurados con éxito",
-				"error": "Error al restaurar la copia de seguridad",
-				"invalidFile": "Archivo de copia de seguridad no válido",
-				"noData": "No se encontraron datos válidos en la copia de seguridad"
-			}
-		}
-	}
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "logout": "Cerrar sesión",
+  "loading": "Cargando...",
+  "login": {
+    "welcomeBack": "Bienvenido de nuevo",
+    "createAccount": "Crear una cuenta",
+    "signInToContinue": "Inicia sesión para continuar",
+    "enterDetailsToStart": "Ingresa tus datos para comenzar",
+    "username": "Nombre de usuario",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "enterUsername": "Ingresa tu nombre de usuario",
+    "emailPlaceholder": "nombre@ejemplo.com",
+    "confirmPasswordPlaceholder": "Confirma tu contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "signIn": "Iniciar sesión",
+    "createAccountButton": "Crear cuenta",
+    "noAccount": "¿No tienes una cuenta?",
+    "haveAccount": "¿Ya tienes una cuenta?",
+    "signUp": "Registrarse",
+    "signInLink": "Inicia sesión"
+  },
+  "nav": {
+    "navigation": "Navegación",
+    "recipes": "Recetas",
+    "explore": "Explorar",
+    "favorites": "Favoritos",
+    "collection": "“Colecciones",
+    "profile": "Perfil",
+    "settings": "Configuración",
+    "login": "Iniciar sesión",
+    "create": "Crear receta"
+  },
+  "recipe": {
+    "common": {
+      "ingredients": "Ingredientes",
+      "steps": "Pasos",
+      "forServings": "Para {count} personas",
+      "servingsCount": "{count} porciones",
+      "duration": "{count} min",
+      "reviews": "{count} reseñas",
+      "ratePrompt": "Valora esta receta",
+      "rateSubtitle": "¿Qué te pareció la receta?",
+      "similar": "Recetas similares",
+      "difficulty": {
+        "easy": "Fácil",
+        "medium": "Medio",
+        "hard": "Difícil"
+      }
+    },
+    "list": {
+      "searchPlaceholder": "Buscar recetas",
+      "difficultyPlaceholder": "Selecciona una dificultad",
+      "groupLabel": "Categorías",
+      "cookTimePlaceholder": "Selecciona un tiempo de cocción",
+      "cookTimeGroupLabel": "Tiempo de cocción",
+      "authorPlaceholder": "Selecciona un autor",
+      "authorGroupLabel": "Autor",
+      "tagsPlaceholder": "Selecciona una etiqueta",
+      "tagsGroupLabel": "Etiquetas",
+      "filterTitle": "Filtrar y ordenar",
+      "filterDescription": "Refina tu búsqueda de recetas",
+      "showResults": "Mostrar resultados",
+      "activeFilters": "Filtros activos:",
+      "clearAll": "Borrar todo",
+      "author": {
+        "options": {
+          "all": "Todos",
+          "user": "Míos"
+        }
+      },
+      "cookTime": {
+        "options": {
+          "any": "Cualquier tiempo",
+          "upTo15": "Hasta 15 min",
+          "from15To30": "15-30 min",
+          "from30To60": "30-60 min"
+        }
+      },
+      "results": "{count} recetas encontradas",
+      "noRecipes": "No se encontraron recetas",
+      "clearFilters": "Limpiar filtros"
+    },
+    "card": {
+      "view": "Ver receta"
+    },
+    "view": {
+      "preparation": {
+        "title": "Preparación",
+        "subtitle": "Instrucciones paso a paso"
+      },
+      "tips": {
+        "title": "Consejos",
+        "subtitle": "Sugerencias útiles para esta receta"
+      }
+    },
+    "form": {
+      "general": {
+        "title": "Información básica",
+        "nameLabel": "Nombre de la receta",
+        "namePlaceholder": "p. ej. pasta carbonara italiana",
+        "descriptionLabel": "Descripción",
+        "descriptionPlaceholder": "Describe brevemente tu receta"
+      },
+      "ingredients": {
+        "title": "Ingredientes",
+        "quantityLabel": "Cantidad",
+        "quantityPlaceholder": "p. ej. 500",
+        "unitLabel": "Unidad (opcional)",
+        "unitPlaceholder": "p. ej. g, ml, piezas",
+        "nameLabel": "Ingrediente",
+        "namePlaceholder": "p. ej. pasta, huevos, tocino",
+        "addButton": "Agregar ingrediente"
+      },
+      "steps": {
+        "title": "Pasos",
+        "stepLabel": "Paso",
+        "stepPlaceholder": "p. ej. Pelar y picar las cebollas",
+        "addButton": "Agregar paso"
+      },
+      "details": {
+        "title": "Detalles de la receta",
+        "cookTimeLabel": "Tiempo de cocción (min)",
+        "cookTimePlaceholder": "p. ej. 25",
+        "servingsLabel": "Porciones",
+        "servingsPlaceholder": "p. ej. 4",
+        "difficultyLabel": "Dificultad",
+        "difficultyPlaceholder": "Selecciona dificultad",
+        "difficultyGroupLabel": "Dificultad",
+        "tagsLabel": "Etiquetas",
+        "tagsPlaceholder": "Introduce una etiqueta y presiona Enter",
+        "previewLabel": "Imagen de portada",
+        "visibility": {
+          "label": "Visibilidad",
+          "placeholder": "Selecciona visibilidad",
+          "options": {
+            "public": "Pública",
+            "private": "Privada"
+          }
+        }
+      },
+      "tips": {
+        "title": "Consejos",
+        "tipLabel": "Consejo",
+        "tipPlaceholder": "p. ej. Deja reposar la masa en la nevera toda la noche",
+        "addButton": "Agregar consejo"
+      }
+    },
+    "saveSuccess": "¡Receta guardada con éxito!",
+    "saveError": "Error al guardar la receta.",
+    "createSuccess": "¡Receta creada con éxito!",
+    "createError": "Error al crear la receta.",
+    "import": {
+      "title": "Importar receta",
+      "description": "Importa una receta desde una URL.",
+      "button": "Importar",
+      "urlLabel": "URL de la receta",
+      "urlPlaceholder": "https://www.recetas.com/receta/...",
+      "urlRequired": "Por favor, ingresa una URL.",
+      "invalidUrl": "Por favor, ingresa una URL valida.",
+      "noRecipe": "No se encontro ninguna receta en esta pagina.",
+      "scrapeError": "No se pudo importar la receta.",
+      "success": "Receta importada con exito!"
+    },
+    "cookMode": {
+      "title": "Modo Cocina",
+      "step": "Paso {current} de {total}",
+      "next": "Siguiente",
+      "previous": "Anterior",
+      "finish": "¡Listo!",
+      "timer": "Temporizador",
+      "startTimer": "Iniciar",
+      "pauseTimer": "Pausa",
+      "resetTimer": "Reiniciar",
+      "setMinutes": "Minutos",
+      "ingredients": "Ingredientes",
+      "exit": "Salir",
+      "noSteps": "No hay pasos disponibles"
+    }
+  },
+  "routes": {
+    "home": {
+      "title": "Recetas",
+      "popularRecipes": "Recetas populares",
+      "recentlyAdded": "Añadidas recientemente",
+      "discover": "Descubrir"
+    },
+    "favorites": {
+      "title": "Favoritos"
+    }
+  },
+  "profile": {
+    "userRecipes": "Recetas de {username}",
+    "userNotFound": "Usuario no encontrado"
+  },
+  "collection": {
+    "noCollections": "Aún no hay colecciones.",
+    "editDialog": {
+      "title": "Editar colección",
+      "titleLabel": "Título"
+    },
+    "deleteDialog": {
+      "title": "Eliminar colección",
+      "description": "¿Estás seguro de que deseas eliminar esta colección?",
+      "confirm": "Eliminar colección"
+    }
+  },
+  "actions": {
+    "share": "Compartir",
+    "save": "Guardar",
+    "rate": "Calificar",
+    "edit": "Editar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "deleteRecipe": "Eliminar receta",
+    "confirmDelete": "¿Estás seguro de que deseas eliminar esta receta?",
+    "saveRecipe": "Guardar receta",
+    "showPreview": "Mostrar vista previa",
+    "error": "Ocurrió un error. Por favor, inténtalo de nuevo.",
+    "loadRecipeError": "No se pudo cargar la receta",
+    "loadCollectionError": "No se pudo cargar la colección",
+    "noShareLink": "No hay enlace para compartir disponible",
+    "shareDisabled": "Compartir desactivado",
+    "linkShared": "Enlace compartido",
+    "linkCopied": "Enlace copiado",
+    "collections": "Colecciones",
+    "noCollectionsAvailable": "Sin colecciones",
+    "newCollection": "Nueva colección",
+    "disableSharing": "Desactivar compartir"
+  },
+  "settings": {
+    "profile": {
+      "title": "Perfil",
+      "description": "Administra tu información personal",
+      "changeAvatar": "Cambiar avatar",
+      "username": "Nombre de usuario",
+      "usernamePlaceholder": "p. ej. juanperez",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "p. ej. max@ejemplo.com",
+      "language": "Idioma",
+      "selectLanguage": "Selecciona idioma",
+      "languages": {
+        "de": "Alemán",
+        "en": "Inglés",
+        "es": "Español"
+      },
+      "changePassword": "Cambiar contraseña",
+      "newPassword": "Nueva contraseña",
+      "newPasswordPlaceholder": "Ingresa una nueva contraseña",
+      "passwordStrength": {
+        "weak": "Débil - al menos 6 caracteres",
+        "medium": "Medio - se recomiendan al menos 10 caracteres",
+        "strong": "Fuerte"
+      },
+      "confirmPassword": "Confirmar contraseña",
+      "match": "Coincide",
+      "mismatch": "No coincide",
+      "confirmPasswordPlaceholder": "Repite la contraseña",
+      "save": "Guardar perfil",
+      "saved": "Guardado con éxito",
+      "error": "Ocurrió un error. Por favor, inténtalo de nuevo.",
+      "delete": {
+        "title": "Eliminar cuenta",
+        "description": "Elimina tu cuenta y todo su contenido (recetas y colecciones) de forma permanente. Esta acción no se puede deshacer.",
+        "cta": "Eliminar cuenta",
+        "confirmTitle": "Confirmar eliminación",
+        "confirmDescription": "Confirma que deseas eliminar tu cuenta de forma permanente.",
+        "typeToConfirm": "Escribe {username} para confirmar.",
+        "confirmLabel": "Confirmación",
+        "confirmPlaceholder": "Ingresa {username} para continuar"
+      }
+    }
+  },
+  "admin": {
+    "title": "Administración",
+    "description": "Gestiona ajustes globales y usuarios.",
+    "tabs": {
+      "general": "General",
+      "users": "Usuarios",
+      "backups": "Copias de seguridad"
+    },
+    "security": {
+      "title": "Seguridad",
+      "allowRegistrations": "Permitir registros"
+    },
+    "save": "Guardar cambios",
+    "saving": "Guardando...",
+    "users": {
+      "title": "Usuarios",
+      "actions": {
+        "label": "Acciones",
+        "editEmail": "Editar correo",
+        "editPassword": "Cambiar contraseña",
+        "deleteUser": "Eliminar usuario",
+        "emailDescription": "Actualiza el correo de {username}.",
+        "passwordDescription": "Elige una nueva contraseña para {username}.",
+        "passwordPlaceholder": "Al menos 6 caracteres",
+        "saveEmail": "Guardar correo",
+        "savePassword": "Guardar contraseña",
+        "emailUpdated": "Correo actualizado",
+        "passwordUpdated": "Contraseña actualizada",
+        "userDeleted": "Usuario eliminado",
+        "errorEmail": "No se pudo actualizar el correo",
+        "errorPassword": "No se pudo actualizar la contraseña",
+        "errorDelete": "No se pudo eliminar al usuario",
+        "deleteDescription": "Esto elimina a {username}. Esta acción no se puede deshacer."
+      }
+    },
+    "backups": {
+      "title": "Copias de seguridad",
+      "export": {
+        "title": "Exportar copia de seguridad",
+        "description": "Descarga una copia de seguridad completa de todos los datos, incluyendo recetas, usuarios e imágenes subidas.",
+        "button": "Crear copia de seguridad",
+        "creating": "Creando copia de seguridad...",
+        "success": "Copia de seguridad creada con éxito",
+        "error": "Error al crear la copia de seguridad"
+      },
+      "import": {
+        "title": "Importar copia de seguridad",
+        "description": "Restaura los datos desde un archivo de copia de seguridad exportado previamente. Esto reemplazará todos los datos existentes.",
+        "selectFile": "Seleccionar archivo de copia de seguridad",
+        "noFile": "Ningún archivo seleccionado",
+        "uploading": "Analizando copia de seguridad...",
+        "previewTitle": "Vista previa de la copia de seguridad",
+        "previewDescription": "Revisa el contenido de esta copia de seguridad antes de restaurarla.",
+        "previewUsers": "Usuarios",
+        "previewRecipes": "Recetas",
+        "previewCollections": "Colecciones",
+        "previewImages": "Imágenes subidas",
+        "previewSettings": "Configuración",
+        "previewIngredients": "Ingredientes",
+        "previewSteps": "Pasos",
+        "previewFavorites": "Favoritos",
+        "previewRatings": "Valoraciones",
+        "previewTips": "Consejos",
+        "previewTags": "Etiquetas",
+        "previewDifficulties": "Dificultades",
+        "restoreButton": "Restaurar desde copia de seguridad",
+        "restoring": "Restaurando...",
+        "restoreWarning": "Esto reemplazará permanentemente todos los datos existentes. Esta acción no se puede deshacer.",
+        "restoreConfirm": "Sí, restaurar desde copia de seguridad",
+        "success": "Datos restaurados con éxito",
+        "error": "Error al restaurar la copia de seguridad",
+        "invalidFile": "Archivo de copia de seguridad no válido",
+        "noData": "No se encontraron datos válidos en la copia de seguridad"
+      }
+    }
+  }
 }

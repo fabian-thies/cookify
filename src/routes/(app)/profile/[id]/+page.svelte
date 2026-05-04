@@ -46,4 +46,8 @@
         showFilters={false}
         title={m["profile.userRecipes"]({username: profileUser.username})}
     />
+{:else}
+    <div class="flex justify-center py-12">
+        <p class="text-muted-foreground">{m["profile.userNotFound"]()}</p>
+    </div>
 {/if}

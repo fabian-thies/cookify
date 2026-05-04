@@ -1,351 +1,352 @@
 {
-	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"logout": "Abmelden",
-	"loading": "Lädt...",
-	"login": {
-		"welcomeBack": "Willkommen zurück",
-		"createAccount": "Konto erstellen",
-		"signInToContinue": "Anmelden, um fortzufahren",
-		"enterDetailsToStart": "Geben Sie Ihre Daten ein, um zu beginnen",
-		"username": "Benutzername",
-		"email": "E-Mail",
-		"password": "Passwort",
-		"confirmPassword": "Passwort bestätigen",
-		"enterUsername": "Geben Sie Ihren Benutzernamen ein",
-		"emailPlaceholder": "name@beispiel.de",
-		"confirmPasswordPlaceholder": "Bestätigen Sie Ihr Passwort",
-		"forgotPassword": "Passwort vergessen?",
-		"signIn": "Anmelden",
-		"createAccountButton": "Konto erstellen",
-		"noAccount": "Haben Sie kein Konto?",
-		"haveAccount": "Haben Sie bereits ein Konto?",
-		"signUp": "Registrieren",
-		"signInLink": "Anmelden"
-	},
-	"nav": {
-		"navigation": "Navigation",
-		"recipes": "Rezepte",
-		"explore": "Entdecken",
-		"favorites": "Favoriten",
-		"collection": "Kollektionen",
-		"profile": "Profil",
-		"settings": "Einstellungen",
-		"login": "Anmelden",
-		"create": "Rezept erstellen"
-	},
-	"recipe": {
-		"common": {
-			"ingredients": "Zutaten",
-			"steps": "Schritte",
-			"forServings": "Für {count} Portionen",
-			"servingsCount": "{count} Portionen",
-			"duration": "{count} Min",
-			"reviews": "{count} Bewertungen",
-			"ratePrompt": "Bewerte dieses Rezept",
-			"rateSubtitle": "Wie hat dir das Rezept gefallen?",
-			"similar": "Ähnliche Rezepte",
-			"difficulty": {
-				"easy": "Einfach",
-				"medium": "Mittel",
-				"hard": "Schwierig"
-			}
-		},
-		"list": {
-			"searchPlaceholder": "Rezepte suchen",
-			"difficultyPlaceholder": "Schwierigkeitsgrad auswählen",
-			"groupLabel": "Kategorien",
-			"cookTimePlaceholder": "Kochzeit auswählen",
-			"cookTimeGroupLabel": "Kochzeit",
-			"authorPlaceholder": "Autor auswählen",
-			"authorGroupLabel": "Autor",
-			"tagsPlaceholder": "Schlagwörter auswählen",
-			"tagsGroupLabel": "Schlagwörter",
-			"filterTitle": "Filter & Sortierung",
-			"filterDescription": "Verfeinere deine Rezeptsuche",
-			"showResults": "Anzeigen",
-			"activeFilters": "Aktive Filter:",
-			"clearAll": "Alle löschen",
-			"author": {
-				"options": {
-					"all": "Alle",
-					"user": "Meine"
-				}
-			},
-			"cookTime": {
-				"options": {
-					"any": "Alle Kochzeiten",
-					"upTo15": "Bis 15 Min",
-					"from15To30": "15-30 Min",
-					"from30To60": "30-60 Min"
-				}
-			},
-			"results": "{count} Rezepte gefunden",
-			"noRecipes": "Keine Rezepte gefunden",
-			"clearFilters": "Filter zurücksetzen"
-		},
-		"card": {
-			"view": "Rezept ansehen"
-		},
-		"view": {
-			"preparation": {
-				"title": "Zubereitung",
-				"subtitle": "Schritt für Schritt Anleitung"
-			},
-			"tips": {
-				"title": "Tipps",
-				"subtitle": "Nützliche Hinweise für dieses Rezept"
-			}
-		},
-		"form": {
-			"general": {
-				"title": "Grundinformationen",
-				"nameLabel": "Rezeptname",
-				"namePlaceholder": "z.B. Italienische Pasta Carbonara",
-				"descriptionLabel": "Beschreibung",
-				"descriptionPlaceholder": "Beschreibe dein Rezept kurz"
-			},
-			"ingredients": {
-				"title": "Zutaten",
-				"quantityLabel": "Menge",
-				"quantityPlaceholder": "z.B. 500",
-				"unitLabel": "Einheit (optional)",
-				"unitPlaceholder": "z.B. g, ml, Stück",
-				"nameLabel": "Zutat",
-				"namePlaceholder": "z.B. Nudeln, Eier, Speck",
-				"addButton": "Zutat hinzufügen"
-			},
-			"steps": {
-				"title": "Schritte",
-				"stepLabel": "Schritt",
-				"stepPlaceholder": "z.B. Zwiebeln schälen und würfeln",
-				"addButton": "Schritt hinzufügen"
-			},
-			"details": {
-				"title": "Rezept-Details",
-				"cookTimeLabel": "Kochzeit (Min.)",
-				"cookTimePlaceholder": "z.B. 25",
-				"servingsLabel": "Portionen",
-				"servingsPlaceholder": "z.B. 4",
-				"difficultyLabel": "Schwierigkeitsgrad",
-				"difficultyPlaceholder": "Schwierigkeitsgrad auswählen",
-				"difficultyGroupLabel": "Schwierigkeitsgrad",
-				"tagsLabel": "Schlagwörter",
-				"tagsPlaceholder": "Tag eingeben und Enter drücken",
-				"previewLabel": "Vorschaubild",
-				"visibility": {
-					"label": "Sichtbarkeit",
-					"placeholder": "Sichtbarkeit auswählen",
-					"options": {
-						"public": "Öffentlich",
-						"private": "Privat"
-					}
-				}
-			},
-			"tips": {
-				"title": "Tipps",
-				"tipLabel": "Tipp",
-				"tipPlaceholder": "z.B. Den Teig über Nacht im Kühlschrank ruhen lassen",
-				"addButton": "Tipp hinzufügen"
-			}
-		},
-		"saveSuccess": "Rezept erfolgreich gespeichert!",
-		"saveError": "Fehler beim Speichern des Rezepts.",
-		"createSuccess": "Rezept erfolgreich erstellt!",
-		"createError": "Fehler beim Erstellen des Rezepts.",
-		"import": {
-			"title": "Rezept importieren",
-			"description": "Importiere ein Rezept von einer URL.",
-			"button": "Importieren",
-			"urlLabel": "Rezept-URL",
-			"urlPlaceholder": "https://www.chefkoch.de/rezepte/...",
-			"urlRequired": "Bitte gib eine URL ein.",
-			"invalidUrl": "Bitte gib eine gueltige URL ein.",
-			"noRecipe": "Kein Rezept auf dieser Seite gefunden.",
-			"scrapeError": "Rezept konnte nicht importiert werden.",
-			"success": "Rezept erfolgreich importiert!"
-		},
-		"cookMode": {
-			"title": "Kochmodus",
-			"step": "Schritt {current} von {total}",
-			"next": "Weiter",
-			"previous": "Zurück",
-			"finish": "Fertig!",
-			"timer": "Timer",
-			"startTimer": "Timer starten",
-			"pauseTimer": "Pause",
-			"resetTimer": "Zurücksetzen",
-			"setMinutes": "Minuten",
-			"ingredients": "Zutaten",
-			"exit": "Beenden",
-			"noSteps": "Keine Schritte vorhanden"
-		}
-	},
-	"routes": {
-		"home": {
-			"title": "Rezepte",
-			"popularRecipes": "Beliebte Rezepte",
-			"recentlyAdded": "Neu hinzugefügt",
-			"discover": "Entdecken"
-		},
-		"favorites": {
-			"title": "Favoriten"
-		}
-	},
-	"profile": {
-		"userRecipes": "Rezepte von {username}"
-	},
-	"actions": {
-		"share": "Teilen",
-		"save": "Speichern",
-		"rate": "Bewerten",
-		"deleteRecipe": "Rezept löschen",
-		"edit": "Bearbeiten",
-		"cancel": "Abbrechen",
-		"delete": "Löschen",
-		"confirmDelete": "Sicher, dass Sie dieses Rezept löschen möchten?",
-		"saveRecipe": "Rezept speichern",
-		"showPreview": "Vorschau anzeigen",
-		"error": "Etwas ist schief gelaufen. Bitte versuchen Sie es erneut.",
-		"loadRecipeError": "Rezept konnte nicht geladen werden",
-		"loadCollectionError": "Collection konnte nicht geladen werden",
-		"noShareLink": "Kein Freigabelink verfügbar",
-		"shareDisabled": "Freigabe deaktiviert",
-		"linkShared": "Link geteilt",
-		"linkCopied": "Link kopiert",
-		"collections": "Kollektionen",
-		"noCollectionsAvailable": "Keine Kollektionen",
-		"newCollection": "Neue Kollektion",
-		"disableSharing": "Freigabe beenden"
-	},
-	"settings": {
-		"profile": {
-			"title": "Profil",
-			"description": "Verwalten Sie Ihre persönlichen Informationen",
-			"changeAvatar": "Avatar ändern",
-			"username": "Benutzername",
-			"usernamePlaceholder": "z.B. MaxMustermann",
-			"email": "E-Mail",
-			"emailPlaceholder": "z.B. max@example.com",
-			"language": "Sprache",
-			"selectLanguage": "Sprache auswählen",
-			"languages": {
-				"de": "Deutsch",
-				"en": "Englisch",
-				"es": "Spanisch"
-			},
-			"changePassword": "Passwort ändern",
-			"newPassword": "Neues Passwort",
-			"newPasswordPlaceholder": "Neues Passwort eingeben",
-			"passwordStrength": {
-				"weak": "Schwach - mindestens 6 Zeichen",
-				"medium": "Mittel - mindestens 10 Zeichen empfohlen",
-				"strong": "Stark"
-			},
-			"confirmPassword": "Passwort bestätigen",
-			"match": "Stimmt überein",
-			"mismatch": "Stimmt nicht überein",
-			"confirmPasswordPlaceholder": "Passwort wiederholen",
-			"save": "Profil speichern",
-			"saved": "Erfolgreich gespeichert",
-			"error": "Fehler beim Speichern, bitte versuchen Sie es erneut.",
-			"delete": {
-				"title": "Konto löschen",
-				"description": "Entfernt dein Konto sowie gespeicherte Rezepte und Kollektionen dauerhaft. Diese Aktion kann nicht rückgängig gemacht werden.",
-				"cta": "Konto löschen",
-				"confirmTitle": "Löschen bestätigen",
-				"confirmDescription": "Bestätige, dass du dein Konto dauerhaft löschen möchtest.",
-				"typeToConfirm": "Gib {username} ein, um zu bestätigen.",
-				"confirmLabel": "Bestätigung",
-				"confirmPlaceholder": "Bitte {username} eingeben"
-			}
-		}
-	},
-	"collection": {
-		"noCollections": "Noch keine Kollektionen vorhanden.",
-		"editDialog": {
-			"title": "Kollektion bearbeiten",
-			"titleLabel": "Titel"
-		},
-		"deleteDialog": {
-			"title": "Kollektion löschen",
-			"description": "Sicher, dass Sie diese Kollektion löschen möchten?",
-			"confirm": "Kollektion löschen"
-		}
-	},
-	"admin": {
-		"title": "Administration",
-		"description": "Verwalte globale Einstellungen und Benutzer.",
-		"tabs": {
-			"general": "Allgemein",
-			"users": "Benutzer",
-			"backups": "Backups"
-		},
-		"security": {
-			"title": "Sicherheit",
-			"allowRegistrations": "Registrierungen erlauben"
-		},
-		"save": "Änderungen speichern",
-		"saving": "Speichere...",
-		"users": {
-			"title": "Benutzer",
-			"actions": {
-				"label": "Aktionen",
-				"editEmail": "E-Mail bearbeiten",
-				"editPassword": "Passwort ändern",
-				"deleteUser": "Benutzer löschen",
-				"emailDescription": "Aktualisiere die E-Mail-Adresse für {username}.",
-				"passwordDescription": "Wähle ein neues Passwort für {username}.",
-				"passwordPlaceholder": "Mindestens 6 Zeichen",
-				"saveEmail": "E-Mail speichern",
-				"savePassword": "Passwort speichern",
-				"emailUpdated": "E-Mail aktualisiert",
-				"passwordUpdated": "Passwort aktualisiert",
-				"userDeleted": "Benutzer gelöscht",
-				"errorEmail": "E-Mail konnte nicht aktualisiert werden",
-				"errorPassword": "Passwort konnte nicht aktualisiert werden",
-				"errorDelete": "Benutzer konnte nicht gelöscht werden",
-				"deleteDescription": "Dies entfernt {username}. Diese Aktion kann nicht rückgängig gemacht werden."
-			}
-		},
-		"backups": {
-			"title": "Backups",
-			"export": {
-				"title": "Backup exportieren",
-				"description": "Lade ein vollständiges Backup aller Daten inklusive Rezepte, Benutzer und hochgeladener Bilder herunter.",
-				"button": "Backup erstellen",
-				"creating": "Backup wird erstellt...",
-				"success": "Backup erfolgreich erstellt",
-				"error": "Fehler beim Erstellen des Backups"
-			},
-			"import": {
-				"title": "Backup importieren",
-				"description": "Stelle Daten aus einer zuvor exportierten Backup-Datei wieder her. Dies ersetzt alle vorhandenen Daten.",
-				"selectFile": "Backup-Datei auswählen",
-				"noFile": "Keine Datei ausgewählt",
-				"uploading": "Backup wird analysiert...",
-				"previewTitle": "Backup-Vorschau",
-				"previewDescription": "Überprüfe den Inhalt dieses Backups vor der Wiederherstellung.",
-				"previewUsers": "Benutzer",
-				"previewRecipes": "Rezepte",
-				"previewCollections": "Kollektionen",
-				"previewImages": "Hochgeladene Bilder",
-				"previewSettings": "Einstellungen",
-				"previewIngredients": "Zutaten",
-				"previewSteps": "Schritte",
-				"previewFavorites": "Favoriten",
-				"previewRatings": "Bewertungen",
-				"previewTips": "Tipps",
-				"previewTags": "Schlagwörter",
-				"previewDifficulties": "Schwierigkeitsgrade",
-				"restoreButton": "Aus Backup wiederherstellen",
-				"restoring": "Wiederherstellung läuft...",
-				"restoreWarning": "Dies ersetzt dauerhaft alle vorhandenen Daten. Diese Aktion kann nicht rückgängig gemacht werden.",
-				"restoreConfirm": "Ja, aus Backup wiederherstellen",
-				"success": "Daten erfolgreich wiederhergestellt",
-				"error": "Fehler bei der Wiederherstellung",
-				"invalidFile": "Ungültige Backup-Datei",
-				"noData": "Keine gültigen Daten im Backup gefunden"
-			}
-		}
-	}
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "logout": "Abmelden",
+  "loading": "Lädt...",
+  "login": {
+    "welcomeBack": "Willkommen zurück",
+    "createAccount": "Konto erstellen",
+    "signInToContinue": "Anmelden, um fortzufahren",
+    "enterDetailsToStart": "Geben Sie Ihre Daten ein, um zu beginnen",
+    "username": "Benutzername",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "enterUsername": "Geben Sie Ihren Benutzernamen ein",
+    "emailPlaceholder": "name@beispiel.de",
+    "confirmPasswordPlaceholder": "Bestätigen Sie Ihr Passwort",
+    "forgotPassword": "Passwort vergessen?",
+    "signIn": "Anmelden",
+    "createAccountButton": "Konto erstellen",
+    "noAccount": "Haben Sie kein Konto?",
+    "haveAccount": "Haben Sie bereits ein Konto?",
+    "signUp": "Registrieren",
+    "signInLink": "Anmelden"
+  },
+  "nav": {
+    "navigation": "Navigation",
+    "recipes": "Rezepte",
+    "explore": "Entdecken",
+    "favorites": "Favoriten",
+    "collection": "Kollektionen",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "login": "Anmelden",
+    "create": "Rezept erstellen"
+  },
+  "recipe": {
+    "common": {
+      "ingredients": "Zutaten",
+      "steps": "Schritte",
+      "forServings": "Für {count} Portionen",
+      "servingsCount": "{count} Portionen",
+      "duration": "{count} Min",
+      "reviews": "{count} Bewertungen",
+      "ratePrompt": "Bewerte dieses Rezept",
+      "rateSubtitle": "Wie hat dir das Rezept gefallen?",
+      "similar": "Ähnliche Rezepte",
+      "difficulty": {
+        "easy": "Einfach",
+        "medium": "Mittel",
+        "hard": "Schwierig"
+      }
+    },
+    "list": {
+      "searchPlaceholder": "Rezepte suchen",
+      "difficultyPlaceholder": "Schwierigkeitsgrad auswählen",
+      "groupLabel": "Kategorien",
+      "cookTimePlaceholder": "Kochzeit auswählen",
+      "cookTimeGroupLabel": "Kochzeit",
+      "authorPlaceholder": "Autor auswählen",
+      "authorGroupLabel": "Autor",
+      "tagsPlaceholder": "Schlagwörter auswählen",
+      "tagsGroupLabel": "Schlagwörter",
+      "filterTitle": "Filter & Sortierung",
+      "filterDescription": "Verfeinere deine Rezeptsuche",
+      "showResults": "Anzeigen",
+      "activeFilters": "Aktive Filter:",
+      "clearAll": "Alle löschen",
+      "author": {
+        "options": {
+          "all": "Alle",
+          "user": "Meine"
+        }
+      },
+      "cookTime": {
+        "options": {
+          "any": "Alle Kochzeiten",
+          "upTo15": "Bis 15 Min",
+          "from15To30": "15-30 Min",
+          "from30To60": "30-60 Min"
+        }
+      },
+      "results": "{count} Rezepte gefunden",
+      "noRecipes": "Keine Rezepte gefunden",
+      "clearFilters": "Filter zurücksetzen"
+    },
+    "card": {
+      "view": "Rezept ansehen"
+    },
+    "view": {
+      "preparation": {
+        "title": "Zubereitung",
+        "subtitle": "Schritt für Schritt Anleitung"
+      },
+      "tips": {
+        "title": "Tipps",
+        "subtitle": "Nützliche Hinweise für dieses Rezept"
+      }
+    },
+    "form": {
+      "general": {
+        "title": "Grundinformationen",
+        "nameLabel": "Rezeptname",
+        "namePlaceholder": "z.B. Italienische Pasta Carbonara",
+        "descriptionLabel": "Beschreibung",
+        "descriptionPlaceholder": "Beschreibe dein Rezept kurz"
+      },
+      "ingredients": {
+        "title": "Zutaten",
+        "quantityLabel": "Menge",
+        "quantityPlaceholder": "z.B. 500",
+        "unitLabel": "Einheit (optional)",
+        "unitPlaceholder": "z.B. g, ml, Stück",
+        "nameLabel": "Zutat",
+        "namePlaceholder": "z.B. Nudeln, Eier, Speck",
+        "addButton": "Zutat hinzufügen"
+      },
+      "steps": {
+        "title": "Schritte",
+        "stepLabel": "Schritt",
+        "stepPlaceholder": "z.B. Zwiebeln schälen und würfeln",
+        "addButton": "Schritt hinzufügen"
+      },
+      "details": {
+        "title": "Rezept-Details",
+        "cookTimeLabel": "Kochzeit (Min.)",
+        "cookTimePlaceholder": "z.B. 25",
+        "servingsLabel": "Portionen",
+        "servingsPlaceholder": "z.B. 4",
+        "difficultyLabel": "Schwierigkeitsgrad",
+        "difficultyPlaceholder": "Schwierigkeitsgrad auswählen",
+        "difficultyGroupLabel": "Schwierigkeitsgrad",
+        "tagsLabel": "Schlagwörter",
+        "tagsPlaceholder": "Tag eingeben und Enter drücken",
+        "previewLabel": "Vorschaubild",
+        "visibility": {
+          "label": "Sichtbarkeit",
+          "placeholder": "Sichtbarkeit auswählen",
+          "options": {
+            "public": "Öffentlich",
+            "private": "Privat"
+          }
+        }
+      },
+      "tips": {
+        "title": "Tipps",
+        "tipLabel": "Tipp",
+        "tipPlaceholder": "z.B. Den Teig über Nacht im Kühlschrank ruhen lassen",
+        "addButton": "Tipp hinzufügen"
+      }
+    },
+    "saveSuccess": "Rezept erfolgreich gespeichert!",
+    "saveError": "Fehler beim Speichern des Rezepts.",
+    "createSuccess": "Rezept erfolgreich erstellt!",
+    "createError": "Fehler beim Erstellen des Rezepts.",
+    "import": {
+      "title": "Rezept importieren",
+      "description": "Importiere ein Rezept von einer URL.",
+      "button": "Importieren",
+      "urlLabel": "Rezept-URL",
+      "urlPlaceholder": "https://www.chefkoch.de/rezepte/...",
+      "urlRequired": "Bitte gib eine URL ein.",
+      "invalidUrl": "Bitte gib eine gueltige URL ein.",
+      "noRecipe": "Kein Rezept auf dieser Seite gefunden.",
+      "scrapeError": "Rezept konnte nicht importiert werden.",
+      "success": "Rezept erfolgreich importiert!"
+    },
+    "cookMode": {
+      "title": "Kochmodus",
+      "step": "Schritt {current} von {total}",
+      "next": "Weiter",
+      "previous": "Zurück",
+      "finish": "Fertig!",
+      "timer": "Timer",
+      "startTimer": "Timer starten",
+      "pauseTimer": "Pause",
+      "resetTimer": "Zurücksetzen",
+      "setMinutes": "Minuten",
+      "ingredients": "Zutaten",
+      "exit": "Beenden",
+      "noSteps": "Keine Schritte vorhanden"
+    }
+  },
+  "routes": {
+    "home": {
+      "title": "Rezepte",
+      "popularRecipes": "Beliebte Rezepte",
+      "recentlyAdded": "Neu hinzugefügt",
+      "discover": "Entdecken"
+    },
+    "favorites": {
+      "title": "Favoriten"
+    }
+  },
+  "profile": {
+    "userRecipes": "Rezepte von {username}",
+    "userNotFound": "Benutzer nicht gefunden"
+  },
+  "actions": {
+    "share": "Teilen",
+    "save": "Speichern",
+    "rate": "Bewerten",
+    "deleteRecipe": "Rezept löschen",
+    "edit": "Bearbeiten",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "confirmDelete": "Sicher, dass Sie dieses Rezept löschen möchten?",
+    "saveRecipe": "Rezept speichern",
+    "showPreview": "Vorschau anzeigen",
+    "error": "Etwas ist schief gelaufen. Bitte versuchen Sie es erneut.",
+    "loadRecipeError": "Rezept konnte nicht geladen werden",
+    "loadCollectionError": "Collection konnte nicht geladen werden",
+    "noShareLink": "Kein Freigabelink verfügbar",
+    "shareDisabled": "Freigabe deaktiviert",
+    "linkShared": "Link geteilt",
+    "linkCopied": "Link kopiert",
+    "collections": "Kollektionen",
+    "noCollectionsAvailable": "Keine Kollektionen",
+    "newCollection": "Neue Kollektion",
+    "disableSharing": "Freigabe beenden"
+  },
+  "settings": {
+    "profile": {
+      "title": "Profil",
+      "description": "Verwalten Sie Ihre persönlichen Informationen",
+      "changeAvatar": "Avatar ändern",
+      "username": "Benutzername",
+      "usernamePlaceholder": "z.B. MaxMustermann",
+      "email": "E-Mail",
+      "emailPlaceholder": "z.B. max@example.com",
+      "language": "Sprache",
+      "selectLanguage": "Sprache auswählen",
+      "languages": {
+        "de": "Deutsch",
+        "en": "Englisch",
+        "es": "Spanisch"
+      },
+      "changePassword": "Passwort ändern",
+      "newPassword": "Neues Passwort",
+      "newPasswordPlaceholder": "Neues Passwort eingeben",
+      "passwordStrength": {
+        "weak": "Schwach - mindestens 6 Zeichen",
+        "medium": "Mittel - mindestens 10 Zeichen empfohlen",
+        "strong": "Stark"
+      },
+      "confirmPassword": "Passwort bestätigen",
+      "match": "Stimmt überein",
+      "mismatch": "Stimmt nicht überein",
+      "confirmPasswordPlaceholder": "Passwort wiederholen",
+      "save": "Profil speichern",
+      "saved": "Erfolgreich gespeichert",
+      "error": "Fehler beim Speichern, bitte versuchen Sie es erneut.",
+      "delete": {
+        "title": "Konto löschen",
+        "description": "Entfernt dein Konto sowie gespeicherte Rezepte und Kollektionen dauerhaft. Diese Aktion kann nicht rückgängig gemacht werden.",
+        "cta": "Konto löschen",
+        "confirmTitle": "Löschen bestätigen",
+        "confirmDescription": "Bestätige, dass du dein Konto dauerhaft löschen möchtest.",
+        "typeToConfirm": "Gib {username} ein, um zu bestätigen.",
+        "confirmLabel": "Bestätigung",
+        "confirmPlaceholder": "Bitte {username} eingeben"
+      }
+    }
+  },
+  "collection": {
+    "noCollections": "Noch keine Kollektionen vorhanden.",
+    "editDialog": {
+      "title": "Kollektion bearbeiten",
+      "titleLabel": "Titel"
+    },
+    "deleteDialog": {
+      "title": "Kollektion löschen",
+      "description": "Sicher, dass Sie diese Kollektion löschen möchten?",
+      "confirm": "Kollektion löschen"
+    }
+  },
+  "admin": {
+    "title": "Administration",
+    "description": "Verwalte globale Einstellungen und Benutzer.",
+    "tabs": {
+      "general": "Allgemein",
+      "users": "Benutzer",
+      "backups": "Backups"
+    },
+    "security": {
+      "title": "Sicherheit",
+      "allowRegistrations": "Registrierungen erlauben"
+    },
+    "save": "Änderungen speichern",
+    "saving": "Speichere...",
+    "users": {
+      "title": "Benutzer",
+      "actions": {
+        "label": "Aktionen",
+        "editEmail": "E-Mail bearbeiten",
+        "editPassword": "Passwort ändern",
+        "deleteUser": "Benutzer löschen",
+        "emailDescription": "Aktualisiere die E-Mail-Adresse für {username}.",
+        "passwordDescription": "Wähle ein neues Passwort für {username}.",
+        "passwordPlaceholder": "Mindestens 6 Zeichen",
+        "saveEmail": "E-Mail speichern",
+        "savePassword": "Passwort speichern",
+        "emailUpdated": "E-Mail aktualisiert",
+        "passwordUpdated": "Passwort aktualisiert",
+        "userDeleted": "Benutzer gelöscht",
+        "errorEmail": "E-Mail konnte nicht aktualisiert werden",
+        "errorPassword": "Passwort konnte nicht aktualisiert werden",
+        "errorDelete": "Benutzer konnte nicht gelöscht werden",
+        "deleteDescription": "Dies entfernt {username}. Diese Aktion kann nicht rückgängig gemacht werden."
+      }
+    },
+    "backups": {
+      "title": "Backups",
+      "export": {
+        "title": "Backup exportieren",
+        "description": "Lade ein vollständiges Backup aller Daten inklusive Rezepte, Benutzer und hochgeladener Bilder herunter.",
+        "button": "Backup erstellen",
+        "creating": "Backup wird erstellt...",
+        "success": "Backup erfolgreich erstellt",
+        "error": "Fehler beim Erstellen des Backups"
+      },
+      "import": {
+        "title": "Backup importieren",
+        "description": "Stelle Daten aus einer zuvor exportierten Backup-Datei wieder her. Dies ersetzt alle vorhandenen Daten.",
+        "selectFile": "Backup-Datei auswählen",
+        "noFile": "Keine Datei ausgewählt",
+        "uploading": "Backup wird analysiert...",
+        "previewTitle": "Backup-Vorschau",
+        "previewDescription": "Überprüfe den Inhalt dieses Backups vor der Wiederherstellung.",
+        "previewUsers": "Benutzer",
+        "previewRecipes": "Rezepte",
+        "previewCollections": "Kollektionen",
+        "previewImages": "Hochgeladene Bilder",
+        "previewSettings": "Einstellungen",
+        "previewIngredients": "Zutaten",
+        "previewSteps": "Schritte",
+        "previewFavorites": "Favoriten",
+        "previewRatings": "Bewertungen",
+        "previewTips": "Tipps",
+        "previewTags": "Schlagwörter",
+        "previewDifficulties": "Schwierigkeitsgrade",
+        "restoreButton": "Aus Backup wiederherstellen",
+        "restoring": "Wiederherstellung läuft...",
+        "restoreWarning": "Dies ersetzt dauerhaft alle vorhandenen Daten. Diese Aktion kann nicht rückgängig gemacht werden.",
+        "restoreConfirm": "Ja, aus Backup wiederherstellen",
+        "success": "Daten erfolgreich wiederhergestellt",
+        "error": "Fehler bei der Wiederherstellung",
+        "invalidFile": "Ungültige Backup-Datei",
+        "noData": "Keine gültigen Daten im Backup gefunden"
+      }
+    }
+  }
 }

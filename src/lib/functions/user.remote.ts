@@ -74,6 +74,12 @@ export const getLocaleByUserId = query(v.object({
 export const getUserById = query(v.object({
     userId: v.string()
 }), async ({userId}) => {
+    const {locals} = getRequestEvent();
+
+    if (!locals.user) {
+        throw new Error('User not authenticated');
+    }
+
     return await getUserByIdFromDb(userId);
 });
 
