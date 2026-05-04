@@ -76,7 +76,7 @@
 
             // Reload collection data
             const collectionId = Number($page.params.id);
-            const result = await getCollectionRecipes({collectionId});
+            const result = await getCollectionRecipes({collectionId}).run();
             collection = {...result, id: collectionId};
             newTitle = result.collectionTitle;
 
