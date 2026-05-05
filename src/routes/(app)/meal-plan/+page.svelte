@@ -11,6 +11,7 @@
     import { ChevronLeft, ChevronRight, Clock, Search, Trash2, X } from "lucide-svelte";
     import type { Recipe } from "$lib/server/db/recipe";
     import { m } from "$lib/paraglide/messages";
+    import { getLocale } from "$lib/paraglide/runtime.js";
 
     type MealPlanEntry = Awaited<ReturnType<typeof getMealPlan>>[number];
 
@@ -57,7 +58,7 @@
     let recipeSearch = $state("");
     let loading = $state(true);
     let error = $state<string | null>(null);
-    let sidebarOpen = $state(true);
+    let sidebarOpen = $state(false);
 
     const monday = $derived(getMonday(new Date(Date.now() + weekOffset * 7 * 86400000)));
 
@@ -190,9 +191,9 @@
             </Button>
         </div>
         <span class="text-sm text-muted-foreground font-medium">
-            {new Date(monday).toLocaleDateString("en-US", { month: "long", day: "numeric" })}
+            {new Date(monday).toLocaleDateString(getLocale(), { month: "long", day: "numeric" })}
             {" "}–{" "}
-            {new Date(monday.getTime() + 6 * 86400000).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+            {new Date(monday.getTime() + 6 * 86400000).toLocaleDateString(getLocale(), { month: "long", day: "numeric", year: "numeric" })}
         </span>
         <Button variant="outline" size="sm" onclick={() => (sidebarOpen = !sidebarOpen)}>
             <Search class="h-4 w-4 mr-2"/>
@@ -244,7 +245,7 @@
                 </div>
             {/if}
 
-            <div class="flex-1 grid grid-cols-7 gap-2">
+            <div class="flex-1 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                 {#each weekDays as { name, date }}
                     {@const dayEntries = entriesForDate(date)}
                     <div
@@ -254,29 +255,33 @@
                         ondragover={(e) => e.preventDefault()}
                         ondrop={(e) => handleDrop(e, date)}
                     >
-                        <div class="px-2 py-2 text-center border-b">
-                            <p class="text-xs font-semibold text-muted-foreground uppercase">{name.slice(0, 3)}</p>
-                            <p class="text-sm font-medium">
+                        <div class="px-3 py-3 text-center border-b">
+                            <p class="text-sm font-semibold text-muted-foreground uppercase">{name.slice(0, 3)}</p>
+                            <p class="text-base font-semibold">
                                 {new Date(date + "T00:00:00").getDate()}
                             </p>
                         </div>
 
-                        <div class="flex-1 p-1.5 space-y-1.5 overflow-y-auto">
+                        <div class="flex-1 p-2 space-y-2 overflow-y-auto">
                             {#if dayEntries.length === 0}
-                                <div class="flex items-center justify-center h-full text-xs text-muted-foreground/50 italic">
+                                <div class="flex items-center justify-center h-full text-sm text-muted-foreground/50 italic">
                                     {m["mealPlan.dropHere"]()}
                                 </div>
                             {:else}
                                 {#each dayEntries as entry (entry.id)}
-                                    <div class="flex items-start gap-2 p-2 rounded-lg bg-card border group hover:shadow-sm transition-shadow">
+                                    <svelte:element
+                                        this={!sidebarOpen ? 'a' : 'div'}
+                                        href={!sidebarOpen ? `/recipe/${entry.recipe.id}` : undefined}
+                                        class="flex items-start gap-3 p-3 rounded-lg bg-card border group hover:shadow-sm transition-shadow overflow-hidden"
+                                    >
                                         <img
                                             src={entry.recipe.image}
                                             alt={entry.recipe.title}
-                                            class="h-8 w-8 rounded object-cover shrink-0"
+                                            class="h-12 w-12 rounded-md object-cover shrink-0"
                                         />
                                         <div class="min-w-0 flex-1">
-                                            <p class="text-xs font-medium truncate">{entry.recipe.title}</p>
-                                            <p class="text-[10px] text-muted-foreground">
+                                            <p class="text-sm font-medium truncate">{entry.recipe.title}</p>
+                                            <p class="text-xs text-muted-foreground truncate">
                                                 {entry.recipe.cookingTime} min · {entry.recipe.servings} servings
                                             </p>
                                         </div>
@@ -284,9 +289,9 @@
                                             class="shrink-0 opacity-0 group-hover:opacity-100 hover:text-destructive transition-all"
                                             onclick={() => handleRemove(entry.id)}
                                         >
-                                            <Trash2 class="h-3.5 w-3.5"/>
+                                            <Trash2 class="h-4 w-4"/>
                                         </button>
-                                    </div>
+                                    </svelte:element>
                                 {/each}
                             {/if}
                         </div>
