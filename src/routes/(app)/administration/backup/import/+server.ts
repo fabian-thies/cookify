@@ -142,6 +142,7 @@ export const POST = async ({ locals, request }) => {
             await tx.delete(table.collectionToRecipe);
             await tx.delete(table.collections);
             await tx.delete(table.difficulty);
+            await tx.delete(table.mealPlan);
             await tx.delete(table.session);
             await tx.delete(table.recipes);
             await tx.delete(table.siteSettings);
@@ -187,13 +188,16 @@ export const POST = async ({ locals, request }) => {
             if (data.collectionToRecipe?.length) {
                 await tx.insert(table.collectionToRecipe).values(data.collectionToRecipe as typeof table.collectionToRecipe.$inferInsert[]);
             }
+            if (data.mealPlan?.length) {
+                await tx.insert(table.mealPlan).values(data.mealPlan as typeof table.mealPlan.$inferInsert[]);
+            }
         });
 
         // TODO
         // Resynchronize serial sequences to prevent duplicate key errors on future inserts
         const serialTables = [
             'site_settings', 'recipes', 'difficulty', 'ingredients', 'steps',
-            'favorite', 'tags', 'tips', 'recipe_rating', 'collections', 'collection_to_recipe'
+            'favorite', 'tags', 'tips', 'recipe_rating', 'collections', 'collection_to_recipe', 'meal_plan'
         ];
         for (const tableName of serialTables) {
             await db.execute(sql.raw(
