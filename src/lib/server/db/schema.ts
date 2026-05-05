@@ -1,4 +1,4 @@
-import {integer, boolean, pgTable, primaryKey, serial, text, timestamp, unique} from 'drizzle-orm/pg-core';
+import {integer, boolean, date, pgTable, primaryKey, serial, text, timestamp, unique} from 'drizzle-orm/pg-core';
 import {DIFFICULTIES, LANGUAGES} from "../../constants";
 
 export const user = pgTable('user', {
@@ -107,6 +107,17 @@ export const collections = pgTable('collections', {
     title: text('title').notNull()
 });
 
+
+export const mealPlan = pgTable('meal_plan', {
+    id: serial('id').primaryKey(),
+    userId: text('user_id').notNull().references(() => user.id),
+    recipeId: integer('recipe_id').notNull().references(() => recipes.id),
+    date: date('date').notNull(),
+    createdAt: timestamp('created_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow(),
+}, (t) => [
+    unique('meal_plan_user_recipe_date_unique').on(t.userId, t.recipeId, t.date),
+]);
+
 export const collectionToRecipe = pgTable('collection_to_recipe', {
     id: serial('id').primaryKey(),
     recipeId: integer('recipe_id').notNull().references(() => recipes.id),
@@ -126,6 +137,7 @@ export type Favorite = typeof favorite.$inferSelect;
 export type Tag = typeof tags.$inferSelect;
 export type RecipeRating = typeof recipeRating.$inferSelect;
 export type Tip = typeof tips.$inferSelect;
+export type MealPlan = typeof mealPlan.$inferSelect;
 export type Collection = typeof collections.$inferSelect;
 export type CollectionToRecipe = typeof collectionToRecipe.$inferSelect;
 export type SiteSettings = typeof siteSettings.$inferSelect;

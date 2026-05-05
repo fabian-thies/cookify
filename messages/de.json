@@ -31,7 +31,8 @@
     "profile": "Profil",
     "settings": "Einstellungen",
     "login": "Anmelden",
-    "create": "Rezept erstellen"
+    "create": "Rezept erstellen",
+    "mealPlan": "Wochenplan"
   },
   "recipe": {
     "common": {
@@ -347,6 +348,29 @@
         "invalidFile": "Ungültige Backup-Datei",
         "noData": "Keine gültigen Daten im Backup gefunden"
       }
+    }
+  },
+  "mealPlan": {
+    "title": "Wochenplan",
+    "today": "Heute",
+    "addRecipes": "Rezepte hinzufügen",
+    "closeRecipes": "Rezepte schließen",
+    "searchPlaceholder": "Rezepte durchsuchen...",
+    "noRecipes": "Keine Rezepte gefunden",
+    "dropHere": "Rezept hier ablegen",
+    "error": {
+      "load": "Wochenplan konnte nicht geladen werden",
+      "add": "Rezept konnte nicht hinzugefügt werden",
+      "remove": "Rezept konnte nicht entfernt werden"
+    },
+    "day": {
+      "monday": "Montag",
+      "tuesday": "Dienstag",
+      "wednesday": "Mittwoch",
+      "thursday": "Donnerstag",
+      "friday": "Freitag",
+      "saturday": "Samstag",
+      "sunday": "Sonntag"
     }
   }
 }

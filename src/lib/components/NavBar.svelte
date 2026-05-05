@@ -45,6 +45,11 @@
                         {m["nav.collection"]()}
                     </NavigationMenu.Link>
                 </NavigationMenu.Item>
+                <NavigationMenu.Item>
+                    <NavigationMenu.Link href="/meal-plan">
+                        {m["nav.mealPlan"]()}
+                    </NavigationMenu.Link>
+                </NavigationMenu.Item>
             </NavigationMenu.List>
         </NavigationMenu.Root>
     </div>
@@ -68,6 +73,9 @@
                     </a>
                     <a href="/collection" onclick={() => isOpen = false}>
                         {m["nav.collection"]()}
+                    </a>
+                    <a href="/meal-plan" onclick={() => isOpen = false}>
+                        {m["nav.mealPlan"]()}
                     </a>
                     <a href="/recipe/create" onclick={() => isOpen = false}>
                         {m["nav.create"]()}

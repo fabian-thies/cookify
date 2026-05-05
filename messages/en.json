@@ -31,7 +31,8 @@
     "profile": "Profile",
     "settings": "Settings",
     "login": "Login",
-    "create": "Create Recipe"
+    "create": "Create Recipe",
+    "mealPlan": "Meal Plan"
   },
   "recipe": {
     "common": {
@@ -349,6 +350,29 @@
         "invalidFile": "Invalid backup file",
         "noData": "No valid data found in backup"
       }
+    }
+  },
+  "mealPlan": {
+    "title": "Meal Plan",
+    "today": "Today",
+    "addRecipes": "Add Recipes",
+    "closeRecipes": "Close Recipes",
+    "searchPlaceholder": "Search recipes...",
+    "noRecipes": "No recipes found",
+    "dropHere": "Drop recipe here",
+    "error": {
+      "load": "Failed to load meal plan",
+      "add": "Failed to add recipe",
+      "remove": "Failed to remove recipe"
+    },
+    "day": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
     }
   }
 }

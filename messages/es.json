@@ -31,7 +31,8 @@
     "profile": "Perfil",
     "settings": "Configuración",
     "login": "Iniciar sesión",
-    "create": "Crear receta"
+    "create": "Crear receta",
+    "mealPlan": "Plan semanal"
   },
   "recipe": {
     "common": {
@@ -347,6 +348,29 @@
         "invalidFile": "Archivo de copia de seguridad no válido",
         "noData": "No se encontraron datos válidos en la copia de seguridad"
       }
+    }
+  },
+  "mealPlan": {
+    "title": "Plan semanal",
+    "today": "Hoy",
+    "addRecipes": "Añadir recetas",
+    "closeRecipes": "Cerrar recetas",
+    "searchPlaceholder": "Buscar recetas...",
+    "noRecipes": "No se encontraron recetas",
+    "dropHere": "Suelta la receta aquí",
+    "error": {
+      "load": "Error al cargar el plan semanal",
+      "add": "Error al añadir la receta",
+      "remove": "Error al eliminar la receta"
+    },
+    "day": {
+      "monday": "Lunes",
+      "tuesday": "Martes",
+      "wednesday": "Miércoles",
+      "thursday": "Jueves",
+      "friday": "Viernes",
+      "saturday": "Sábado",
+      "sunday": "Domingo"
     }
   }
 }
