@@ -306,15 +306,17 @@
                                         <div class="min-w-0 flex-1">
                                             <p class="text-sm font-medium truncate">{entry.recipe.title}</p>
                                             <p class="text-xs text-muted-foreground truncate">
-                                                {entry.recipe.cookingTime} min · {entry.recipe.servings} servings
+                                                {entry.recipe.cookingTime} min · {m["recipe.common.servingsCount"]({ count: entry.recipe.servings })}
                                             </p>
                                         </div>
+                                        {#if sidebarOpen}
                                         <button
                                             class="shrink-0 opacity-0 group-hover:opacity-100 hover:text-destructive transition-all"
                                             onclick={() => handleRemove(entry.id)}
                                         >
                                             <Trash2 class="h-4 w-4"/>
                                         </button>
+                                        {/if}
                                     </svelte:element>
                                 {/each}
                             {/if}
