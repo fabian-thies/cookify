@@ -4,6 +4,7 @@ import {
     addToMealPlan as addToMealPlanDb,
     removeFromMealPlan as removeFromMealPlanDb,
     getMealPlan as getMealPlanDb,
+    getShoppingList as getShoppingListDb,
 } from '$lib/server/db/meal-plan';
 
 export const addToMealPlan = command(v.object({
@@ -45,4 +46,18 @@ export const getMealPlan = query(v.object({
     }
 
     return await getMealPlanDb(userId, startDate, endDate);
+});
+
+export const getShoppingList = query(v.object({
+    startDate: v.pipe(v.string(), v.regex(/^\d{4}-\d{2}-\d{2}$/)),
+    endDate: v.pipe(v.string(), v.regex(/^\d{4}-\d{2}-\d{2}$/)),
+}), async ({ startDate, endDate }) => {
+    const { locals } = getRequestEvent();
+    const userId = locals.user?.id;
+
+    if (!userId) {
+        throw new Error('User not authenticated');
+    }
+
+    return await getShoppingListDb(userId, startDate, endDate);
 });

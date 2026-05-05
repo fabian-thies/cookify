@@ -371,6 +371,8 @@
       "friday": "Viernes",
       "saturday": "Sábado",
       "sunday": "Domingo"
-    }
+    },
+    "shoppingList": "Lista de compras",
+    "emptyShoppingList": "No hay recetas planificadas para esta semana"
   }
 }

@@ -1,6 +1,6 @@
 import { getDb } from "$lib/server/db/index";
-import { mealPlan, recipes, difficultyToRecipe, difficulty } from "$lib/server/db/schema";
-import { and, eq, gte, lte, desc, getTableColumns, sql } from "drizzle-orm";
+import { mealPlan, recipes, difficultyToRecipe, difficulty, ingredients } from "$lib/server/db/schema";
+import { and, eq, gte, lte, desc, getTableColumns, sql, sum } from "drizzle-orm";
 
 const tagListSubquery = sql<string[]>`COALESCE(ARRAY(
     SELECT tags.name
@@ -55,4 +55,26 @@ export async function getMealPlan(userId: string, startDate: string, endDate: st
         .orderBy(mealPlan.date, mealPlan.createdAt);
 
     return entries;
+}
+
+export async function getShoppingList(userId: string, startDate: string, endDate: string) {
+    const db = getDb();
+
+    const items = await db
+        .select({
+            name: ingredients.name,
+            quantity: sum(ingredients.quantity).mapWith(Number),
+            unit: ingredients.unit,
+        })
+        .from(mealPlan)
+        .innerJoin(ingredients, eq(mealPlan.recipeId, ingredients.recipeId))
+        .where(and(
+            eq(mealPlan.userId, userId),
+            gte(mealPlan.date, startDate),
+            lte(mealPlan.date, endDate)
+        ))
+        .groupBy(ingredients.name, ingredients.unit)
+        .orderBy(ingredients.name);
+
+    return items;
 }
