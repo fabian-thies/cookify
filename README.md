@@ -10,19 +10,36 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
 ## Features
 
 - **User Accounts**
-    - Create your own account with login and registration.
+    - Create your own account with login, registration, and profile settings.
+    - Choose your preferred language and update your avatar.
 - **Recipe Management**
-    - Add, edit, and delete your favorite recipes.
-    - Include ingredients (with amounts and units), steps, servings, and cook time.
-    - Upload images to personalize your recipes.
+    - Add, edit, and delete recipes with full detail: ingredients (amounts + units), steps, servings, cook time, difficulty, tags, and tips.
+    - Upload custom images to personalize each recipe.
+    - Set recipes as **public** or **private** to control who can see them.
+- **Import from URL (Recipe Scraper)**
+    - Paste a recipe URL and let Cookify extract title, ingredients, steps, and image automatically via JSON-LD structured data.
 - **Smart Search & Filters**
-    - Easily search and filter recipes (e.g., by difficulty or cook time).
+    - Search and filter recipes by difficulty, cook time, or keywords.
 - **Favorites & Ratings**
-    - Mark favorites and rate recipes you love.
+    - Mark recipes as favorites and rate them on a 1–5 scale.
 - **Personal Collections**
-    - Organize everything with custom recipe collections.
+    - Group recipes into custom collections for easy organization.
+- **Weekly Meal Plan**
+    - Drag and drop recipes onto a weekly calendar to plan your meals.
+    - Auto-generated **shopping list** based on the recipes scheduled for the week.
+- **Cook Mode**
+    - Full-screen, step-by-step cooking experience that keeps your screen awake.
+    - Built-in **multiple timers** — start a timer per step or add custom timers on the fly.
+- **Recipe Sharing**
+    - Generate shareable links for any public recipe.
+    - Track view counts to see how often your recipes have been viewed.
+- **Home Dashboard**
+    - Browse popular recipes, recently added dishes, and discover something new through curated carousels.
+- **Administration & Backup**
+    - Admin panel to manage users and toggle new registrations on/off.
+    - **Backup & Restore**: export the entire database plus all uploaded images as a ZIP file, or import a backup to restore everything.
 - **Multilingual Support**
-    - Use Cookify in your preferred language: **English**, **German**, or **Spanish**.
+    - Available in **English**, **German**, and **Spanish**.
 
 ## Installation
 
