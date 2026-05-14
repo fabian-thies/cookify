@@ -1,6 +1,7 @@
 <script lang="ts">
     import RecipeList from "$lib/components/recipe/widgets/RecipeList.svelte";
     import {m} from "$lib/paraglide/messages";
+    import {Spinner} from "$lib/components/ui/spinner";
     import {getRecipesByUserId} from "$lib/functions/recipe.remote";
     import {getUserById} from "$lib/functions/user.remote";
     import type {Recipe} from "$lib/server/db/recipe";
@@ -36,13 +37,14 @@
 </script>
 
 {#if loading}
-    <div class="flex justify-center py-12">
-        <p class="text-muted-foreground">{m.loading()}</p>
+    <div class="flex items-center justify-center py-12">
+        <Spinner class="size-8"/>
     </div>
 {:else if profileUser}
     <RecipeList
         userId={currentUserId}
         {recipes}
+        {loading}
         showFilters={false}
         title={m["profile.userRecipes"]({username: profileUser.username})}
     />

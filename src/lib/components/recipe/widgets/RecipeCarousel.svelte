@@ -5,14 +5,16 @@
     import type {ComponentProps} from "svelte";
     import type {Recipe} from "$lib/server/db/recipe";
     import {m} from "$lib/paraglide/messages";
+    import {Spinner} from "$lib/components/ui/spinner";
 
     type Props = {
         title: string;
         class?: string;
         recipes: Recipe[];
+        loading?: boolean;
     }
 
-    const {class: className, title, recipes}: Props = $props();
+    const {class: className, title, recipes, loading = false}: Props = $props();
 </script>
 
 <div class={`w-full px-4 ${className}`}>
@@ -24,7 +26,11 @@
     </div>
 
     <div class="flex justify-between gap-6">
-        {#if (recipes && recipes.length > 0)}
+        {#if loading}
+            <div class="flex items-center justify-center py-12 w-full">
+                <Spinner class="size-8"/>
+            </div>
+        {:else if (recipes && recipes.length > 0)}
             <Carousel.Root class="w-full" opts={{ align: "start", loop: true }}>
                 <Carousel.Content class="items-start">
                     {#each recipes as recipe}

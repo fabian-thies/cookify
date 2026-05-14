@@ -11,12 +11,14 @@
     import {Badge} from "$lib/components/ui/badge";
     import {Filter, X, SlidersHorizontal} from "lucide-svelte";
     import {Separator} from "$lib/components/ui/separator";
+    import {Spinner} from "$lib/components/ui/spinner";
 
     type Props = {
         recipes: Recipe[];
         userId: string;
         title?: string;
         showFilters?: boolean;
+        loading?: boolean;
         actions? : Snippet;
     };
 
@@ -49,7 +51,7 @@
         {value: "user", label: m["recipe.list.author.options.user"]()}
     ];
 
-    let {userId, recipes, title, showFilters = true, actions}: Props = $props();
+    let {userId, recipes, title, showFilters = true, loading = false, actions}: Props = $props();
 
     let search = $state("");
     let selectedDifficulty = $state("");
@@ -309,7 +311,11 @@
         {/if}
     {/if}
 
-    {#if filteredRecipes.length === 0}
+    {#if loading}
+        <div class="flex items-center justify-center py-16">
+            <Spinner class="size-8"/>
+        </div>
+    {:else if filteredRecipes.length === 0}
         <div class="flex flex-col items-center justify-center py-16 text-center">
             <div class="w-16 h-16 mb-4 rounded-full bg-muted flex items-center justify-center">
                 <svg class="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">

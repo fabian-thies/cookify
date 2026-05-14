@@ -8,13 +8,15 @@
     const {data}: PageProps = $props();
 
     let recipes = $state<Recipe[]>([]);
+    let loading = $state(true);
     const userId = data.user.id;
 
     $effect(() => {
         getFavoriteRecipes().then((favRecipes) => {
             recipes = favRecipes as Recipe[];
+            loading = false;
         });
     });
 </script>
 
-<RecipeList {userId} {recipes} title={m["routes.favorites.title"]()}/>
+<RecipeList {userId} {recipes} title={m["routes.favorites.title"]()} {loading}/>
