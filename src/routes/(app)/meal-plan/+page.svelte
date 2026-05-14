@@ -153,6 +153,7 @@
                     },
                 ];
             }
+            shoppingList = await getShoppingList({ startDate: weekDays[0].date, endDate: weekDays[6].date }).run();
         } catch (e: any) {
             error = e.message ?? m["mealPlan.error.add"]();
         }
@@ -162,6 +163,7 @@
         try {
             await removeFromMealPlan({ mealPlanId: entryId });
             mealPlanEntries = mealPlanEntries.filter((e) => e.id !== entryId);
+            shoppingList = await getShoppingList({ startDate: weekDays[0].date, endDate: weekDays[6].date }).run();
         } catch (e: any) {
             error = e.message ?? m["mealPlan.error.remove"]();
         }
