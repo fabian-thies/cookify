@@ -113,7 +113,7 @@
                     value={recipe?.visibility ?? "public"}/>
         </div>
         <div class="flex w-full flex-col gap-3">
-            <div>
+            <div class="flex flex-col gap-1">
                 <Label>{m["recipe.form.nutrition.title"]()}</Label>
                 <p class="text-xs text-muted-foreground">{m["recipe.form.nutrition.description"]()}</p>
             </div>
