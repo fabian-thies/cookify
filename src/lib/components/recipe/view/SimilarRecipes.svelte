@@ -34,9 +34,9 @@
         <Spinner/>
     </div>
 {:else if !error && similarRecipes.length > 0}
-    <div class="w-full mt-12">
-        <div class="space-y-2 mb-8">
-            <h2 class="text-3xl font-bold tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
+    <div class="w-full mt-10">
+        <div class="space-y-2 mb-5 sm:mb-8">
+            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
                 {m["recipe.common.similar"]()}
             </h2>
             <div class="h-1 w-16 bg-gradient-to-r from-primary to-primary/50 rounded-full"></div>

@@ -116,12 +116,12 @@
     };
 </script>
 
-<div class="flex flex-col gap-6 p-4 sm:p-6 mt-4">
+<div class="flex flex-col gap-6 mt-2">
     {#if title || actions}
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             {#if title}
                 <div class="space-y-1">
-                    <h1 class="font-bold text-4xl tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
+                    <h1 class="font-bold text-3xl sm:text-4xl tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
                         {title}
                     </h1>
                     <div class="h-1 w-20 bg-gradient-to-r from-primary to-primary/50 rounded-full"></div>
@@ -160,7 +160,7 @@
                         </Badge>
                     {/if}
                 </Popover.Trigger>
-                <Popover.Content class="w-80 max-h-[calc(100vh-200px)] overflow-y-auto backdrop-blur-xl bg-popover/95 border-border/50 shadow-xl" align="end">
+                <Popover.Content class="w-[calc(100vw-2rem)] max-h-[70dvh] overflow-y-auto backdrop-blur-xl bg-popover/95 border-border/50 shadow-xl sm:w-80" align="end">
                     <div class="flex flex-col gap-5">
                         <div class="space-y-2">
                             <h4 class="font-semibold text-base flex items-center gap-2">

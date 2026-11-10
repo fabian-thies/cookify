@@ -30,7 +30,7 @@ import Tips from "$lib/components/recipe/view/Tips.svelte";
     {#key recipe.id}
         <Overview {...recipe} {recipeOwner} aiEnabled={!!data.ai?.configured && !!data.ai?.enabled}/>
     {/key}
-    <div class="grid lg:grid-cols-3 gap-8">
+    <div class="grid gap-4 sm:gap-8 lg:grid-cols-3">
         <div class="lg:col-span-1">
             <Ingredients ingredients={recipe.ingredients} servings={recipe.servings}/>
         </div>

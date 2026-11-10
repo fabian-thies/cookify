@@ -17,9 +17,9 @@
     const {class: className, title, recipes, loading = false}: Props = $props();
 </script>
 
-<div class={`w-full px-4 ${className}`}>
-    <div class="space-y-2 mb-8">
-        <h2 class="text-3xl font-bold tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
+<div class={`w-full ${className}`}>
+    <div class="space-y-2 mb-5 sm:mb-8">
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
             {title}
         </h2>
         <div class="h-1 w-16 bg-gradient-to-r from-primary to-primary/50 rounded-full"></div>
@@ -34,7 +34,7 @@
             <Carousel.Root class="w-full" opts={{ align: "start", loop: true }}>
                 <Carousel.Content class="items-start">
                     {#each recipes as recipe}
-                        <Carousel.Item class="md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                        <Carousel.Item class="basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
                             <RecipeCard
                                 id={recipe.id}
                                 title={recipe.title}
@@ -48,8 +48,8 @@
                         </Carousel.Item>
                     {/each}
                 </Carousel.Content>
-                <Carousel.Previous class="shadow-md hover:shadow-lg transition-shadow duration-200"/>
-                <Carousel.Next class="shadow-md hover:shadow-lg transition-shadow duration-200"/>
+                <Carousel.Previous class="hidden shadow-md hover:shadow-lg transition-shadow duration-200 md:inline-flex"/>
+                <Carousel.Next class="hidden shadow-md hover:shadow-lg transition-shadow duration-200 md:inline-flex"/>
             </Carousel.Root>
         {:else}
             <div class="flex flex-col items-center justify-center py-12 text-center w-full">

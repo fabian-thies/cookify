@@ -47,7 +47,7 @@
 </script>
 
 {#snippet ingredientRow(item: IngredientLike, index: number)}
-    <div class="flex flex-col md:flex-row gap-6">
+    <div class="grid grid-cols-2 gap-3 md:flex md:flex-row md:gap-6">
         <div class="flex w-full flex-col gap-1.5">
             <Label for="ingredients-{index}-amount">{m["recipe.form.ingredients.quantityLabel"]()}</Label>
             <Input
@@ -69,7 +69,7 @@
                     placeholder={m["recipe.form.ingredients.unitPlaceholder"]()}
             />
         </div>
-        <div class="flex w-full flex-col gap-1.5">
+        <div class="col-span-2 flex w-full flex-col gap-1.5 md:col-span-1">
             <Label for="ingredients-{index}-ingredient">Zutat</Label>
             <Input
                     type="text"
@@ -80,7 +80,7 @@
                     required
             />
         </div>
-        <div class="flex w-full md:max-w-10 flex-col gap-x-1.5 justify-end">
+        <div class="col-span-2 flex w-full flex-col justify-end gap-x-1.5 md:col-span-1 md:max-w-10">
             <Button
                     variant="outline"
                     class="hover:cursor-pointer"

@@ -1,6 +1,7 @@
 <script lang="ts">
     import '../../app.css';
     import NavBar from "$lib/components/NavBar.svelte";
+    import MobileNav from "$lib/components/MobileNav.svelte";
     import {Toaster} from "$lib/components/ui/sonner/index.js";
 
     let {children, data} = $props();
@@ -12,6 +13,8 @@
 
 <Toaster position="top-center" richColors/>
 
-<div class="container mx-auto max-w-7xl px-4 sm:px-6 pb-12 pt-4">
+<div class="mx-auto w-full max-w-7xl px-4 pt-3 pb-[calc(4.5rem+env(safe-area-inset-bottom))] sm:px-6 lg:pb-12">
     {@render children()}
 </div>
+
+<MobileNav/>

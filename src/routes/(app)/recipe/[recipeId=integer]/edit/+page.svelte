@@ -129,7 +129,7 @@
     });
 </script>
 
-<div class="container mx-auto mt-14">
+<div class="mx-auto mt-2 sm:mt-6">
     {#if loading}
         <div class="flex items-center justify-center py-12">
             <div class="text-muted-foreground">{m.loading()}</div>
@@ -153,7 +153,7 @@
                 }
             }}
         }>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-8">
                 <div class="space-y-6 lg:col-span-2">
                     <General {recipe}/>
                     <Ingredients {ingredients} {recipe}/>

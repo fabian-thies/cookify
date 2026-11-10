@@ -13,9 +13,9 @@
     const language = user.language;
 </script>
 
-<div class="flex flex-col gap-6 p-4 sm:p-6 mt-4">
+<div class="flex flex-col gap-6 mt-2">
     <div class="space-y-1">
-        <h1 class="font-bold text-4xl tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
+        <h1 class="font-bold text-3xl sm:text-4xl tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
             {m["nav.settings"]()}
         </h1>
         <div class="h-1 w-20 bg-gradient-to-r from-primary to-primary/50 rounded-full"></div>

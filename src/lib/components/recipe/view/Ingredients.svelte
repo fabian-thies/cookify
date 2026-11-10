@@ -59,18 +59,18 @@
             <h1 class="text-lg font-bold">{m["recipe.common.ingredients"]()}</h1>
             <p class="text-sm text-muted-foreground">{m["recipe.common.forServings"]({count: desiredServings})}</p>
         </Card.Title>
-        <div class="flex items-center gap-2">
-            <Button type="button" variant="outline" class="h-8 w-8 px-0" onclick={() => changeServings(-1)}>-</Button>
+        <div class="flex items-center gap-1.5">
+            <Button type="button" variant="outline" class="h-9 w-9 px-0" onclick={() => changeServings(-1)}>-</Button>
             <Input
                     type="number"
-                    class="h-8 w-12 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    class="h-9 w-12 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     min="1"
                     max="999"
                     step="1"
                     value={desiredServings}
                     oninput={onServingsInput}
             />
-            <Button type="button" variant="outline" class="h-8 w-8 px-0" onclick={() => changeServings(1)}>+</Button>
+            <Button type="button" variant="outline" class="h-9 w-9 px-0" onclick={() => changeServings(1)}>+</Button>
         </div>
     </Card.Header>
 

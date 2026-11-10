@@ -289,17 +289,17 @@
     }
 </script>
 
-<div class="w-full mt-4 md:mt-18">
-    <h1 class="text-4xl font-bold">{title}</h1>
-    <div class="text-muted-foreground h-5 flex items-center gap-4 mb-4 mt-4">
+<div class="w-full mt-2 sm:mt-10">
+    <h1 class="text-3xl font-bold leading-tight sm:text-4xl">{title}</h1>
+    <div class="text-muted-foreground min-h-5 flex flex-wrap items-center gap-3 mb-3 mt-3 text-sm sm:gap-4 sm:text-base">
         <div class="flex items-center gap-2">
-            <Star color="#fbbf24" fill="#fbbf24" size={20}/>
+            <Star color="#fbbf24" fill="#fbbf24" size={18}/>
             <span>{averageRating != null ? averageRating.toFixed(1) : "–"}</span>
         </div>
         <Separator orientation="vertical"/>
         <p>{m["recipe.common.reviews"]({count: ratingCount})}</p>
     </div>
-    <p class="text-lg text-muted-foreground mb-6">{description}
+    <p class="text-base text-muted-foreground mb-5 sm:text-lg sm:mb-6">{description}
     </p>
 
     {#if tags.length > 0}
@@ -331,8 +331,8 @@
         </div>
     {/if}
 
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4 sm:gap-0">
-        <div class="flex items-center flex-wrap gap-4 sm:gap-6 h-auto sm:h-5">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 gap-4 sm:gap-0">
+        <div class="flex items-center flex-wrap gap-3 sm:gap-6">
             <div class="flex items-center gap-2">
                 <Clock size={18}/>
                 <span class="font-medium">{m["recipe.common.duration"]({count: cookingTime})}</span>
@@ -351,7 +351,7 @@
         </div>
         <div class="flex items-center flex-wrap gap-2">
             {#if readonly}
-                <Button class="flex-1 sm:flex-none min-w-0" variant="secondary" onclick={shareRecipeOnClick}
+                <Button variant="secondary" onclick={shareRecipeOnClick}
                         disabled={isSharing || isUpdatingShare || !sharePathState}>
                     <Share2 class="w-4 h-4 sm:w-5 sm:h-5"/>
                     <span class="inline">{m["actions.share"]()}</span>
@@ -359,7 +359,7 @@
             {:else}
                 <Dialog.Root bind:open={showRatingDialog}>
                     <Dialog.Trigger
-                            class={buttonVariants({ variant: "outline" }) + " flex-1 sm:flex-none min-w-0"}>
+                            class={buttonVariants({ variant: "outline" })}>
                         <Star
                                 class="sm:w-[18px] sm:h-[18px]"
                                 color={userRating != null ? "#fbbf24" : "currentColor"}
@@ -408,11 +408,11 @@
                         </Dialog.Footer>
                     </Dialog.Content>
                 </Dialog.Root>
-                <Button class="flex-1 sm:flex-none min-w-0" onclick={likeRecipeOnClick}>
+                <Button onclick={likeRecipeOnClick}>
                     <Heart class="w-4 h-4 sm:w-5 sm:h-5" fill={isFavorite ? "white" : "none"}/>
                     <span class="inline">{m["actions.save"]()}</span>
                 </Button>
-                <Button href="/recipe/{recipeId}/cook" class="flex-1 sm:flex-none min-w-0" variant="default">
+                <Button href="/recipe/{recipeId}/cook" variant="default">
                         <ChefHat class="w-4 h-4 sm:w-5 sm:h-5"/>
                         <span class="inline">{m["recipe.cookMode.title"]()}</span>
                     </Button>
@@ -500,7 +500,7 @@
         </div>
     </div>
     <div class="mb-6">
-        <img alt="" class="w-full h-96 object-cover rounded-lg shadow-lg border" src={image}>
+        <img alt="" class="w-full h-56 object-cover rounded-xl shadow-lg border sm:h-96" src={image}>
     </div>
 </div>
 

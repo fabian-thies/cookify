@@ -434,6 +434,7 @@
     "searchPlaceholder": "Rezepte durchsuchen...",
     "noRecipes": "Keine Rezepte gefunden",
     "dropHere": "Rezept hier ablegen",
+    "addHere": "Hier hinzufügen",
     "error": {
       "load": "Wochenplan konnte nicht geladen werden",
       "add": "Rezept konnte nicht hinzugefügt werden",

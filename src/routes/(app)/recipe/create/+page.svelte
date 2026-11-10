@@ -124,7 +124,7 @@
     let creating = $state(false);
 </script>
 
-<div class="container mx-auto mt-14">
+<div class="mx-auto mt-2 sm:mt-6">
     <form action="?/createRecipe" enctype="multipart/form-data" method="POST" use:enhance={() => {
         creating = true;
         return async ({ result }) => {
@@ -143,7 +143,7 @@
             }
         }}
     }>
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-8">
             <div class="space-y-6 lg:col-span-2">
                 <General/>
                 <Ingredients ingredients={ingredients}/>

@@ -436,6 +436,7 @@
     "searchPlaceholder": "Search recipes...",
     "noRecipes": "No recipes found",
     "dropHere": "Drop recipe here",
+    "addHere": "Add here",
     "error": {
       "load": "Failed to load meal plan",
       "add": "Failed to add recipe",

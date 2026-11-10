@@ -25,9 +25,9 @@ $effect(() => {
 });
 </script>
 
-<div class="flex flex-col gap-6 p-4 sm:p-6 mt-4">
+<div class="flex flex-col gap-6 mt-2">
     <div class="space-y-1">
-        <h1 class="font-bold text-4xl tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
+        <h1 class="font-bold text-3xl sm:text-4xl tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
             {m["nav.collection"]()}
         </h1>
         <div class="h-1 w-20 bg-gradient-to-r from-primary to-primary/50 rounded-full"></div>
@@ -49,7 +49,7 @@ $effect(() => {
             <p class="text-muted-foreground text-lg font-medium">{m["collection.noCollections"]()}</p>
         </div>
     {:else}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 place-items-stretch">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 place-items-stretch">
             {#each collections as {title, recipeCount, id, thumbnails}}
                 <CollectionCard title={title} images={thumbnails} collectionId={id} recipeCount={recipeCount}/>
             {/each}

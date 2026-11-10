@@ -24,7 +24,7 @@
     });
 </script>
 
-<div class="flex flex-col gap-20 p-4 sm:p-6 mt-8 mb-12 fade-stagger">
+<div class="flex flex-col gap-10 sm:gap-16 mt-4 mb-8 fade-stagger">
     <RecipeCarousel recipes={popularRecipes} title={m["routes.home.popularRecipes"]()} class="animate-fade-in" {loading}/>
     <RecipeCarousel recipes={recentRecipes} title={m["routes.home.recentlyAdded"]()} class="animate-fade-in" {loading}/>
     <RecipeCarousel recipes={discoverRecipes} title={m["routes.home.discover"]()} class="animate-fade-in" {loading}/>

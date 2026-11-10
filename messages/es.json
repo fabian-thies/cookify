@@ -434,6 +434,7 @@
     "searchPlaceholder": "Buscar recetas...",
     "noRecipes": "No se encontraron recetas",
     "dropHere": "Suelta la receta aquí",
+    "addHere": "Añadir aquí",
     "error": {
       "load": "Error al cargar el plan semanal",
       "add": "Error al añadir la receta",

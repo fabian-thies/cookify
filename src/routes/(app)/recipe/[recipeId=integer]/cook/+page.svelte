@@ -206,19 +206,19 @@
 </script>
 
 {#if recipe}
-    <div class="fixed inset-0 z-50 bg-background flex flex-col">
-        <div class="flex items-center justify-between px-4 py-3 border-b border-border bg-card/80 backdrop-blur-sm">
-            <div class="flex items-center gap-3">
-                <ChefHat class="w-6 h-6 text-primary"/>
-                <h1 class="text-lg font-bold truncate max-w-[50vw]">{recipe.title}</h1>
+    <div class="fixed inset-0 z-50 flex h-dvh flex-col bg-background">
+        <div class="flex items-center justify-between gap-2 border-b border-border bg-card/80 px-3 py-2 pt-[max(0.5rem,env(safe-area-inset-top))] backdrop-blur-sm sm:px-4 sm:py-3">
+            <div class="flex min-w-0 items-center gap-2 sm:gap-3">
+                <ChefHat class="h-5 w-5 shrink-0 text-primary sm:h-6 sm:w-6"/>
+                <h1 class="truncate text-base font-bold sm:text-lg">{recipe.title}</h1>
             </div>
-            <div class="flex items-center gap-2">
-                <Button variant="ghost" size="sm" onclick={() => showIngredients = !showIngredients}>
-                    <ListChecks class="w-4 h-4 mr-1.5"/>
+            <div class="flex shrink-0 items-center gap-1.5">
+                <Button variant="ghost" size="sm" class="px-2 sm:px-3" onclick={() => showIngredients = !showIngredients}>
+                    <ListChecks class="h-4 w-4 sm:mr-1.5"/>
                     <span class="hidden sm:inline">{m["recipe.cookMode.ingredients"]()}</span>
                 </Button>
-                <Button variant="outline" size="sm" onclick={exitCookMode}>
-                    <X class="w-4 h-4 mr-1.5"/>
+                <Button variant="outline" size="sm" class="px-2 sm:px-3" onclick={exitCookMode}>
+                    <X class="h-4 w-4 sm:mr-1.5"/>
                     <span class="hidden sm:inline">{m["recipe.cookMode.exit"]()}</span>
                 </Button>
             </div>
@@ -251,7 +251,7 @@
                     </ul>
                 </div>
             {/if}
-            <div class="flex-1 flex flex-col items-center justify-center px-4 sm:px-8 py-6">
+            <div class="flex flex-1 flex-col items-center justify-center overflow-y-auto px-4 py-4 sm:px-8 sm:py-6">
                 {#if isFinished}
                     <div class="text-center animate-fade-in">
                         <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
@@ -336,13 +336,14 @@
                 </div>
             </div>
         {/if}
-        <div class="border-t border-border bg-card px-4 py-4 sm:px-8">
-            <div class="max-w-2xl mx-auto">
-                <div class="flex items-center justify-center gap-2 mb-4">
-                    <Timer class="w-4 h-4 text-muted-foreground"/>
-                    <span class="text-sm text-muted-foreground">{m["recipe.cookMode.timer"]()}:</span>
+        <div class="border-t border-border bg-card px-3 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-8 sm:py-4">
+            <div class="mx-auto max-w-2xl">
+                <div class="mb-3 flex items-center gap-2 overflow-x-auto sm:mb-4 sm:justify-center">
+                    <Timer class="hidden h-4 w-4 shrink-0 text-muted-foreground sm:block"/>
+                    <span class="hidden shrink-0 text-sm text-muted-foreground sm:inline">{m["recipe.cookMode.timer"]()}:</span>
                     {#each [1, 3, 5, 10, 15] as mins}
                         <Button
+                            class="shrink-0"
                             variant="secondary"
                             size="sm"
                             onclick={() => startTimer(mins)}
@@ -351,31 +352,31 @@
                         </Button>
                     {/each}
                 </div>
-                <div class="flex items-center justify-center gap-2 mb-4">
+                <div class="mb-3 flex items-center justify-center gap-2 sm:mb-4">
                     <input
                         type="number"
                         bind:value={customMinutes}
                         min="1"
                         max="999"
-                        class="w-16 h-8 text-center bg-secondary rounded-md border border-border text-sm"
+                        class="h-8 w-16 rounded-md border border-border bg-secondary text-center text-base sm:text-sm"
                     />
                     <span class="text-sm text-muted-foreground">{m["recipe.cookMode.setMinutes"]()}</span>
                     <Button variant="outline" size="sm" onclick={() => {
                         if (customMinutes > 0) startTimer(customMinutes);
                     }}>
-                        <Play class="w-3.5 h-3.5 mr-1"/>
+                        <Play class="mr-1 h-3.5 w-3.5"/>
                         {m["recipe.cookMode.startTimer"]()}
                     </Button>
                 </div>
-                <div class="flex items-center justify-between gap-4">
+                <div class="flex items-center justify-between gap-3 sm:gap-4">
                     <Button
                         variant="outline"
                         size="lg"
                         onclick={prevStep}
                         disabled={currentStep === 0}
-                        class="flex-1 max-w-[200px]"
+                        class="h-11 flex-1 max-w-[200px]"
                     >
-                        <ChevronLeft class="w-5 h-5 mr-1"/>
+                        <ChevronLeft class="mr-1 h-5 w-5"/>
                         {m["recipe.cookMode.previous"]()}
                     </Button>
 
@@ -384,10 +385,10 @@
                         size="lg"
                         onclick={nextStep}
                         disabled={isFinished}
-                        class="flex-1 max-w-[200px]"
+                        class="h-11 flex-1 max-w-[200px]"
                     >
                         {m["recipe.cookMode.next"]()}
-                        <ChevronRight class="w-5 h-5 ml-1"/>
+                        <ChevronRight class="ml-1 h-5 w-5"/>
                     </Button>
                 </div>
             </div>
