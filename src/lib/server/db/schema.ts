@@ -48,6 +48,11 @@ export const recipes = pgTable('recipes', {
     visibility: text('visibility', {enum: ['public', 'private']}).notNull().default('public'),
     shareToken: text('share_token').unique(),
     shareEnabled: boolean('share_enabled').notNull().default(false),
+    calories: integer('calories'),
+    protein: integer('protein'),
+    carbs: integer('carbs'),
+    fat: integer('fat'),
+    fiber: integer('fiber'),
 });
 
 export const difficulty = pgTable('difficulty', {

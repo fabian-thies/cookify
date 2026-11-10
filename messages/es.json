@@ -43,6 +43,14 @@
       "steps": "Pasos",
       "forServings": "Para {count} personas",
       "servingsCount": "{count} porciones",
+      "nutrition": {
+        "title": "Nutrición por porción",
+        "calories": "{value} kcal",
+        "protein": "Proteína {value} g",
+        "carbs": "Carbohidratos {value} g",
+        "fat": "Grasa {value} g",
+        "fiber": "Fibra {value} g"
+      },
       "duration": "{count} min",
       "reviews": "{count} reseñas",
       "ratePrompt": "Valora esta receta",
@@ -145,6 +153,15 @@
           }
         }
       },
+      "nutrition": {
+        "title": "Nutrición (por porción)",
+        "description": "Opcional. Las recetas creadas con IA lo completan automáticamente.",
+        "calories": "Calorías (kcal)",
+        "protein": "Proteína (g)",
+        "carbs": "Carbohidratos (g)",
+        "fat": "Grasa (g)",
+        "fiber": "Fibra (g)"
+      },
       "tips": {
         "title": "Consejos",
         "tipLabel": "Consejo",
@@ -167,6 +184,44 @@
       "noRecipe": "No se encontro ninguna receta en esta pagina.",
       "scrapeError": "No se pudo importar la receta.",
       "success": "Receta importada con exito!"
+    },
+    "ai": {
+      "button": "Crear con IA",
+      "title": "Crear receta con IA",
+      "description": "Describe tu idea o sube una foto. La IA completa el formulario por ti.",
+      "tabs": {
+        "text": "Describir",
+        "photo": "Foto"
+      },
+      "promptLabel": "¿Qué te gustaría cocinar?",
+      "promptPlaceholder": "p. ej. una pasta vegetariana rápida con espinacas y feta",
+      "coverHint": "Puedes añadir una imagen de portada en el formulario después de generarla.",
+      "photoLabel": "Foto",
+      "photoModeLabel": "¿Qué muestra la foto?",
+      "photoModes": {
+        "recipe": "Una receta (libro de cocina, nota escrita, captura)",
+        "dish": "Un plato terminado",
+        "ingredients": "Ingredientes / nevera"
+      },
+      "useAsCover": "Usar esta foto como imagen de la receta",
+      "generate": "Generar receta",
+      "generating": "Creando receta...",
+      "error": "No se pudo crear la receta. Inténtalo de nuevo.",
+      "success": "Receta completada. Revísala antes de guardar.",
+      "editButton": "Editar con IA",
+      "editTitle": "Editar receta con IA",
+      "editDescription": "Describe qué debe cambiar. La IA actualiza el formulario.",
+      "instructionLabel": "¿Qué debe cambiar?",
+      "instructionPlaceholder": "p. ej. hacerla vegana, para 8 porciones o pasos más simples",
+      "apply": "Aplicar cambios",
+      "applying": "Aplicando cambios...",
+      "applied": "Receta actualizada. Revísala antes de guardar.",
+      "editError": "No se pudo actualizar la receta. Inténtalo de nuevo.",
+      "nutrition": {
+        "button": "Estimar nutrición",
+        "success": "Nutrición estimada.",
+        "error": "No se pudo estimar la nutrición."
+      }
     },
     "cookMode": {
       "title": "Modo Cocina",
@@ -292,11 +347,20 @@
     "tabs": {
       "general": "General",
       "users": "Usuarios",
-      "backups": "Copias de seguridad"
+      "backups": "Copias de seguridad",
+      "ai": "IA"
     },
     "security": {
       "title": "Seguridad",
       "allowRegistrations": "Permitir registros"
+    },
+    "ai": {
+      "title": "Funciones de IA",
+      "description": "Permite a los usuarios crear, editar y analizar recetas con IA.",
+      "enable": "Activar funciones de IA",
+      "configured": "Clave de API configurada",
+      "notConfigured": "No hay clave de API configurada. Define OPENAI_KEY en el servidor.",
+      "envHint": "Se configura con OPENAI_KEY, OPENAI_BASE_URL, OPENAI_MODEL y OPENAI_VISION_MODEL."
     },
     "save": "Guardar cambios",
     "saving": "Guardando...",

@@ -112,6 +112,34 @@
                     placeholder={m["recipe.form.details.visibility.placeholder"]()}
                     value={recipe?.visibility ?? "public"}/>
         </div>
+        <div class="flex w-full flex-col gap-3">
+            <div>
+                <Label>{m["recipe.form.nutrition.title"]()}</Label>
+                <p class="text-xs text-muted-foreground">{m["recipe.form.nutrition.description"]()}</p>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="flex flex-col gap-1.5">
+                    <Label for="calories" class="text-xs">{m["recipe.form.nutrition.calories"]()}</Label>
+                    <Input id="calories" min="0" name="calories" type="number" value={recipe?.calories ?? ''}/>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <Label for="protein" class="text-xs">{m["recipe.form.nutrition.protein"]()}</Label>
+                    <Input id="protein" min="0" name="protein" type="number" value={recipe?.protein ?? ''}/>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <Label for="carbs" class="text-xs">{m["recipe.form.nutrition.carbs"]()}</Label>
+                    <Input id="carbs" min="0" name="carbs" type="number" value={recipe?.carbs ?? ''}/>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <Label for="fat" class="text-xs">{m["recipe.form.nutrition.fat"]()}</Label>
+                    <Input id="fat" min="0" name="fat" type="number" value={recipe?.fat ?? ''}/>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <Label for="fiber" class="text-xs">{m["recipe.form.nutrition.fiber"]()}</Label>
+                    <Input id="fiber" min="0" name="fiber" type="number" value={recipe?.fiber ?? ''}/>
+                </div>
+            </div>
+        </div>
         <div class="flex w-full flex-col gap-1.5">
             <Label for="tagInput">{m["recipe.form.details.tagsLabel"]()}</Label>
             <Input

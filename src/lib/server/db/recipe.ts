@@ -37,7 +37,12 @@ export async function createRecipe({
                                        tips,
                                        tags,
                                        image,
-                                       visibility
+                                       visibility,
+                                       calories = null,
+                                       protein = null,
+                                       carbs = null,
+                                       fat = null,
+                                       fiber = null
                                    }: CreateRecipeInput) {
     const db = getDb();
     const result = await db.insert(recipes).values({
@@ -47,7 +52,12 @@ export async function createRecipe({
         cookingTime: cookTime,
         servings,
         userId: userId,
-        visibility
+        visibility,
+        calories,
+        protein,
+        carbs,
+        fat,
+        fiber
     }).returning({id: recipes.id});
 
     await db.insert(difficultyToRecipe).values({recipeId: result[0].id, difficultyId: getDifficultyId(difficulty)});
@@ -128,7 +138,12 @@ export async function updateRecipe({
                                        tips,
                                        tags,
                                        image,
-                                       visibility
+                                       visibility,
+                                       calories = null,
+                                       protein = null,
+                                       carbs = null,
+                                       fat = null,
+                                       fiber = null
                                    }: UpdateRecipeInput) {
     const db = getDb();
 
@@ -153,7 +168,12 @@ export async function updateRecipe({
             servings,
             userId,
             updatedAt: new Date(),
-            visibility
+            visibility,
+            calories,
+            protein,
+            carbs,
+            fat,
+            fiber
         })
         .where(eq(recipes.id, id));
 
@@ -201,6 +221,26 @@ export async function updateRecipe({
     }
 
     return {id};
+}
+
+export async function updateRecipeNutrition(
+    recipeId: number,
+    nutrition: {calories: number | null; protein: number | null; carbs: number | null; fat: number | null; fiber: number | null}
+) {
+    const db = getDb();
+
+    const [updated] = await db.update(recipes)
+        .set(nutrition)
+        .where(eq(recipes.id, recipeId))
+        .returning({
+            calories: recipes.calories,
+            protein: recipes.protein,
+            carbs: recipes.carbs,
+            fat: recipes.fat,
+            fiber: recipes.fiber
+        });
+
+    return updated;
 }
 
 export async function getRecipes(offset = 0, limit?: number, orderBy?: "recent" | "popular" | "random", includePrivate = false) {

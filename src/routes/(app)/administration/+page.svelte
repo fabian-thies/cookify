@@ -4,6 +4,8 @@
     import {getAllowRegistrations} from "$lib/functions/site.remote";
     import type {PublicUser} from "$lib/server/db/schema";
 
+    const {data} = $props();
+
     let users = $state<PublicUser[]>([]);
     let allowRegistrations = $state(true);
     let loading = $state(true);
@@ -29,5 +31,10 @@
         <span class="text-muted-foreground">Loading…</span>
     </div>
 {:else}
-    <General {users} allowRegistration={allowRegistrations} />
+    <General
+        {users}
+        allowRegistration={allowRegistrations}
+        aiConfigured={data.ai.configured}
+        aiEnabled={data.ai.enabled}
+    />
 {/if}

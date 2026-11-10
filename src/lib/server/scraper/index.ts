@@ -226,7 +226,7 @@ function extractFromJsonLd(jsonLd: Record<string, unknown>): ScrapedRecipe | nul
     };
 }
 
-export async function scrapeRecipe(url: string): Promise<ScrapedRecipe> {
+export async function fetchRecipePage(url: string): Promise<string> {
     const response = await fetch(url, {
         headers: {
             'User-Agent': 'Mozilla/5.0 (compatible; CookifyRecipeBot/1.0)',
@@ -239,8 +239,10 @@ export async function scrapeRecipe(url: string): Promise<ScrapedRecipe> {
         throw new Error(`Failed to fetch URL: ${response.status} ${response.statusText}`);
     }
 
-    const html = await response.text();
+    return response.text();
+}
 
+export function scrapeRecipeFromHtml(html: string, url: string): ScrapedRecipe | null {
     const jsonLdRegex = /<script\s+type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi;
     let match: RegExpExecArray | null;
 
@@ -278,7 +280,7 @@ export async function scrapeRecipe(url: string): Promise<ScrapedRecipe> {
         };
     }
 
-    throw new Error('No recipe found on this page.');
+    return null;
 }
 
 function decodeHtmlEntities(str: string): string {

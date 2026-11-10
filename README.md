@@ -18,6 +18,12 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
     - Set recipes as **public** or **private** to control who can see them.
 - **Import from URL (Recipe Scraper)**
     - Paste a recipe URL and let Cookify extract title, ingredients, steps, and image automatically via JSON-LD structured data.
+    - If a page has no structured data, a configured AI model extracts the recipe as a fallback.
+- **AI Recipes (optional)**
+    - Create recipes from a text idea or a photo (cookbook page, handwritten note, finished dish, or fridge contents).
+    - Edit existing recipes with natural language (e.g. "make it vegan" or "for 8 servings").
+    - AI-generated recipes include estimated nutrition per serving; nutrition can also be estimated for existing recipes.
+    - Admins can enable or disable AI features globally at any time.
 - **Smart Search & Filters**
     - Search and filter recipes by difficulty, cook time, or keywords.
 - **Favorites & Ratings**
@@ -78,6 +84,20 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
   ```
 
 * File uploads are persisted in the `./uploads` directory (mounted into the container).
+
+* **AI configuration (optional):**
+  The AI features use an OpenAI-compatible chat completions endpoint and are disabled when no key is set.
+  Add these variables to your `.env` / Coolify environment:
+
+  ```dotenv
+  OPENAI_KEY=your_api_key
+  OPENAI_BASE_URL=https://ollama.com/v1   # Ollama Cloud; use https://api.openai.com/v1 for OpenAI
+  OPENAI_MODEL=deepseek-v4.1-flash:1017          # text model
+  OPENAI_VISION_MODEL=deepseek-v4.1-flash:1017   # used for image input
+  ```
+
+  After deploying, an administrator can turn the features on or off under **Administration → AI**.
+  Recipe text and photos are sent to the configured provider; review its privacy policy before enabling AI.
 
 * Database **migrations** run automatically on container start (`scripts/migrate.ts`).
 

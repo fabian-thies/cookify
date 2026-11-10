@@ -10,7 +10,8 @@
         Star,
         Trash2,
         Users,
-        ChefHat
+        ChefHat,
+        Sparkles
     } from "lucide-svelte";
     import * as Dialog from "$lib/components/ui/dialog/index.js";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
@@ -27,6 +28,7 @@
         enableRecipeShare,
         disableRecipeShare
     } from "$lib/functions/recipe.remote";
+    import {estimateNutrition} from "$lib/functions/ai.remote";
     import {toast} from "svelte-sonner";
     import {goto} from "$app/navigation";
     import {type Difficulty, difficultyLabels} from "$lib/types/recipe";
@@ -49,7 +51,13 @@
         readonly?: boolean,
         sharePath?: string,
         shareEnabled?: boolean;
-        tags?: string[]
+        tags?: string[];
+        calories?: number | null;
+        protein?: number | null;
+        carbs?: number | null;
+        fat?: number | null;
+        fiber?: number | null;
+        aiEnabled?: boolean;
     };
 
     let {
@@ -68,7 +76,13 @@
         readonly = false,
         sharePath,
         shareEnabled = false,
-        tags = []
+        tags = [],
+        calories: initialCalories = null,
+        protein: initialProtein = null,
+        carbs: initialCarbs = null,
+        fat: initialFat = null,
+        fiber: initialFiber = null,
+        aiEnabled = false
     }: props = $props();
 
     let averageRating = $state<number | null>(initialAverageRating);
@@ -80,6 +94,14 @@
     let isUpdatingShare = $state(false);
     let showDeleteDialog = $state(false);
     let showRatingDialog = $state(false);
+    let isEstimatingNutrition = $state(false);
+    let nutrition = $state({
+        calories: initialCalories,
+        protein: initialProtein,
+        carbs: initialCarbs,
+        fat: initialFat,
+        fiber: initialFiber
+    });
     const stars = [1, 2, 3, 4, 5] as const;
     let sharePathState = $state<string | null>(sharePath ?? null);
     let isShareEnabled = $state(shareEnabled || !!sharePathState);
@@ -149,6 +171,22 @@
             await likeRecipe({recipeId});
         } catch (e) {
             toast.error(m["actions.error"]());
+        }
+    }
+
+    async function estimateNutritionOnClick() {
+        if (isEstimatingNutrition || !recipeOwner) {
+            return;
+        }
+
+        try {
+            isEstimatingNutrition = true;
+            nutrition = await estimateNutrition({recipeId});
+            toast.success(m["recipe.ai.nutrition.success"]());
+        } catch {
+            toast.error(m["recipe.ai.nutrition.error"]());
+        } finally {
+            isEstimatingNutrition = false;
         }
     }
 
@@ -269,6 +307,27 @@
             {#each tags as tag}
                 <Badge variant="secondary">{tag}</Badge>
             {/each}
+        </div>
+    {/if}
+
+    {#if nutrition.calories != null || nutrition.protein != null || nutrition.carbs != null || nutrition.fat != null || nutrition.fiber != null}
+        <div class="flex flex-wrap items-center gap-2 mb-6">
+            <span class="text-sm text-muted-foreground">{m["recipe.common.nutrition.title"]()}:</span>
+            {#if nutrition.calories != null}
+                <Badge variant="secondary">{m["recipe.common.nutrition.calories"]({value: nutrition.calories})}</Badge>
+            {/if}
+            {#if nutrition.protein != null}
+                <Badge variant="secondary">{m["recipe.common.nutrition.protein"]({value: nutrition.protein})}</Badge>
+            {/if}
+            {#if nutrition.carbs != null}
+                <Badge variant="secondary">{m["recipe.common.nutrition.carbs"]({value: nutrition.carbs})}</Badge>
+            {/if}
+            {#if nutrition.fat != null}
+                <Badge variant="secondary">{m["recipe.common.nutrition.fat"]({value: nutrition.fat})}</Badge>
+            {/if}
+            {#if nutrition.fiber != null}
+                <Badge variant="secondary">{m["recipe.common.nutrition.fiber"]({value: nutrition.fiber})}</Badge>
+            {/if}
         </div>
     {/if}
 
@@ -419,6 +478,13 @@
                                                    disabled={isUpdatingShare}>
                                     <Link2Off class="w-4 h-4 sm:w-5 sm:h-5"/>
                                     <span class="inline">{m["actions.disableSharing"]()}</span>
+                                </DropdownMenu.Item>
+                            {/if}
+                            {#if recipeOwner && aiEnabled}
+                                <DropdownMenu.Item class="flex items-center gap-3" onclick={estimateNutritionOnClick}
+                                                   disabled={isEstimatingNutrition}>
+                                    <Sparkles size={16} class="sm:w-[18px] sm:h-[18px]"/>
+                                    <span class="inline">{m["recipe.ai.nutrition.button"]()}</span>
                                 </DropdownMenu.Item>
                             {/if}
                             {#if recipeOwner}

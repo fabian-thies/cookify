@@ -43,6 +43,14 @@
       "steps": "Steps",
       "forServings": "Serves {count}",
       "servingsCount": "{count} servings",
+      "nutrition": {
+        "title": "Nutrition per serving",
+        "calories": "{value} kcal",
+        "protein": "Protein {value} g",
+        "carbs": "Carbs {value} g",
+        "fat": "Fat {value} g",
+        "fiber": "Fiber {value} g"
+      },
       "duration": "{count} min",
       "reviews": "{count} reviews",
       "ratePrompt": "Rate this recipe",
@@ -145,6 +153,15 @@
           }
         }
       },
+      "nutrition": {
+        "title": "Nutrition (per serving)",
+        "description": "Optional. AI-created recipes fill this automatically.",
+        "calories": "Calories (kcal)",
+        "protein": "Protein (g)",
+        "carbs": "Carbs (g)",
+        "fat": "Fat (g)",
+        "fiber": "Fiber (g)"
+      },
       "tips": {
         "title": "Tips",
         "tipLabel": "Tip",
@@ -167,6 +184,44 @@
       "noRecipe": "No recipe found on this page.",
       "scrapeError": "Failed to import the recipe.",
       "success": "Recipe imported successfully!"
+    },
+    "ai": {
+      "button": "Create with AI",
+      "title": "Create recipe with AI",
+      "description": "Describe your idea or upload a photo. AI fills the form for you.",
+      "tabs": {
+        "text": "Describe",
+        "photo": "Photo"
+      },
+      "promptLabel": "What would you like to cook?",
+      "promptPlaceholder": "e.g. a quick vegetarian pasta with spinach and feta",
+      "coverHint": "You can add a cover image in the form after generating.",
+      "photoLabel": "Photo",
+      "photoModeLabel": "What does the photo show?",
+      "photoModes": {
+        "recipe": "A recipe (cookbook, handwritten note, screenshot)",
+        "dish": "A finished dish",
+        "ingredients": "Ingredients / fridge"
+      },
+      "useAsCover": "Use this photo as the recipe image",
+      "generate": "Generate recipe",
+      "generating": "Creating recipe...",
+      "error": "Could not create a recipe. Please try again.",
+      "success": "Recipe filled in. Please review it before saving.",
+      "editButton": "Edit with AI",
+      "editTitle": "Edit recipe with AI",
+      "editDescription": "Describe what should change. AI updates the form.",
+      "instructionLabel": "What should change?",
+      "instructionPlaceholder": "e.g. make it vegan, for 8 servings, or simpler steps",
+      "apply": "Apply changes",
+      "applying": "Applying changes...",
+      "applied": "Recipe updated. Please review it before saving.",
+      "editError": "Could not update the recipe. Please try again.",
+      "nutrition": {
+        "button": "Estimate nutrition",
+        "success": "Nutrition estimated.",
+        "error": "Could not estimate nutrition."
+      }
     },
     "cookMode": {
       "title": "Cook Mode",
@@ -294,11 +349,20 @@
     "tabs": {
       "general": "General",
       "users": "Users",
-      "backups": "Backups"
+      "backups": "Backups",
+      "ai": "AI"
     },
     "security": {
       "title": "Security",
       "allowRegistrations": "Allow registrations"
+    },
+    "ai": {
+      "title": "AI features",
+      "description": "Allow users to create, edit and analyze recipes with AI.",
+      "enable": "Enable AI features",
+      "configured": "API key configured",
+      "notConfigured": "No API key configured. Set OPENAI_KEY on the server.",
+      "envHint": "Configured with OPENAI_KEY, OPENAI_BASE_URL, OPENAI_MODEL and OPENAI_VISION_MODEL."
     },
     "save": "Save changes",
     "saving": "Saving...",

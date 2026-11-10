@@ -12,6 +12,10 @@
     import {Spinner} from "$lib/components/ui/spinner/index.js";
 
     import ImportDialog from "$lib/components/recipe/import/ImportDialog.svelte";
+    import AiRecipeDialog from "$lib/components/recipe/import/AiRecipeDialog.svelte";
+
+    const {form, data} = $props();
+    const aiEnabled = $derived(!!data.ai?.configured && !!data.ai?.enabled);
 
     type ScrapedRecipe = {
         title: string;
@@ -23,7 +27,15 @@
         ingredients: { name: string; amount: number | null; unit: string }[];
         steps: string[];
         tags: string[];
-        sourceUrl: string;
+        tips?: string[];
+        nutrition?: {
+            calories: number | null;
+            protein: number | null;
+            carbs: number | null;
+            fat: number | null;
+            fiber: number | null;
+        } | null;
+        sourceUrl?: string | null;
     };
 
     let ingredients = $state<{id: number | null; recipeId: number; name: string; quantity: number | null; unit: string}[]>([]);
@@ -31,8 +43,8 @@
     let tags = $state<string[]>([]);
     let tips = $state<{id: number | null; recipeId: number; tip: string}[]>([]);
 
-    function handleImport(recipe: ScrapedRecipe) {
-        const formEl = document.querySelector('form') as HTMLFormElement;
+    async function handleImport(recipe: ScrapedRecipe) {
+        const formEl = document.querySelector('form[enctype="multipart/form-data"]') as HTMLFormElement;
         if (!formEl) return;
 
         const titleInput = formEl.querySelector('[name="title"]') as HTMLInputElement;
@@ -75,38 +87,39 @@
             tags = [...recipe.tags];
         }
 
-        // @ts-ignore
         if (recipe.tips && recipe.tips.length > 0) {
-            // @ts-ignore
-            tips = recipe.tips.map((t: any) => ({
+            tips = recipe.tips.map((tip) => ({
                 id: null,
                 recipeId: 0,
-                tip: t.tip || t
+                tip
             }));
         }
 
-        if (recipe.image) {
-            fetch(recipe.image)
-                .then(res => res.blob())
-                .then(blob => {
-                    const file = new File([blob], 'imported-image.jpg', { type: blob.type || 'image/jpeg' });
-                    const dt = new DataTransfer();
-                    dt.items.add(file);
-                    const fileInput = formEl.querySelector('[name="picture"]') as HTMLInputElement;
-                    if (fileInput) {
-                        fileInput.files = dt.files;
-                        fileInput.dispatchEvent(new Event('change', { bubbles: true }));
-                    }
-                })
-                .catch(() => {
-                    // Silently ignore image download failures
-                });
+        if (recipe.nutrition) {
+            for (const key of ["calories", "protein", "carbs", "fat", "fiber"] as const) {
+                const value = recipe.nutrition[key];
+                const input = formEl.querySelector(`[name="${key}"]`) as HTMLInputElement;
+                if (input && value != null) input.value = String(value);
+            }
         }
 
-        toast.success((m as any)['recipe.import.success']());
+        if (recipe.image) {
+            try {
+                const res = await fetch(recipe.image);
+                const blob = await res.blob();
+                const file = new File([blob], 'imported-image.jpg', {type: blob.type || 'image/jpeg'});
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                const fileInput = formEl.querySelector('[name="picture"]') as HTMLInputElement;
+                if (fileInput) {
+                    fileInput.files = dt.files;
+                    fileInput.dispatchEvent(new Event('change', {bubbles: true}));
+                }
+            } catch {
+                // Silently ignore image download failures
+            }
+        }
     }
-
-    const {form} = $props();
 
     let creating = $state(false);
 </script>
@@ -141,6 +154,9 @@
             <div class="space-y-6">
                 <Details tags={tags}/>
                 <div class="flex flex-col gap-3 mt-6">
+                    {#if aiEnabled}
+                        <AiRecipeDialog onImport={handleImport}/>
+                    {/if}
                     <ImportDialog onImport={handleImport}/>
                     <Button class="w-full" type="submit">
                         {#if creating}

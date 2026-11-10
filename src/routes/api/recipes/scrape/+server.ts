@@ -1,6 +1,10 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types.js';
-import { scrapeRecipe } from '$lib/server/scraper/index.js';
+import { fetchRecipePage, scrapeRecipeFromHtml } from '$lib/server/scraper/index.js';
+import { generateRecipeFromHtml } from '$lib/server/ai/index.js';
+import { isAiAvailable } from '$lib/server/ai/availability.js';
+import { checkAiRateLimit } from '$lib/server/ai/rate-limit.js';
+import { getLocale } from '$lib/paraglide/runtime';
 import { resolve4, resolve6 } from 'node:dns/promises';
 
 function isPrivateIp(ip: string): boolean {
@@ -72,16 +76,30 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         return json({ error: 'URLs pointing to internal networks are not allowed' }, { status: 400 });
     }
 
+    let html: string;
     try {
-        const recipe = await scrapeRecipe(url);
-        return json(recipe);
+        html = await fetchRecipePage(url);
     } catch (err) {
         const message = err instanceof Error ? err.message : 'Failed to scrape recipe';
-
-        if (message.includes('No recipe found')) {
-            return json({ error: message }, { status: 404 });
-        }
-
         return json({ error: message }, { status: 500 });
     }
+
+    const scraped = scrapeRecipeFromHtml(html, url);
+    const needsAiFallback = !scraped || scraped.ingredients.length === 0 || scraped.steps.length === 0;
+
+    if (needsAiFallback) {
+        try {
+            if (await isAiAvailable() && checkAiRateLimit(locals.user.id)) {
+                return json(await generateRecipeFromHtml(html, url, getLocale()));
+            }
+        } catch (err) {
+            console.error('AI recipe import fallback failed:', err);
+        }
+    }
+
+    if (scraped) {
+        return json(scraped);
+    }
+
+    return json({ error: 'No recipe found on this page.' }, { status: 404 });
 };

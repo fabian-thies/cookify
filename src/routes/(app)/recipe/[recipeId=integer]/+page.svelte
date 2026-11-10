@@ -27,7 +27,9 @@ import Tips from "$lib/components/recipe/view/Tips.svelte";
 </script>
 
 {#if recipe}
-    <Overview {...recipe} {recipeOwner}/>
+    {#key recipe.id}
+        <Overview {...recipe} {recipeOwner} aiEnabled={!!data.ai?.configured && !!data.ai?.enabled}/>
+    {/key}
     <div class="grid lg:grid-cols-3 gap-8">
         <div class="lg:col-span-1">
             <Ingredients ingredients={recipe.ingredients} servings={recipe.servings}/>

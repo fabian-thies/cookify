@@ -5,6 +5,7 @@
     import {Label} from "$lib/components/ui/label/index.js";
     import {m} from "$lib/paraglide/messages";
     import {Spinner} from "$lib/components/ui/spinner/index.js";
+    import {toast} from "svelte-sonner";
 
     type ScrapedRecipe = {
         title: string;
@@ -16,13 +17,21 @@
         ingredients: { name: string; amount: number | null; unit: string }[];
         steps: string[];
         tags: string[];
-        sourceUrl: string;
+        tips?: string[];
+        nutrition?: {
+            calories: number | null;
+            protein: number | null;
+            carbs: number | null;
+            fat: number | null;
+            fiber: number | null;
+        } | null;
+        sourceUrl?: string | null;
     };
 
     let {
         onImport
     }: {
-        onImport: (recipe: ScrapedRecipe) => void;
+        onImport: (recipe: ScrapedRecipe) => void | Promise<void>;
     } = $props();
 
     let open = $state(false);
@@ -65,9 +74,10 @@
             }
 
             const recipe: ScrapedRecipe = await response.json();
-            onImport(recipe);
+            await onImport(recipe);
             open = false;
             url = '';
+            toast.success(m["recipe.import.success"]());
         } catch {
             error = m["recipe.import.scrapeError"]();
         } finally {

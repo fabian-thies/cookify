@@ -4,19 +4,25 @@
     import { Label } from "$lib/components/ui/label/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
     import { m } from "$lib/paraglide/messages";
-    import { ShieldCheck, Users, Download, Upload, HardDrive, Database, FileArchive, Loader2, TriangleAlert } from "lucide-svelte";
+    import { ShieldCheck, Users, Download, Upload, HardDrive, Database, FileArchive, Loader2, TriangleAlert, Sparkles } from "lucide-svelte";
     import * as Dialog from "$lib/components/ui/dialog/index.js";
 
     import {createColumns} from "../../../../routes/(app)/administration/columns";
     import DataTable from "../../../../routes/(app)/administration/data-table.svelte";
     import {Checkbox} from "$lib/components/ui/checkbox";
-    import {updateAllowRegistrations} from "$lib/functions/site.remote";
+    import {updateAiEnabled, updateAllowRegistrations} from "$lib/functions/site.remote";
     import {toast} from "svelte-sonner";
     import type {PublicUser} from "$lib/server/db/schema";
 
-    const { users: initialUsers, allowRegistration: initialAllowRegistration = true } = $props();
+    const {
+        users: initialUsers,
+        allowRegistration: initialAllowRegistration = true,
+        aiConfigured = false,
+        aiEnabled: initialAiEnabled = true
+    } = $props();
 
     let allowRegistration = $state(initialAllowRegistration);
+    let aiEnabled = $state(initialAiEnabled);
     let isSavingSettings = $state(false);
     let users = $state<PublicUser[]>([...initialUsers]);
 
@@ -43,7 +49,15 @@
         e.preventDefault();
         try {
             isSavingSettings = true;
-            await updateAllowRegistrations({value: allowRegistration});
+            const updates: Promise<unknown>[] = [
+                updateAllowRegistrations({value: allowRegistration})
+            ];
+
+            if (aiConfigured) {
+                updates.push(updateAiEnabled({value: aiEnabled}));
+            }
+
+            await Promise.all(updates);
 
             toast.success(m["settings.profile.saved"]());
         } catch (error) {
@@ -170,6 +184,7 @@
                 <Tabs.Trigger value="account">{m["admin.tabs.general"]()}</Tabs.Trigger>
                 <Tabs.Trigger value="users">{m["admin.tabs.users"]()}</Tabs.Trigger>
                 <Tabs.Trigger value="backups">{m["admin.tabs.backups"]()}</Tabs.Trigger>
+                <Tabs.Trigger value="ai">{m["admin.tabs.ai"]()}</Tabs.Trigger>
             </Tabs.List>
 
             <Tabs.Content value="account" class="mt-4">
@@ -245,6 +260,22 @@
                         <p class="text-sm text-destructive">{previewError}</p>
                     {/if}
                 </div>
+            </Tabs.Content>
+
+            <Tabs.Content value="ai" class="mt-4 space-y-4">
+                <div class="flex items-center gap-2">
+                    <Sparkles size={16} class="text-muted-foreground"/>
+                    <h3 class="text-sm font-medium">{m["admin.ai.title"]()}</h3>
+                </div>
+                <p class="text-sm text-muted-foreground">{m["admin.ai.description"]()}</p>
+                <p class={`text-sm font-medium ${aiConfigured ? "text-emerald-600" : "text-destructive"}`}>
+                    {aiConfigured ? m["admin.ai.configured"]() : m["admin.ai.notConfigured"]()}
+                </p>
+                <div class="flex items-center gap-3">
+                    <Checkbox id="ai_enabled" bind:checked={aiEnabled} disabled={!aiConfigured}/>
+                    <Label for="ai_enabled">{m["admin.ai.enable"]()}</Label>
+                </div>
+                <p class="text-xs text-muted-foreground">{m["admin.ai.envHint"]()}</p>
             </Tabs.Content>
         </Tabs.Root>
     </Card.Content>

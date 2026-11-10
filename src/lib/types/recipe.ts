@@ -14,6 +14,11 @@ export interface CreateRecipeInput {
     tips: string[];
     image: string;
     visibility: "public" | "private";
+    calories?: number | null;
+    protein?: number | null;
+    carbs?: number | null;
+    fat?: number | null;
+    fiber?: number | null;
 }
 
 export interface UpdateRecipeInput extends CreateRecipeInput {

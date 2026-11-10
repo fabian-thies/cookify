@@ -43,6 +43,14 @@
       "steps": "Schritte",
       "forServings": "Für {count} Portionen",
       "servingsCount": "{count} Portionen",
+      "nutrition": {
+        "title": "Nährwerte pro Portion",
+        "calories": "{value} kcal",
+        "protein": "Protein {value} g",
+        "carbs": "Kohlenhydrate {value} g",
+        "fat": "Fett {value} g",
+        "fiber": "Ballaststoffe {value} g"
+      },
       "duration": "{count} Min",
       "reviews": "{count} Bewertungen",
       "ratePrompt": "Bewerte dieses Rezept",
@@ -145,6 +153,15 @@
           }
         }
       },
+      "nutrition": {
+        "title": "Nährwerte (pro Portion)",
+        "description": "Optional. KI-Rezepte füllen das automatisch aus.",
+        "calories": "Kalorien (kcal)",
+        "protein": "Protein (g)",
+        "carbs": "Kohlenhydrate (g)",
+        "fat": "Fett (g)",
+        "fiber": "Ballaststoffe (g)"
+      },
       "tips": {
         "title": "Tipps",
         "tipLabel": "Tipp",
@@ -167,6 +184,44 @@
       "noRecipe": "Kein Rezept auf dieser Seite gefunden.",
       "scrapeError": "Rezept konnte nicht importiert werden.",
       "success": "Rezept erfolgreich importiert!"
+    },
+    "ai": {
+      "button": "Mit KI erstellen",
+      "title": "Rezept mit KI erstellen",
+      "description": "Beschreibe deine Idee oder lade ein Foto hoch. Die KI füllt das Formular für dich aus.",
+      "tabs": {
+        "text": "Beschreiben",
+        "photo": "Foto"
+      },
+      "promptLabel": "Was möchtest du kochen?",
+      "promptPlaceholder": "z. B. eine schnelle vegetarische Pasta mit Spinat und Feta",
+      "coverHint": "Du kannst nach dem Erstellen ein Titelbild im Formular hinzufügen.",
+      "photoLabel": "Foto",
+      "photoModeLabel": "Was ist auf dem Foto zu sehen?",
+      "photoModes": {
+        "recipe": "Ein Rezept (Kochbuch, Handschrift, Screenshot)",
+        "dish": "Ein fertiges Gericht",
+        "ingredients": "Zutaten / Kühlschrank"
+      },
+      "useAsCover": "Dieses Foto als Rezeptbild verwenden",
+      "generate": "Rezept erstellen",
+      "generating": "Rezept wird erstellt...",
+      "error": "Rezept konnte nicht erstellt werden. Bitte versuche es erneut.",
+      "success": "Rezept ausgefüllt. Bitte prüfe es vor dem Speichern.",
+      "editButton": "Mit KI bearbeiten",
+      "editTitle": "Rezept mit KI bearbeiten",
+      "editDescription": "Beschreibe, was sich ändern soll. Die KI aktualisiert das Formular.",
+      "instructionLabel": "Was soll geändert werden?",
+      "instructionPlaceholder": "z. B. vegan machen, für 8 Portionen oder einfachere Schritte",
+      "apply": "Änderungen anwenden",
+      "applying": "Änderungen werden angewendet...",
+      "applied": "Rezept aktualisiert. Bitte prüfe es vor dem Speichern.",
+      "editError": "Rezept konnte nicht aktualisiert werden. Bitte versuche es erneut.",
+      "nutrition": {
+        "button": "Nährwerte schätzen",
+        "success": "Nährwerte geschätzt.",
+        "error": "Nährwerte konnten nicht geschätzt werden."
+      }
     },
     "cookMode": {
       "title": "Kochmodus",
@@ -292,11 +347,20 @@
     "tabs": {
       "general": "Allgemein",
       "users": "Benutzer",
-      "backups": "Backups"
+      "backups": "Backups",
+      "ai": "KI"
     },
     "security": {
       "title": "Sicherheit",
       "allowRegistrations": "Registrierungen erlauben"
+    },
+    "ai": {
+      "title": "KI-Funktionen",
+      "description": "Erlaube Benutzern, Rezepte mit KI zu erstellen, zu bearbeiten und zu analysieren.",
+      "enable": "KI-Funktionen aktivieren",
+      "configured": "API-Schlüssel konfiguriert",
+      "notConfigured": "Kein API-Schlüssel konfiguriert. Setze OPENAI_KEY auf dem Server.",
+      "envHint": "Konfiguriert über OPENAI_KEY, OPENAI_BASE_URL, OPENAI_MODEL und OPENAI_VISION_MODEL."
     },
     "save": "Änderungen speichern",
     "saving": "Speichere...",

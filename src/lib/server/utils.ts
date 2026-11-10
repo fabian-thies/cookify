@@ -112,6 +112,11 @@ export function parseRecipeFormData(formData: FormData): {
     tags: string[];
     tips: string[];
     visibility: "public" | "private";
+    calories: number | null;
+    protein: number | null;
+    carbs: number | null;
+    fat: number | null;
+    fiber: number | null;
 } {
     const title: string = formData.get("title")?.toString() ?? "";
     const description: string = formData.get("description")?.toString() ?? "";
@@ -185,6 +190,14 @@ export function parseRecipeFormData(formData: FormData): {
         name: names[index]
     }));
 
+    const parseOptionalInt = (name: string): number | null => {
+        const raw = formData.get(name)?.toString().trim() ?? "";
+        if (raw === "") return null;
+        const value = Number(raw);
+        if (!Number.isFinite(value) || value < 0) return null;
+        return Math.round(value);
+    };
+
     return {
         title,
         description,
@@ -195,6 +208,11 @@ export function parseRecipeFormData(formData: FormData): {
         steps: stepsArr,
         tags: tagsArr,
         tips: tipsArr,
-        visibility
+        visibility,
+        calories: parseOptionalInt("calories"),
+        protein: parseOptionalInt("protein"),
+        carbs: parseOptionalInt("carbs"),
+        fat: parseOptionalInt("fat"),
+        fiber: parseOptionalInt("fiber")
     };
 }

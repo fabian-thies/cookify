@@ -99,6 +99,13 @@
       "when": 1794344192886,
       "tag": "0013_passkey",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1794347705864,
+      "tag": "0014_red_big_bertha",
+      "breakpoints": true
     }
   ]
 }

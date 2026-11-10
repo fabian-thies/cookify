@@ -460,7 +460,12 @@ export const createRecipe = command(v.object({
     tags: v.array(v.pipe(v.string(), v.minLength(1))),
     tips: v.array(v.pipe(v.string(), v.minLength(1))),
     image: v.pipe(v.string(), v.minLength(1)),
-    visibility: v.picklist(['public', 'private'])
+    visibility: v.picklist(['public', 'private']),
+    calories: v.optional(v.nullable(v.number()), null),
+    protein: v.optional(v.nullable(v.number()), null),
+    carbs: v.optional(v.nullable(v.number()), null),
+    fat: v.optional(v.nullable(v.number()), null),
+    fiber: v.optional(v.nullable(v.number()), null)
 }), async (data) => {
     const {locals} = getRequestEvent();
 
@@ -490,7 +495,12 @@ export const updateRecipe = command(v.object({
     tags: v.array(v.pipe(v.string(), v.minLength(1))),
     tips: v.array(v.pipe(v.string(), v.minLength(1))),
     image: v.pipe(v.string(), v.minLength(1)),
-    visibility: v.picklist(['public', 'private'])
+    visibility: v.picklist(['public', 'private']),
+    calories: v.optional(v.nullable(v.number()), null),
+    protein: v.optional(v.nullable(v.number()), null),
+    carbs: v.optional(v.nullable(v.number()), null),
+    fat: v.optional(v.nullable(v.number()), null),
+    fiber: v.optional(v.nullable(v.number()), null)
 }), async (data) => {
     const {locals} = getRequestEvent();
 
