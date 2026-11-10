@@ -10,6 +10,7 @@ export default defineConfig({
 				command: 'npm run build && npm run preview',
 				port: 4173
 			},
+	// The develop deployment currently serves Traefik's self-signed certificate.
 	use: { baseURL, ignoreHTTPSErrors: true },
 	testDir: 'e2e'
 });
