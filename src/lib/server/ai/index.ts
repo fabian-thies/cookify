@@ -275,7 +275,9 @@ async function requestChat(
         model,
         messages,
         temperature: 0.2,
-        max_tokens: 4_096
+        // The configured model is a reasoning model: leave room for its
+        // reasoning tokens plus the final JSON answer.
+        max_tokens: 8_192
     };
 
     if (jsonMode) {
