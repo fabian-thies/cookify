@@ -7,6 +7,11 @@ import {isUserLanguage} from "$lib/types/languages";
 import type {UserLanguage} from "$lib/types/languages";
 import {LANGUAGES} from "$lib/constants";
 import {deleteSessionTokenCookie, invalidateSession} from "$lib/server/auth";
+import {deletePasskey, getPasskeysByUserId} from "$lib/server/db/passkey";
+
+export const load = async ({locals}: RequestEvent) => {
+    return {passkeys: await getPasskeysByUserId(locals.user!.id)};
+};
 
 const ProfileSchema = v.object({
     username: v.string(),
@@ -70,6 +75,16 @@ export const actions = {
             console.error("Failed to save profile:", e);
             return fail(500, {internalError: true});
         }
+    },
+    deletePasskey: async ({request, locals}: RequestEvent) => {
+        if (!locals.user) return fail(401);
+
+        const id = String((await request.formData()).get("id") ?? "");
+        if (!id) return fail(400);
+
+        await deletePasskey(locals.user.id, id);
+
+        return {success: true};
     },
     delete: async (event: RequestEvent) => {
         if (!event.locals.user) return fail(401);

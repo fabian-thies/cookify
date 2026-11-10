@@ -53,6 +53,7 @@ function sanitizeDates(data: Record<string, Record<string, unknown>[]>) {
         siteSettings: ['updatedAt'],
         recipes: ['createdAt', 'updatedAt'],
         recipeRating: ['createdAt', 'updatedAt'],
+        passkey: ['createdAt'],
     };
 
     for (const [tableName, fields] of Object.entries(timestampFields)) {
@@ -132,6 +133,7 @@ export const POST = async ({ locals, request }) => {
     try {
         await db.transaction(async (tx) => {
             // Clear in reverse dependency order (children first)
+            await tx.delete(table.passkey);
             await tx.delete(table.recipeRating);
             await tx.delete(table.favorite);
             await tx.delete(table.tips);
@@ -151,6 +153,9 @@ export const POST = async ({ locals, request }) => {
             // Insert in dependency order (parents first)
             if (data.users?.length) {
                 await tx.insert(table.user).values(data.users as typeof table.user.$inferInsert[]);
+            }
+            if (data.passkey?.length) {
+                await tx.insert(table.passkey).values(data.passkey as typeof table.passkey.$inferInsert[]);
             }
             if (data.siteSettings?.length) {
                 await tx.insert(table.siteSettings).values(data.siteSettings as typeof table.siteSettings.$inferInsert[]);

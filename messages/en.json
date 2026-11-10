@@ -20,7 +20,10 @@
     "noAccount": "Don't have an account?",
     "haveAccount": "Already have an account?",
     "signUp": "Sign up",
-    "signInLink": "Sign in"
+    "signInLink": "Sign in",
+    "or": "or",
+    "passkey": "Sign in with passkey",
+    "passkeyError": "Passkey sign-in failed."
   },
   "nav": {
     "navigation": "Navigation",
@@ -234,6 +237,15 @@
     "disableSharing": "Disable sharing"
   },
   "settings": {
+    "passkey": {
+      "title": "Passkeys",
+      "description": "Sign in without a password using Face ID, Touch ID, Windows Hello or a security key.",
+      "add": "Add passkey",
+      "added": "Passkey added.",
+      "error": "Could not add the passkey.",
+      "empty": "No passkey added yet.",
+      "delete": "Remove passkey"
+    },
     "profile": {
       "title": "Profile",
       "description": "Manage your personal information",

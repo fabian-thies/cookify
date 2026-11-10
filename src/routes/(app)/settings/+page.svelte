@@ -2,6 +2,7 @@
     import {enhance} from '$app/forms';
     import {goto, invalidateAll} from '$app/navigation';
     import General from "$lib/components/settings/form/General.svelte";
+    import Passkey from "$lib/components/settings/Passkey.svelte";
     import {toast} from "svelte-sonner";
     import {m} from "$lib/paraglide/messages";
     import {setLocale} from "$lib/paraglide/runtime.js";
@@ -47,4 +48,6 @@
 
         <General {user}/>
     </form>
+
+    <Passkey passkeys={data.passkeys}/>
 </div>

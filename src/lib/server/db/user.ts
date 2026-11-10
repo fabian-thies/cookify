@@ -4,6 +4,8 @@ import {
     collectionToRecipe,
     collections,
     favorite,
+    mealPlan,
+    passkey,
     recipeRating,
     recipes,
     session,
@@ -85,6 +87,8 @@ export async function deleteUserAccount(userId: string) {
 
     await db.delete(recipeRating).where(eq(recipeRating.userId, userId));
     await db.delete(favorite).where(eq(favorite.userId, userId));
+    await db.delete(passkey).where(eq(passkey.userId, userId));
+    await db.delete(mealPlan).where(eq(mealPlan.userId, userId));
     await db.delete(session).where(eq(session.userId, userId));
 
     return db.delete(user).where(eq(user.id, userId));

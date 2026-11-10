@@ -10,6 +10,10 @@
     import type {HTMLAttributes} from "svelte/elements";
     import {m} from "$lib/paraglide/messages.js";
     import {page} from "$app/state";
+    import {goto} from "$app/navigation";
+    import {browserSupportsWebAuthn, startAuthentication} from "@simplewebauthn/browser";
+    import {toast} from "svelte-sonner";
+    import Fingerprint from "@lucide/svelte/icons/fingerprint";
 
     interface Props extends HTMLAttributes<HTMLDivElement> {
         class?: string;
@@ -30,6 +34,38 @@
     });
 
     const effectiveIsLogin = $derived(allowRegistrations ? isLogin : true);
+
+    let passkeySupported = $state(false);
+    let passkeyBusy = $state(false);
+
+    $effect(() => {
+        passkeySupported = browserSupportsWebAuthn();
+    });
+
+    async function loginWithPasskey() {
+        passkeyBusy = true;
+        try {
+            const optionsResponse = await fetch("/login/passkey/options", {method: "POST"});
+            if (!optionsResponse.ok) throw new Error("Could not start passkey login");
+
+            const optionsJSON = await optionsResponse.json();
+            const response = await startAuthentication({optionsJSON});
+
+            const verifyResponse = await fetch("/login/passkey/verify", {
+                method: "POST",
+                headers: {"content-type": "application/json"},
+                body: JSON.stringify(response)
+            });
+            if (!verifyResponse.ok) throw new Error("Passkey login failed");
+
+            await goto(redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//") ? redirectTo : "/");
+        } catch (e) {
+            console.error(e);
+            toast.error(m["login.passkeyError"]());
+        } finally {
+            passkeyBusy = false;
+        }
+    }
 </script>
 
 <div {...restProps} class={cn("flex flex-col gap-6", className)}>
@@ -110,6 +146,17 @@
                             {effectiveIsLogin ? m["login.signIn"]() : m["login.createAccountButton"]()}
                         </Button>
                     </div>
+                    {#if effectiveIsLogin && passkeySupported}
+                        <div class="flex items-center gap-2">
+                            <span class="h-px flex-1 bg-border"></span>
+                            <span class="text-xs uppercase text-muted-foreground">{m["login.or"]()}</span>
+                            <span class="h-px flex-1 bg-border"></span>
+                        </div>
+                        <Button class="w-full" disabled={passkeyBusy} onclick={loginWithPasskey} type="button" variant="outline">
+                            <Fingerprint class="size-4"/>
+                            {m["login.passkey"]()}
+                        </Button>
+                    {/if}
                     <div class="text-center text-sm text-muted-foreground">
                         {#if allowRegistrations}
                             {effectiveIsLogin ? m["login.noAccount"]() : m["login.haveAccount"]()}

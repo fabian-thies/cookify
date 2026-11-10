@@ -25,6 +25,15 @@ export const session = pgTable('session', {
     expiresAt: timestamp('expires_at', {withTimezone: true, mode: 'date'}).notNull()
 });
 
+export const passkey = pgTable('passkey', {
+    id: text('id').primaryKey(), // credential ID, base64url
+    userId: text('user_id').notNull().references(() => user.id),
+    publicKey: text('public_key').notNull(), // base64url
+    counter: integer('counter').notNull().default(0),
+    transports: text('transports'), // comma separated
+    createdAt: timestamp('created_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow()
+});
+
 export const recipes = pgTable('recipes', {
     id: serial('id').primaryKey(),
     title: text('title').notNull(),
@@ -126,6 +135,7 @@ export const collectionToRecipe = pgTable('collection_to_recipe', {
 
 
 export type Session = typeof session.$inferSelect;
+export type Passkey = typeof passkey.$inferSelect;
 export type Recipe = typeof recipes.$inferSelect;
 export type Ingredient = typeof ingredients.$inferSelect;
 export type Step = typeof steps.$inferSelect;

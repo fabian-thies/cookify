@@ -20,7 +20,10 @@
     "noAccount": "Haben Sie kein Konto?",
     "haveAccount": "Haben Sie bereits ein Konto?",
     "signUp": "Registrieren",
-    "signInLink": "Anmelden"
+    "signInLink": "Anmelden",
+    "or": "oder",
+    "passkey": "Mit Passkey anmelden",
+    "passkeyError": "Passkey-Anmeldung fehlgeschlagen."
   },
   "nav": {
     "navigation": "Navigation",
@@ -220,6 +223,15 @@
     "disableSharing": "Freigabe beenden"
   },
   "settings": {
+    "passkey": {
+      "title": "Passkeys",
+      "description": "Melden Sie sich ohne Passwort mit Face ID, Touch ID, Windows Hello oder einem Sicherheitsschlüssel an.",
+      "add": "Passkey hinzufügen",
+      "added": "Passkey hinzugefügt.",
+      "error": "Passkey konnte nicht hinzugefügt werden.",
+      "empty": "Noch kein Passkey eingerichtet.",
+      "delete": "Passkey entfernen"
+    },
     "profile": {
       "title": "Profil",
       "description": "Verwalten Sie Ihre persönlichen Informationen",

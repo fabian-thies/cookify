@@ -14,6 +14,7 @@ export const GET = async ({ locals }) => {
 
     const data = {
         users: await db.select().from(table.user),
+        passkey: await db.select().from(table.passkey),
         siteSettings: await db.select().from(table.siteSettings),
         recipes: await db.select().from(table.recipes),
         difficulty: await db.select().from(table.difficulty),

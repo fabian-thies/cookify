@@ -20,6 +20,9 @@
     "noAccount": "¿No tienes una cuenta?",
     "haveAccount": "¿Ya tienes una cuenta?",
     "signUp": "Registrarse",
+    "or": "o",
+    "passkey": "Iniciar sesión con passkey",
+    "passkeyError": "No se pudo iniciar sesión con passkey.",
     "signInLink": "Inicia sesión"
   },
   "nav": {
@@ -232,6 +235,15 @@
     "disableSharing": "Desactivar compartir"
   },
   "settings": {
+    "passkey": {
+      "title": "Passkeys",
+      "description": "Inicia sesión sin contraseña con Face ID, Touch ID, Windows Hello o una llave de seguridad.",
+      "add": "Añadir passkey",
+      "added": "Passkey añadido.",
+      "error": "No se pudo añadir el passkey.",
+      "empty": "Aún no hay ningún passkey.",
+      "delete": "Eliminar passkey"
+    },
     "profile": {
       "title": "Perfil",
       "description": "Administra tu información personal",
