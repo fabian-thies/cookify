@@ -5,7 +5,7 @@ import {setChallengeCookie} from '$lib/server/webauthn';
 export const POST = async (event) => {
     const options = await generateAuthenticationOptions({
         rpID: event.url.hostname,
-        userVerification: 'preferred'
+        userVerification: 'required'
     });
 
     setChallengeCookie(event, options.challenge);

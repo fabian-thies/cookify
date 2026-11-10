@@ -1,6 +1,6 @@
 <script lang="ts">
     import {invalidateAll} from '$app/navigation';
-    import {startRegistration} from '@simplewebauthn/browser';
+    import {addPasskey} from '$lib/passkey';
     import {Button} from '$lib/components/ui/button/index.js';
     import * as Card from '$lib/components/ui/card/index.js';
     import {m} from '$lib/paraglide/messages';
@@ -11,22 +11,10 @@
 
     let busy = $state(false);
 
-    async function addPasskey() {
+    async function handleAddPasskey() {
         busy = true;
         try {
-            const optionsResponse = await fetch('/settings/passkey/options', {method: 'POST'});
-            if (!optionsResponse.ok) throw new Error('Could not start registration');
-
-            const optionsJSON = await optionsResponse.json();
-            const response = await startRegistration({optionsJSON});
-
-            const verifyResponse = await fetch('/settings/passkey/verify', {
-                method: 'POST',
-                headers: {'content-type': 'application/json'},
-                body: JSON.stringify(response)
-            });
-            if (!verifyResponse.ok) throw new Error('Could not verify registration');
-
+            await addPasskey();
             await invalidateAll();
             toast.success(m['settings.passkey.added']());
         } catch (e) {
@@ -65,7 +53,7 @@
         </ul>
     </Card.Content>
     <Card.Footer>
-        <Button disabled={busy} onclick={addPasskey} type="button" variant="outline">
+        <Button disabled={busy} onclick={handleAddPasskey} type="button" variant="outline">
             <Plus size={16}/>
             {m['settings.passkey.add']()}
         </Button>

@@ -5,6 +5,7 @@ import {
     difficultyToRecipe,
     favorite,
     ingredients,
+    mealPlan,
     recipeRating,
     recipes,
     steps,
@@ -100,6 +101,7 @@ export async function deleteRecipe(userId: string, recipeId: number) {
         throw new Error('Insufficient permissions');
     }
 
+    await db.delete(mealPlan).where(eq(mealPlan.recipeId, recipeId));
     await db.delete(favorite).where(eq(favorite.recipeId, recipeId));
     await db.delete(recipeRating).where(eq(recipeRating.recipeId, recipeId));
     await db.delete(collectionToRecipe).where(eq(collectionToRecipe.recipeId, recipeId));

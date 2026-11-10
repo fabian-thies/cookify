@@ -1,7 +1,7 @@
 import {error, json} from '@sveltejs/kit';
 import {generateRegistrationOptions} from '@simplewebauthn/server';
 import {getPasskeysByUserId} from '$lib/server/db/passkey';
-import {parseTransports, setChallengeCookie} from '$lib/server/webauthn';
+import {setChallengeCookie} from '$lib/server/webauthn';
 
 export const POST = async (event) => {
     const user = event.locals.user;
@@ -20,7 +20,7 @@ export const POST = async (event) => {
         excludeCredentials: existing.map(({id}) => ({id})),
         authenticatorSelection: {
             residentKey: 'required',
-            userVerification: 'preferred'
+            userVerification: 'required'
         }
     });
 

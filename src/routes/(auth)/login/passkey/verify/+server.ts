@@ -1,9 +1,9 @@
 import {error, json} from '@sveltejs/kit';
 import {isoBase64URL} from '@simplewebauthn/server/helpers';
-import {verifyAuthenticationResponse} from '@simplewebauthn/server';
+import {verifyAuthenticationResponse, type AuthenticatorTransportFuture} from '@simplewebauthn/server';
 import * as auth from '$lib/server/auth';
 import {getPasskeyById, updatePasskeyCounter} from '$lib/server/db/passkey';
-import {parseTransports, takeChallengeCookie} from '$lib/server/webauthn';
+import {takeChallengeCookie} from '$lib/server/webauthn';
 
 export const POST = async (event) => {
     const challenge = takeChallengeCookie(event);
@@ -32,7 +32,7 @@ export const POST = async (event) => {
                 id: passkey.id,
                 publicKey: isoBase64URL.toBuffer(passkey.publicKey),
                 counter: passkey.counter,
-                transports: parseTransports(passkey.transports)
+                transports: passkey.transports?.split(',') as AuthenticatorTransportFuture[] | undefined
             }
         });
     } catch (e) {

@@ -1,5 +1,4 @@
 import type {RequestEvent} from '@sveltejs/kit';
-import type {AuthenticatorTransportFuture} from '@simplewebauthn/server';
 
 const CHALLENGE_COOKIE = 'passkey-challenge';
 
@@ -17,8 +16,4 @@ export function takeChallengeCookie(event: RequestEvent) {
     const challenge = event.cookies.get(CHALLENGE_COOKIE);
     event.cookies.delete(CHALLENGE_COOKIE, {path: '/'});
     return challenge;
-}
-
-export function parseTransports(transports: string | null): AuthenticatorTransportFuture[] | undefined {
-    return transports ? transports.split(',') as AuthenticatorTransportFuture[] : undefined;
 }

@@ -38,4 +38,9 @@ test('register, add passkey and log in with it', async ({page, browserName, cont
     await page.goto('/login');
     await page.getByRole('button', {name: /sign in with passkey/i}).click();
     await expect(page).toHaveURL('/');
+
+    // The remove button is destructive too, so cover it: one passkey in, none left.
+    await page.goto('/settings');
+    await page.getByRole('button', {name: /remove passkey/i}).click();
+    await expect(page.getByText('No passkey added yet.')).toBeVisible();
 });

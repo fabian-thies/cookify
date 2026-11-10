@@ -11,7 +11,8 @@
     import {m} from "$lib/paraglide/messages.js";
     import {page} from "$app/state";
     import {goto} from "$app/navigation";
-    import {browserSupportsWebAuthn, startAuthentication} from "@simplewebauthn/browser";
+    import {browserSupportsWebAuthn} from "@simplewebauthn/browser";
+    import {loginWithPasskey} from "$lib/passkey";
     import {toast} from "svelte-sonner";
     import Fingerprint from "@lucide/svelte/icons/fingerprint";
 
@@ -42,22 +43,10 @@
         passkeySupported = browserSupportsWebAuthn();
     });
 
-    async function loginWithPasskey() {
+    async function handlePasskeyLogin() {
         passkeyBusy = true;
         try {
-            const optionsResponse = await fetch("/login/passkey/options", {method: "POST"});
-            if (!optionsResponse.ok) throw new Error("Could not start passkey login");
-
-            const optionsJSON = await optionsResponse.json();
-            const response = await startAuthentication({optionsJSON});
-
-            const verifyResponse = await fetch("/login/passkey/verify", {
-                method: "POST",
-                headers: {"content-type": "application/json"},
-                body: JSON.stringify(response)
-            });
-            if (!verifyResponse.ok) throw new Error("Passkey login failed");
-
+            await loginWithPasskey();
             await goto(redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//") ? redirectTo : "/");
         } catch (e) {
             console.error(e);
@@ -152,7 +141,7 @@
                             <span class="text-xs uppercase text-muted-foreground">{m["login.or"]()}</span>
                             <span class="h-px flex-1 bg-border"></span>
                         </div>
-                        <Button class="w-full" disabled={passkeyBusy} onclick={loginWithPasskey} type="button" variant="outline">
+                        <Button class="w-full" disabled={passkeyBusy} onclick={handlePasskeyLogin} type="button" variant="outline">
                             <Fingerprint class="size-4"/>
                             {m["login.passkey"]()}
                         </Button>
