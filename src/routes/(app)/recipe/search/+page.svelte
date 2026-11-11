@@ -1,4 +1,5 @@
 <script lang="ts">
+    import {page} from "$app/state";
     import type {PageProps} from "./$types";
     import ErrorState from "$lib/components/ErrorState.svelte";
     import RecipeList from "$lib/components/recipe/widgets/RecipeList.svelte";
@@ -33,5 +34,5 @@
 {#if failed}
     <ErrorState onRetry={loadRecipes}/>
 {:else}
-<RecipeList {userId} {recipes} title={m["routes.home.title"]()} {loading}/>
+<RecipeList initialTag={page.url.searchParams.get("tag") ?? ""} {userId} {recipes} title={m["routes.home.title"]()} {loading}/>
 {/if}

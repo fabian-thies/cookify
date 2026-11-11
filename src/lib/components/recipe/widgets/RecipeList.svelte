@@ -14,6 +14,7 @@
 
     type Props = {
         recipes: Recipe[];
+        initialTag?: string;
         userId: string;
         title?: string;
         showFilters?: boolean;
@@ -52,12 +53,13 @@
         {value: "user", label: m["recipe.list.author.options.user"]()}
     ];
 
-    let {userId, recipes, title, showFilters = true, loading = false, emptyHref = "/recipe/create", emptyLabel = m["nav.create"](), actions}: Props = $props();
+    let {userId, recipes, initialTag = "", title, showFilters = true, loading = false, emptyHref = "/recipe/create", emptyLabel = m["nav.create"](), actions}: Props = $props();
 
     let search = $state("");
     let selectedDifficulty = $state("");
     let selectedCookTime = $state("");
     let selectedTag = $state("");
+    $effect(() => { selectedTag = initialTag; });
     let author = $state("");
     let filterPopoverOpen = $state(false);
 
