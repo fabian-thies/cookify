@@ -303,9 +303,9 @@
     <img alt={title} class="aspect-[3/2] w-full border-b border-border/60 object-cover sm:aspect-[2/1] sm:rounded-2xl sm:border" src={image}>
 </div>
 
-<div class="mb-6 w-full sm:mb-8">
-    <h1 class="text-2xl font-semibold leading-tight tracking-tight sm:text-4xl">{title}</h1>
-    <div class="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+<div class="mb-6 w-full sm:mb-8 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-x-8">
+    <h1 class="text-2xl font-semibold leading-tight tracking-tight sm:text-4xl lg:col-start-1">{title}</h1>
+    <div class="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground lg:col-start-1">
         <span class="flex items-center gap-1.5 font-medium text-foreground">
             <Star class="size-4" color="#fbbf24" fill="#fbbf24"/>
             {averageRating != null ? averageRating.toFixed(1) : "–"}
@@ -313,9 +313,9 @@
         <span class="size-1 rounded-full bg-border"></span>
         <p>{m["recipe.common.reviews"]({count: ratingCount})}</p>
     </div>
-    <p class="mt-2 max-w-[65ch] text-[15px] leading-relaxed text-muted-foreground sm:text-base">{description}</p>
+    <p class="mt-2 max-w-[65ch] text-[15px] leading-relaxed text-muted-foreground sm:text-base lg:col-start-1">{description}</p>
 
-    <div class="mt-4 flex flex-wrap items-center gap-2">
+    <div class="mt-4 flex flex-wrap items-center gap-2 lg:col-start-1">
         <span class="inline-flex h-8 items-center gap-1.5 rounded-full border border-border/70 bg-card px-3 text-[13px] font-medium">
             <Clock class="size-3.5 text-primary"/>
             {m["recipe.common.duration"]({count: cookingTime})}
@@ -329,7 +329,7 @@
         </span>
     </div>
 
-    <div class="mt-4 flex items-center gap-2">
+    <div class="mt-4 flex items-center gap-2 lg:col-start-2 lg:row-span-4 lg:row-start-1 lg:mt-0 lg:self-start">
         {#if readonly}
             <Button class="flex-1 sm:flex-none" onclick={shareRecipeOnClick} size="lg" variant="secondary"
                     disabled={isSharing || isUpdatingShare || !sharePathState}>
@@ -472,7 +472,7 @@
     </div>
 
     {#if tags.length > 0}
-        <div class="mt-4 flex flex-wrap gap-1.5">
+        <div class="mt-4 flex flex-wrap gap-1.5 lg:col-span-2">
             {#each tags as tag}
                 <Badge variant="outline">{tag}</Badge>
             {/each}
@@ -480,7 +480,7 @@
     {/if}
 
     {#if nutrition.calories != null || nutrition.protein != null || nutrition.carbs != null || nutrition.fat != null || nutrition.fiber != null}
-        <div class="mt-5 flex flex-wrap items-center gap-1.5">
+        <div class="mt-5 flex flex-wrap items-center gap-1.5 lg:col-span-2">
             <span class="mr-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">{m["recipe.common.nutrition.title"]()}</span>
             {#if nutrition.calories != null}
                 <Badge variant="secondary">{m["recipe.common.nutrition.calories"]({value: nutrition.calories})}</Badge>

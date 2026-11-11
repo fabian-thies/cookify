@@ -5,6 +5,7 @@
     import AiEditDialog from '$lib/components/recipe/import/AiEditDialog.svelte';
     import ImportDialog from '$lib/components/recipe/import/ImportDialog.svelte';
     import Overview from '$lib/components/recipe/view/Overview.svelte';
+    import Preparation from "$lib/components/recipe/view/Preparation.svelte";
     import Ingredients from '$lib/components/recipe/view/Ingredients.svelte';
 
     let ready = $state(false);
@@ -33,6 +34,7 @@
             readonly={shared} tags={metadata ? recipe.tags : []} {...(metadata ? recipe.nutrition : {})}/>
         <div class="grid gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-8" data-testid="recipe-body">
             <Ingredients servings={2} ingredients={[{id: 1, name: 'Pasta', quantity: 0.5, unit: 'kg'}]}/>
+            <div class="lg:col-span-2"><Preparation steps={[{id: 1, number: 1, step: recipe.steps[0]}]}/></div>
         </div>
     </div>
 </main>

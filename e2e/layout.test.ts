@@ -90,3 +90,20 @@ for (const [width, query] of [[320, ""], [390, ""], [768, ""], [1280, ""], [390,
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     });
 }
+
+for (const width of [1024, 1280, 1440]) {
+    test(`desktop recipe actions sit beside the title at ${width}px`, async ({page, baseURL}) => {
+        await page.setViewportSize({width, height: 1000});
+        await page.context().addCookies([{name: 'PARAGLIDE_LOCALE', value: 'de', url: baseURL!}]);
+        await page.goto(fixtureRoute);
+        await page.locator('main[data-ready="true"]').waitFor();
+        const heading = await page.getByRole('heading', {level: 1}).boundingBox();
+        const cook = await page.getByRole('link', {name: 'Kochmodus', exact: true}).boundingBox();
+        const actions = await page.getByRole('button', {name: 'Mehr', exact: true}).boundingBox();
+        const body = await page.getByTestId('recipe-body').boundingBox();
+        expect(cook!.x).toBeGreaterThanOrEqual(heading!.x + heading!.width + 24);
+        expect(Math.abs(cook!.y - heading!.y)).toBeLessThanOrEqual(4);
+        expect(Math.abs(actions!.x + actions!.width - body!.x - body!.width)).toBeLessThanOrEqual(1);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    });
+}
