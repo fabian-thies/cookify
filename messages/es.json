@@ -482,5 +482,12 @@
     },
     "shoppingList": "Lista de compras",
     "emptyShoppingList": "No hay recetas planificadas para esta semana"
-  }
+  },
+  "a11y.skipToContent": "Saltar al contenido",
+  "actions.close": "Cerrar",
+  "recipe.form.unsavedChanges": "Tienes cambios sin guardar. ¿Salir sin guardar?",
+  "login.showPassword": "Mostrar contraseña",
+  "login.hidePassword": "Ocultar contraseña",
+  "mealPlan.chooseDay": "Elige un día para {title}.",
+  "mealPlan.tapToPlan": "Selecciona una receta y añádela a un día"
 }

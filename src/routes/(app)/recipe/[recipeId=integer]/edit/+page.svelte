@@ -1,5 +1,7 @@
 <script lang="ts">
     import {enhance} from '$app/forms';
+    import UnsavedChanges from '$lib/components/recipe/form/UnsavedChanges.svelte';
+    import ErrorState from "$lib/components/ErrorState.svelte";
     import General from "$lib/components/recipe/form/General.svelte";
     import Ingredients from "$lib/components/recipe/form/Ingredients.svelte";
     import Steps from "$lib/components/recipe/form/Steps.svelte";
@@ -20,6 +22,9 @@
     // The remote query's inferred return type collapses to never in svelte-check.
     type RecipeData = any;
 
+    let formElement = $state<HTMLFormElement>();
+    let saved = $state(false);
+
     const {data} = $props();
     const aiEnabled = $derived(!!data.ai?.configured && !!data.ai?.enabled);
 
@@ -29,6 +34,7 @@
     let tips = $state<Tip[]>([]);
     let updating = $state(false);
     let loading = $state(true);
+    let failed = $state(false);
     let version = $state(0);
 
     const aiRecipe = $derived(recipe ? {
@@ -114,9 +120,11 @@
         }
     }
 
-    $effect(() => {
+    function loadRecipe() {
+        loading = true;
+        failed = false;
         const recipeId = Number($page.params.recipeId);
-        getRecipeForEdit({recipeId}).then((result) => {
+        getRecipeForEdit({recipeId}).run().then((result) => {
             recipe = result;
             ingredients = result.ingredients;
             steps = result.steps;
@@ -124,10 +132,14 @@
             loading = false;
         }).catch((error) => {
             console.error('Failed to load recipe:', error);
-            toast.error(m["actions.loadRecipeError"]());
-        });
-    });
+            failed = true;
+        }).finally(() => loading = false);
+    }
+
+    $effect(() => { $page.params.recipeId; queueMicrotask(loadRecipe); });
 </script>
+
+<UnsavedChanges form={formElement} {saved}/>
 
 <div class="mx-auto mt-2 sm:mt-6">
     <div class="mb-5 space-y-1">
@@ -137,13 +149,16 @@
         <div class="flex items-center justify-center py-12">
             <div class="text-muted-foreground">{m.loading()}</div>
         </div>
+    {:else if failed}
+        <ErrorState message={m["actions.loadRecipeError"]()} onRetry={loadRecipe}/>
     {:else if recipe}
         {#key version}
-        <form action="?/updateRecipe" enctype="multipart/form-data" method="POST" use:enhance={() => {
+        <form bind:this={formElement} action="?/updateRecipe" enctype="multipart/form-data" method="POST" use:enhance={() => {
             updating = true;
             return async ({ result }) => {
                 updating = false;
                 if (result.type === 'success') {
+                    saved = true;
                     const recipeId = result.data?.id;
 
                     toast.success(m["recipe.saveSuccess"]());
@@ -156,7 +171,10 @@
                 }
             }}
         }>
-            <div class="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-8">
+            {#if aiEnabled && aiRecipe}
+            <div class="mb-5"><AiEditDialog recipe={aiRecipe} onApply={applyAiRecipe}/></div>
+        {/if}
+        <div class="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-8">
                 <div class="space-y-5 lg:col-span-2 lg:space-y-6">
                     <General {recipe}/>
                     <Ingredients {ingredients} {recipe}/>
@@ -166,11 +184,9 @@
 
                 <div class="space-y-5 lg:space-y-6">
                     <Details {recipe}/>
-                    <div class="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-10 flex flex-col gap-2 rounded-xl border border-border/70 bg-card/95 p-3 backdrop-blur lg:static lg:border-0 lg:bg-transparent lg:p-0">
-                        {#if aiEnabled && aiRecipe}
-                            <AiEditDialog recipe={aiRecipe} onApply={applyAiRecipe}/>
-                        {/if}
-                        <Button class="w-full" type="submit">
+                    <div class="flex flex-col gap-2 rounded-xl border border-border/70 bg-card/95 p-3 backdrop-blur lg:static lg:border-0 lg:bg-transparent lg:p-0">
+
+                        <Button class="w-full" disabled={updating} aria-busy={updating} type="submit">
                             {#if updating}
                                 <Spinner/>
                             {:else}

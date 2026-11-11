@@ -12,6 +12,7 @@
         placeholder?: string;
         groupLabel?: string;
         name?: string;
+        id?: string;
         class?: string;
         disabled?: boolean;
         required?: boolean;
@@ -23,6 +24,7 @@
         placeholder = "Select an option",
         groupLabel,
         name,
+        id,
         class: className = "w-[180px]",
         disabled = false,
         required = false
@@ -62,7 +64,7 @@
 
  <Select.Root bind:value {disabled} {name} type="single">
     <input type="hidden" name={name} value={value}/>
-    <Select.Trigger class={className + " bg-background"} aria-invalid={invalid || undefined} bind:ref={triggerRef}>
+    <Select.Trigger id={id ?? name} aria-label={groupLabel ?? placeholder} aria-required={required} class={className + " bg-background"} aria-invalid={invalid || undefined} bind:ref={triggerRef}>
         {triggerContent}
     </Select.Trigger>
     <Select.Content>

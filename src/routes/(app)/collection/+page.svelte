@@ -1,4 +1,5 @@
 <script lang="ts">
+    import ErrorState from "$lib/components/ErrorState.svelte";
     import CollectionCard from "$lib/components/collection/CollectionCard.svelte";
     import CollectionCardSkeleton from "$lib/components/collection/CollectionCardSkeleton.svelte";
     import {createCollection, getCollections} from "$lib/functions/recipe.remote";
@@ -21,21 +22,29 @@
 
     let collections = $state<CollectionWithMeta[]>([]);
     let loading = $state(true);
+    let failed = $state(false);
 
     let showCreate = $state(false);
     let newTitle = $state("");
     let creating = $state(false);
 
     async function loadCollections() {
-        collections = await getCollections() as CollectionWithMeta[];
+        collections = await getCollections().run() as CollectionWithMeta[];
     }
 
-    $effect(() => {
+    async function reloadCollections() {
         loading = true;
-        loadCollections()
-            .catch(() => toast.error(m["actions.loadCollectionError"]()))
-            .finally(() => loading = false);
-    });
+        failed = false;
+        try {
+            await loadCollections();
+        } catch {
+            failed = true;
+        } finally {
+            loading = false;
+        }
+    }
+
+    $effect(() => { queueMicrotask(reloadCollections); });
 
     async function createCollectionOnClick() {
         const title = newTitle.trim();
@@ -71,6 +80,8 @@
                 <CollectionCardSkeleton/>
             {/each}
         </div>
+    {:else if failed}
+        <ErrorState message={m["actions.loadCollectionError"]()} onRetry={reloadCollections}/>
     {:else if collections.length === 0}
         <div class="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border/70 px-6 py-16 text-center">
             <div class="flex size-12 items-center justify-center rounded-full bg-muted">

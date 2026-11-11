@@ -27,8 +27,8 @@
 
         try {
             const [user, recipeData] = await Promise.all([
-                getUserById({userId: profileId}),
-                getRecipesByUserId({userId: profileId})
+                getUserById({userId: profileId}).run(),
+                getRecipesByUserId({userId: profileId}).run()
             ]);
             if (run !== requestId) return;
             profileUser = user;
@@ -44,7 +44,7 @@
     $effect(() => {
         const profileId = $page.params.id;
         if (!profileId) return;
-        loadProfile(profileId);
+        queueMicrotask(() => loadProfile(profileId));
     });
 </script>
 

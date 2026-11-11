@@ -12,7 +12,7 @@
     ];
 
     const isActive = (href: string) =>
-        href === "/" ? page.url.pathname === "/" : page.url.pathname.startsWith(href);
+        href === "/" ? page.url.pathname === "/" : page.url.pathname.startsWith(href === "/recipe/search" ? "/recipe/" : href);
 </script>
 
 <nav
@@ -31,7 +31,7 @@
                     <span class="flex h-7 w-12 items-center justify-center rounded-full transition-colors {active ? 'bg-primary/15' : ''}">
                         <item.icon class="size-5" strokeWidth={active ? 2.2 : 1.8}/>
                     </span>
-                    <span class="max-w-full truncate px-0.5 text-[10px] font-medium">{item.label()}</span>
+                    <span class="max-w-full truncate px-0.5 text-[11px] font-medium">{item.label()}</span>
                 </a>
             </li>
         {/each}

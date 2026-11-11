@@ -22,7 +22,7 @@ import Tips from "$lib/components/recipe/view/Tips.svelte";
         failed = false;
 
         try {
-            const result = await getRecipeDetails({recipeId, incrementView: true});
+            const result = await getRecipeDetails({recipeId, incrementView: true}).run();
             recipe = result;
             recipeOwner = data.user!.id === result.userId;
         } catch (error) {
@@ -32,7 +32,8 @@ import Tips from "$lib/components/recipe/view/Tips.svelte";
     }
 
     $effect(() => {
-        loadRecipe();
+        $page.params.recipeId;
+        queueMicrotask(loadRecipe);
     });
 </script>
 

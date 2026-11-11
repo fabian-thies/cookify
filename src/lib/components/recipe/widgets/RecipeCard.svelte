@@ -34,10 +34,10 @@
         </Badge>
     </div>
     <div class="flex flex-1 flex-col gap-1 p-3.5 sm:p-4">
-        <h3 class="line-clamp-2 text-[15px] font-medium leading-snug tracking-tight">{title}</h3>
-        <p class="line-clamp-2 text-[13px] leading-relaxed text-muted-foreground">{description}</p>
+        <h3 class="line-clamp-2 text-base font-medium leading-snug tracking-tight">{title}</h3>
+        <p class="line-clamp-2 text-sm leading-relaxed text-muted-foreground">{description}</p>
         {#if tags.length > 0}
-            <p class="truncate text-[11px] text-muted-foreground/80">{tags.slice(0, 3).join(" · ")}</p>
+            <p class="truncate text-xs text-muted-foreground">{tags.slice(0, 3).join(" · ")}</p>
         {/if}
         <div class="mt-auto flex items-center gap-2 pt-3 text-xs text-muted-foreground">
             <span class="flex items-center gap-1">

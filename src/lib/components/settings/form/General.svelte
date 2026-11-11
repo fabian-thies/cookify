@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {Button} from "$lib/components/ui/button/index.js";
+    import {Button, buttonVariants} from "$lib/components/ui/button/index.js";
     import {Label} from "$lib/components/ui/label/index.js";
     import {Input} from "$lib/components/ui/input/index.js";
     import {m} from "$lib/paraglide/messages";
@@ -18,7 +18,12 @@
     let showPassword = $state(false);
     let showPasswordConfirm = $state(false);
 
-    let previewUrl = $derived(selectedFile ? URL.createObjectURL(selectedFile) : null);
+    let previewUrl = $state<string | null>(null);
+    $effect(() => {
+        const url = selectedFile ? URL.createObjectURL(selectedFile) : null;
+        previewUrl = url;
+        return () => { if (url) URL.revokeObjectURL(url); };
+    });
 
     function handleAvatarChange(event: Event) {
         const files = (event.target as HTMLInputElement).files;
@@ -132,11 +137,13 @@
                                     bind:value={password}
                                     class="pr-10"
                                     id="password"
+                                    autocomplete="new-password"
+                                    minlength={6}
                                     name="password"
                                     placeholder={m["settings.profile.newPasswordPlaceholder"]()}
                                     type={showPassword ? "text" : "password"}
                             />
-                            <Button class="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent" onclick={() => showPassword = !showPassword} size="sm"
+                            <Button aria-label={showPassword ? m["login.hidePassword"]() : m["login.showPassword"]()} aria-pressed={showPassword} class="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent" onclick={() => showPassword = !showPassword} size="sm"
                                     type="button"
                                     variant="ghost">
                                 {#if showPassword}
@@ -184,7 +191,7 @@
                                     placeholder={m["settings.profile.confirmPasswordPlaceholder"]()}
                                     type={showPasswordConfirm ? "text" : "password"}
                             />
-                            <Button class="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent" onclick={() => showPasswordConfirm = !showPasswordConfirm} size="sm"
+                            <Button aria-label={showPasswordConfirm ? m["login.hidePassword"]() : m["login.showPassword"]()} aria-pressed={showPasswordConfirm} class="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent" onclick={() => showPasswordConfirm = !showPasswordConfirm} size="sm"
                                     type="button"
                                     variant="ghost">
                                 {#if showPasswordConfirm}
@@ -249,10 +256,8 @@
                                 />
                             </div>
                             <Dialog.Footer class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
-                                <Dialog.Close>
-                                    <Button variant="outline" type="button">
-                                        {m["actions.cancel"]()}
-                                    </Button>
+                                <Dialog.Close class={buttonVariants({variant: "outline"})}>
+                                    {m["actions.cancel"]()}
                                 </Dialog.Close>
                                 <Button
                                         aria-disabled={!canDelete}

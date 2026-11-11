@@ -4,4 +4,4 @@
     let {ref = $bindable(null), ...restProps}: DialogPrimitive.CloseProps = $props();
 </script>
 
-<DialogPrimitive.Close {...restProps} bind:ref data-slot="dialog-close"/>
+<DialogPrimitive.Close type="button" {...restProps} bind:ref data-slot="dialog-close"/>

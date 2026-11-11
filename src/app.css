@@ -35,7 +35,7 @@
     --card-foreground: oklch(0.21 0.008 70);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.21 0.008 70);
-    --primary: oklch(0.62 0.18 45);
+    --primary: oklch(0.54 0.17 45);
     --primary-foreground: oklch(0.99 0.01 90);
     --secondary: oklch(0.96 0.004 80);
     --secondary-foreground: oklch(0.24 0.008 70);
@@ -47,6 +47,8 @@
     --border: oklch(0.9 0.006 75);
     --input: oklch(0.9 0.006 75);
     --ring: oklch(0.62 0.18 45);
+    --touch-target: 2.75rem;
+    --shadow-surface: 0 2px 12px rgb(0 0 0 / 6%);
     --chart-1: oklch(0.646 0.222 41.116);
     --chart-2: oklch(0.6 0.118 184.704);
     --chart-3: oklch(0.398 0.07 227.392);
@@ -153,8 +155,51 @@
         min-height: 100dvh;
     }
 
+    :where(a, button, input, textarea, select, [tabindex]):focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 3px;
+    }
+
+    :where(input, textarea, select, button, a) {
+        scroll-margin-block: 6rem;
+    }
+
+    .skip-link {
+        position: fixed;
+        top: 0.5rem;
+        left: 1rem;
+        z-index: 100;
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius);
+        background: var(--primary);
+        color: var(--primary-foreground);
+        transform: translateY(-200%);
+    }
+
+    .skip-link:focus { transform: translateY(0); }
+
     /* iPhones zoom the page when a focused field is under 16px. */
     @media (max-width: 767px) {
+        [data-slot="button"],
+        [data-slot="input"],
+        [data-slot="select-trigger"],
+        [data-slot="dialog-close"],
+        [data-slot="dropdown-menu-item"],
+        [data-slot="dropdown-menu-checkbox-item"],
+        [data-slot="dropdown-menu-sub-trigger"],
+        [data-slot="select-item"] {
+            min-height: var(--touch-target);
+        }
+
+        [data-slot="button"], [data-slot="dialog-close"] {
+            min-width: var(--touch-target);
+        }
+
+        [data-slot="dialog-content"] {
+            overscroll-behavior-y: contain;
+            scroll-padding-block: 1rem;
+        }
+
         input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
         textarea,
         select,

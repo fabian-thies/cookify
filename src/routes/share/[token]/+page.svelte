@@ -19,7 +19,7 @@ import Tips from "$lib/components/recipe/view/Tips.svelte";
         failed = false;
 
         try {
-            recipe = await getSharedRecipeDetails({token, incrementView: true});
+            recipe = await getSharedRecipeDetails({token, incrementView: true}).run();
         } catch (error) {
             console.error('Failed to load shared recipe:', error);
             failed = true;
@@ -27,7 +27,8 @@ import Tips from "$lib/components/recipe/view/Tips.svelte";
     }
 
     $effect(() => {
-        loadSharedRecipe();
+        $page.params.token;
+        queueMicrotask(loadSharedRecipe);
     });
 </script>
 

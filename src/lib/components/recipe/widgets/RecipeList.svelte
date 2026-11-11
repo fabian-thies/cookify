@@ -18,6 +18,8 @@
         title?: string;
         showFilters?: boolean;
         loading?: boolean;
+        emptyHref?: string;
+        emptyLabel?: string;
         actions? : Snippet;
     };
 
@@ -50,7 +52,7 @@
         {value: "user", label: m["recipe.list.author.options.user"]()}
     ];
 
-    let {userId, recipes, title, showFilters = true, loading = false, actions}: Props = $props();
+    let {userId, recipes, title, showFilters = true, loading = false, emptyHref = "/recipe/create", emptyLabel = m["nav.create"](), actions}: Props = $props();
 
     let search = $state("");
     let selectedDifficulty = $state("");
@@ -130,7 +132,7 @@
                     <h1 class="page-title">{title}</h1>
                 {/if}
                 {#if !loading}
-                    <p class="text-sm text-muted-foreground">
+                    <p role="status" aria-live="polite" aria-atomic="true" class="text-sm text-muted-foreground">
                         {m["recipe.list.results"]({count: filteredRecipes.length})}
                     </p>
                 {/if}
@@ -158,7 +160,7 @@
                 {#if search}
                     <button
                         aria-label={m["search.clear"]()}
-                        class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-muted-foreground transition hover:bg-accent hover:text-foreground"
+                        class="absolute right-0 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition hover:bg-accent hover:text-foreground"
                         onclick={() => search = ""}
                         type="button"
                     >
@@ -185,7 +187,7 @@
                                 {m["recipe.list.filterTitle"]()}
                             </h4>
                             {#if filterActive}
-                                <button class="text-xs text-muted-foreground transition hover:text-foreground" onclick={clearFilters} type="button">
+                                <button class="min-h-11 px-2 text-sm text-muted-foreground transition hover:text-foreground" onclick={clearFilters} type="button">
                                     {m["recipe.list.clearAll"]()}
                                 </button>
                             {/if}
@@ -249,7 +251,7 @@
                 {#if selectedDifficulty}
                     <Badge class="gap-1 py-1 pl-2.5 pr-1.5" variant="secondary">
                         {difficultySelectOptions.find(d => d.value === selectedDifficulty)?.label}
-                        <button aria-label={m["recipe.list.clearFilters"]()} class="-mr-0.5 rounded-full p-0.5 transition hover:bg-background/60" onclick={() => selectedDifficulty = ""} type="button">
+                        <button aria-label={m["recipe.list.clearFilters"]()} class="-mr-0.5 inline-flex size-8 items-center justify-center rounded-full transition hover:bg-background/60" onclick={() => selectedDifficulty = ""} type="button">
                             <X class="size-3"/>
                         </button>
                     </Badge>
@@ -257,7 +259,7 @@
                 {#if selectedCookTime}
                     <Badge class="gap-1 py-1 pl-2.5 pr-1.5" variant="secondary">
                         {cookTimeSelectOptions.find(c => c.value === selectedCookTime)?.label}
-                        <button aria-label={m["recipe.list.clearFilters"]()} class="-mr-0.5 rounded-full p-0.5 transition hover:bg-background/60" onclick={() => selectedCookTime = ""} type="button">
+                        <button aria-label={m["recipe.list.clearFilters"]()} class="-mr-0.5 inline-flex size-8 items-center justify-center rounded-full transition hover:bg-background/60" onclick={() => selectedCookTime = ""} type="button">
                             <X class="size-3"/>
                         </button>
                     </Badge>
@@ -265,7 +267,7 @@
                 {#if selectedTag}
                     <Badge class="gap-1 py-1 pl-2.5 pr-1.5" variant="secondary">
                         {selectedTag}
-                        <button aria-label={m["recipe.list.clearFilters"]()} class="-mr-0.5 rounded-full p-0.5 transition hover:bg-background/60" onclick={() => selectedTag = ""} type="button">
+                        <button aria-label={m["recipe.list.clearFilters"]()} class="-mr-0.5 inline-flex size-8 items-center justify-center rounded-full transition hover:bg-background/60" onclick={() => selectedTag = ""} type="button">
                             <X class="size-3"/>
                         </button>
                     </Badge>
@@ -273,12 +275,12 @@
                 {#if author && author !== "all"}
                     <Badge class="gap-1 py-1 pl-2.5 pr-1.5" variant="secondary">
                         {authorSelectOptions.find(a => a.value === author)?.label}
-                        <button aria-label={m["recipe.list.clearFilters"]()} class="-mr-0.5 rounded-full p-0.5 transition hover:bg-background/60" onclick={() => author = ""} type="button">
+                        <button aria-label={m["recipe.list.clearFilters"]()} class="-mr-0.5 inline-flex size-8 items-center justify-center rounded-full transition hover:bg-background/60" onclick={() => author = ""} type="button">
                             <X class="size-3"/>
                         </button>
                     </Badge>
                 {/if}
-                <Button class="h-7 px-2 text-xs text-muted-foreground" onclick={clearFilters} size="sm" variant="ghost">
+                <Button class="px-2 text-sm text-muted-foreground" onclick={clearFilters} size="sm" variant="ghost">
                     {m["recipe.list.clearAll"]()}
                 </Button>
             </div>
@@ -303,9 +305,9 @@
                     {m["recipe.list.clearFilters"]()}
                 </Button>
             {:else if recipes.length === 0}
-                <Button href="/recipe/create" size="sm">
-                    <Plus class="size-4"/>
-                    {m["nav.create"]()}
+                <Button href={emptyHref} size="sm">
+                    {#if emptyHref === "/recipe/create"}<Plus class="size-4"/>{:else}<Search class="size-4"/>{/if}
+                    {emptyLabel}
                 </Button>
             {/if}
         </div>

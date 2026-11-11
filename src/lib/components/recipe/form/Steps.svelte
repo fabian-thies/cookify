@@ -36,7 +36,7 @@
 </script>
 
 {#snippet instructionRow(item: Step, index: number)}
-    <div class="flex flex-row gap-6">
+    <div class="flex flex-row gap-2 sm:gap-4">
         <div class="flex w-full max-w-10 flex-col gap-1.5">
             <Label>&nbsp;</Label>
             <div class="flex flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full items-center justify-center text-sm font-medium">
@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        <div class="flex w-full flex-col gap-1.5">
+        <div class="flex min-w-0 flex-1 flex-col gap-1.5">
             <Label for="instructions-{index}-description">{m["recipe.form.steps.stepLabel"]()}</Label>
             <Textarea
                     id="instructions-{index}-description"
@@ -59,8 +59,9 @@
         <div class="flex w-full max-w-10 flex-col gap-1.5">
             <Label>&nbsp;</Label>
             <Button
+                    aria-label={m["actions.delete"]() + ": " + m["recipe.form.steps.stepLabel"]() + " " + (index + 1)}
                     type="button"
-                    variant="outline"
+                    variant="ghost"
                     class="hover:cursor-pointer"
                     disabled={steps.length === 1}
                     onclick={() => removeStep(index)}

@@ -83,9 +83,13 @@
         <Card.Content>
             <form action="{effectiveIsLogin ? '?/login' : '?/register'}" method="post" use:enhance={() => {
                 submitting = true;
-                return async ({update}) => {
+                return async ({result, update}) => {
                     try {
-                        await update();
+                        if (result.type === "error") {
+                            toast.error(m["actions.error"]());
+                            return;
+                        }
+                        await update({reset: false});
                     } finally {
                         submitting = false;
                     }
@@ -100,6 +104,10 @@
                             <Label for="username-{id}">{m["login.username"]()}</Label>
                             <Input
                                     autocomplete="username"
+                                    autocapitalize="none"
+                                    spellcheck={false}
+                                    minlength={3}
+                                    maxlength={31}
                                     id="username-{id}"
                                     name="username"
                                     placeholder={m["login.enterUsername"]()}
@@ -128,11 +136,14 @@
                                         class="pr-11"
                                         id="password-{id}"
                                         name="password"
+                                        minlength={6}
+                                        maxlength={255}
                                         required
                                         type={showPassword ? "text" : "password"}
                                 />
                                 <Button
-                                        aria-label={m["login.password"]()}
+                                        aria-label={showPassword ? m["login.hidePassword"]() : m["login.showPassword"]()}
+                                        aria-pressed={showPassword}
                                         class="absolute right-0 top-0 h-full px-3 text-muted-foreground hover:bg-transparent"
                                         onclick={() => showPassword = !showPassword}
                                         size="sm"
@@ -155,12 +166,14 @@
                                         id="confirm-password-{id}"
                                         name="confirmPassword"
                                         placeholder={m["login.confirmPasswordPlaceholder"]()}
+                                        minlength={6}
+                                        maxlength={255}
                                         required
                                         type={showPassword ? "text" : "password"}
                                 />
                             </div>
                         {/if}
-                        <Button class="w-full" disabled={submitting} size="lg" type="submit">
+                        <Button class="w-full" disabled={submitting || passkeyBusy} aria-busy={submitting} size="lg" type="submit">
                             {#if submitting}
                                 <Spinner class="size-4"/>
                             {:else}
@@ -174,7 +187,7 @@
                             <span class="text-xs uppercase text-muted-foreground">{m["login.or"]()}</span>
                             <span class="h-px flex-1 bg-border"></span>
                         </div>
-                        <Button class="w-full" disabled={passkeyBusy} onclick={handlePasskeyLogin} size="lg" type="button" variant="outline">
+                        <Button class="w-full" disabled={passkeyBusy || submitting} aria-busy={passkeyBusy} onclick={handlePasskeyLogin} size="lg" type="button" variant="outline">
                             <Fingerprint class="size-4"/>
                             {m["login.passkey"]()}
                         </Button>
@@ -186,7 +199,7 @@
                             Registrations are currently disabled.
                         {/if}
                         <button
-                                class="underline underline-offset-4 hover:no-underline cursor-pointer"
+                                class="min-h-11 rounded-md px-1 underline underline-offset-4 hover:no-underline cursor-pointer"
                                 onclick={() => allowRegistrations && (isLogin = !isLogin)}
                                 type="button"
                                 disabled={!allowRegistrations}

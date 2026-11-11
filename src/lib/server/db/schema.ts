@@ -1,4 +1,4 @@
-import {integer, boolean, date, pgTable, primaryKey, serial, text, timestamp, unique} from 'drizzle-orm/pg-core';
+import {integer, doublePrecision, boolean, date, pgTable, primaryKey, serial, text, timestamp, unique} from 'drizzle-orm/pg-core';
 import {DIFFICULTIES, LANGUAGES} from "../../constants";
 
 export const user = pgTable('user', {
@@ -71,7 +71,7 @@ export const ingredients = pgTable('ingredients', {
     id: serial('id').primaryKey(),
     recipeId: integer('recipe_id').notNull().references(() => recipes.id),
     name: text('name').notNull(),
-    quantity: integer('quantity').notNull(),
+    quantity: doublePrecision('quantity').notNull(),
     unit: text('unit').notNull(),
 });
 

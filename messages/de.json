@@ -481,5 +481,12 @@
     },
     "shoppingList": "Einkaufsliste",
     "emptyShoppingList": "Keine Rezepte für diese Woche geplant"
-  }
+  },
+  "a11y.skipToContent": "Zum Inhalt springen",
+  "actions.close": "Schließen",
+  "recipe.form.unsavedChanges": "Du hast ungespeicherte Änderungen. Ohne Speichern verlassen?",
+  "login.showPassword": "Passwort anzeigen",
+  "login.hidePassword": "Passwort verbergen",
+  "mealPlan.chooseDay": "Wähle einen Tag für {title}.",
+  "mealPlan.tapToPlan": "Rezept auswählen und einem Tag hinzufügen"
 }

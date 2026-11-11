@@ -29,8 +29,8 @@
 </script>
 
 {#snippet tipRow(item: TipDraft, index: number)}
-    <div class="flex flex-row gap-6">
-        <div class="flex w-full flex-col gap-1.5">
+    <div class="flex flex-row gap-2 sm:gap-4">
+        <div class="flex min-w-0 flex-1 flex-col gap-1.5">
             <Label for="tips-{index}-description">{m["recipe.form.tips.tipLabel"]()}</Label>
             <Textarea
                     id="tips-{index}-description"
@@ -43,8 +43,9 @@
         <div class="flex w-full max-w-10 flex-col gap-1.5">
             <Label>&nbsp;</Label>
             <Button
+                    aria-label={m["actions.delete"]() + ": " + m["recipe.form.tips.tipLabel"]() + " " + (index + 1)}
                     type="button"
-                    variant="outline"
+                    variant="ghost"
                     class="hover:cursor-pointer"
                     onclick={() => removeTip(index)}
             >

@@ -1,6 +1,6 @@
 <script lang="ts">
     import * as Dialog from "$lib/components/ui/dialog/index.js";
-    import {Button} from "$lib/components/ui/button/index.js";
+    import {Button, buttonVariants} from "$lib/components/ui/button/index.js";
     import {Label} from "$lib/components/ui/label/index.js";
     import {Textarea} from "$lib/components/ui/textarea/index.js";
     import {Spinner} from "$lib/components/ui/spinner/index.js";
@@ -133,11 +133,9 @@
         error = null;
     }
 }}>
-    <Dialog.Trigger class="w-full">
-        <Button variant="outline" type="button" class="w-full gap-2">
+    <Dialog.Trigger class={buttonVariants({variant: "outline"}) + " w-full gap-2"}>
             <Sparkles size={16}/>
             {m["recipe.ai.editButton"]()}
-        </Button>
     </Dialog.Trigger>
     <Dialog.Content class="sm:max-w-[550px]">
         <Dialog.Header>
@@ -160,7 +158,7 @@
         </div>
 
         {#if error}
-            <p class="text-sm text-destructive">{error}</p>
+            <p role="alert" class="text-sm text-destructive">{error}</p>
         {/if}
 
         <Dialog.Footer>

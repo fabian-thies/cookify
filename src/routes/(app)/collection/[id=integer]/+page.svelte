@@ -1,4 +1,5 @@
 <script lang="ts">
+    import ErrorState from "$lib/components/ErrorState.svelte";
     import RecipeList from "$lib/components/recipe/widgets/RecipeList.svelte";
     import {
         deleteCollection,
@@ -32,6 +33,7 @@
     let collection: CollectionData | null = $state(null);
     let collectionOwner = $state(false);
     let loading = $state(true);
+    let failed = $state(false);
     const userId = data.user.id;
 
     let showDeleteDialog = $state(false);
@@ -40,20 +42,23 @@
     let newTitle = $state("");
     let isSaving = $state(false);
 
-    $effect(() => {
+    function loadCollection() {
         loading = true;
+        failed = false;
         const collectionId = Number($page.params.id);
-        getCollectionRecipes({collectionId}).then((result) => {
+        getCollectionRecipes({collectionId}).run().then((result) => {
             collection = {...result, id: collectionId};
             collectionOwner = data.user!.id === result.userId;
             newTitle = result.collectionTitle;
             loading = false;
         }).catch((error) => {
             console.error('Failed to load collection:', error);
-            toast.error(m["actions.loadCollectionError"]());
+            failed = true;
             loading = false;
         });
-    });
+    }
+
+    $effect(() => { $page.params.id; queueMicrotask(loadCollection); });
 
     async function deleteCollectionOnClick() {
         try {
@@ -66,11 +71,12 @@
     }
 
     async function setCollectionTitleOnClick() {
+        if (isSaving || !newTitle.trim()) return;
         try {
             isSaving = true;
 
             await setCollectionTitle({
-                title: newTitle,
+                title: newTitle.trim(),
                 collectionId: collection!.id
             });
 
@@ -81,23 +87,26 @@
             newTitle = result.collectionTitle;
 
             showEditDialog = false;
-            isSaving = false;
 
             toast.success(m["settings.profile.saved"]());
         } catch (e) {
             toast.error(m["actions.error"]());
+        } finally {
+            isSaving = false;
         }
     }
 </script>
 
-{#if collection}
+{#if failed}
+    <ErrorState message={m["actions.loadCollectionError"]()} onRetry={loadCollection}/>
+{:else if loading}
+    <p role="status" class="py-12 text-center text-muted-foreground">{m.loading()}</p>
+{:else if collection}
     <RecipeList {userId} recipes={collection.recipes} title={collection.collectionTitle} showFilters={false}>
     {#snippet actions()}
         <DropdownMenu.Root>
-            <DropdownMenu.Trigger>
-                <Button variant="outline">
-                    <PencilIcon></PencilIcon>
-                </Button>
+            <DropdownMenu.Trigger aria-label={m["actions.edit"]()} class={buttonVariants({variant: "outline", size: "icon"})}>
+                <PencilIcon class="size-4"/>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content>
                 <DropdownMenu.Group>
@@ -136,7 +145,7 @@
                 <Dialog.Close class={buttonVariants({ variant: "outline" })}>
                     {m["actions.cancel"]()}
                 </Dialog.Close>
-                <Button type="button" onclick={async () => {await setCollectionTitleOnClick()}}>
+                <Button disabled={isSaving || !newTitle.trim()} type="button" onclick={async () => {await setCollectionTitleOnClick()}}>
                     {#if isSaving}
                         <Spinner class="mr-2"/>
                     {:else}
@@ -161,7 +170,7 @@
                 <Dialog.Close class={buttonVariants({ variant: "outline" })}>
                     {m["actions.cancel"]()}
                 </Dialog.Close>
-                <Button type="button"
+                <Button variant="destructive" type="button"
                         onclick={async () => {await deleteCollectionOnClick()}}>{m["collection.deleteDialog.confirm"]()}</Button>
             </Dialog.Footer>
         </Dialog.Content>

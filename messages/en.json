@@ -484,5 +484,12 @@
     },
     "shoppingList": "Shopping List",
     "emptyShoppingList": "No recipes planned for this week"
-  }
+  },
+  "a11y.skipToContent": "Skip to content",
+  "actions.close": "Close",
+  "recipe.form.unsavedChanges": "You have unsaved changes. Leave without saving?",
+  "login.showPassword": "Show password",
+  "login.hidePassword": "Hide password",
+  "mealPlan.chooseDay": "Choose a day for {title}.",
+  "mealPlan.tapToPlan": "Select a recipe and add it to a day"
 }

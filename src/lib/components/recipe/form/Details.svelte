@@ -7,7 +7,11 @@
     import SelectComponent from "$lib/components/ui/select/SelectComponent.svelte";
     import {Badge} from "$lib/components/ui/badge";
 
-    const {recipe, tags: tagsProp}: {recipe?: any; tags?: string[]} = $props();
+    const {recipe, tags: tagsProp, difficulty}: {recipe?: any; tags?: string[]; difficulty?: string} = $props();
+    let selectedDifficulty = $state("");
+    $effect(() => {
+        selectedDifficulty = difficulty ?? recipe?.difficulty?.toLowerCase() ?? "";
+    });
 
     const difficulties = [
         {value: "easy", label: m["recipe.common.difficulty.easy"]()},
@@ -34,7 +38,7 @@
 
     const addTag = () => {
         const value = tagInput.trim();
-        if (value && !tags.includes(value) && tags.length <= 20) {
+        if (value && !tags.includes(value) && tags.length < 20) {
             tags = [...tags, value];
         }
         tagInput = "";
@@ -100,7 +104,7 @@
                     groupLabel={m["recipe.form.details.difficultyGroupLabel"]()}
                     name="difficulty"
                     options={difficulties}
-                    placeholder={m["recipe.form.details.difficultyPlaceholder"]()} value={recipe?.difficulty.toLowerCase() || ''}
+                    placeholder={m["recipe.form.details.difficultyPlaceholder"]()} bind:value={selectedDifficulty}
                     required/>
         </div>
         <div class="flex w-full flex-col gap-1.5">
@@ -146,17 +150,18 @@
                     bind:value={tagInput}
                     id="tagInput"
                     onkeydown={handleKeydown}
+                    onblur={addTag}
                     placeholder={m["recipe.form.details.tagsPlaceholder"]()}
                     type="text"
             />
             {#if tags.length > 0}
                 <div class="flex flex-wrap gap-2 mt-2">
                     {#each tags as tag, index}
-                        <Badge class="flex items-center gap-1 cursor-pointer" onclick={() => removeTag(index)}>
+                        <button type="button" class="inline-flex min-h-11 items-center gap-2 rounded-full bg-secondary px-3 text-sm text-secondary-foreground" aria-label={m["actions.delete"]() + ": " + tag} onclick={() => removeTag(index)}>
                             {tag}
-                            <X class="h-3 w-3"/>
-                            <input type="hidden" name="tags[]" value={tag}/>
-                        </Badge>
+                            <X class="size-4"/>
+                        </button>
+                        <input type="hidden" name="tags[]" value={tag}/>
                     {/each}
                 </div>
             {/if}

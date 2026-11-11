@@ -106,6 +106,13 @@
       "when": 1794347705864,
       "tag": "0014_red_big_bertha",
       "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1794360242481,
+      "tag": "0015_decimal_ingredient_quantities",
+      "breakpoints": true
     }
   ]
 }

@@ -1,5 +1,6 @@
 <script lang="ts">
     import {enhance} from '$app/forms';
+    import UnsavedChanges from '$lib/components/recipe/form/UnsavedChanges.svelte';
     import General from "$lib/components/recipe/form/General.svelte";
     import Ingredients from "$lib/components/recipe/form/Ingredients.svelte";
     import Steps from "$lib/components/recipe/form/Steps.svelte";
@@ -13,6 +14,9 @@
 
     import ImportDialog from "$lib/components/recipe/import/ImportDialog.svelte";
     import AiRecipeDialog from "$lib/components/recipe/import/AiRecipeDialog.svelte";
+
+    let formElement = $state<HTMLFormElement>();
+    let saved = $state(false);
 
     const {form, data} = $props();
     const aiEnabled = $derived(!!data.ai?.configured && !!data.ai?.enabled);
@@ -41,6 +45,7 @@
     let ingredients = $state<{id: number | null; recipeId: number; name: string; quantity: number | null; unit: string}[]>([]);
     let steps = $state<{number: number; step: string}[]>([]);
     let tags = $state<string[]>([]);
+    let difficulty = $state<string>();
     let tips = $state<{id: number | null; recipeId: number; tip: string}[]>([]);
 
     async function handleImport(recipe: ScrapedRecipe) {
@@ -63,7 +68,7 @@
         if (difficultySelect && recipe.difficulty) {
             const validDifficulties = ['easy', 'medium', 'hard'];
             const normalizedDifficulty = validDifficulties.find(d => recipe.difficulty?.toLowerCase().includes(d));
-            if (normalizedDifficulty) difficultySelect.value = normalizedDifficulty;
+            if (normalizedDifficulty) difficulty = normalizedDifficulty;
         }
 
         if (recipe.ingredients.length > 0) {
@@ -124,15 +129,18 @@
     let creating = $state(false);
 </script>
 
+<UnsavedChanges form={formElement} {saved}/>
+
 <div class="mx-auto mt-2 sm:mt-6">
     <div class="mb-5 space-y-1">
         <h1 class="page-title">{m["recipe.form.createTitle"]()}</h1>
     </div>
-    <form action="?/createRecipe" enctype="multipart/form-data" method="POST" use:enhance={() => {
+    <form bind:this={formElement} action="?/createRecipe" enctype="multipart/form-data" method="POST" use:enhance={() => {
         creating = true;
         return async ({ result }) => {
             creating = false;
             if (result.type === 'success') {
+                saved = true;
                 const recipeId = result.data?.id;
 
                 toast.success(m["recipe.createSuccess"]());
@@ -146,6 +154,10 @@
             }
         }}
     }>
+        <div class="mb-5 grid gap-2 sm:grid-cols-2">
+            <ImportDialog onImport={handleImport}/>
+            {#if aiEnabled}<AiRecipeDialog onImport={handleImport}/>{/if}
+        </div>
         <div class="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-8">
             <div class="space-y-5 lg:col-span-2 lg:space-y-6">
                 <General/>
@@ -155,13 +167,9 @@
             </div>
 
             <div class="space-y-5 lg:space-y-6">
-                <Details tags={tags}/>
-                <div class="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-10 flex flex-col gap-2 rounded-xl border border-border/70 bg-card/95 p-3 backdrop-blur lg:static lg:border-0 lg:bg-transparent lg:p-0">
-                    {#if aiEnabled}
-                        <AiRecipeDialog onImport={handleImport}/>
-                    {/if}
-                    <ImportDialog onImport={handleImport}/>
-                    <Button class="w-full" type="submit">
+                <Details tags={tags} {difficulty}/>
+                <div class="flex flex-col gap-2 rounded-xl border border-border/70 bg-card/95 p-3 backdrop-blur lg:static lg:border-0 lg:bg-transparent lg:p-0">
+                    <Button class="w-full" disabled={creating} aria-busy={creating} type="submit">
                         {#if creating}
                             <Spinner/>
                         {:else}

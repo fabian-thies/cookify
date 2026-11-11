@@ -199,7 +199,9 @@ export const getRecipes = query(v.optional(v.object({
     orderBy: v.optional(v.picklist(['recent', 'popular']))
 })), async (params) => {
     const {offset = 0, limit, orderBy} = params || {};
-    return await getRecipesFromDb(offset, limit, orderBy, false);
+    const {locals} = getRequestEvent();
+    if (!locals.user) throw new Error('User not authenticated');
+    return await getRecipesFromDb(offset, limit, orderBy, locals.user.id);
 });
 
 export const getRecentRecipes = query(async () => {
@@ -217,7 +219,7 @@ export const getDiscoverRecipes = query(async () => {
 export const getFavoriteRecipes = query(async () => {
     const {locals} = getRequestEvent();
     if (!locals.user) throw new Error('User not authenticated');
-    return await getFavoriteRecipesFromDb();
+    return await getFavoriteRecipesFromDb(locals.user.id);
 });
 
 export const getDifficulties = query(async () => {
@@ -319,7 +321,9 @@ export const getUserRecipeRating = query(v.object({
 export const getCollectionRecipes = query(v.object({
     collectionId: v.number()
 }), async ({collectionId}) => {
-    return await getCollectionRecipesFromDb(collectionId);
+    const {locals} = getRequestEvent();
+    if (!locals.user) throw new Error('User not authenticated');
+    return await getCollectionRecipesFromDb(collectionId, locals.user.id);
 });
 
 export const getRecipeDetails = query(v.object({

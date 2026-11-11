@@ -52,6 +52,9 @@
             <Label for="ingredients-{index}-amount">{m["recipe.form.ingredients.quantityLabel"]()}</Label>
             <Input
                     type="number"
+                    inputmode="decimal"
+                    min="0"
+                    step="any"
                     id="ingredients-{index}-amount"
                     name="ingredients_amount[]"
                     bind:value={item.quantity}
@@ -70,7 +73,7 @@
             />
         </div>
         <div class="col-span-2 flex w-full flex-col gap-1.5 md:col-span-1">
-            <Label for="ingredients-{index}-ingredient">Zutat</Label>
+            <Label for="ingredients-{index}-ingredient">{m["recipe.form.ingredients.nameLabel"]()}</Label>
             <Input
                     type="text"
                     id="ingredients-{index}-ingredient"
@@ -82,8 +85,9 @@
         </div>
         <div class="col-span-2 flex w-full flex-col justify-end gap-x-1.5 md:col-span-1 md:max-w-10">
             <Button
-                    variant="outline"
-                    class="hover:cursor-pointer"
+                    aria-label={m["actions.delete"]() + ": " + m["recipe.form.ingredients.title"]() + " " + (index + 1)}
+                    variant="ghost"
+                    class="ml-auto w-11"
                     type="button"
                     disabled={ingredients.length === 1}
                     onclick={() => removeIngredient(index)}

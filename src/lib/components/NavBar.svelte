@@ -19,10 +19,10 @@
     ];
 
     const isActive = (href: string) =>
-        href === "/" ? page.url.pathname === "/" : page.url.pathname.startsWith(href);
+        href === "/" ? page.url.pathname === "/" : page.url.pathname.startsWith(href === "/recipe/search" ? "/recipe/" : href);
 </script>
 
-<nav class="sticky top-0 z-40 mx-auto flex w-full max-w-6xl items-center justify-between gap-2 border-b border-border/60 bg-background/80 px-4 py-2 backdrop-blur-xl sm:top-3 sm:w-[calc(100%-2rem)] sm:rounded-2xl sm:border sm:border-border/70 sm:bg-card/70 sm:px-5 sm:shadow-lg sm:shadow-black/20 lg:px-6">
+<nav class="sticky top-0 z-40 mx-auto flex w-full max-w-6xl items-center justify-between gap-2 border-b border-border/60 bg-background/80 px-4 py-2 pt-[max(0.5rem,env(safe-area-inset-top))] backdrop-blur-xl sm:top-3 sm:w-[calc(100%-2rem)] sm:rounded-2xl sm:border sm:border-border/70 sm:bg-card/70 sm:px-5 sm:shadow-sm lg:px-6">
     <a class="flex items-center gap-2 rounded-lg px-1 py-1 transition hover:opacity-80" href="/">
         <h2 class="cookify text-xl font-semibold tracking-tight lg:text-2xl">
             cookify
@@ -37,6 +37,7 @@
                     <NavigationMenu.Item>
                         <NavigationMenu.Link
                                 class={isActive(link.href) ? "font-medium text-foreground" : "font-medium text-muted-foreground hover:text-foreground"}
+                                aria-current={isActive(link.href) ? "page" : undefined}
                                 href={link.href}
                         >
                             {link.label()}
@@ -49,18 +50,14 @@
 
     <div class="flex items-center gap-1.5 lg:gap-2.5">
         {#if user}
-            <a aria-label={m["nav.create"]()} href="/recipe/create" class="lg:hidden">
-                <Button class="size-9 rounded-full" size="icon" variant="outline">
+            <Button aria-label={m["nav.create"]()} href="/recipe/create" class="rounded-full lg:hidden" size="icon" variant="outline">
                     <Plus class="size-4"/>
-                </Button>
-            </a>
-            <a href="/recipe/create" class="hidden lg:inline-block">
-                <Button variant="outline">
+            </Button>
+            <Button href="/recipe/create" class="hidden lg:inline-flex" variant="outline">
                     <Plus class="size-4"/>{m["nav.create"]()}
-                </Button>
-            </a>
+            </Button>
             <DropdownMenu.Root>
-                <DropdownMenu.Trigger aria-label={m["nav.profile"]()}>
+                <DropdownMenu.Trigger class="flex size-11 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-ring" aria-label={m["nav.profile"]()}>
                     <Avatar.Root class="size-8 cursor-pointer ring-1 ring-border transition hover:ring-primary/50 lg:size-9">
                         <Avatar.Image src={user.avatar}/>
                         <Avatar.Fallback class="text-xs">{user.username.slice(0, 2).toUpperCase()}</Avatar.Fallback>

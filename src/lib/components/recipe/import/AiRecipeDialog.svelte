@@ -1,7 +1,7 @@
 <script lang="ts">
     import * as Dialog from "$lib/components/ui/dialog/index.js";
     import * as Tabs from "$lib/components/ui/tabs/index.js";
-    import {Button} from "$lib/components/ui/button/index.js";
+    import {Button, buttonVariants} from "$lib/components/ui/button/index.js";
     import {Input} from "$lib/components/ui/input/index.js";
     import {Label} from "$lib/components/ui/label/index.js";
     import {Textarea} from "$lib/components/ui/textarea/index.js";
@@ -111,11 +111,9 @@
         reset();
     }
 }}>
-    <Dialog.Trigger class="w-full">
-        <Button variant="outline" type="button" class="w-full gap-2">
+    <Dialog.Trigger class={buttonVariants({variant: "outline"}) + " w-full gap-2"}>
             <Sparkles size={16}/>
             {m["recipe.ai.button"]()}
-        </Button>
     </Dialog.Trigger>
     <Dialog.Content class="sm:max-w-[550px]">
         <Dialog.Header>

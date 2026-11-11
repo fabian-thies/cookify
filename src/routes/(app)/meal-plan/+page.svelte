@@ -65,6 +65,8 @@
     let error = $state<string | null>(null);
     let sidebarOpen = $state(false);
     let shoppingListOpen = $state(false);
+    let adding = $state(false);
+    let loadVersion = 0;
     let selectedRecipeId = $state<number | null>(null);
     let shoppingList = $state<ShoppingItem[]>([]);
     let checkedItems = $state<Set<string>>(new Set());
@@ -86,6 +88,7 @@
 
     async function loadData() {
         if (!userId) return;
+        const version = ++loadVersion;
         loading = true;
         error = null;
         checkedItems = new Set();
@@ -93,24 +96,25 @@
             const start = weekDays[0].date;
             const end = weekDays[6].date;
             const [plan, userRecipes, list] = await Promise.all([
-                getMealPlan({ startDate: start, endDate: end }),
-                getRecipesByUserId({ userId }),
-                getShoppingList({ startDate: start, endDate: end }),
+                getMealPlan({ startDate: start, endDate: end }).run(),
+                getRecipesByUserId({ userId }).run(),
+                getShoppingList({ startDate: start, endDate: end }).run(),
             ]);
+            if (version !== loadVersion) return;
             mealPlanEntries = plan;
             recipes = userRecipes;
             shoppingList = list;
         } catch (e: any) {
-            error = e.message ?? m["mealPlan.error.load"]();
+            if (version === loadVersion) error = m["mealPlan.error.load"]();
         } finally {
-            loading = false;
+            if (version === loadVersion) loading = false;
         }
     }
 
     $effect(() => {
         weekDays;
         userId;
-        loadData();
+        queueMicrotask(loadData);
     });
 
     function prevWeek() {
@@ -138,6 +142,7 @@
 
     // Drag and drop does not exist on touch screens, so a tap on a recipe followed by a tap on a day adds it.
     async function addRecipeToDate(id: number, date: string) {
+        if (adding) return;
         const alreadyPlanned = entriesForDate(date).some(
             (entry) => entry.recipeId === id
         );
@@ -146,6 +151,7 @@
             return;
         }
 
+        adding = true;
         try {
             const result = await addToMealPlan({ recipeId: id, date });
             const recipe = recipes.find((r) => r.id === id);
@@ -169,7 +175,9 @@
             selectedRecipeId = null;
             shoppingList = await getShoppingList({ startDate: weekDays[0].date, endDate: weekDays[6].date }).run();
         } catch (e: any) {
-            error = e.message ?? m["mealPlan.error.add"]();
+            error = m["mealPlan.error.add"]();
+        } finally {
+            adding = false;
         }
     }
 
@@ -212,9 +220,9 @@
     </div>
 
     {#if error}
-        <div class="bg-destructive/10 text-destructive px-4 py-3 rounded-lg flex items-center justify-between">
+        <div role="alert" class="bg-destructive/10 text-destructive px-4 py-3 rounded-lg flex items-center justify-between">
             <span>{error}</span>
-            <button aria-label={m["actions.cancel"]()} class="rounded p-1 transition hover:bg-destructive/10" onclick={() => (error = null)}><X class="size-4"/></button>
+            <button aria-label={m["actions.cancel"]()} class="flex size-11 shrink-0 items-center justify-center rounded transition hover:bg-destructive/10" onclick={() => (error = null)}><X class="size-4"/></button>
         </div>
     {/if}
 
@@ -231,16 +239,23 @@
             </Button>
         </div>
         <div class="flex items-center gap-2">
-            <Button aria-expanded={sidebarOpen} aria-label={sidebarOpen ? m["mealPlan.closeRecipes"]() : m["mealPlan.addRecipes"]()} class="h-9" size="sm" variant={sidebarOpen ? "secondary" : "outline"} onclick={() => (sidebarOpen = !sidebarOpen)}>
+            <Button aria-expanded={sidebarOpen} aria-label={sidebarOpen ? m["mealPlan.closeRecipes"]() : m["mealPlan.addRecipes"]()} class="h-9" size="sm" variant={sidebarOpen ? "secondary" : "outline"} onclick={() => { sidebarOpen = !sidebarOpen; shoppingListOpen = false; }}>
                 <Search class="size-4 sm:mr-1.5"/>
                 <span class="hidden sm:inline">{sidebarOpen ? m["mealPlan.closeRecipes"]() : m["mealPlan.addRecipes"]()}</span>
             </Button>
-            <Button aria-expanded={shoppingListOpen} aria-label={m["mealPlan.shoppingList"]()} class="h-9" size="sm" variant={shoppingListOpen ? "default" : "outline"} onclick={() => (shoppingListOpen = !shoppingListOpen)}>
+            <Button aria-expanded={shoppingListOpen} aria-label={m["mealPlan.shoppingList"]()} class="h-9" size="sm" variant={shoppingListOpen ? "default" : "outline"} onclick={() => { shoppingListOpen = !shoppingListOpen; sidebarOpen = false; }}>
                 <ShoppingCart class="size-4 sm:mr-1.5"/>
                 <span class="hidden sm:inline">{m["mealPlan.shoppingList"]()}</span>
             </Button>
         </div>
     </div>
+
+    {#if selectedRecipeId != null}
+        <div role="status" class="flex items-center justify-between gap-3 rounded-xl bg-primary/10 px-4 py-2 text-sm">
+            <p>{m["mealPlan.chooseDay"]({title: recipes.find(recipe => recipe.id === selectedRecipeId)?.title ?? ''})}</p>
+            <Button variant="ghost" size="icon" aria-label={m["actions.cancel"]()} onclick={() => selectedRecipeId = null}><X class="size-4"/></Button>
+        </div>
+    {/if}
 
     {#if loading}
         <div class="flex items-center justify-center py-20">
@@ -267,7 +282,11 @@
                                 <button
                                     class="flex w-full items-center gap-3 p-2 rounded-lg border bg-card hover:bg-accent/50 cursor-grab active:cursor-grabbing transition-colors text-left {selectedRecipeId === recipe.id ? 'ring-2 ring-primary' : ''}"
                                     draggable="true"
-                                    onclick={() => selectedRecipeId = selectedRecipeId === recipe.id ? null : recipe.id}
+                                    aria-pressed={selectedRecipeId === recipe.id}
+                                    onclick={() => {
+                                        selectedRecipeId = selectedRecipeId === recipe.id ? null : recipe.id;
+                                        sidebarOpen = false;
+                                    }}
                                     ondragstart={(e) => handleDragStart(e, recipe.id)}
                                 >
                                     <img
@@ -288,14 +307,14 @@
                 </div>
             {/if}
 
-            <div class="grid flex-1 grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5">
+            <div class="grid flex-1 grid-cols-1 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5">
                 {#each weekDays as { name, date }}
                     {@const dayEntries = entriesForDate(date)}
                     {@const isToday = date === today}
                     <div
                         role="region"
                         aria-label="{name} meal plan"
-                        class="flex min-h-[130px] flex-col rounded-xl border transition-colors sm:min-h-[300px] {isToday ? 'border-primary/40 bg-primary/5' : 'border-border/70 bg-card/30'} {dayEntries.length > 0 ? 'bg-primary/5' : ''} {selectedRecipeId != null ? 'border-primary/50 ring-1 ring-primary/30' : ''}"
+                        class="flex min-h-[120px] flex-col rounded-xl border transition-colors sm:min-h-[300px] {isToday ? 'border-primary/40 bg-primary/5' : 'border-border/70 bg-card/30'} {dayEntries.length > 0 ? 'bg-primary/5' : ''} {selectedRecipeId != null ? 'border-primary/50 ring-1 ring-primary/30' : ''}"
                         ondragover={(e) => e.preventDefault()}
                         ondrop={(e) => handleDrop(e, date)}
                     >
@@ -308,7 +327,8 @@
                             </div>
                             {#if selectedRecipeId != null}
                                 <button
-                                    class="mt-2 inline-flex h-7 w-full items-center justify-center gap-1 rounded-md bg-primary/15 text-[11px] font-medium text-primary transition hover:bg-primary/25"
+                                    disabled={adding}
+                                    class="mt-2 inline-flex min-h-11 w-full items-center justify-center gap-1 rounded-md bg-primary/15 text-sm font-medium text-primary transition hover:bg-primary/25"
                                     onclick={() => addRecipeToDate(selectedRecipeId!, date)}
                                 >
                                     <Plus class="size-3"/>
@@ -319,8 +339,8 @@
 
                         <div class="flex-1 space-y-2 overflow-y-auto p-1.5 sm:p-2">
                             {#if dayEntries.length === 0}
-                                <div class="flex h-full min-h-16 items-center justify-center px-2 text-center text-[11px] text-muted-foreground/60 sm:text-xs">
-                                    {m["mealPlan.dropHere"]()}
+                                <div class="flex h-full min-h-16 items-center justify-center px-2 text-center text-sm text-muted-foreground">
+                                    <span class="sm:hidden">{m["mealPlan.tapToPlan"]()}</span><span class="hidden sm:inline">{m["mealPlan.dropHere"]()}</span>
                                 </div>
                             {:else}
                                 {#each dayEntries as entry (entry.id)}
@@ -340,7 +360,7 @@
                                         </a>
                                         <button
                                             aria-label={m["actions.delete"]()}
-                                            class="shrink-0 rounded p-1 text-muted-foreground/50 transition hover:bg-destructive/10 hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100"
+                                            class="flex size-11 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
                                             onclick={() => handleRemove(entry.id)}
                                         >
                                             <Trash2 class="size-3.5"/>
@@ -354,9 +374,9 @@
             </div>
 
             {#if shoppingListOpen}
-                <div class="flex w-full shrink-0 flex-col gap-3 rounded-xl border bg-card/50 p-4 lg:w-72">
+                <div class="order-first flex w-full shrink-0 flex-col gap-3 rounded-xl border bg-card/50 p-4 lg:order-none lg:w-72">
                     <div class="flex items-center justify-between">
-                        <h2 class="font-semibold text-sm">{m["mealPlan.shoppingList"]()}</h2>                        <button aria-label={m["mealPlan.shoppingList"]()} class="rounded p-1 text-muted-foreground transition hover:bg-accent hover:text-foreground" onclick={() => (shoppingListOpen = false)}>
+                        <h2 class="font-semibold text-sm">{m["mealPlan.shoppingList"]()}</h2>                        <button aria-label={m["mealPlan.shoppingList"]()} class="flex size-11 items-center justify-center rounded text-muted-foreground transition hover:bg-accent hover:text-foreground" onclick={() => (shoppingListOpen = false)}>
                             <X class="size-4"/>
                         </button>
                     </div>
@@ -368,7 +388,9 @@
                                 {@const key = `${item.name}|||${item.unit}`}
                                 {@const isChecked = checkedItems.has(key)}
                                 <button
-                                    class="flex items-center justify-between p-2 rounded-lg border bg-card hover:bg-accent/50 transition-colors text-left w-full {isChecked ? 'opacity-60' : ''}"
+                                    role="checkbox"
+                                    aria-checked={isChecked}
+                                    class="flex min-h-11 items-center justify-between p-2 rounded-lg border bg-card hover:bg-accent/50 transition-colors text-left w-full {isChecked ? 'opacity-60' : ''}"
                                     onclick={() => toggleChecked(key)}
                                 >
                                     <div class="min-w-0 flex-1">

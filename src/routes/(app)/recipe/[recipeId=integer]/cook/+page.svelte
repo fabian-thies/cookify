@@ -1,7 +1,10 @@
 <script lang="ts">
+    import ErrorState from "$lib/components/ErrorState.svelte";
+    import {remainingSeconds} from "$lib/timer";
     import {m} from "$lib/paraglide/messages";
     import {page} from "$app/stores";
     import {getRecipeDetails} from "$lib/functions/recipe.remote";
+    import * as Dialog from "$lib/components/ui/dialog";
     import {Button} from "$lib/components/ui/button/index.js";
     import {
         ChefHat,
@@ -22,6 +25,7 @@
     const {data} = $props();
 
     let recipe = $state<any>(null);
+    let failed = $state(false);
     let currentStep = $state(0);
     let showIngredients = $state(false);
     let customMinutes = $state(5);
@@ -32,32 +36,36 @@
         totalSeconds: number;
         isRunning: boolean;
         label: string;
+        deadline: number;
     }
 
     let timers = $state<TimerData[]>([]);
     let timerIdCounter = $state(0);
 
-    let intervalIds = new Map<number, ReturnType<typeof setInterval>>();
 
     let steps = $derived(recipe?.steps ?? []);
     let totalSteps = $derived(steps.length);
     let ingredients = $derived(recipe?.ingredients ?? []);
-    let isFinished = $derived(currentStep >= totalSteps);
+    let isFinished = $derived(totalSteps > 0 && currentStep >= totalSteps);
 
     let wakeLock: WakeLockSentinel | null = null;
 
-    $effect(() => {
+    function loadRecipe() {
+        failed = false;
         const recipeId = Number($page.params.recipeId);
-        getRecipeDetails({recipeId, incrementView: false}).then((result) => {
+        getRecipeDetails({recipeId, incrementView: false}).run().then((result) => {
             recipe = result;
         }).catch((error) => {
             console.error('Failed to load recipe:', error);
+            failed = true;
         });
-    });
+    }
+
+    $effect(() => { $page.params.recipeId; queueMicrotask(loadRecipe); });
 
     async function requestWakeLock() {
         try {
-            if ('wakeLock' in navigator) {
+            if ('wakeLock' in navigator && (!wakeLock || wakeLock.released)) {
                 wakeLock = await navigator.wakeLock.request('screen');
             }
         } catch (e) {
@@ -73,9 +81,18 @@
 
     onMount(() => {
         requestWakeLock();
+        const interval = setInterval(updateTimers, 250);
+        const onVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                updateTimers();
+                requestWakeLock();
+            }
+        };
+        document.addEventListener('visibilitychange', onVisibilityChange);
         return () => {
             releaseWakeLock();
-            intervalIds.forEach(id => clearInterval(id));
+            clearInterval(interval);
+            document.removeEventListener('visibilitychange', onVisibilityChange);
         };
     });
 
@@ -106,98 +123,44 @@
         navigator.vibrate?.([200, 100, 200]);
     }
 
+    function updateTimers() {
+        const now = Date.now();
+        timers = timers.map(timer => {
+            if (!timer.isRunning) return timer;
+            const seconds = remainingSeconds(timer.deadline, now);
+            if (seconds === timer.remainingSeconds) return timer;
+            if (seconds === 0) finishTimer(timer.label);
+            return {...timer, remainingSeconds: seconds, isRunning: seconds > 0};
+        });
+    }
+
     function startTimer(minutes: number, label?: string) {
-        const id = timerIdCounter++;
-        const totalSeconds = minutes * 60;
-        const timerLabel = label || `${minutes} min`;
-
-        const intervalId = setInterval(() => {
-            const timer = timers.find(t => t.id === id);
-            if (!timer) {
-                clearInterval(intervalId);
-                intervalIds.delete(id);
-                return;
-            }
-
-            const newRemaining = timer.remainingSeconds - 1;
-            if (newRemaining <= 0) {
-                clearInterval(intervalId);
-                intervalIds.delete(id);
-                timers = timers.map(t =>
-                    t.id === id ? { ...t, remainingSeconds: 0, isRunning: false } : t
-                );
-                finishTimer(timerLabel);
-            } else {
-                timers = timers.map(t =>
-                    t.id === id ? { ...t, remainingSeconds: newRemaining } : t
-                );
-            }
-        }, 1000);
-
-        intervalIds.set(id, intervalId);
-
+        if (!Number.isFinite(minutes) || minutes <= 0 || minutes > 999) return;
+        const seconds = Math.round(minutes * 60);
         timers = [...timers, {
-            id,
-            remainingSeconds: totalSeconds,
-            totalSeconds,
+            id: timerIdCounter++,
+            remainingSeconds: seconds,
+            totalSeconds: seconds,
             isRunning: true,
-            label: timerLabel
+            label: label || `${minutes} min`,
+            deadline: Date.now() + seconds * 1000
         }];
     }
 
     function toggleTimer(timerId: number) {
-        const timer = timers.find(t => t.id === timerId);
-        if (!timer) return;
-
-        if (timer.isRunning) {
-            const intervalId = intervalIds.get(timerId);
-            if (intervalId) {
-                clearInterval(intervalId);
-                intervalIds.delete(timerId);
-            }
-            timers = timers.map(t =>
-                t.id === timerId ? { ...t, isRunning: false } : t
-            );
-        } else {
-            if (timer.remainingSeconds <= 0) return;
-
-            const intervalId = setInterval(() => {
-                const current = timers.find(t => t.id === timerId);
-                if (!current) {
-                    clearInterval(intervalId);
-                    intervalIds.delete(timerId);
-                    return;
-                }
-
-                const newRemaining = current.remainingSeconds - 1;
-                if (newRemaining <= 0) {
-                    clearInterval(intervalId);
-                    intervalIds.delete(timerId);
-                    timers = timers.map(t =>
-                        t.id === timerId ? { ...t, remainingSeconds: 0, isRunning: false } : t
-                    );
-                    finishTimer(current.label);
-                } else {
-                    timers = timers.map(t =>
-                        t.id === timerId ? { ...t, remainingSeconds: newRemaining } : t
-                    );
-                }
-            }, 1000);
-
-            intervalIds.set(timerId, intervalId);
-            timers = timers.map(t =>
-                t.id === timerId ? { ...t, isRunning: true } : t
-            );
-        }
+        updateTimers();
+        timers = timers.map(timer => {
+            if (timer.id !== timerId || timer.remainingSeconds <= 0) return timer;
+            return {
+                ...timer,
+                isRunning: !timer.isRunning,
+                deadline: Date.now() + timer.remainingSeconds * 1000
+            };
+        });
     }
 
     function resetTimer(timerId: number) {
-        const intervalId = intervalIds.get(timerId);
-        if (intervalId) {
-            clearInterval(intervalId);
-            intervalIds.delete(timerId);
-        }
-        timers = timers.filter(t => t.id !== timerId);
+        timers = timers.filter(timer => timer.id !== timerId);
     }
 
     function formatTime(seconds: number): string {
@@ -214,6 +177,8 @@
     }
 </script>
 
+<svelte:head><title>{recipe?.title ? `${recipe.title} · Cookify` : 'Cookify'}</title></svelte:head>
+
 {#if recipe}
     <div class="fixed inset-0 z-50 flex h-dvh flex-col bg-background">
         <div class="flex items-center justify-between gap-2 border-b border-border bg-card/80 px-3 py-2 pt-[max(0.5rem,env(safe-area-inset-top))] backdrop-blur-sm sm:px-4 sm:py-3">
@@ -222,10 +187,32 @@
                 <h1 class="truncate text-base font-bold sm:text-lg">{recipe.title}</h1>
             </div>
             <div class="flex shrink-0 items-center gap-1.5">
-                <Button aria-expanded={showIngredients} aria-label={m["recipe.cookMode.ingredients"]()} variant="ghost" size="sm" class="px-2 sm:px-3" onclick={() => showIngredients = !showIngredients}>
-                    <ListChecks class="h-4 w-4 sm:mr-1.5"/>
-                    <span class="hidden sm:inline">{m["recipe.cookMode.ingredients"]()}</span>
-                </Button>
+                <Dialog.Root bind:open={showIngredients}>
+                    <Dialog.Trigger>
+                        {#snippet child({props})}
+                            <Button {...props} aria-label={m["recipe.cookMode.ingredients"]()} variant="ghost" size="sm" class="px-2 sm:px-3">
+                                <ListChecks class="size-4"/>
+                                <span class="hidden sm:inline">{m["recipe.cookMode.ingredients"]()}</span>
+                            </Button>
+                        {/snippet}
+                    </Dialog.Trigger>
+                    <Dialog.Content>
+                        <Dialog.Header>
+                            <Dialog.Title>{m["recipe.cookMode.ingredients"]()}</Dialog.Title>
+                            <Dialog.Description>{m["recipe.common.forServings"]({count: recipe.servings})}</Dialog.Description>
+                        </Dialog.Header>
+                    <ul class="divide-y divide-border/50">
+                        {#each ingredients as ing}
+                            <li class="flex items-start gap-3 py-2.5">
+                                <span class="min-w-16 text-sm font-semibold tabular-nums text-primary">
+                                    {ing.quantity} {ing.unit}
+                                </span>
+                                <span class="text-sm leading-relaxed">{ing.name}</span>
+                            </li>
+                        {/each}
+                    </ul>
+                    </Dialog.Content>
+                </Dialog.Root>
                 <Button aria-label={m["recipe.cookMode.exit"]()} variant="outline" size="sm" class="px-2 sm:px-3" onclick={exitCookMode}>
                     <X class="h-4 w-4 sm:mr-1.5"/>
                     <span class="hidden sm:inline">{m["recipe.cookMode.exit"]()}</span>
@@ -239,30 +226,9 @@
             ></div>
         </div>
         <div class="relative flex flex-1 overflow-hidden">
-            {#if showIngredients}
-                <div class="absolute inset-y-0 left-0 z-10 w-80 max-w-[85vw] overflow-y-auto border-r border-border bg-card p-4 shadow-xl transition-transform">
-                    <div class="mb-4 flex items-center justify-between">
-                        <h2 class="text-base font-semibold">{m["recipe.cookMode.ingredients"]()}</h2>
-                        <Button aria-label={m["actions.cancel"]()} size="icon" variant="ghost" onclick={() => showIngredients = false}>
-                            <X class="size-4"/>
-                        </Button>
-                    </div>
-                    <p class="mb-4 text-sm text-muted-foreground">{m["recipe.common.forServings"]({count: recipe.servings})}</p>
-                    <ul class="divide-y divide-border/50">
-                        {#each ingredients as ing}
-                            <li class="flex items-start gap-3 py-2.5">
-                                <span class="min-w-16 text-sm font-semibold tabular-nums text-primary">
-                                    {ing.quantity} {ing.unit}
-                                </span>
-                                <span class="text-sm leading-relaxed">{ing.name}</span>
-                            </li>
-                        {/each}
-                    </ul>
-                </div>
-            {/if}
-            <div class="flex flex-1 flex-col items-center justify-center overflow-y-auto px-4 py-4 sm:px-8 sm:py-6">
+            <div class="flex flex-1 flex-col items-center overflow-y-auto px-4 py-4 sm:px-8 sm:py-6">
                 {#if isFinished}
-                    <div class="animate-fade-in text-center">
+                    <div class="my-auto animate-fade-in text-center">
                         <div class="mx-auto mb-6 flex size-20 items-center justify-center rounded-full bg-primary/10">
                             <ChefHat class="size-10 text-primary"/>
                         </div>
@@ -279,7 +245,7 @@
                         </div>
                     </div>
                 {:else if totalSteps > 0}
-                    <div class="w-full max-w-2xl animate-fade-in">
+                    <div class="my-auto w-full max-w-2xl animate-fade-in">
                         <div class="mb-6 text-center">
                             <span class="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                                 {m["recipe.cookMode.step"]({current: currentStep + 1, total: totalSteps})}
@@ -318,7 +284,7 @@
                             <button
                                 aria-label={m["recipe.cookMode.step"]({current: i + 1, total: totalSteps})}
                                 aria-current={i === currentStep ? "step" : undefined}
-                                class="p-2"
+                                class="flex size-11 items-center justify-center rounded-full"
                                 onclick={() => goToStep(i)}
                             >
                                 <span class="block size-1.5 rounded-full transition-all {i === currentStep ? 'scale-150 bg-primary' : i < currentStep ? 'bg-primary/40' : 'bg-muted-foreground/40'}"></span>
@@ -371,11 +337,13 @@
                 </div>
                 <div class="mb-3 flex items-center justify-center gap-2 sm:mb-4">
                     <input
+                        aria-label={m["recipe.cookMode.setMinutes"]()}
                         type="number"
+                        inputmode="numeric"
                         bind:value={customMinutes}
                         min="1"
                         max="999"
-                        class="h-8 w-16 rounded-md border border-border bg-secondary text-center text-base sm:text-sm"
+                        class="h-11 w-16 rounded-md border border-border bg-secondary text-center text-base sm:text-sm"
                     />
                     <span class="text-sm text-muted-foreground">{m["recipe.cookMode.setMinutes"]()}</span>
                     <Button variant="outline" size="sm" onclick={() => {
@@ -401,7 +369,7 @@
                         variant={isFinished ? "secondary" : "default"}
                         size="lg"
                         onclick={nextStep}
-                        disabled={isFinished}
+                        disabled={isFinished || totalSteps === 0}
                         class="h-11 flex-1 max-w-[200px]"
                     >
                         {m["recipe.cookMode.next"]()}
@@ -410,6 +378,11 @@
                 </div>
             </div>
         </div>
+    </div>
+{:else if failed}
+    <div class="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-background p-4">
+        <ErrorState message={m["actions.loadRecipeError"]()} onRetry={loadRecipe}/>
+        <Button variant="outline" onclick={exitCookMode}>{m["recipe.cookMode.exit"]()}</Button>
     </div>
 {:else}
     <div class="fixed inset-0 z-50 bg-background flex items-center justify-center">

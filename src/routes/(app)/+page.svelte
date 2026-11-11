@@ -19,9 +19,9 @@
 
         try {
             const [popular, recent, discover] = await Promise.all([
-                getPopularRecipes(),
-                getRecentRecipes(),
-                getDiscoverRecipes()
+                getPopularRecipes().run(),
+                getRecentRecipes().run(),
+                getDiscoverRecipes().run()
             ]);
             popularRecipes = popular;
             recentRecipes = recent;
@@ -34,7 +34,7 @@
     }
 
     $effect(() => {
-        loadRecipes();
+        queueMicrotask(loadRecipes);
     });
 
     const allEmpty = $derived(!loading && popularRecipes.length + recentRecipes.length + discoverRecipes.length === 0);

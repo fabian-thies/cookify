@@ -1,6 +1,6 @@
 <script lang="ts">
     import * as Dialog from "$lib/components/ui/dialog/index.js";
-    import {Button} from "$lib/components/ui/button/index.js";
+    import {Button, buttonVariants} from "$lib/components/ui/button/index.js";
     import {Input} from "$lib/components/ui/input/index.js";
     import {Label} from "$lib/components/ui/label/index.js";
     import {m} from "$lib/paraglide/messages";
@@ -40,6 +40,7 @@
     let error = $state<string | null>(null);
 
     async function handleImport() {
+        if (loading) return;
         const trimmedUrl = url.trim();
 
         if (!trimmedUrl) {
@@ -48,7 +49,8 @@
         }
 
         try {
-            new URL(trimmedUrl);
+            const parsed = new URL(trimmedUrl);
+            if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('Invalid protocol');
         } catch {
             error = m["recipe.import.invalidUrl"]();
             return;
@@ -94,10 +96,8 @@
 </script>
 
     <Dialog.Root bind:open onOpenChange={handleOpenChange}>
-    <Dialog.Trigger class="w-full">
-        <Button variant="outline" type="button" class="w-full">
+    <Dialog.Trigger class={buttonVariants({variant: "outline"}) + " w-full"}>
             {m["recipe.import.button"]()}
-        </Button>
     </Dialog.Trigger>
     <Dialog.Content>
         <Dialog.Header>
@@ -122,7 +122,7 @@
                 />
             </div>
             {#if error}
-                <p class="text-sm text-destructive">{error}</p>
+                <p role="alert" class="text-sm text-destructive">{error}</p>
             {/if}
         </div>
         <Dialog.Footer>

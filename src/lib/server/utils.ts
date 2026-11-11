@@ -143,7 +143,7 @@ export function parseRecipeFormData(formData: FormData): {
 
     for (const amount of formData.getAll("ingredients_amount[]")) {
         const num = Number(amount);
-        if (Number.isNaN(num)) {
+        if (!Number.isFinite(num) || num < 0) {
             throw new Error("invalid");
         }
         amounts.push(num);

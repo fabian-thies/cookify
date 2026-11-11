@@ -14,7 +14,7 @@ import {
     tips as tipsTable
 } from "$lib/server/db/schema";
 import {getDifficultyId} from "$lib/server/utils";
- import {and, desc, eq, getTableColumns, ne, sql} from "drizzle-orm";
+ import {and, desc, eq, getTableColumns, ne, or, sql} from "drizzle-orm";
 import type {CreateRecipeInput, UpdateRecipeInput} from "$lib/types/recipe";
 import {getRequestEvent} from "$app/server";
 import {randomUUID} from "crypto";
@@ -45,84 +45,87 @@ export async function createRecipe({
                                        fiber = null
                                    }: CreateRecipeInput) {
     const db = getDb();
-    const result = await db.insert(recipes).values({
-        title,
-        description,
-        image,
-        cookingTime: cookTime,
-        servings,
-        userId: userId,
-        visibility,
-        calories,
-        protein,
-        carbs,
-        fat,
-        fiber
-    }).returning({id: recipes.id});
+    return db.transaction(async (db) => {
+        const result = await db.insert(recipes).values({
+            title,
+            description,
+            image,
+            cookingTime: cookTime,
+            servings,
+            userId: userId,
+            visibility,
+            calories,
+            protein,
+            carbs,
+            fat,
+            fiber
+        }).returning({id: recipes.id});
 
-    await db.insert(difficultyToRecipe).values({recipeId: result[0].id, difficultyId: getDifficultyId(difficulty)});
+        await db.insert(difficultyToRecipe).values({recipeId: result[0].id, difficultyId: getDifficultyId(difficulty)});
 
-    await db.insert(ingredients).values(
-        ingredientsList.map((ingredient) => ({
-            recipeId: result[0].id,
-            name: ingredient.name,
-            quantity: ingredient.amount,
-            unit: ingredient.unit,
-        }))
-    );
-
-    await db.insert(stepsTable).values(
-        steps.map((step, index) => ({
-            recipeId: result[0].id,
-            step,
-            number: index + 1,
-        }))
-    );
-
-    if (tags.length > 0) {
-        await db.insert(tagsTable).values(
-            tags.map((tag) => ({
+        await db.insert(ingredients).values(
+            ingredientsList.map((ingredient) => ({
                 recipeId: result[0].id,
-                name: tag,
+                name: ingredient.name,
+                quantity: ingredient.amount,
+                unit: ingredient.unit,
             }))
         );
-    }
 
-    if (tips.length > 0) {
-        await db.insert(tipsTable).values(
-            tips.map((tip) => ({
+        await db.insert(stepsTable).values(
+            steps.map((step, index) => ({
                 recipeId: result[0].id,
-                tip,
+                step,
+                number: index + 1,
             }))
         );
-    }
 
-    return result;
+        if (tags.length > 0) {
+            await db.insert(tagsTable).values(
+                tags.map((tag) => ({
+                    recipeId: result[0].id,
+                    name: tag,
+                }))
+            );
+        }
+
+        if (tips.length > 0) {
+            await db.insert(tipsTable).values(
+                tips.map((tip) => ({
+                    recipeId: result[0].id,
+                    tip,
+                }))
+            );
+        }
+
+        return result;
+    });
 }
 
 export async function deleteRecipe(userId: string, recipeId: number) {
     const db = getDb();
+    return db.transaction(async (db) => {
+        const recipe = await db.select().from(recipes)
+            .where(and(eq(recipes.id, recipeId), eq(recipes.userId, userId)))
+            .limit(1);
 
-    const recipe = await db.select().from(recipes)
-        .where(and(eq(recipes.id, recipeId), eq(recipes.userId, userId)))
-        .limit(1);
+        if (userId !== recipe[0]?.userId) {
+            throw new Error('Insufficient permissions');
+        }
 
-    if (userId !== recipe[0]?.userId) {
-        throw new Error('Insufficient permissions');
-    }
-
-    await db.delete(mealPlan).where(eq(mealPlan.recipeId, recipeId));
-    await db.delete(favorite).where(eq(favorite.recipeId, recipeId));
-    await db.delete(recipeRating).where(eq(recipeRating.recipeId, recipeId));
-    await db.delete(collectionToRecipe).where(eq(collectionToRecipe.recipeId, recipeId));
-    await db.delete(difficultyToRecipe).where(eq(difficultyToRecipe.recipeId, recipeId));
-    await db.delete(ingredients).where(eq(ingredients.recipeId, recipeId));
-    await db.delete(stepsTable).where(eq(stepsTable.recipeId, recipeId));
-    await db.delete(tagsTable).where(eq(tagsTable.recipeId, recipeId));
-    await db.delete(tipsTable).where(eq(tipsTable.recipeId, recipeId));
-    return db.delete(recipes)
-        .where(and(eq(recipes.id, recipeId), eq(recipes.userId, userId)))
-        .returning({id: recipes.id});
+        await db.delete(mealPlan).where(eq(mealPlan.recipeId, recipeId));
+        await db.delete(favorite).where(eq(favorite.recipeId, recipeId));
+        await db.delete(recipeRating).where(eq(recipeRating.recipeId, recipeId));
+        await db.delete(collectionToRecipe).where(eq(collectionToRecipe.recipeId, recipeId));
+        await db.delete(difficultyToRecipe).where(eq(difficultyToRecipe.recipeId, recipeId));
+        await db.delete(ingredients).where(eq(ingredients.recipeId, recipeId));
+        await db.delete(stepsTable).where(eq(stepsTable.recipeId, recipeId));
+        await db.delete(tagsTable).where(eq(tagsTable.recipeId, recipeId));
+        await db.delete(tipsTable).where(eq(tipsTable.recipeId, recipeId));
+        return db.delete(recipes)
+            .where(and(eq(recipes.id, recipeId), eq(recipes.userId, userId)))
+            .returning({id: recipes.id});
+    });
 }
 
 export async function updateRecipe({
@@ -146,81 +149,82 @@ export async function updateRecipe({
                                        fiber = null
                                    }: UpdateRecipeInput) {
     const db = getDb();
+    return db.transaction(async (db) => {
+        const [existingRecipe] = await db.select({userId: recipes.userId})
+            .from(recipes)
+            .where(eq(recipes.id, id));
 
-    const [existingRecipe] = await db.select({userId: recipes.userId})
-        .from(recipes)
-        .where(eq(recipes.id, id));
+        if (!existingRecipe) {
+            throw new Error('Recipe not found');
+        }
 
-    if (!existingRecipe) {
-        throw new Error('Recipe not found');
-    }
+        if (existingRecipe.userId !== userId) {
+            throw new Error('Insufficient permissions');
+        }
 
-    if (existingRecipe.userId !== userId) {
-        throw new Error('Insufficient permissions');
-    }
+        await db.update(recipes)
+            .set({
+                title,
+                description,
+                image,
+                cookingTime: cookTime,
+                servings,
+                userId,
+                updatedAt: new Date(),
+                visibility,
+                calories,
+                protein,
+                carbs,
+                fat,
+                fiber
+            })
+            .where(eq(recipes.id, id));
 
-    await db.update(recipes)
-        .set({
-            title,
-            description,
-            image,
-            cookingTime: cookTime,
-            servings,
-            userId,
-            updatedAt: new Date(),
-            visibility,
-            calories,
-            protein,
-            carbs,
-            fat,
-            fiber
-        })
-        .where(eq(recipes.id, id));
+        await db.update(difficultyToRecipe)
+            .set({difficultyId: getDifficultyId(difficulty)})
+            .where(eq(difficultyToRecipe.recipeId, id));
 
-    await db.update(difficultyToRecipe)
-        .set({difficultyId: getDifficultyId(difficulty)})
-        .where(eq(difficultyToRecipe.recipeId, id));
-
-    await db.delete(ingredients).where(eq(ingredients.recipeId, id));
-    await db.insert(ingredients).values(
-        ingredientsList.map((ingredient) => ({
-            recipeId: id,
-            name: ingredient.name,
-            quantity: ingredient.amount,
-            unit: ingredient.unit,
-        }))
-    );
-
-    await db.delete(stepsTable).where(eq(stepsTable.recipeId, id));
-    await db.insert(stepsTable).values(
-        steps.map((step, index) => ({
-            recipeId: id,
-            step,
-            number: index + 1,
-        }))
-    );
-
-    await db.delete(tagsTable).where(eq(tagsTable.recipeId, id));
-    if (tags.length > 0) {
-        await db.insert(tagsTable).values(
-            tags.map((tag) => ({
+        await db.delete(ingredients).where(eq(ingredients.recipeId, id));
+        await db.insert(ingredients).values(
+            ingredientsList.map((ingredient) => ({
                 recipeId: id,
-                name: tag,
+                name: ingredient.name,
+                quantity: ingredient.amount,
+                unit: ingredient.unit,
             }))
         );
-    }
 
-    await db.delete(tipsTable).where(eq(tipsTable.recipeId, id));
-    if (tips.length > 0) {
-        await db.insert(tipsTable).values(
-            tips.map((tip) => ({
+        await db.delete(stepsTable).where(eq(stepsTable.recipeId, id));
+        await db.insert(stepsTable).values(
+            steps.map((step, index) => ({
                 recipeId: id,
-                tip,
+                step,
+                number: index + 1,
             }))
         );
-    }
 
-    return {id};
+        await db.delete(tagsTable).where(eq(tagsTable.recipeId, id));
+        if (tags.length > 0) {
+            await db.insert(tagsTable).values(
+                tags.map((tag) => ({
+                    recipeId: id,
+                    name: tag,
+                }))
+            );
+        }
+
+        await db.delete(tipsTable).where(eq(tipsTable.recipeId, id));
+        if (tips.length > 0) {
+            await db.insert(tipsTable).values(
+                tips.map((tip) => ({
+                    recipeId: id,
+                    tip,
+                }))
+            );
+        }
+
+        return {id};
+    });
 }
 
 export async function updateRecipeNutrition(
@@ -243,7 +247,7 @@ export async function updateRecipeNutrition(
     return updated;
 }
 
-export async function getRecipes(offset = 0, limit?: number, orderBy?: "recent" | "popular" | "random", includePrivate = false) {
+export async function getRecipes(offset = 0, limit?: number, orderBy?: "recent" | "popular" | "random", viewerId?: string) {
     const db = getDb();
     let query = db.select({
         ...getTableColumns(recipes),
@@ -256,9 +260,10 @@ export async function getRecipes(offset = 0, limit?: number, orderBy?: "recent" 
         .offset(offset)
         .$dynamic();
 
-    if (!includePrivate) {
-        query = query.where(eq(recipes.visibility, "public"));
-    }
+    query = query.where(or(
+        eq(recipes.visibility, "public"),
+        viewerId ? eq(recipes.userId, viewerId) : undefined
+    ));
 
     if (limit) {
         query = query.limit(limit);
@@ -279,7 +284,7 @@ export async function getRecipes(offset = 0, limit?: number, orderBy?: "recent" 
     return query;
 }
 
-export async function getCollectionRecipes(collectionId: number) {
+export async function getCollectionRecipes(collectionId: number, userId: string) {
     const db = getDb();
 
     if (!collectionId) {
@@ -291,6 +296,10 @@ export async function getCollectionRecipes(collectionId: number) {
         .from(collections)
         .where(eq(collections.id, collectionId));
 
+    if (!collectionRow || collectionRow.userId !== userId) {
+        throw new Error('Collection not found');
+    }
+
     const recipesResult = await db.select({
         ...getTableColumns(recipes),
         difficulty: difficulty.difficulty,
@@ -300,7 +309,10 @@ export async function getCollectionRecipes(collectionId: number) {
         .innerJoin(collectionToRecipe, eq(collectionToRecipe.recipeId, recipes.id))
         .innerJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
         .innerJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
-        .where(eq(collectionToRecipe.collectionId, collectionId));
+        .where(and(
+            eq(collectionToRecipe.collectionId, collectionId),
+            or(eq(recipes.visibility, "public"), eq(recipes.userId, userId))
+        ));
 
     const collectionRecipes = {
         collectionTitle: collectionRow?.title,
@@ -359,7 +371,7 @@ export async function getDiscoverRecipes() {
     return getRecipes(0, undefined, "random");
 }
 
-export async function getFavoriteRecipes() {
+export async function getFavoriteRecipes(userId: string) {
     const db = getDb();
     return db.select({
         ...getTableColumns(recipes),
@@ -370,7 +382,11 @@ export async function getFavoriteRecipes() {
         .innerJoin(favorite, eq(favorite.recipeId, recipes.id))
         .innerJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
         .innerJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
-        .where(and(eq(favorite.favorite, true), eq(recipes.visibility, "public")));
+        .where(and(
+            eq(favorite.userId, userId),
+            eq(favorite.favorite, true),
+            or(eq(recipes.visibility, "public"), eq(recipes.userId, userId))
+        ));
 }
 
 export async function getRecipeById(id: number) {

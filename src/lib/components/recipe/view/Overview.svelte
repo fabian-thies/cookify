@@ -88,6 +88,7 @@
     let ratingCount = $state(initialRatingCount);
     let userRating = $state<number | null>(initialUserRating);
     let favorite = $state(isFavorite);
+    let isSavingFavorite = $state(false);
     let hoverRating = $state<number | null>(null);
     let isSubmittingRating = $state(false);
     let isSharing = $state(false);
@@ -164,10 +165,11 @@
     }
 
     async function likeRecipeOnClick() {
-        if (readonly) {
+        if (readonly || isSavingFavorite) {
             return;
         }
 
+        isSavingFavorite = true;
         const previous = favorite;
         favorite = !favorite;
 
@@ -176,6 +178,8 @@
         } catch (e) {
             favorite = previous;
             toast.error(m["actions.error"]());
+        } finally {
+            isSavingFavorite = false;
         }
     }
 
@@ -337,7 +341,7 @@
                 <ChefHat class="size-4"/>
                 {m["recipe.cookMode.title"]()}
             </Button>
-            <Button aria-label={m["actions.save"]()} onclick={likeRecipeOnClick} size="lg" variant="outline">
+            <Button aria-label={m["nav.favorites"]()} aria-pressed={favorite} disabled={isSavingFavorite} onclick={likeRecipeOnClick} size="lg" variant="outline">
                 <Heart class="size-4" fill={favorite ? "currentColor" : "none"}/>
                 <span class="hidden sm:inline">{m["actions.save"]()}</span>
             </Button>
@@ -390,10 +394,8 @@
                 </Dialog.Content>
             </Dialog.Root>
             <DropdownMenu.Root>
-                <DropdownMenu.Trigger>
-                    <Button aria-label={m["actions.more"]()} class="size-12" size="icon" variant="outline">
-                        <Ellipsis class="size-5"/>
-                    </Button>
+                <DropdownMenu.Trigger aria-label={m["actions.more"]()} class={buttonVariants({variant: "outline", size: "icon"}) + " size-12"}>
+                    <Ellipsis class="size-5"/>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content align="end" class="w-60">
                     <DropdownMenu.Group>

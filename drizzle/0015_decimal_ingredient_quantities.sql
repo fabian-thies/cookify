@@ -1,0 +1,1 @@
+ALTER TABLE "ingredients" ALTER COLUMN "quantity" SET DATA TYPE double precision;
