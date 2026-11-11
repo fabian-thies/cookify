@@ -7,6 +7,7 @@
     import type {PublicUser} from "$lib/server/db/schema";
     import {m} from "$lib/paraglide/messages";
     import {page} from "$app/state";
+    import {imageVariantUrl} from "$lib/images";
 
     const {user}: { user: PublicUser } = $props();
 
@@ -59,7 +60,7 @@
             <DropdownMenu.Root>
                 <DropdownMenu.Trigger class="flex size-11 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-ring" aria-label={m["nav.profile"]()}>
                     <Avatar.Root class="size-8 cursor-pointer ring-1 ring-border transition hover:ring-primary/50 lg:size-9">
-                        <Avatar.Image src={user.avatar}/>
+                        <Avatar.Image decoding="async" loading="lazy" src={imageVariantUrl(user.avatar, "thumb")}/>
                         <Avatar.Fallback class="text-xs">{user.username.slice(0, 2).toUpperCase()}</Avatar.Fallback>
                     </Avatar.Root>
                 </DropdownMenu.Trigger>
@@ -67,7 +68,7 @@
                     <DropdownMenu.Label class="font-normal">
                         <div class="flex items-center gap-2">
                             <Avatar.Root class="h-8 w-8">
-                                <Avatar.Image alt="" src={user.avatar}/>
+                                <Avatar.Image alt="" decoding="async" loading="lazy" src={imageVariantUrl(user.avatar, "thumb")}/>
                                 <Avatar.Fallback>{user.username.slice(0, 2)}</Avatar.Fallback>
                             </Avatar.Root>
                             <div class="grid gap-0.5 overflow-hidden">

@@ -25,6 +25,11 @@ const tagListSubquery = sql<string[]>`COALESCE(ARRAY(
     WHERE ${tagsTable.recipeId} = ${recipes.id}
 ), ARRAY[]::text[])`;
 
+// `search_vector` is maintained in the database and only needed for searching, so keep it out of API payloads.
+const {searchVector: _searchVector, ...recipeColumns} = getTableColumns(recipes);
+
+export {recipeColumns};
+
 export async function createRecipe({
                                        title,
                                        description,
@@ -250,7 +255,7 @@ export async function updateRecipeNutrition(
 export async function getRecipes(offset = 0, limit?: number, orderBy?: "recent" | "popular" | "random", viewerId?: string) {
     const db = getDb();
     let query = db.select({
-        ...getTableColumns(recipes),
+        ...recipeColumns,
         difficulty: difficulty.difficulty,
         tags: tagListSubquery,
     })
@@ -284,6 +289,72 @@ export async function getRecipes(offset = 0, limit?: number, orderBy?: "recent" 
     return query;
 }
 
+function searchTerms(input: string): string[] {
+    return input
+        .toLowerCase()
+        .split(/\s+/)
+        .map((term) => term.replace(/[^\p{L}\p{N}]+/gu, ''))
+        .filter((term) => term.length > 0);
+}
+
+export async function searchRecipes(searchTerm: string, viewerId?: string, limit = 60) {
+    const query = searchTerm.trim();
+    const terms = searchTerms(query);
+    if (terms.length === 0) {
+        return [];
+    }
+
+    const db = getDb();
+    const tsQuery = terms.map((term) => `${term}:*`).join(' & ');
+
+    // Every word has to match somewhere, either as a full-text prefix or fuzzily via trigrams.
+    // The trigram branch is what makes typos ("pancaks" -> "pancakes") work.
+    const termMatches = terms.map((term) => or(
+        sql`${recipes.searchVector} @@ to_tsquery('simple', ${`${term}:*`})`,
+        sql`word_similarity(${term}, ${recipes.title}) > 0.45`,
+        sql`word_similarity(${term}, ${recipes.description}) > 0.45`,
+        sql`EXISTS (
+            SELECT 1
+            FROM ${tagsTable}
+            WHERE ${tagsTable.recipeId} = ${recipes.id}
+              AND word_similarity(${term}, ${tagsTable.name}) > 0.45
+        )`
+    ));
+
+    const titleSimilarity = sql.join(
+        terms.map((term) => sql`word_similarity(${term}, ${recipes.title})`),
+        sql` + `
+    );
+    const descriptionSimilarity = sql.join(
+        terms.map((term) => sql`word_similarity(${term}, ${recipes.description})`),
+        sql` + `
+    );
+
+    const relevance = sql<number>`(
+        ts_rank_cd(${recipes.searchVector}, to_tsquery('simple', ${tsQuery})) * 4 +
+        (${titleSimilarity}) * 2 +
+        (${descriptionSimilarity})
+    )`;
+
+    return db.select({
+        ...recipeColumns,
+        difficulty: difficulty.difficulty,
+        tags: tagListSubquery,
+    })
+        .from(recipes)
+        .innerJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
+        .innerJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
+        .where(and(
+            or(
+                eq(recipes.visibility, "public"),
+                viewerId ? eq(recipes.userId, viewerId) : sql`false`
+            ),
+            and(...termMatches)
+        ))
+        .orderBy(desc(relevance), desc(recipes.createdAt))
+        .limit(limit);
+}
+
 export async function getCollectionRecipes(collectionId: number, userId: string) {
     const db = getDb();
 
@@ -301,7 +372,7 @@ export async function getCollectionRecipes(collectionId: number, userId: string)
     }
 
     const recipesResult = await db.select({
-        ...getTableColumns(recipes),
+        ...recipeColumns,
         difficulty: difficulty.difficulty,
         tags: tagListSubquery,
     })
@@ -374,7 +445,7 @@ export async function getDiscoverRecipes() {
 export async function getFavoriteRecipes(userId: string) {
     const db = getDb();
     return db.select({
-        ...getTableColumns(recipes),
+        ...recipeColumns,
         difficulty: difficulty.difficulty,
         tags: tagListSubquery,
     })
@@ -393,7 +464,7 @@ export async function getRecipeById(id: number) {
     const db = getDb();
     const result = await db
         .select({
-            ...getTableColumns(recipes),
+            ...recipeColumns,
             difficulty: difficulty.difficulty,
             tags: tagListSubquery,
         })
@@ -409,7 +480,7 @@ export async function getRecipeByShareToken(token: string) {
     const db = getDb();
     const [row] = await db
         .select({
-            ...getTableColumns(recipes),
+            ...recipeColumns,
             difficulty: difficulty.difficulty,
         })
         .from(recipes)
@@ -482,7 +553,7 @@ export async function getRecipesByUserId(userId: string, includePrivate = false)
     const db = getDb();
 
     let query = db.select({
-        ...getTableColumns(recipes),
+        ...recipeColumns,
         difficulty: difficulty.difficulty,
         tags: tagListSubquery,
     })
@@ -769,7 +840,7 @@ export async function getSimilarRecipes(recipeId: number, limit = 6) {
 
     const similarRecipes = await db
         .select({
-            ...getTableColumns(recipes),
+            ...recipeColumns,
             difficulty: difficulty.difficulty,
             tags: tagListSubquery,
             similarityScore,

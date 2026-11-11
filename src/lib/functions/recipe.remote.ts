@@ -28,6 +28,7 @@ import {
     getRecipeRatingSummary as getRecipeRatingSummaryFromDb,
     getUserRecipeRating as getUserRecipeRatingFromDb,
     getCollectionRecipes as getCollectionRecipesFromDb,
+    searchRecipes as searchRecipesFromDb,
     createRecipe as createRecipeInDb,
     updateRecipe as updateRecipeInDb,
     incrementRecipeViewCount,
@@ -202,6 +203,14 @@ export const getRecipes = query(v.optional(v.object({
     const {locals} = getRequestEvent();
     if (!locals.user) throw new Error('User not authenticated');
     return await getRecipesFromDb(offset, limit, orderBy, locals.user.id);
+});
+
+export const searchRecipes = query(v.object({
+    query: v.pipe(v.string(), v.trim(), v.minLength(1), v.maxLength(100))
+}), async ({query}) => {
+    const {locals} = getRequestEvent();
+    if (!locals.user) throw new Error('User not authenticated');
+    return await searchRecipesFromDb(query, locals.user.id);
 });
 
 export const getRecentRecipes = query(async () => {

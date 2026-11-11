@@ -1,5 +1,24 @@
-import {integer, doublePrecision, boolean, date, pgTable, primaryKey, serial, text, timestamp, unique} from 'drizzle-orm/pg-core';
+import {
+    integer,
+    doublePrecision,
+    boolean,
+    customType,
+    date,
+    index,
+    pgTable,
+    primaryKey,
+    serial,
+    text,
+    timestamp,
+    unique
+} from 'drizzle-orm/pg-core';
 import {DIFFICULTIES, LANGUAGES} from "../../constants";
+
+const tsvector = customType<{ data: string }>({
+    dataType() {
+        return 'tsvector';
+    }
+});
 
 export const user = pgTable('user', {
     id: text('id').primaryKey(),
@@ -53,7 +72,13 @@ export const recipes = pgTable('recipes', {
     carbs: integer('carbs'),
     fat: integer('fat'),
     fiber: integer('fiber'),
-});
+    // Maintained by the recipes/tags triggers (see drizzle/0016_*). Used for full-text search.
+    searchVector: tsvector('search_vector'),
+}, (table) => [
+    index('recipes_search_vector_idx').using('gin', table.searchVector),
+    index('recipes_title_trgm_idx').using('gin', table.title.op('gin_trgm_ops')),
+    index('recipes_description_trgm_idx').using('gin', table.description.op('gin_trgm_ops')),
+]);
 
 export const difficulty = pgTable('difficulty', {
     id: serial('id').primaryKey().notNull(),
@@ -96,7 +121,9 @@ export const tags = pgTable('tags', {
     id: serial('id').primaryKey(),
     recipeId: integer('recipe_id').notNull().references(() => recipes.id),
     name: text('name').notNull(),
-});
+}, (table) => [
+    index('tags_name_trgm_idx').using('gin', table.name.op('gin_trgm_ops')),
+]);
 
 export const tips = pgTable('tips', {
     id: serial('id').primaryKey(),

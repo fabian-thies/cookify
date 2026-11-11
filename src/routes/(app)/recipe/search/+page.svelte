@@ -34,5 +34,5 @@
 {#if failed}
     <ErrorState onRetry={loadRecipes}/>
 {:else}
-<RecipeList initialTag={page.url.searchParams.get("tag") ?? ""} {userId} {recipes} title={m["routes.home.title"]()} {loading}/>
+<RecipeList initialTag={page.url.searchParams.get("tag") ?? ""} {userId} {recipes} title={m["routes.home.title"]()} {loading} serverSearch/>
 {/if}

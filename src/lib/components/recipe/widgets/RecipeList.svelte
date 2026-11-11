@@ -10,7 +10,8 @@
     import type {Snippet} from "svelte";
     import * as Popover from "$lib/components/ui/popover";
     import {Badge} from "$lib/components/ui/badge";
-    import {Filter, Plus, Search, SearchX, SlidersHorizontal, X} from "lucide-svelte";
+    import {Filter, Loader2, Plus, Search, SearchX, SlidersHorizontal, X} from "lucide-svelte";
+    import {searchRecipes} from "$lib/functions/recipe.remote";
 
     type Props = {
         recipes: Recipe[];
@@ -18,6 +19,7 @@
         userId: string;
         title?: string;
         showFilters?: boolean;
+        serverSearch?: boolean;
         loading?: boolean;
         emptyHref?: string;
         emptyLabel?: string;
@@ -53,15 +55,55 @@
         {value: "user", label: m["recipe.list.author.options.user"]()}
     ];
 
-    let {userId, recipes, initialTag = "", title, showFilters = true, loading = false, emptyHref = "/recipe/create", emptyLabel = m["nav.create"](), actions}: Props = $props();
+    let {userId, recipes, initialTag = "", title, showFilters = true, serverSearch = false, loading = false, emptyHref = "/recipe/create", emptyLabel = m["nav.create"](), actions}: Props = $props();
 
     let search = $state("");
+    let remoteRecipes = $state<Recipe[] | null>(null);
+    let searching = $state(false);
     let selectedDifficulty = $state("");
     let selectedCookTime = $state("");
     let selectedTag = $state("");
     $effect(() => { selectedTag = initialTag; });
     let author = $state("");
     let filterPopoverOpen = $state(false);
+
+    $effect(() => {
+        if (!serverSearch) {
+            return;
+        }
+
+        const term = search.trim();
+        if (!term) {
+            remoteRecipes = null;
+            searching = false;
+            return;
+        }
+
+        let cancelled = false;
+        searching = true;
+
+        const timer = setTimeout(async () => {
+            try {
+                const result = await searchRecipes({query: term.slice(0, 100)}).run();
+                if (!cancelled) {
+                    remoteRecipes = result as Recipe[];
+                }
+            } catch {
+                if (!cancelled) {
+                    remoteRecipes = [];
+                }
+            } finally {
+                if (!cancelled) {
+                    searching = false;
+                }
+            }
+        }, 250);
+
+        return () => {
+            cancelled = true;
+            clearTimeout(timer);
+        };
+    });
 
     const activeFilterCount = $derived.by(() => {
         let count = 0;
@@ -85,11 +127,14 @@
 
     let filterActive = $derived(!!search || !!selectedDifficulty || !!selectedCookTime || !!selectedTag || (!!author && author !== "all"));
 
+    const visibleRecipes = $derived(serverSearch && search.trim() ? (remoteRecipes ?? []) : recipes);
+
     const filteredRecipes = $derived.by(() => {
-        return recipes.filter(recipe => {
+        return visibleRecipes.filter(recipe => {
             const term = search.trim().toLowerCase();
             const recipeTags = recipe.tags ?? [];
             const matchesSearch =
+                serverSearch ||
                 !term ||
                 recipe.title.toLowerCase().includes(term) ||
                 (recipe.description ?? "").toLowerCase().includes(term) ||
@@ -159,6 +204,9 @@
                     placeholder={m["recipe.list.searchPlaceholder"]()}
                     type="search"
                 />
+                {#if searching}
+                    <Loader2 class="pointer-events-none absolute right-11 top-1/2 size-4 -translate-y-1/2 animate-spin text-muted-foreground"/>
+                {/if}
                 {#if search}
                     <button
                         aria-label={m["search.clear"]()}
@@ -289,7 +337,7 @@
         {/if}
     {/if}
 
-    {#if loading}
+    {#if loading || (searching && remoteRecipes === null)}
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
             {#each Array(8) as _}
                 {@render cardSkeleton()}

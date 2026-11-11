@@ -3,6 +3,7 @@
     import {Badge} from "$lib/components/ui/badge";
     import {Clock, Star, UserRound} from "lucide-svelte";
     import {type Difficulty, difficultyLabels} from "$lib/types/recipe";
+    import {imageVariantUrl, isUploadedImage} from "$lib/images";
 
     type Props = {
         id: number;
@@ -16,6 +17,11 @@
         tags?: string[];
     };
     let {id, title, description, image, servings, cookingTime, rating, difficulty, tags = []}: Props = $props();
+
+    const thumbnail = $derived(imageVariantUrl(image, "thumb"));
+    const thumbnailSrcset = $derived(isUploadedImage(image)
+        ? `${imageVariantUrl(image, "thumb")} 480w, ${imageVariantUrl(image, "medium")} 960w`
+        : undefined);
 </script>
 
 <a
@@ -26,8 +32,11 @@
         <img
                 alt={title}
                 class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                decoding="async"
                 loading="lazy"
-                src={image}
+                sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
+                src={thumbnail}
+                srcset={thumbnailSrcset}
         >
         <Badge class="absolute right-2.5 top-2.5 border-transparent bg-background/75 text-foreground backdrop-blur-md" variant="secondary">
             {difficultyLabels[difficulty] ?? difficulty}

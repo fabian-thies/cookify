@@ -32,6 +32,7 @@
     import {goto} from "$app/navigation";
     import {type Difficulty, difficultyLabels} from "$lib/types/recipe";
     import {Spinner} from "$lib/components/ui/spinner";
+    import {imageVariantUrl, isUploadedImage} from "$lib/images";
 
     type props = {
         id: number
@@ -106,6 +107,11 @@
     const stars = [1, 2, 3, 4, 5] as const;
     let sharePathState = $state<string | null>(sharePath ?? null);
     let isShareEnabled = $state(shareEnabled || !!sharePathState);
+
+    const heroImage = $derived(imageVariantUrl(image, "medium"));
+    const heroSrcset = $derived(isUploadedImage(image)
+        ? `${imageVariantUrl(image, "medium")} 960w, ${imageVariantUrl(image, "large")} 1600w`
+        : undefined);
 
     $effect(() => {
         if (showRatingDialog) {
@@ -300,7 +306,15 @@
 </script>
 
 <div class="-mx-4 -mt-3 mb-6 sm:mx-0 sm:mt-0">
-    <img alt={title} class="aspect-[3/2] w-full border-b border-border/60 object-cover sm:aspect-[2/1] sm:rounded-2xl sm:border" src={image}>
+    <img
+            alt={title}
+            class="aspect-[3/2] w-full border-b border-border/60 object-cover sm:aspect-[2/1] sm:rounded-2xl sm:border"
+            decoding="async"
+            fetchpriority="high"
+            sizes="(min-width: 1280px) 1152px, 100vw"
+            src={heroImage}
+            srcset={heroSrcset}
+    >
 </div>
 
 <div class="mb-6 w-full sm:mb-8 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-x-8">

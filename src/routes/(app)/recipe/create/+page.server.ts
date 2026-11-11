@@ -1,5 +1,6 @@
 import {type Actions, fail, redirect, type RequestEvent} from "@sveltejs/kit";
-import {parseRecipeFormData, saveImage, validateInputEmpty} from "$lib/server/utils";
+import {parseRecipeFormData, validateInputEmpty} from "$lib/server/utils";
+import {saveImage} from "$lib/server/image";
 import {createRecipe} from "$lib/server/db/recipe";
 
 export const actions = {

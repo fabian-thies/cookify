@@ -1,6 +1,7 @@
 import { getDb } from "$lib/server/db/index";
 import { mealPlan, recipes, difficultyToRecipe, difficulty, ingredients } from "$lib/server/db/schema";
 import { and, eq, gte, lte, desc, getTableColumns, sql, sum } from "drizzle-orm";
+import { recipeColumns } from "$lib/server/db/recipe";
 
 const tagListSubquery = sql<string[]>`COALESCE(ARRAY(
     SELECT tags.name
@@ -38,7 +39,7 @@ export async function getMealPlan(userId: string, startDate: string, endDate: st
         .select({
             ...getTableColumns(mealPlan),
             recipe: {
-                ...getTableColumns(recipes),
+                ...recipeColumns,
                 difficulty: difficulty.difficulty,
                 tags: tagListSubquery,
             },

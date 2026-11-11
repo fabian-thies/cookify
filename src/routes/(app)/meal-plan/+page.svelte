@@ -13,6 +13,7 @@
     import type { Recipe } from "$lib/server/db/recipe";
     import { m } from "$lib/paraglide/messages";
     import { getLocale } from "$lib/paraglide/runtime.js";
+    import { imageVariantUrl } from "$lib/images";
 
     type MealPlanEntry = Awaited<ReturnType<typeof getMealPlan>>[number];
     type ShoppingItem = Awaited<ReturnType<typeof getShoppingList>>[number];
@@ -290,9 +291,11 @@
                                     ondragstart={(e) => handleDragStart(e, recipe.id)}
                                 >
                                     <img
-                                        src={recipe.image}
+                                        src={imageVariantUrl(recipe.image, "thumb")}
                                         alt={recipe.title}
                                         class="h-10 w-10 rounded-md object-cover shrink-0"
+                                        decoding="async"
+                                        loading="lazy"
                                     />
                                     <div class="min-w-0 flex-1">
                                         <p class="text-sm font-medium truncate">{recipe.title}</p>
@@ -347,9 +350,11 @@
                                     <div class="group flex items-start gap-1 rounded-lg border border-border/60 bg-card p-1.5 transition-colors hover:border-border sm:gap-2 sm:p-2">
                                         <a class="flex min-w-0 flex-1 items-start gap-2" href={`/recipe/${entry.recipe.id}`}>
                                             <img
-                                                src={entry.recipe.image}
+                                                src={imageVariantUrl(entry.recipe.image, "thumb")}
                                                 alt={entry.recipe.title}
                                                 class="size-9 shrink-0 rounded-md object-cover sm:size-10"
+                                                decoding="async"
+                                                loading="lazy"
                                             />
                                             <div class="min-w-0 flex-1">
                                                 <p class="line-clamp-2 text-xs font-medium leading-snug sm:text-[13px]">{entry.recipe.title}</p>

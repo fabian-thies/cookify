@@ -1,8 +1,4 @@
-import {promises as fs} from 'fs';
-import path from 'path';
-import crypto from 'crypto';
 import {hash} from "@node-rs/argon2";
-import heicConvert from 'heic-convert';
 
 /**
  * Throws an error if any of the inputs is empty
@@ -42,63 +38,6 @@ export const getDifficultyId = (difficulty: string): number => {
         default:
             throw new Error('Invalid difficulty');
     }
-}
-
-const uploadDir = path.join(process.cwd(), 'uploads');
-
-function extFromMime(mime: string) {
-    if (!mime) return '';
-    if (mime === 'image/jpeg') return '.jpg';
-    if (mime === 'image/png') return '.png';
-    if (mime === 'image/webp') return '.webp';
-    if (mime === 'image/gif') return '.gif';
-    if (mime === 'image/heic') return '.heic';
-    if (mime === 'image/heif') return '.heif';
-    if (mime === 'image/heic-sequence') return '.heics';
-    if (mime === 'image/heif-sequence') return '.heifs';
-    return '';
-}
-
-const toArrayBuffer = (buf: Buffer): ArrayBuffer =>
-    <ArrayBuffer>buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
-
-export async function saveImage(file: File): Promise<string> {
-    await fs.mkdir(uploadDir, {recursive: true});
-
-    const arr = await file.arrayBuffer();
-    const input = Buffer.from(arr);
-
-    const givenExt =
-        extFromMime(file.type) ||
-        path.extname((file as unknown as { name?: string }).name ?? '') ||
-        '';
-
-    const isHeic =
-        file.type === 'image/heic' ||
-        file.type === 'image/heif' ||
-        givenExt.toLowerCase() === '.heic' ||
-        givenExt.toLowerCase() === '.heif';
-
-    let out = input;
-    let ext = givenExt || '.jpg';
-
-    if (isHeic) {
-        const jpegAb = (await heicConvert({
-            buffer: toArrayBuffer(input),
-            format: 'JPEG',
-            quality: 0.9,
-        })) as ArrayBuffer;
-
-        out = Buffer.from(new Uint8Array(jpegAb));
-        ext = '.jpg';
-    }
-
-    const fileName = `${crypto.randomUUID()}${ext}`;
-    const fullPath = path.join(uploadDir, fileName);
-
-    await fs.writeFile(fullPath, out);
-
-    return `/uploads/${fileName}`;
 }
 
 export function parseRecipeFormData(formData: FormData): {

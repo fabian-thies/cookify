@@ -14,7 +14,7 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
     - Choose your preferred language and update your avatar.
 - **Recipe Management**
     - Add, edit, and delete recipes with full detail: ingredients (amounts + units), steps, servings, cook time, difficulty, tags, and tips.
-    - Upload custom images to personalize each recipe.
+    - Upload custom images to personalize each recipe. Uploads are converted to responsive WebP thumbnails automatically.
     - Set recipes as **public** or **private** to control who can see them.
 - **Import from URL (Recipe Scraper)**
     - Paste a recipe URL and let Cookify extract title, ingredients, steps, and image automatically via JSON-LD structured data.
@@ -26,6 +26,7 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
     - Admins can enable or disable AI features globally at any time.
 - **Smart Search & Filters**
     - Search and filter recipes by difficulty, cook time, or keywords.
+    - Powered by PostgreSQL full-text search, with fuzzy matching for typos.
 - **Favorites & Ratings**
     - Mark recipes as favorites and rate them on a 1–5 scale.
 - **Personal Collections**

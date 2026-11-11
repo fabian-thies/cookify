@@ -113,6 +113,20 @@
       "when": 1794360242481,
       "tag": "0015_decimal_ingredient_quantities",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1794426382925,
+      "tag": "0016_recipe_search",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1794426747566,
+      "tag": "0017_recipe_search_indexes",
+      "breakpoints": true
     }
   ]
 }

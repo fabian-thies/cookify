@@ -2,6 +2,7 @@
     import {ChevronRight, ImageIcon} from "lucide-svelte";
 
     import {m} from "$lib/paraglide/messages";
+    import {imageVariantUrl, isUploadedImage} from "$lib/images";
 
     type Props = {
         collectionId: number;
@@ -11,6 +12,11 @@
     };
 
     let {collectionId, title, images, recipeCount}: Props = $props();
+
+    const cover = $derived(images?.[0] ?? "");
+    const coverSrcset = $derived(isUploadedImage(cover)
+        ? `${imageVariantUrl(cover, "thumb")} 480w, ${imageVariantUrl(cover, "medium")} 960w`
+        : undefined);
 </script>
 
 <a
@@ -22,8 +28,11 @@
             <img
                     alt=""
                     class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out motion-safe:group-hover:scale-[1.03] motion-reduce:transition-none"
+                    decoding="async"
                     loading="lazy"
-                    src={images[0]}
+                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    src={imageVariantUrl(cover, "thumb")}
+                    srcset={coverSrcset}
             >
         {:else}
             <div class="absolute inset-0 flex items-center justify-center text-muted-foreground">

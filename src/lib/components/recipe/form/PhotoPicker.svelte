@@ -2,6 +2,7 @@
     import {Camera, ImageIcon} from "lucide-svelte";
     import {m} from "$lib/paraglide/messages";
     import {Button} from "$lib/components/ui/button";
+    import {imageVariantUrl} from "$lib/images";
 
     let {image, required = false}: {image?: string; required?: boolean} = $props();
     let input: HTMLInputElement;
@@ -40,8 +41,9 @@
             class="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
         />
         {#if (previewUrl || image) && !previewFailed}
-            <img src={previewUrl || image} alt={m["recipe.form.details.photoPreview"]()}
-                 class="aspect-[4/3] w-full object-cover" onerror={() => previewFailed = true}/>
+            <img src={previewUrl || imageVariantUrl(image, "medium")} alt={m["recipe.form.details.photoPreview"]()}
+                 class="aspect-[4/3] w-full object-cover" decoding="async" loading="lazy"
+                 onerror={() => previewFailed = true}/>
         {:else}
             <div class="flex min-h-40 flex-col items-center justify-center gap-3 px-5 py-6 text-center">
                 <div class="flex size-12 items-center justify-center rounded-full bg-background text-primary">

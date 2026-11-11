@@ -1,37 +1,36 @@
 import {error, type RequestHandler} from '@sveltejs/kit';
 import path from 'node:path';
+import {promises as fs} from 'node:fs';
 import {Readable} from 'node:stream';
 import {createReadStream} from 'node:fs';
-
-const uploadsDir = path.resolve(process.cwd(), 'uploads');
-
-const MIME_TYPES: Record<string, string> = {
-    '.avif': 'image/avif',
-    '.gif': 'image/gif',
-    '.jpeg': 'image/jpeg',
-    '.jpg': 'image/jpeg',
-    '.png': 'image/png',
-    '.svg': 'image/svg+xml',
-    '.webp': 'image/webp'
-};
+import {MIME_TYPES, resolveImageVariant, UPLOAD_DIR} from '$lib/server/image';
 
 export const GET: RequestHandler = async ({params}) => {
     const slug = params.path;
     if (!slug) throw error(404, 'Not found');
 
     const segments = slug.split('/').filter(Boolean);
-    const requestedPath = path.resolve(uploadsDir, ...segments);
-    const relative = path.relative(uploadsDir, requestedPath);
+    const requestedPath = path.resolve(UPLOAD_DIR, ...segments);
+    const relative = path.relative(UPLOAD_DIR, requestedPath);
     if (relative.startsWith('..') || path.isAbsolute(relative)) {
         throw error(404, 'Not found');
     }
 
+    let filePath = requestedPath;
+    let contentType = MIME_TYPES[path.extname(requestedPath).toLowerCase()] ?? 'application/octet-stream';
+
     try {
-        const ext = path.extname(requestedPath).toLowerCase();
-        const contentType = MIME_TYPES[ext] ?? 'application/octet-stream';
+        await fs.access(filePath);
+    } catch {
+        // Variants for images uploaded before the image pipeline existed are generated lazily.
+        const resolved = await resolveImageVariant(requestedPath);
+        if (!resolved) throw error(404, 'Not found');
+        filePath = resolved.filePath;
+        contentType = resolved.contentType;
+    }
 
-        const nodeStream = createReadStream(requestedPath);
-
+    try {
+        const nodeStream = createReadStream(filePath);
         const webStream = Readable.toWeb(nodeStream) as unknown as globalThis.ReadableStream<Uint8Array>;
 
         return new Response(webStream, {

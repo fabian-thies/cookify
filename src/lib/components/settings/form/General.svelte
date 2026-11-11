@@ -10,6 +10,7 @@
     import type {PublicUser} from "$lib/server/db/schema";
     import {Camera, Eye, EyeOff, Languages, Lock, Trash2} from "lucide-svelte";
     import SelectComponent from "$lib/components/ui/select/SelectComponent.svelte";
+    import {imageVariantUrl} from "$lib/images";
 
     const {user, formId = 'settings-form'}: { user: PublicUser, formId?: string } = $props();
 
@@ -77,7 +78,7 @@
                         class="inline-flex rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background" onclick={openAvatarPicker}
                         type="button">
                         <Avatar.Root class="cursor-pointer size-16 sm:size-20">
-                            <Avatar.Image src={previewUrl ?? user.avatar}/>
+                            <Avatar.Image decoding="async" loading="lazy" src={previewUrl ?? imageVariantUrl(user.avatar, "thumb")}/>
                             <Avatar.Fallback class="text-lg">{user.username.slice(0, 2).toUpperCase()}</Avatar.Fallback>
                         </Avatar.Root>
                 </button>

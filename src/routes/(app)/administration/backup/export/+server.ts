@@ -1,6 +1,7 @@
 import { error } from '@sveltejs/kit';
 import { getDb } from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
+import { recipeColumns } from '$lib/server/db/recipe';
 import AdmZip from 'adm-zip';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -16,7 +17,7 @@ export const GET = async ({ locals }) => {
         users: await db.select().from(table.user),
         passkey: await db.select().from(table.passkey),
         siteSettings: await db.select().from(table.siteSettings),
-        recipes: await db.select().from(table.recipes),
+        recipes: await db.select(recipeColumns).from(table.recipes),
         difficulty: await db.select().from(table.difficulty),
         difficultyToRecipe: await db.select().from(table.difficultyToRecipe),
         ingredients: await db.select().from(table.ingredients),
