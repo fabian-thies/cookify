@@ -474,7 +474,7 @@
     {#if tags.length > 0}
         <div class="mt-4 flex flex-wrap gap-1.5 lg:col-span-2">
             {#each tags as tag}
-                <Badge variant="outline" href={"/recipe/search?tag=" + encodeURIComponent(tag)} class="min-h-11 max-w-full whitespace-normal break-words px-3 text-sm outline-none">{tag}</Badge>
+                <Badge variant="outline" href={"/recipe/search?tag=" + encodeURIComponent(tag)}>{tag}</Badge>
             {/each}
         </div>
     {/if}
