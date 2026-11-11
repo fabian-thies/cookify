@@ -66,16 +66,16 @@
 </script>
 
 <div class="mt-2 flex flex-col gap-5">
-    <div class="flex items-end justify-between gap-3">
+    <div class="flex items-center justify-between gap-3">
         <h1 class="page-title">{m["nav.collection"]()}</h1>
-        <Button onclick={() => showCreate = true} size="sm" variant="outline">
+        <Button onclick={() => showCreate = true} class="min-h-11" variant="outline">
             <Plus class="size-4"/>
             {m["collection.new"]()}
         </Button>
     </div>
 
     {#if loading}
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {#each Array(8) as _}
                 <CollectionCardSkeleton/>
             {/each}
@@ -88,13 +88,13 @@
                 <FolderPlus class="size-5 text-muted-foreground"/>
             </div>
             <p class="text-sm text-muted-foreground">{m["collection.noCollections"]()}</p>
-            <Button onclick={() => showCreate = true} size="sm" variant="outline">
+            <Button onclick={() => showCreate = true} class="min-h-11" variant="outline">
                 <Plus class="size-4"/>
                 {m["collection.new"]()}
             </Button>
         </div>
     {:else}
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {#each collections as {title, recipeCount, id, thumbnails}}
                 <CollectionCard images={thumbnails} collectionId={id} recipeCount={recipeCount} {title}/>
             {/each}

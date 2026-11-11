@@ -1,7 +1,10 @@
-<div class="flex h-full flex-col gap-3 rounded-xl border border-border/70 bg-card p-3">
-    <div class="aspect-[4/3] w-full animate-pulse rounded-lg bg-muted"></div>
-    <div class="flex items-center justify-between px-0.5 pb-0.5">
-        <div class="h-4 w-32 animate-pulse rounded bg-muted"></div>
-        <div class="size-4 animate-pulse rounded bg-muted"></div>
+<div class="flex h-full flex-col overflow-hidden rounded-xl border border-border/70 bg-card" aria-hidden="true">
+    <div class="aspect-[16/9] w-full animate-pulse bg-muted motion-reduce:animate-none"></div>
+    <div class="flex flex-1 items-center justify-between gap-4 p-4 sm:p-5">
+        <div class="space-y-2">
+            <div class="h-6 w-40 animate-pulse rounded bg-muted motion-reduce:animate-none"></div>
+            <div class="h-5 w-20 animate-pulse rounded bg-muted motion-reduce:animate-none"></div>
+        </div>
+        <div class="size-5 animate-pulse rounded bg-muted motion-reduce:animate-none"></div>
     </div>
 </div>
