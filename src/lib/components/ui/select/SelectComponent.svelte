@@ -65,7 +65,7 @@
  <Select.Root bind:value {disabled} {name} type="single">
     <input type="hidden" name={name} value={value}/>
     <Select.Trigger id={id ?? name} aria-label={groupLabel ?? placeholder} aria-required={required} class={className + " bg-background"} aria-invalid={invalid || undefined} bind:ref={triggerRef}>
-        {triggerContent}
+        <span class="min-w-0 truncate">{triggerContent}</span>
     </Select.Trigger>
     <Select.Content>
         <Select.Group>

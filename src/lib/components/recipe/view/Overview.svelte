@@ -303,7 +303,7 @@
     <img alt={title} class="aspect-[3/2] w-full border-b border-border/60 object-cover sm:aspect-[2/1] sm:rounded-2xl sm:border" src={image}>
 </div>
 
-<div class="w-full">
+<div class="mb-6 w-full sm:mb-8">
     <h1 class="text-2xl font-semibold leading-tight tracking-tight sm:text-4xl">{title}</h1>
     <div class="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
         <span class="flex items-center gap-1.5 font-medium text-foreground">
