@@ -34,6 +34,9 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
 - **Weekly Meal Plan**
     - Drag and drop recipes onto a weekly calendar to plan your meals.
     - Auto-generated **shopping list** based on the recipes scheduled for the week.
+    - **Calendar subscription (ICS)**: add the plan to Google Calendar, Apple Calendar or any other calendar app.
+- **Installable PWA**
+    - Add Cookify to your home screen and keep recently visited pages and images available offline.
 - **Cook Mode**
     - Full-screen, step-by-step cooking experience that keeps your screen awake.
     - Built-in **multiple timers** — start a timer per step or add custom timers on the fly.

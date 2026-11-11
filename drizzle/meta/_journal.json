@@ -127,6 +127,13 @@
       "when": 1794426747566,
       "tag": "0017_recipe_search_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1794427281472,
+      "tag": "0018_calendar_feed",
+      "breakpoints": true
     }
   ]
 }

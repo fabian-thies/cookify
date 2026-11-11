@@ -490,7 +490,24 @@
       "sunday": "Sunday"
     },
     "shoppingList": "Shopping List",
-    "emptyShoppingList": "No recipes planned for this week"
+    "emptyShoppingList": "No recipes planned for this week",
+    "calendar": {
+      "button": "Subscribe",
+      "title": "Calendar subscription",
+      "description": "Add your meal plan to your calendar app. The calendar updates automatically several times a day.",
+      "linkLabel": "Calendar feed URL",
+      "copy": "Copy link",
+      "copied": "Link copied",
+      "copyError": "Could not copy the link",
+      "rotated": "New calendar link created",
+      "rotate": "Create new link",
+      "error": "Could not load the calendar link",
+      "howToTitle": "How to subscribe",
+      "step1": "Copy this link.",
+      "step2": "Open your calendar app and choose \"Add calendar from URL\".",
+      "step3": "Paste the link and confirm. Meal plan changes will sync automatically.",
+      "security": "Anyone with this link can see your meal plan. Create a new link to revoke old ones."
+    }
   },
   "a11y.skipToContent": "Skip to content",
   "actions.close": "Close",
@@ -498,5 +515,16 @@
   "login.showPassword": "Show password",
   "login.hidePassword": "Hide password",
   "mealPlan.chooseDay": "Choose a day for {title}.",
-  "mealPlan.tapToPlan": "Select a recipe and add it to a day"
+  "mealPlan.tapToPlan": "Select a recipe and add it to a day",
+  "pwa": {
+    "installTitle": "Install Cookify",
+    "installText": "Add Cookify to your home screen and keep your recipes and meal plan available offline.",
+    "install": "Install",
+    "installed": "Cookify is installed"
+  },
+  "offline": {
+    "title": "You are offline",
+    "text": "Cached pages are still available. Reconnect to load fresh recipes and plans.",
+    "retry": "Try again"
+  }
 }

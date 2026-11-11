@@ -28,7 +28,9 @@ export const user = pgTable('user', {
     passwordHash: text('password_hash').notNull(),
     avatar: text('avatar'),
     language: text('language', {enum: [...LANGUAGES]}).notNull().default(LANGUAGES[0]),
-    administrator: boolean('administrator').notNull().default(false)
+    administrator: boolean('administrator').notNull().default(false),
+    // Bearer token for the read-only meal plan calendar feed.
+    calendarToken: text('calendar_token').unique()
 });
 
 export const siteSettings = pgTable('site_settings', {
@@ -172,7 +174,7 @@ export type Recipe = typeof recipes.$inferSelect;
 export type Ingredient = typeof ingredients.$inferSelect;
 export type Step = typeof steps.$inferSelect;
 export type User = typeof user.$inferSelect;
-export type PublicUser = Omit<User, 'passwordHash'>;
+export type PublicUser = Omit<User, 'passwordHash' | 'calendarToken'>;
 export type Difficulty = typeof difficulty.$inferSelect;
 export type DifficultyToRecipe = typeof difficultyToRecipe.$inferSelect;
 export type Favorite = typeof favorite.$inferSelect;

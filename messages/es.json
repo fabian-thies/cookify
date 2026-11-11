@@ -488,7 +488,24 @@
       "sunday": "Domingo"
     },
     "shoppingList": "Lista de compras",
-    "emptyShoppingList": "No hay recetas planificadas para esta semana"
+    "emptyShoppingList": "No hay recetas planificadas para esta semana",
+    "calendar": {
+      "button": "Suscribirse",
+      "title": "Suscripción al calendario",
+      "description": "Añade tu plan semanal a tu aplicación de calendario. El calendario se actualiza automáticamente varias veces al día.",
+      "linkLabel": "URL del feed del calendario",
+      "copy": "Copiar enlace",
+      "copied": "Enlace copiado",
+      "copyError": "No se pudo copiar el enlace",
+      "rotated": "Nuevo enlace de calendario creado",
+      "rotate": "Crear nuevo enlace",
+      "error": "No se pudo cargar el enlace del calendario",
+      "howToTitle": "Cómo suscribirse",
+      "step1": "Copia este enlace.",
+      "step2": "Abre tu aplicación de calendario y elige «Añadir calendario desde URL».",
+      "step3": "Pega el enlace y confirma. Los cambios del plan se sincronizarán automáticamente.",
+      "security": "Cualquiera con este enlace puede ver tu plan semanal. Crea un enlace nuevo para revocar los anteriores."
+    }
   },
   "a11y.skipToContent": "Saltar al contenido",
   "actions.close": "Cerrar",
@@ -496,5 +513,16 @@
   "login.showPassword": "Mostrar contraseña",
   "login.hidePassword": "Ocultar contraseña",
   "mealPlan.chooseDay": "Elige un día para {title}.",
-  "mealPlan.tapToPlan": "Selecciona una receta y añádela a un día"
+  "mealPlan.tapToPlan": "Selecciona una receta y añádela a un día",
+  "pwa": {
+    "installTitle": "Instalar Cookify",
+    "installText": "Añade Cookify a tu pantalla de inicio y mantén tus recetas y el plan semanal disponibles sin conexión.",
+    "install": "Instalar",
+    "installed": "Cookify está instalado"
+  },
+  "offline": {
+    "title": "Estás sin conexión",
+    "text": "Las páginas guardadas siguen disponibles. Vuelve a conectarte para cargar recetas y planes actualizados.",
+    "retry": "Reintentar"
+  }
 }

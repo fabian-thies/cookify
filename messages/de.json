@@ -155,7 +155,8 @@
         "cookTimePlaceholder": "z.B. 25",
         "servingsLabel": "Portionen",
         "servingsPlaceholder": "z.B. 4",
-        "difficultyLabel": "Schwierigkeitsgrad",        "difficultyPlaceholder": "Schwierigkeitsgrad auswählen",
+        "difficultyLabel": "Schwierigkeitsgrad",
+        "difficultyPlaceholder": "Schwierigkeitsgrad auswählen",
         "difficultyGroupLabel": "Schwierigkeitsgrad",
         "tagsLabel": "Schlagwörter",
         "tagsPlaceholder": "Tag eingeben und Enter drücken",
@@ -487,7 +488,24 @@
       "sunday": "Sonntag"
     },
     "shoppingList": "Einkaufsliste",
-    "emptyShoppingList": "Keine Rezepte für diese Woche geplant"
+    "emptyShoppingList": "Keine Rezepte für diese Woche geplant",
+    "calendar": {
+      "button": "Kalender-Abo",
+      "title": "Kalender-Abo",
+      "description": "Füge deinen Wochenplan zu deiner Kalender-App hinzu. Der Kalender aktualisiert sich mehrmals täglich automatisch.",
+      "linkLabel": "Kalender-Feed-URL",
+      "copy": "Link kopieren",
+      "copied": "Link kopiert",
+      "copyError": "Link konnte nicht kopiert werden",
+      "rotated": "Neuer Kalender-Link erstellt",
+      "rotate": "Neuen Link erzeugen",
+      "error": "Kalender-Link konnte nicht geladen werden",
+      "howToTitle": "So abonnierst du",
+      "step1": "Kopiere diesen Link.",
+      "step2": "Öffne deine Kalender-App und wähle „Kalender aus URL hinzufügen“.",
+      "step3": "Füge den Link ein und bestätige. Änderungen am Wochenplan werden automatisch synchronisiert.",
+      "security": "Jeder mit diesem Link kann deinen Wochenplan sehen. Erzeuge einen neuen Link, um alte zu widerrufen."
+    }
   },
   "a11y.skipToContent": "Zum Inhalt springen",
   "actions.close": "Schließen",
@@ -495,5 +513,16 @@
   "login.showPassword": "Passwort anzeigen",
   "login.hidePassword": "Passwort verbergen",
   "mealPlan.chooseDay": "Wähle einen Tag für {title}.",
-  "mealPlan.tapToPlan": "Rezept auswählen und einem Tag hinzufügen"
+  "mealPlan.tapToPlan": "Rezept auswählen und einem Tag hinzufügen",
+  "pwa": {
+    "installTitle": "Cookify installieren",
+    "installText": "Zum Startbildschirm hinzufügen und Rezepte sowie Wochenplan offline verfügbar machen.",
+    "install": "Installieren",
+    "installed": "Cookify ist installiert"
+  },
+  "offline": {
+    "title": "Du bist offline",
+    "text": "Zwischengespeicherte Seiten bleiben verfügbar. Stelle eine Verbindung her, um aktuelle Rezepte und Pläne zu laden.",
+    "retry": "Erneut versuchen"
+  }
 }

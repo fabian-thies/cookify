@@ -5,6 +5,8 @@ import {
     removeFromMealPlan as removeFromMealPlanDb,
     getMealPlan as getMealPlanDb,
     getShoppingList as getShoppingListDb,
+    getOrCreateCalendarToken,
+    rotateCalendarToken,
 } from '$lib/server/db/meal-plan';
 
 export const addToMealPlan = command(v.object({
@@ -46,6 +48,34 @@ export const getMealPlan = query(v.object({
     }
 
     return await getMealPlanDb(userId, startDate, endDate);
+});
+
+function calendarFeedUrl(origin: string, token: string): string {
+    return `${origin}/calendar/${token}.ics`;
+}
+
+export const getCalendarFeed = query(async () => {
+    const { locals, url } = getRequestEvent();
+    const userId = locals.user?.id;
+
+    if (!userId) {
+        throw new Error('User not authenticated');
+    }
+
+    const token = await getOrCreateCalendarToken(userId);
+    return { url: calendarFeedUrl(url.origin, token) };
+});
+
+export const rotateCalendarFeed = command(async () => {
+    const { locals, url } = getRequestEvent();
+    const userId = locals.user?.id;
+
+    if (!userId) {
+        throw new Error('User not authenticated');
+    }
+
+    const token = await rotateCalendarToken(userId);
+    return { url: calendarFeedUrl(url.origin, token) };
 });
 
 export const getShoppingList = query(v.object({

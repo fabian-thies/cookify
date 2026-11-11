@@ -5,11 +5,15 @@
         addToMealPlan,
         removeFromMealPlan,
         getShoppingList,
+        getCalendarFeed,
+        rotateCalendarFeed,
     } from "$lib/functions/meal-plan.remote";
-    import { Button } from "$lib/components/ui/button";
+    import { Button, buttonVariants } from "$lib/components/ui/button";
     import { Input } from "$lib/components/ui/input";
     import { Spinner } from "$lib/components/ui/spinner";
-    import { ChevronLeft, ChevronRight, Clock, Plus, Search, ShoppingCart, Trash2, X } from "lucide-svelte";
+    import * as Dialog from "$lib/components/ui/dialog";
+    import { ChevronLeft, ChevronRight, Clock, Plus, Search, ShoppingCart, Trash2, X, CalendarPlus, Copy, Check, RefreshCw } from "lucide-svelte";
+    import { toast } from "svelte-sonner";
     import type { Recipe } from "$lib/server/db/recipe";
     import { m } from "$lib/paraglide/messages";
     import { getLocale } from "$lib/paraglide/runtime.js";
@@ -71,6 +75,12 @@
     let selectedRecipeId = $state<number | null>(null);
     let shoppingList = $state<ShoppingItem[]>([]);
     let checkedItems = $state<Set<string>>(new Set());
+    let calendarDialogOpen = $state(false);
+    let calendarUrl = $state("");
+    let calendarLoading = $state(false);
+    let calendarCopied = $state(false);
+    let calendarRotating = $state(false);
+    let calendarError = $state<string | null>(null);
 
     const monday = $derived(getMonday(new Date(Date.now() + weekOffset * 7 * 86400000)));
 
@@ -206,6 +216,51 @@
         }
         checkedItems = next;
     }
+
+    async function openCalendarDialog() {
+        calendarDialogOpen = true;
+        if (calendarUrl || calendarLoading) return;
+
+        calendarLoading = true;
+        calendarError = null;
+        try {
+            const result = await getCalendarFeed().run();
+            calendarUrl = result.url;
+        } catch {
+            calendarError = m["mealPlan.calendar.error"]();
+        } finally {
+            calendarLoading = false;
+        }
+    }
+
+    async function copyCalendarUrl() {
+        if (!calendarUrl) return;
+        try {
+            await navigator.clipboard.writeText(calendarUrl);
+            calendarCopied = true;
+            toast.success(m["mealPlan.calendar.copied"]());
+            setTimeout(() => (calendarCopied = false), 2000);
+        } catch {
+            calendarError = m["mealPlan.calendar.copyError"]();
+        }
+    }
+
+    async function rotateCalendar() {
+        if (calendarRotating) return;
+
+        calendarRotating = true;
+        calendarError = null;
+        try {
+            const result = await rotateCalendarFeed();
+            calendarUrl = result.url;
+            calendarCopied = false;
+            toast.success(m["mealPlan.calendar.rotated"]());
+        } catch {
+            calendarError = m["mealPlan.calendar.error"]();
+        } finally {
+            calendarRotating = false;
+        }
+    }
 </script>
 
 <div class="mt-2 flex flex-col gap-5">
@@ -247,6 +302,10 @@
             <Button aria-expanded={shoppingListOpen} aria-label={m["mealPlan.shoppingList"]()} class="h-9" size="sm" variant={shoppingListOpen ? "default" : "outline"} onclick={() => { shoppingListOpen = !shoppingListOpen; sidebarOpen = false; }}>
                 <ShoppingCart class="size-4 sm:mr-1.5"/>
                 <span class="hidden sm:inline">{m["mealPlan.shoppingList"]()}</span>
+            </Button>
+            <Button aria-label={m["mealPlan.calendar.button"]()} class="h-9" size="sm" variant="outline" onclick={openCalendarDialog}>
+                <CalendarPlus class="size-4 sm:mr-1.5"/>
+                <span class="hidden sm:inline">{m["mealPlan.calendar.button"]()}</span>
             </Button>
         </div>
     </div>
@@ -417,4 +476,54 @@
             {/if}
         </div>
     {/if}
+
+    <Dialog.Root bind:open={calendarDialogOpen}>
+        <Dialog.Content>
+            <Dialog.Header>
+                <Dialog.Title>{m["mealPlan.calendar.title"]()}</Dialog.Title>
+                <Dialog.Description>{m["mealPlan.calendar.description"]()}</Dialog.Description>
+            </Dialog.Header>
+
+            {#if calendarError}
+                <p role="alert" class="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{calendarError}</p>
+            {/if}
+
+            {#if calendarLoading}
+                <div class="flex items-center justify-center py-10">
+                    <Spinner/>
+                </div>
+            {:else if calendarUrl}
+                <div class="flex gap-2">
+                    <Input aria-label={m["mealPlan.calendar.linkLabel"]()} class="font-mono text-xs" readonly value={calendarUrl}/>
+                    <Button aria-label={m["mealPlan.calendar.copy"]()} class="h-10 shrink-0" onclick={copyCalendarUrl} size="icon" variant="outline">
+                        {#if calendarCopied}
+                            <Check class="size-4"/>
+                        {:else}
+                            <Copy class="size-4"/>
+                        {/if}
+                    </Button>
+                </div>
+
+                <div class="space-y-2 text-sm text-muted-foreground">
+                    <p class="font-medium text-foreground">{m["mealPlan.calendar.howToTitle"]()}</p>
+                    <ol class="list-decimal space-y-1 pl-5">
+                        <li>{m["mealPlan.calendar.step1"]()}</li>
+                        <li>{m["mealPlan.calendar.step2"]()}</li>
+                        <li>{m["mealPlan.calendar.step3"]()}</li>
+                    </ol>
+                    <p>{m["mealPlan.calendar.security"]()}</p>
+                </div>
+
+                <Dialog.Footer class="items-center justify-between sm:justify-between">
+                    <Button class="text-muted-foreground" disabled={calendarRotating} onclick={rotateCalendar} size="sm" variant="ghost">
+                        <RefreshCw class="size-4 {calendarRotating ? 'animate-spin' : ''}"/>
+                        {m["mealPlan.calendar.rotate"]()}
+                    </Button>
+                    <Dialog.Close class={buttonVariants({ size: "sm", variant: "outline" })}>
+                        {m["actions.close"]()}
+                    </Dialog.Close>
+                </Dialog.Footer>
+            {/if}
+        </Dialog.Content>
+    </Dialog.Root>
 </div>

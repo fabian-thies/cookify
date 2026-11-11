@@ -8,6 +8,7 @@
     import {m} from "$lib/paraglide/messages";
     import {page} from "$app/state";
     import {imageVariantUrl} from "$lib/images";
+    import {clearOfflineCaches} from "$lib/pwa";
 
     const {user}: { user: PublicUser } = $props();
 
@@ -102,7 +103,7 @@
                     </DropdownMenu.Group>
                     <DropdownMenu.Separator/>
                     <DropdownMenu.Item class="text-destructive">
-                        <form class="w-full" method="post" action="/logout">
+                        <form class="w-full" method="post" action="/logout" onsubmit={clearOfflineCaches}>
                             <button class="flex w-full items-center gap-2" type="submit">
                                 <LogOut class="size-4"/>
                                 {m["logout"]()}
