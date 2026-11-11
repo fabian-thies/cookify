@@ -103,3 +103,4 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
 
 * **Coolify Deployment:**
   The provided `docker-compose.yml` works out of the box with **Coolify**. Just make sure your domain in Coolify is forwarded to the app’s exposed port (`3000`).
+* **Default language:** Set `DEFAULT_LOCALE=de` in the runtime environment (supported: `en`, `de`, `es`; fallback: `en`). Profile language takes priority, followed by a saved language cookie. New visitors and newly registered accounts use the default. Existing account preferences are preserved. Redeploy after changing the environment variable.

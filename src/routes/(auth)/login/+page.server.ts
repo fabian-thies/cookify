@@ -1,3 +1,4 @@
+import {getLocale} from '$lib/paraglide/runtime';
 import {verify} from '@node-rs/argon2';
 import {encodeBase32LowerCase} from '@oslojs/encoding';
 import {type Actions, fail, redirect} from '@sveltejs/kit';
@@ -101,7 +102,8 @@ export const actions: Actions = {
                 username,
                 passwordHash,
                 email,
-                administrator: isFirstUser
+                administrator: isFirstUser,
+                language: getLocale()
             });
 
             const sessionToken = auth.generateSessionToken();
