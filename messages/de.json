@@ -2,6 +2,16 @@
   "$schema": "https://inlang.com/schema/inlang-message-format",
   "logout": "Abmelden",
   "loading": "Lädt...",
+  "search": {
+    "clear": "Suche löschen"
+  },
+  "error": {
+    "notFoundTitle": "Seite nicht gefunden",
+    "notFoundText": "Diese Seite gibt es nicht oder sie wurde verschoben.",
+    "title": "Etwas ist schiefgelaufen",
+    "text": "Bitte versuche es gleich noch einmal.",
+    "home": "Zur Startseite"
+  },
   "login": {
     "welcomeBack": "Willkommen zurück",
     "createAccount": "Konto erstellen",
@@ -43,6 +53,8 @@
       "steps": "Schritte",
       "forServings": "Für {count} Portionen",
       "servingsCount": "{count} Portionen",
+      "decreaseServings": "Portion verringern",
+      "increaseServings": "Portion erhöhen",
       "nutrition": {
         "title": "Nährwerte pro Portion",
         "calories": "{value} kcal",
@@ -55,6 +67,8 @@
       "reviews": "{count} Bewertungen",
       "ratePrompt": "Bewerte dieses Rezept",
       "rateSubtitle": "Wie hat dir das Rezept gefallen?",
+      "rateStars": "{value} von 5 Sternen",
+      "ratingSaved": "Bewertung gespeichert",
       "similar": "Ähnliche Rezepte",
       "difficulty": {
         "easy": "Einfach",
@@ -72,6 +86,7 @@
       "authorGroupLabel": "Autor",
       "tagsPlaceholder": "Schlagwörter auswählen",
       "tagsGroupLabel": "Schlagwörter",
+      "filter": "Filter",
       "filterTitle": "Filter & Sortierung",
       "filterDescription": "Verfeinere deine Rezeptsuche",
       "showResults": "Anzeigen",
@@ -109,6 +124,8 @@
       }
     },
     "form": {
+      "createTitle": "Neues Rezept",
+      "editTitle": "Rezept bearbeiten",
       "general": {
         "title": "Grundinformationen",
         "nameLabel": "Rezeptname",
@@ -138,8 +155,7 @@
         "cookTimePlaceholder": "z.B. 25",
         "servingsLabel": "Portionen",
         "servingsPlaceholder": "z.B. 4",
-        "difficultyLabel": "Schwierigkeitsgrad",
-        "difficultyPlaceholder": "Schwierigkeitsgrad auswählen",
+        "difficultyLabel": "Schwierigkeitsgrad",        "difficultyPlaceholder": "Schwierigkeitsgrad auswählen",
         "difficultyGroupLabel": "Schwierigkeitsgrad",
         "tagsLabel": "Schlagwörter",
         "tagsPlaceholder": "Tag eingeben und Enter drücken",
@@ -236,7 +252,11 @@
       "setMinutes": "Minuten",
       "ingredients": "Zutaten",
       "exit": "Beenden",
-      "noSteps": "Keine Schritte vorhanden"
+      "noSteps": "Keine Schritte vorhanden",
+      "startStepTimer": "{minutes} Min. Timer starten",
+      "stepLabel": "Schritt {number}",
+      "restart": "Von vorne beginnen",
+      "timerDone": "Timer abgelaufen"
     }
   },
   "routes": {
@@ -258,6 +278,8 @@
     "share": "Teilen",
     "save": "Speichern",
     "rate": "Bewerten",
+    "more": "Mehr",
+    "retry": "Erneut versuchen",
     "deleteRecipe": "Rezept löschen",
     "edit": "Bearbeiten",
     "cancel": "Abbrechen",
@@ -331,6 +353,12 @@
   },
   "collection": {
     "noCollections": "Noch keine Kollektionen vorhanden.",
+    "new": "Neue Kollektion",
+    "createTitle": "Neue Kollektion",
+    "nameLabel": "Name der Kollektion",
+    "namePlaceholder": "z. B. Meal Prep",
+    "create": "Erstellen",
+    "created": "Kollektion erstellt",
     "editDialog": {
       "title": "Kollektion bearbeiten",
       "titleLabel": "Titel"
@@ -429,6 +457,8 @@
   "mealPlan": {
     "title": "Wochenplan",
     "today": "Heute",
+    "previousWeek": "Vorherige Woche",
+    "nextWeek": "Nächste Woche",
     "addRecipes": "Rezepte hinzufügen",
     "closeRecipes": "Rezepte schließen",
     "searchPlaceholder": "Rezepte durchsuchen...",

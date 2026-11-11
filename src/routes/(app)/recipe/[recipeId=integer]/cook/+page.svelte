@@ -17,6 +17,7 @@
     } from "lucide-svelte";
     import {goto} from "$app/navigation";
     import {onMount} from "svelte";
+    import {toast} from "svelte-sonner";
 
     const {data} = $props();
 
@@ -100,9 +101,15 @@
         goto(`/recipe/${$page.params.recipeId}`);
     }
 
+    function finishTimer(label: string) {
+        toast.success(`${m["recipe.cookMode.timerDone"]()} · ${label}`);
+        navigator.vibrate?.([200, 100, 200]);
+    }
+
     function startTimer(minutes: number, label?: string) {
         const id = timerIdCounter++;
         const totalSeconds = minutes * 60;
+        const timerLabel = label || `${minutes} min`;
 
         const intervalId = setInterval(() => {
             const timer = timers.find(t => t.id === id);
@@ -119,6 +126,7 @@
                 timers = timers.map(t =>
                     t.id === id ? { ...t, remainingSeconds: 0, isRunning: false } : t
                 );
+                finishTimer(timerLabel);
             } else {
                 timers = timers.map(t =>
                     t.id === id ? { ...t, remainingSeconds: newRemaining } : t
@@ -133,7 +141,7 @@
             remainingSeconds: totalSeconds,
             totalSeconds,
             isRunning: true,
-            label: label || `${minutes} min`
+            label: timerLabel
         }];
     }
 
@@ -168,6 +176,7 @@
                     timers = timers.map(t =>
                         t.id === timerId ? { ...t, remainingSeconds: 0, isRunning: false } : t
                     );
+                    finishTimer(current.label);
                 } else {
                     timers = timers.map(t =>
                         t.id === timerId ? { ...t, remainingSeconds: newRemaining } : t
@@ -213,39 +222,39 @@
                 <h1 class="truncate text-base font-bold sm:text-lg">{recipe.title}</h1>
             </div>
             <div class="flex shrink-0 items-center gap-1.5">
-                <Button variant="ghost" size="sm" class="px-2 sm:px-3" onclick={() => showIngredients = !showIngredients}>
+                <Button aria-expanded={showIngredients} aria-label={m["recipe.cookMode.ingredients"]()} variant="ghost" size="sm" class="px-2 sm:px-3" onclick={() => showIngredients = !showIngredients}>
                     <ListChecks class="h-4 w-4 sm:mr-1.5"/>
                     <span class="hidden sm:inline">{m["recipe.cookMode.ingredients"]()}</span>
                 </Button>
-                <Button variant="outline" size="sm" class="px-2 sm:px-3" onclick={exitCookMode}>
+                <Button aria-label={m["recipe.cookMode.exit"]()} variant="outline" size="sm" class="px-2 sm:px-3" onclick={exitCookMode}>
                     <X class="h-4 w-4 sm:mr-1.5"/>
                     <span class="hidden sm:inline">{m["recipe.cookMode.exit"]()}</span>
                 </Button>
             </div>
         </div>
-        <div class="w-full h-1 bg-muted">
+        <div class="h-0.5 w-full bg-border">
             <div
-                class="h-full bg-primary transition-all duration-500 ease-out"
+                class="h-full rounded-r-full bg-primary transition-all duration-500 ease-out"
                 style="width: {totalSteps > 0 ? ((isFinished ? totalSteps : currentStep + 1) / totalSteps) * 100 : 0}%"
             ></div>
         </div>
-        <div class="flex-1 flex overflow-hidden relative">
+        <div class="relative flex flex-1 overflow-hidden">
             {#if showIngredients}
-                <div class="absolute inset-y-0 left-0 w-80 max-w-[85vw] bg-card border-r border-border z-10 overflow-y-auto p-4 shadow-xl transition-transform">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-bold">{m["recipe.cookMode.ingredients"]()}</h2>
-                        <Button variant="ghost" size="icon" onclick={() => showIngredients = false}>
-                            <X class="w-4 h-4"/>
+                <div class="absolute inset-y-0 left-0 z-10 w-80 max-w-[85vw] overflow-y-auto border-r border-border bg-card p-4 shadow-xl transition-transform">
+                    <div class="mb-4 flex items-center justify-between">
+                        <h2 class="text-base font-semibold">{m["recipe.cookMode.ingredients"]()}</h2>
+                        <Button aria-label={m["actions.cancel"]()} size="icon" variant="ghost" onclick={() => showIngredients = false}>
+                            <X class="size-4"/>
                         </Button>
                     </div>
-                    <p class="text-sm text-muted-foreground mb-4">{m["recipe.common.forServings"]({count: recipe.servings})}</p>
-                    <ul class="space-y-3">
+                    <p class="mb-4 text-sm text-muted-foreground">{m["recipe.common.forServings"]({count: recipe.servings})}</p>
+                    <ul class="divide-y divide-border/50">
                         {#each ingredients as ing}
-                            <li class="flex items-start gap-3">
-                                <span class="font-semibold text-primary min-w-[60px] text-base">
+                            <li class="flex items-start gap-3 py-2.5">
+                                <span class="min-w-16 text-sm font-semibold tabular-nums text-primary">
                                     {ing.quantity} {ing.unit}
                                 </span>
-                                <span class="text-base">{ing.name}</span>
+                                <span class="text-sm leading-relaxed">{ing.name}</span>
                             </li>
                         {/each}
                     </ul>
@@ -253,42 +262,47 @@
             {/if}
             <div class="flex flex-1 flex-col items-center justify-center overflow-y-auto px-4 py-4 sm:px-8 sm:py-6">
                 {#if isFinished}
-                    <div class="text-center animate-fade-in">
-                        <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-                            <ChefHat class="w-10 h-10 text-primary"/>
+                    <div class="animate-fade-in text-center">
+                        <div class="mx-auto mb-6 flex size-20 items-center justify-center rounded-full bg-primary/10">
+                            <ChefHat class="size-10 text-primary"/>
                         </div>
-                        <h2 class="text-3xl sm:text-4xl font-bold mb-3">{m["recipe.cookMode.finish"]()}</h2>
-                        <p class="text-muted-foreground text-lg mb-8">{recipe.title}</p>
-                        <Button size="lg" onclick={() => currentStep = 0}>
-                            <RotateCcw class="w-4 h-4 mr-2"/>
-                            {m["recipe.cookMode.resetTimer"]()}
-                        </Button>
+                        <h2 class="mb-2 text-3xl font-semibold tracking-tight sm:text-4xl">{m["recipe.cookMode.finish"]()}</h2>
+                        <p class="mb-8 text-muted-foreground">{recipe.title}</p>
+                        <div class="flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
+                            <Button size="lg" onclick={() => currentStep = 0}>
+                                <RotateCcw class="size-4"/>
+                                {m["recipe.cookMode.restart"]()}
+                            </Button>
+                            <Button size="lg" variant="outline" onclick={exitCookMode}>
+                                {m["recipe.cookMode.exit"]()}
+                            </Button>
+                        </div>
                     </div>
                 {:else if totalSteps > 0}
                     <div class="w-full max-w-2xl animate-fade-in">
-                        <div class="text-center mb-6">
-                            <span class="text-sm font-medium text-muted-foreground">
+                        <div class="mb-6 text-center">
+                            <span class="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                                 {m["recipe.cookMode.step"]({current: currentStep + 1, total: totalSteps})}
                             </span>
                         </div>
-                        <div class="flex items-start gap-4 sm:gap-6 mb-8">
-                            <div class="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl sm:text-2xl font-bold">
+                        <div class="mb-8 flex items-start gap-4 sm:gap-6">
+                            <div class="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-lg font-semibold tabular-nums text-primary-foreground sm:size-14 sm:text-xl">
                                 {currentStep + 1}
                             </div>
-                            <p class="text-xl sm:text-2xl md:text-3xl leading-relaxed font-medium pt-2 sm:pt-3">
+                            <p class="pt-1 text-xl font-medium leading-relaxed sm:pt-2.5 sm:text-2xl md:text-3xl">
                                 {steps[currentStep].step}
                             </p>
                         </div>
                         {#if extractTimeFromStep(steps[currentStep].step)}
                             {@const stepMinutes = extractTimeFromStep(steps[currentStep].step)!}
-                            <div class="flex justify-center mb-4">
+                            <div class="mb-4 flex justify-center">
                                 <Button
-                                    variant="secondary"
                                     size="lg"
-                                    onclick={() => startTimer(stepMinutes, `Schritt ${currentStep + 1}`)}
+                                    variant="secondary"
+                                    onclick={() => startTimer(stepMinutes, m["recipe.cookMode.stepLabel"]({number: currentStep + 1}))}
                                 >
-                                    <Timer class="w-5 h-5 mr-2"/>
-                                    {stepMinutes} min Timer starten
+                                    <Timer class="size-4"/>
+                                    {m["recipe.cookMode.startStepTimer"]({minutes: stepMinutes})}
                                 </Button>
                             </div>
                         {/if}
@@ -299,37 +313,40 @@
                     </div>
                 {/if}
                 {#if totalSteps > 1 && !isFinished}
-                    <div class="flex gap-2 mt-4 flex-wrap justify-center">
+                    <div class="mt-4 flex flex-wrap justify-center">
                         {#each steps as _, i}
                             <button
-                                class="w-3 h-3 rounded-full transition-all {i === currentStep ? 'bg-primary scale-125' : i < currentStep ? 'bg-primary/40' : 'bg-muted-foreground/30'}"
+                                aria-label={m["recipe.cookMode.step"]({current: i + 1, total: totalSteps})}
+                                aria-current={i === currentStep ? "step" : undefined}
+                                class="p-2"
                                 onclick={() => goToStep(i)}
-                                aria-label="{m["recipe.cookMode.step"]({current: i + 1, total: totalSteps})}"
-                            ></button>
+                            >
+                                <span class="block size-1.5 rounded-full transition-all {i === currentStep ? 'scale-150 bg-primary' : i < currentStep ? 'bg-primary/40' : 'bg-muted-foreground/40'}"></span>
+                            </button>
                         {/each}
                     </div>
                 {/if}
             </div>
         </div>
         {#if timers.length > 0}
-            <div class="border-t border-border bg-card/80 backdrop-blur-sm px-4 py-2">
-                <div class="flex flex-wrap gap-3 justify-center">
+            <div class="border-t border-border bg-card/80 px-4 py-2 backdrop-blur-sm">
+                <div class="flex flex-wrap justify-center gap-2">
                     {#each timers as timer (timer.id)}
-                        <div class="flex items-center gap-2 bg-secondary rounded-lg px-3 py-2">
-                            <Clock class="w-4 h-4 text-primary"/>
-                            <span class="text-sm font-medium">{timer.label}</span>
-                            <span class="font-mono text-lg font-bold {timer.remainingSeconds === 0 ? 'text-destructive' : ''}">
+                        <div class="flex items-center gap-2 rounded-lg border border-border/60 bg-secondary/60 px-2.5 py-1.5">
+                            <Clock class="size-3.5 text-primary"/>
+                            <span class="text-xs font-medium text-muted-foreground">{timer.label}</span>
+                            <span class="font-mono text-base font-semibold tabular-nums {timer.remainingSeconds === 0 ? 'text-destructive' : ''}">
                                 {formatTime(timer.remainingSeconds)}
                             </span>
-                            <Button variant="ghost" size="icon" class="h-7 w-7" onclick={() => toggleTimer(timer.id)}>
+                            <Button aria-label={timer.isRunning ? m["recipe.cookMode.pauseTimer"]() : m["recipe.cookMode.startTimer"]()} class="size-7" size="icon" variant="ghost" onclick={() => toggleTimer(timer.id)}>
                                 {#if timer.isRunning}
-                                    <Pause class="w-3.5 h-3.5"/>
+                                    <Pause class="size-3.5"/>
                                 {:else}
-                                    <Play class="w-3.5 h-3.5"/>
+                                    <Play class="size-3.5"/>
                                 {/if}
                             </Button>
-                            <Button variant="ghost" size="icon" class="h-7 w-7" onclick={() => resetTimer(timer.id)}>
-                                <X class="w-3.5 h-3.5"/>
+                            <Button aria-label={m["recipe.cookMode.resetTimer"]()} class="size-7" size="icon" variant="ghost" onclick={() => resetTimer(timer.id)}>
+                                <X class="size-3.5"/>
                             </Button>
                         </div>
                     {/each}

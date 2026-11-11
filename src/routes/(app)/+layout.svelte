@@ -11,7 +11,7 @@
 
 <NavBar {user}/>
 
-<Toaster position="top-center" richColors/>
+<Toaster offset={84} position="top-center" richColors/>
 
 <div class="mx-auto w-full max-w-7xl px-4 pt-3 pb-[calc(4.5rem+env(safe-area-inset-bottom))] sm:px-6 lg:pb-12">
     {@render children()}

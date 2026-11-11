@@ -17,7 +17,7 @@
 
 <nav
         aria-label={m["nav.navigation"]()}
-        class="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-card/90 backdrop-blur-xl lg:hidden"
+        class="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-card/85 backdrop-blur-xl lg:hidden"
 >
     <ul class="flex items-stretch pb-[env(safe-area-inset-bottom)]">
         {#each items as item}
@@ -25,11 +25,13 @@
             <li class="flex-1">
                 <a
                         aria-current={active ? "page" : undefined}
-                        class="flex h-14 flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors {active ? 'text-primary' : 'text-muted-foreground active:text-foreground'}"
+                        class="flex h-14 flex-col items-center justify-center gap-0.5 transition-colors {active ? 'text-primary' : 'text-muted-foreground active:text-foreground'}"
                         href={item.href}
                 >
-                    <item.icon class="size-5" strokeWidth={active ? 2.4 : 1.8}/>
-                    <span class="max-w-full truncate px-0.5">{item.label()}</span>
+                    <span class="flex h-7 w-12 items-center justify-center rounded-full transition-colors {active ? 'bg-primary/15' : ''}">
+                        <item.icon class="size-5" strokeWidth={active ? 2.2 : 1.8}/>
+                    </span>
+                    <span class="max-w-full truncate px-0.5 text-[10px] font-medium">{item.label()}</span>
                 </a>
             </li>
         {/each}

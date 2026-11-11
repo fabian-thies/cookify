@@ -1,58 +1,120 @@
 <script lang="ts">
-import CollectionCard from "$lib/components/collection/CollectionCard.svelte";
-import CollectionCardSkeleton from "$lib/components/collection/CollectionCardSkeleton.svelte";
-import {getCollections} from "$lib/functions/recipe.remote";
-import {m} from "$lib/paraglide/messages";
+    import CollectionCard from "$lib/components/collection/CollectionCard.svelte";
+    import CollectionCardSkeleton from "$lib/components/collection/CollectionCardSkeleton.svelte";
+    import {createCollection, getCollections} from "$lib/functions/recipe.remote";
+    import {Button} from "$lib/components/ui/button";
+    import * as Dialog from "$lib/components/ui/dialog";
+    import {Input} from "$lib/components/ui/input";
+    import {Label} from "$lib/components/ui/label";
+    import {m} from "$lib/paraglide/messages";
+    import {FolderPlus, Plus} from "lucide-svelte";
+    import {toast} from "svelte-sonner";
 
-type CollectionWithMeta = {
-    id: number;
-    userId: string;
-    title: string;
-    recipeCount: number;
-    isInCollection: boolean;
-    thumbnails: string[];
-};
+    type CollectionWithMeta = {
+        id: number;
+        userId: string;
+        title: string;
+        recipeCount: number;
+        isInCollection: boolean;
+        thumbnails: string[];
+    };
 
-let collections = $state<CollectionWithMeta[]>([]);
-let loading = $state(true);
+    let collections = $state<CollectionWithMeta[]>([]);
+    let loading = $state(true);
 
-$effect(() => {
-    loading = true;
-    getCollections().then((result) => {
-        collections = result as CollectionWithMeta[];
-        loading = false;
+    let showCreate = $state(false);
+    let newTitle = $state("");
+    let creating = $state(false);
+
+    async function loadCollections() {
+        collections = await getCollections() as CollectionWithMeta[];
+    }
+
+    $effect(() => {
+        loading = true;
+        loadCollections()
+            .catch(() => toast.error(m["actions.loadCollectionError"]()))
+            .finally(() => loading = false);
     });
-});
+
+    async function createCollectionOnClick() {
+        const title = newTitle.trim();
+        if (!title || creating) return;
+
+        try {
+            creating = true;
+            await createCollection({title});
+            await loadCollections();
+            showCreate = false;
+            newTitle = "";
+            toast.success(m["collection.created"]());
+        } catch {
+            toast.error(m["actions.error"]());
+        } finally {
+            creating = false;
+        }
+    }
 </script>
 
-<div class="flex flex-col gap-6 mt-2">
-    <div class="space-y-1">
-        <h1 class="font-bold text-3xl sm:text-4xl tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
-            {m["nav.collection"]()}
-        </h1>
-        <div class="h-1 w-20 bg-gradient-to-r from-primary to-primary/50 rounded-full"></div>
+<div class="mt-2 flex flex-col gap-5">
+    <div class="flex items-end justify-between gap-3">
+        <h1 class="page-title">{m["nav.collection"]()}</h1>
+        <Button onclick={() => showCreate = true} size="sm" variant="outline">
+            <Plus class="size-4"/>
+            {m["collection.new"]()}
+        </Button>
     </div>
 
     {#if loading}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 place-items-stretch">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {#each Array(8) as _}
-                <CollectionCardSkeleton />
+                <CollectionCardSkeleton/>
             {/each}
         </div>
     {:else if collections.length === 0}
-        <div class="flex flex-col items-center justify-center py-16 text-center">
-            <div class="w-16 h-16 mb-4 rounded-full bg-muted flex items-center justify-center">
-                <svg class="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
-                </svg>
+        <div class="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border/70 px-6 py-16 text-center">
+            <div class="flex size-12 items-center justify-center rounded-full bg-muted">
+                <FolderPlus class="size-5 text-muted-foreground"/>
             </div>
-            <p class="text-muted-foreground text-lg font-medium">{m["collection.noCollections"]()}</p>
+            <p class="text-sm text-muted-foreground">{m["collection.noCollections"]()}</p>
+            <Button onclick={() => showCreate = true} size="sm" variant="outline">
+                <Plus class="size-4"/>
+                {m["collection.new"]()}
+            </Button>
         </div>
     {:else}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 place-items-stretch">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {#each collections as {title, recipeCount, id, thumbnails}}
-                <CollectionCard title={title} images={thumbnails} collectionId={id} recipeCount={recipeCount}/>
+                <CollectionCard images={thumbnails} collectionId={id} recipeCount={recipeCount} {title}/>
             {/each}
         </div>
     {/if}
 </div>
+
+<Dialog.Root bind:open={showCreate}>
+    <Dialog.Content>
+        <form class="flex flex-col gap-5" onsubmit={(e) => { e.preventDefault(); createCollectionOnClick(); }}>
+            <Dialog.Header>
+                <Dialog.Title>{m["collection.createTitle"]()}</Dialog.Title>
+            </Dialog.Header>
+            <div class="grid gap-2">
+                <Label for="collection-title">{m["collection.nameLabel"]()}</Label>
+                <Input
+                        bind:value={newTitle}
+                        id="collection-title"
+                        maxlength={100}
+                        placeholder={m["collection.namePlaceholder"]()}
+                        required
+                />
+            </div>
+            <Dialog.Footer>
+                <Dialog.Close class="inline-flex h-10 items-center justify-center rounded-lg border border-border px-4 text-sm font-medium transition hover:bg-accent" type="button">
+                    {m["actions.cancel"]()}
+                </Dialog.Close>
+                <Button disabled={creating || !newTitle.trim()} type="submit">
+                    {m["collection.create"]()}
+                </Button>
+            </Dialog.Footer>
+        </form>
+    </Dialog.Content>
+</Dialog.Root>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import LoginForm from "$lib/components/LoginForm.svelte";
-    import {Apple} from 'lucide-svelte';
+    import {ChefHat} from 'lucide-svelte';
     import {getAllowRegistrations} from "$lib/functions/site.remote";
 
     let allowRegistrations = $state(true);
@@ -11,16 +11,15 @@
         });
     });
 </script>
-<div class="flex min-h-dvh flex-col items-center justify-center gap-6 px-4 py-8">
+
+<div class="flex min-h-dvh flex-col items-center justify-center gap-8 px-4 py-10">
+    <a class="flex flex-col items-center gap-3" href="/">
+        <div class="flex size-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-black/20">
+            <ChefHat class="size-6"/>
+        </div>
+        <span class="cookify text-2xl font-semibold tracking-tight">cookify</span>
+    </a>
     <div class="flex w-full max-w-sm flex-col gap-6">
-        <a class="flex items-center gap-2 self-center font-medium" href="##">
-            <div
-                    class="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md"
-            >
-                <Apple class="size-4"/>
-            </div>
-            Cookify
-        </a>
         <LoginForm isLogin={true} {allowRegistrations}/>
     </div>
 </div>

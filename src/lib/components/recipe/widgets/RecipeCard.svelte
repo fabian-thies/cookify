@@ -1,6 +1,4 @@
 <script lang="ts">
-    import {Button} from "$lib/components/ui/button";
-    import * as Card from "$lib/components/ui/card";
     import {m} from "$lib/paraglide/messages";
     import {Badge} from "$lib/components/ui/badge";
     import {Clock, Star, UserRound} from "lucide-svelte";
@@ -20,45 +18,43 @@
     let {id, title, description, image, servings, cookingTime, rating, difficulty, tags = []}: Props = $props();
 </script>
 
-<Card.Root class="flex h-full w-full flex-col overflow-hidden rounded-xl bg-card pt-0 pb-0 gap-0 shadow-sm">
-    <Card.Header class="relative aspect-video w-full overflow-hidden p-0">
-        <Badge class="absolute right-2.5 top-2.5" variant="secondary">
+<a
+        class="group flex h-full flex-col overflow-hidden rounded-xl border border-border/70 bg-card transition-colors hover:border-border hover:bg-accent/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        href="/recipe/{id}"
+>
+    <div class="relative aspect-[4/3] w-full overflow-hidden bg-muted">
+        <img
+                alt={title}
+                class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                loading="lazy"
+                src={image}
+        >
+        <Badge class="absolute right-2.5 top-2.5 border-transparent bg-background/75 text-foreground backdrop-blur-md" variant="secondary">
             {difficultyLabels[difficulty] ?? difficulty}
         </Badge>
-        <img alt={title} class="h-full w-full object-cover" loading="lazy" src={image}>
-    </Card.Header>
-    <Card.Content class="flex-1 px-3.5 pt-3.5 sm:px-4 sm:pt-4">
-        <h1 class="font-medium text-base text-card-foreground sm:text-lg">{title}</h1>
-        <p class="text-sm pt-1.5 text-muted-foreground line-clamp-2">{description}</p>
+    </div>
+    <div class="flex flex-1 flex-col gap-1 p-3.5 sm:p-4">
+        <h3 class="line-clamp-2 text-[15px] font-medium leading-snug tracking-tight">{title}</h3>
+        <p class="line-clamp-2 text-[13px] leading-relaxed text-muted-foreground">{description}</p>
         {#if tags.length > 0}
-            <div class="flex flex-wrap gap-1.5 pt-2">
-                {#each tags.slice(0, 3) as tag}
-                    <Badge variant="outline" class="text-[10px] px-2 py-0.5">{tag}</Badge>
-                {/each}
-                {#if tags.length > 3}
-                    <Badge variant="outline" class="text-[10px] px-2 py-0.5">+{tags.length - 3}</Badge>
-                {/if}
-            </div>
+            <p class="truncate text-[11px] text-muted-foreground/80">{tags.slice(0, 3).join(" · ")}</p>
         {/if}
-        <div class="flex gap-2 pt-3 mt-3 border-t border-border/50 justify-between">
-            <span class="text-xs sm:text-sm text-muted-foreground flex flex-row gap-1 items-center">
-                <Clock size={15} class="text-primary"/>
+        <div class="mt-auto flex items-center gap-2 pt-3 text-xs text-muted-foreground">
+            <span class="flex items-center gap-1">
+                <Clock class="size-3.5 text-primary"/>
                 {m["recipe.common.duration"]({count: cookingTime})}
             </span>
-            <span class="text-xs sm:text-sm text-muted-foreground flex flex-row gap-1 items-center">
-                <UserRound size={15} class="text-primary"/>
+            <span class="size-0.5 shrink-0 rounded-full bg-muted-foreground/40"></span>
+            <span class="flex items-center gap-1">
+                <UserRound class="size-3.5 text-primary"/>
                 {m["recipe.common.servingsCount"]({count: servings})}
             </span>
-            <span class="text-xs sm:text-sm text-muted-foreground flex flex-row gap-1 items-center">
             {#if rating != null}
-                    <Star size={15} fill="#fbbf24" color="#fbbf24"/>
-                {rating}
+                <span class="ml-auto flex items-center gap-1 font-medium text-foreground">
+                    <Star class="size-3.5" fill="currentColor"/>
+                    {rating}
+                </span>
             {/if}
-            </span>
         </div>
-    </Card.Content>
-    <Card.Footer class="flex-col gap-2 px-3.5 pb-3.5 pt-3 sm:px-4 sm:pb-4">
-        <Button class="w-full" data-sveltekit-preload-data="hover" href="/recipe/{id}"
-                type="submit">{m["recipe.card.view"]()}</Button>
-    </Card.Footer>
-</Card.Root>
+    </div>
+</a>

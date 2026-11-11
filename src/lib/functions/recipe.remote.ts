@@ -162,11 +162,9 @@ export const createCollection = command(v.object({
         throw new Error('User not authenticated');
     }
 
-    if(!params.recipeId) {
-        throw new Error('Recipe ID not provided');
-    }
+    const recipeId = Number(params.recipeId);
 
-    return createCollectionInDb(userId, title, Number(params.recipeId));
+    return createCollectionInDb(userId, title, Number.isFinite(recipeId) ? recipeId : undefined);
 });
 
 export const enableRecipeShare = command(v.object({

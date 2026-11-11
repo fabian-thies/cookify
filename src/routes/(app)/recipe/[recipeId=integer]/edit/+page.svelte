@@ -130,6 +130,9 @@
 </script>
 
 <div class="mx-auto mt-2 sm:mt-6">
+    <div class="mb-5 space-y-1">
+        <h1 class="page-title">{m["recipe.form.editTitle"]()}</h1>
+    </div>
     {#if loading}
         <div class="flex items-center justify-center py-12">
             <div class="text-muted-foreground">{m.loading()}</div>
@@ -153,21 +156,21 @@
                 }
             }}
         }>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-8">
-                <div class="space-y-6 lg:col-span-2">
+            <div class="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-8">
+                <div class="space-y-5 lg:col-span-2 lg:space-y-6">
                     <General {recipe}/>
                     <Ingredients {ingredients} {recipe}/>
                     <Steps {steps}/>
                     <Tips {tips}/>
                 </div>
 
-                <div class="space-y-6">
+                <div class="space-y-5 lg:space-y-6">
                     <Details {recipe}/>
-                    <div class="flex flex-col gap-3 mt-6">
+                    <div class="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-10 flex flex-col gap-2 rounded-xl border border-border/70 bg-card/95 p-3 backdrop-blur lg:static lg:border-0 lg:bg-transparent lg:p-0">
                         {#if aiEnabled && aiRecipe}
                             <AiEditDialog recipe={aiRecipe} onApply={applyAiRecipe}/>
                         {/if}
-                        <Button class="w-full" type="submit" >
+                        <Button class="w-full" type="submit">
                             {#if updating}
                                 <Spinner/>
                             {:else}

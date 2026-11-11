@@ -5,6 +5,7 @@ import Tips from "$lib/components/recipe/view/Tips.svelte";
     import Ingredients from "$lib/components/recipe/view/Ingredients.svelte";
     import Overview from "$lib/components/recipe/view/Overview.svelte";
     import RecipeCarousel from "$lib/components/recipe/widgets/RecipeCarousel.svelte";
+    import ErrorState from "$lib/components/ErrorState.svelte";
     import {m} from "$lib/paraglide/messages";
     import type {PageProps} from "./$types";
     import {getRecipeDetails} from "$lib/functions/recipe.remote";
@@ -14,23 +15,36 @@ import Tips from "$lib/components/recipe/view/Tips.svelte";
 
     let recipe = $state<any>(null);
     let recipeOwner = $state(false);
+    let failed = $state(false);
 
-    $effect(() => {
+    async function loadRecipe() {
         const recipeId = Number($page.params.recipeId);
-        getRecipeDetails({recipeId, incrementView: true}).then((result) => {
+        failed = false;
+
+        try {
+            const result = await getRecipeDetails({recipeId, incrementView: true});
             recipe = result;
             recipeOwner = data.user!.id === result.userId;
-        }).catch((error) => {
+        } catch (error) {
             console.error('Failed to load recipe:', error);
-        });
+            failed = true;
+        }
+    }
+
+    $effect(() => {
+        loadRecipe();
     });
 </script>
 
-{#if recipe}
+{#if failed}
+    <div class="mt-4">
+        <ErrorState message={m["actions.loadRecipeError"]()} onRetry={loadRecipe}/>
+    </div>
+{:else if recipe}
     {#key recipe.id}
         <Overview {...recipe} {recipeOwner} aiEnabled={!!data.ai?.configured && !!data.ai?.enabled}/>
     {/key}
-    <div class="grid gap-4 sm:gap-8 lg:grid-cols-3">
+    <div class="grid gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-8">
         <div class="lg:col-span-1">
             <Ingredients ingredients={recipe.ingredients} servings={recipe.servings}/>
         </div>

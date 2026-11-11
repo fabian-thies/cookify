@@ -692,11 +692,11 @@ export async function toggleRecipeInCollection(recipeId: number, collectionId: n
         return {isInCollection: true, id: inserted.id};
     }
 }
-export async function createCollection(userId: string, title: string, recipeId: number) {
+export async function createCollection(userId: string, title: string, recipeId?: number) {
     const db = getDb();
 
-    if(!userId || !title || !recipeId) {
-        throw new Error('User ID, title and recipe ID are required.');
+    if (!userId || !title) {
+        throw new Error('User ID and title are required.');
     }
 
     const [collection] = await db.insert(collections).values({
@@ -704,10 +704,12 @@ export async function createCollection(userId: string, title: string, recipeId: 
         title,
     }).returning({id: collections.id, title: collections.title});
 
-    await db.insert(collectionToRecipe).values({
-        recipeId,
-        collectionId: collection.id
-    });
+    if (recipeId) {
+        await db.insert(collectionToRecipe).values({
+            recipeId,
+            collectionId: collection.id
+        });
+    }
 
     return collection;
 }

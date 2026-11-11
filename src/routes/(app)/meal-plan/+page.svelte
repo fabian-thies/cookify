@@ -43,7 +43,10 @@
     }
 
     function formatDate(d: Date): string {
-        return d.toISOString().slice(0, 10);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
     }
 
     function getWeekDays(monday: Date): { name: string; date: string }[] {
@@ -69,6 +72,7 @@
     const monday = $derived(getMonday(new Date(Date.now() + weekOffset * 7 * 86400000)));
 
     const weekDays = $derived(getWeekDays(monday));
+    const today = $derived(formatDate(new Date()));
 
     const filteredRecipes = $derived(
         recipes.filter((r) =>
@@ -195,43 +199,44 @@
     }
 </script>
 
-<div class="flex flex-col gap-5 mt-2">
-    <div class="space-y-1">
-        <h1 class="font-bold text-3xl sm:text-4xl tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
-            {m["mealPlan.title"]()}
-        </h1>
-        <div class="h-1 w-20 bg-gradient-to-r from-primary to-primary/50 rounded-full"></div>
+<div class="mt-2 flex flex-col gap-5">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div class="space-y-1">
+            <h1 class="page-title">{m["mealPlan.title"]()}</h1>
+            <p class="text-sm text-muted-foreground">
+                {new Date(monday).toLocaleDateString(getLocale(), { month: "long", day: "numeric" })}
+                {" – "}
+                {new Date(monday.getTime() + 6 * 86400000).toLocaleDateString(getLocale(), { month: "long", day: "numeric", year: "numeric" })}
+            </p>
+        </div>
     </div>
 
     {#if error}
         <div class="bg-destructive/10 text-destructive px-4 py-3 rounded-lg flex items-center justify-between">
             <span>{error}</span>
-            <button class="hover:opacity-70" onclick={() => (error = null)}><X class="h-4 w-4"/></button>
+            <button aria-label={m["actions.cancel"]()} class="rounded p-1 transition hover:bg-destructive/10" onclick={() => (error = null)}><X class="size-4"/></button>
         </div>
     {/if}
 
-    <div class="flex items-center justify-between gap-2 flex-wrap">
-        <div class="flex items-center gap-2">
-            <Button variant="outline" size="icon" onclick={prevWeek}>
-                <ChevronLeft class="h-4 w-4"/>
+    <div class="flex items-center justify-between gap-2">
+        <div class="inline-flex items-center rounded-lg border border-border/70 bg-card p-0.5">
+            <Button aria-label={m["mealPlan.previousWeek"]()} class="size-9 rounded-md" size="icon" variant="ghost" onclick={prevWeek}>
+                <ChevronLeft class="size-4"/>
             </Button>
-            <Button variant="outline" size="sm" onclick={goToCurrentWeek}>{m["mealPlan.today"]()}</Button>
-            <Button variant="outline" size="icon" onclick={nextWeek}>
-                <ChevronRight class="h-4 w-4"/>
+            <Button class="h-9 px-3 text-xs font-medium" size="sm" variant="ghost" onclick={goToCurrentWeek}>
+                {m["mealPlan.today"]()}
+            </Button>
+            <Button aria-label={m["mealPlan.nextWeek"]()} class="size-9 rounded-md" size="icon" variant="ghost" onclick={nextWeek}>
+                <ChevronRight class="size-4"/>
             </Button>
         </div>
-        <span class="text-sm text-muted-foreground font-medium">
-            {new Date(monday).toLocaleDateString(getLocale(), { month: "long", day: "numeric" })}
-            {" "}–{" "}
-            {new Date(monday.getTime() + 6 * 86400000).toLocaleDateString(getLocale(), { month: "long", day: "numeric", year: "numeric" })}
-        </span>
-        <div class="flex items-center gap-2 shrink-0">
-            <Button variant="outline" size="sm" onclick={() => (sidebarOpen = !sidebarOpen)}>
-                <Search class="h-4 w-4 sm:mr-2"/>
+        <div class="flex items-center gap-2">
+            <Button aria-expanded={sidebarOpen} aria-label={sidebarOpen ? m["mealPlan.closeRecipes"]() : m["mealPlan.addRecipes"]()} class="h-9" size="sm" variant={sidebarOpen ? "secondary" : "outline"} onclick={() => (sidebarOpen = !sidebarOpen)}>
+                <Search class="size-4 sm:mr-1.5"/>
                 <span class="hidden sm:inline">{sidebarOpen ? m["mealPlan.closeRecipes"]() : m["mealPlan.addRecipes"]()}</span>
             </Button>
-            <Button variant={shoppingListOpen ? "default" : "outline"} size="sm" onclick={() => (shoppingListOpen = !shoppingListOpen)}>
-                <ShoppingCart class="h-4 w-4 sm:mr-2"/>
+            <Button aria-expanded={shoppingListOpen} aria-label={m["mealPlan.shoppingList"]()} class="h-9" size="sm" variant={shoppingListOpen ? "default" : "outline"} onclick={() => (shoppingListOpen = !shoppingListOpen)}>
+                <ShoppingCart class="size-4 sm:mr-1.5"/>
                 <span class="hidden sm:inline">{m["mealPlan.shoppingList"]()}</span>
             </Button>
         </div>
@@ -248,6 +253,7 @@
                     <div class="relative">
                         <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/>
                         <Input
+                            aria-label={m["mealPlan.searchPlaceholder"]()}
                             class="pl-9"
                             placeholder={m["mealPlan.searchPlaceholder"]()}
                             bind:value={recipeSearch}
@@ -285,21 +291,24 @@
             <div class="grid flex-1 grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5">
                 {#each weekDays as { name, date }}
                     {@const dayEntries = entriesForDate(date)}
+                    {@const isToday = date === today}
                     <div
                         role="region"
                         aria-label="{name} meal plan"
-                        class="flex min-h-[130px] flex-col rounded-xl border bg-card/30 transition-colors sm:min-h-[300px] {dayEntries.length > 0 ? 'bg-primary/5' : ''} {selectedRecipeId != null ? 'border-primary/50 ring-1 ring-primary/30' : ''}"
+                        class="flex min-h-[130px] flex-col rounded-xl border transition-colors sm:min-h-[300px] {isToday ? 'border-primary/40 bg-primary/5' : 'border-border/70 bg-card/30'} {dayEntries.length > 0 ? 'bg-primary/5' : ''} {selectedRecipeId != null ? 'border-primary/50 ring-1 ring-primary/30' : ''}"
                         ondragover={(e) => e.preventDefault()}
                         ondrop={(e) => handleDrop(e, date)}
                     >
-                        <div class="border-b px-3 py-2 text-center sm:py-3">
-                            <p class="text-xs font-semibold text-muted-foreground uppercase sm:text-sm">{name.slice(0, 3)}</p>
-                            <p class="text-sm font-semibold sm:text-base">
-                                {new Date(date + "T00:00:00").getDate()}
-                            </p>
+                        <div class="border-b border-border/60 px-3 py-2 sm:py-2.5">
+                            <div class="flex items-baseline justify-between gap-2">
+                                <p class="text-[11px] font-semibold uppercase tracking-wide {isToday ? 'text-primary' : 'text-muted-foreground'}">{name.slice(0, 3)}</p>
+                                <p class="text-sm font-semibold tabular-nums {isToday ? 'text-primary' : ''}">
+                                    {new Date(date + "T00:00:00").getDate()}
+                                </p>
+                            </div>
                             {#if selectedRecipeId != null}
                                 <button
-                                    class="mt-1.5 inline-flex w-full items-center justify-center gap-1 rounded-md bg-primary/10 px-2 py-1 text-[11px] font-medium text-primary"
+                                    class="mt-2 inline-flex h-7 w-full items-center justify-center gap-1 rounded-md bg-primary/15 text-[11px] font-medium text-primary transition hover:bg-primary/25"
                                     onclick={() => addRecipeToDate(selectedRecipeId!, date)}
                                 >
                                     <Plus class="size-3"/>
@@ -310,36 +319,33 @@
 
                         <div class="flex-1 space-y-2 overflow-y-auto p-1.5 sm:p-2">
                             {#if dayEntries.length === 0}
-                                <div class="flex h-full items-center justify-center text-xs text-muted-foreground/50 italic">
+                                <div class="flex h-full min-h-16 items-center justify-center px-2 text-center text-[11px] text-muted-foreground/60 sm:text-xs">
                                     {m["mealPlan.dropHere"]()}
                                 </div>
                             {:else}
                                 {#each dayEntries as entry (entry.id)}
-                                    <svelte:element
-                                        this={!sidebarOpen ? 'a' : 'div'}
-                                        href={!sidebarOpen ? `/recipe/${entry.recipe.id}` : undefined}
-                                        class="group flex items-start gap-2 overflow-hidden rounded-lg border bg-card p-2 transition-shadow hover:shadow-sm sm:gap-3 sm:p-3"
-                                    >
-                                        <img
-                                            src={entry.recipe.image}
-                                            alt={entry.recipe.title}
-                                            class="h-10 w-10 shrink-0 rounded-md object-cover sm:h-12 sm:w-12"
-                                        />
-                                        <div class="min-w-0 flex-1">
-                                            <p class="text-xs font-medium line-clamp-2 sm:text-sm">{entry.recipe.title}</p>
-                                            <p class="truncate text-[11px] text-muted-foreground">
-                                                {entry.recipe.cookingTime} min
-                                            </p>
-                                        </div>
-                                        {#if sidebarOpen}
+                                    <div class="group flex items-start gap-1 rounded-lg border border-border/60 bg-card p-1.5 transition-colors hover:border-border sm:gap-2 sm:p-2">
+                                        <a class="flex min-w-0 flex-1 items-start gap-2" href={`/recipe/${entry.recipe.id}`}>
+                                            <img
+                                                src={entry.recipe.image}
+                                                alt={entry.recipe.title}
+                                                class="size-9 shrink-0 rounded-md object-cover sm:size-10"
+                                            />
+                                            <div class="min-w-0 flex-1">
+                                                <p class="line-clamp-2 text-xs font-medium leading-snug sm:text-[13px]">{entry.recipe.title}</p>
+                                                <p class="truncate text-[11px] text-muted-foreground">
+                                                    {entry.recipe.cookingTime} min
+                                                </p>
+                                            </div>
+                                        </a>
                                         <button
-                                            class="shrink-0 text-muted-foreground transition-all hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100"
-                                            onclick={(e) => { e.stopPropagation(); handleRemove(entry.id); }}
+                                            aria-label={m["actions.delete"]()}
+                                            class="shrink-0 rounded p-1 text-muted-foreground/50 transition hover:bg-destructive/10 hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100"
+                                            onclick={() => handleRemove(entry.id)}
                                         >
-                                            <Trash2 class="h-4 w-4"/>
+                                            <Trash2 class="size-3.5"/>
                                         </button>
-                                        {/if}
-                                    </svelte:element>
+                                    </div>
                                 {/each}
                             {/if}
                         </div>
@@ -350,9 +356,8 @@
             {#if shoppingListOpen}
                 <div class="flex w-full shrink-0 flex-col gap-3 rounded-xl border bg-card/50 p-4 lg:w-72">
                     <div class="flex items-center justify-between">
-                        <h2 class="font-semibold text-sm">{m["mealPlan.shoppingList"]()}</h2>
-                        <button class="hover:opacity-70" onclick={() => (shoppingListOpen = false)}>
-                            <X class="h-4 w-4"/>
+                        <h2 class="font-semibold text-sm">{m["mealPlan.shoppingList"]()}</h2>                        <button aria-label={m["mealPlan.shoppingList"]()} class="rounded p-1 text-muted-foreground transition hover:bg-accent hover:text-foreground" onclick={() => (shoppingListOpen = false)}>
+                            <X class="size-4"/>
                         </button>
                     </div>
                     <div class="flex-1 overflow-y-auto space-y-2 max-h-[60vh]">

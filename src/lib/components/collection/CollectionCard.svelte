@@ -1,6 +1,5 @@
 <script lang="ts">
-    import * as Card from "$lib/components/ui/card";
-    import {Bookmark, ImageIcon} from "lucide-svelte";
+    import {Bookmark, ChevronRight, ImageIcon} from "lucide-svelte";
 
     type Props = {
         collectionId: number;
@@ -12,38 +11,30 @@
     let {collectionId, title, images, recipeCount}: Props = $props();
 </script>
 
-<a href="/collection/{collectionId}" class="w-full h-full group">
-    <Card.Root class="flex flex-col overflow-hidden rounded-lg bg-card p-4 gap-4 shadow-sm hover:shadow-xl transition-all duration-300 border border-border/50 hover:border-primary/30">
-        <Card.Header class="relative h-42 overflow-hidden p-0 rounded-lg">
-            {#if images && images.length > 0}
-                <img alt={title} class="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" src={images[0]} loading="lazy">
-            {:else}
-                <div class="absolute inset-0 flex items-center justify-center bg-muted text-muted-foreground">
-                    <ImageIcon size={32}/>
-                </div>
-            {/if}
-        </Card.Header>
-        <Card.Content class="flex-1 p-0">
-            <div class="flex gap-2">
-                {#each Array.from({length: 3}, (_, i) => images?.[i + 1] ?? null) as thumb}
-                    <div class="flex-1 overflow-hidden rounded-lg bg-muted aspect-3/2">
-                        {#if thumb}
-                            <img alt="" class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" src={thumb} loading="lazy">
-                        {:else}
-                            <div class="h-full w-full flex items-center justify-center text-muted-foreground">
-                                <ImageIcon size={18}/>
-                            </div>
-                        {/if}
-                    </div>
-                {/each}
+<a
+        class="group flex h-full flex-col gap-3 overflow-hidden rounded-xl border border-border/70 bg-card p-3 transition-colors hover:border-border hover:bg-accent/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        href="/collection/{collectionId}"
+>
+    <div class="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-muted">
+        {#if images && images.length > 0}
+            <img
+                    alt={title}
+                    class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                    loading="lazy"
+                    src={images[0]}
+            >
+        {:else}
+            <div class="absolute inset-0 flex items-center justify-center text-muted-foreground">
+                <ImageIcon class="size-7"/>
             </div>
-            <div class="flex justify-between mt-5 items-center">
-                <h1 class="font-bold tracking-wide text-lg text-card-foreground group-hover:text-primary transition-colors duration-200">{title}</h1>
-                <span class="text-sm text-muted-foreground flex flex-row gap-1.5 items-center">
-                    <Bookmark size={16} class="text-primary"/>
-                    <span class="font-medium">{recipeCount}</span>
-                </span>
-            </div>
-        </Card.Content>
-    </Card.Root>
+        {/if}
+        <span class="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-background/75 px-2 py-0.5 text-[11px] font-medium backdrop-blur-md">
+            <Bookmark class="size-3 text-primary"/>
+            {recipeCount}
+        </span>
+    </div>
+    <div class="flex items-center justify-between gap-2 px-0.5 pb-0.5">
+        <h3 class="truncate text-[15px] font-medium tracking-tight">{title}</h3>
+        <ChevronRight class="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"/>
+    </div>
 </a>

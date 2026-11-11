@@ -15,6 +15,8 @@
     import {loginWithPasskey} from "$lib/passkey";
     import {toast} from "svelte-sonner";
     import Fingerprint from "@lucide/svelte/icons/fingerprint";
+    import {Eye, EyeOff} from "lucide-svelte";
+    import {Spinner} from "$lib/components/ui/spinner";
 
     interface Props extends HTMLAttributes<HTMLDivElement> {
         class?: string;
@@ -38,6 +40,8 @@
 
     let passkeySupported = $state(false);
     let passkeyBusy = $state(false);
+    let submitting = $state(false);
+    let showPassword = $state(false);
 
     $effect(() => {
         passkeySupported = browserSupportsWebAuthn();
@@ -67,7 +71,7 @@
             </Alert.Description>
         </Alert.Root>
     {/if}
-    <Card.Root>
+    <Card.Root class="border-border/70 shadow-xl shadow-black/10">
         <Card.Header class="text-center">
             <Card.Title class="text-xl">
                 {effectiveIsLogin ? m["login.welcomeBack"]() : m["login.createAccount"]()}
@@ -77,15 +81,25 @@
             </Card.Description>
         </Card.Header>
         <Card.Content>
-            <form action="{effectiveIsLogin ? '?/login' : '?/register'}" method="post" use:enhance>
+            <form action="{effectiveIsLogin ? '?/login' : '?/register'}" method="post" use:enhance={() => {
+                submitting = true;
+                return async ({update}) => {
+                    try {
+                        await update();
+                    } finally {
+                        submitting = false;
+                    }
+                };
+            }}>
                 {#if redirectTo}
                     <input type="hidden" name="redirectTo" value={redirectTo}/>
                 {/if}
                 <div class="grid gap-6">
-                    <div class="grid gap-6">
+                    <div class="grid gap-5">
                         <div class="grid gap-3">
                             <Label for="username-{id}">{m["login.username"]()}</Label>
                             <Input
+                                    autocomplete="username"
                                     id="username-{id}"
                                     name="username"
                                     placeholder={m["login.enterUsername"]()}
@@ -97,42 +111,61 @@
                             <div class="grid gap-3">
                                 <Label for="email-{id}">{m["login.email"]()}</Label>
                                 <Input
+                                        autocomplete="email"
                                         id="email-{id}"
                                         name="email"
-                                        type="email"
                                         placeholder={m["login.emailPlaceholder"]()}
                                         required
+                                        type="email"
                                 />
                             </div>
                         {/if}
                         <div class="grid gap-3">
-                            <div class="flex items-center">
-                                <Label for="password-{id}">{m["login.password"]()}</Label>
-                                <!--                                {#if isLogin}
-                                                                    <a
-                                                                            href="##"
-                                                                            class="ml-auto text-sm underline-offset-4 hover:underline"
-                                                                    >
-                                                                        {m["login.forgotPassword"]()}
-                                                                    </a>
-                                                                {/if}-->
+                            <Label for="password-{id}">{m["login.password"]()}</Label>
+                            <div class="relative">
+                                <Input
+                                        autocomplete={effectiveIsLogin ? "current-password" : "new-password"}
+                                        class="pr-11"
+                                        id="password-{id}"
+                                        name="password"
+                                        required
+                                        type={showPassword ? "text" : "password"}
+                                />
+                                <Button
+                                        aria-label={m["login.password"]()}
+                                        class="absolute right-0 top-0 h-full px-3 text-muted-foreground hover:bg-transparent"
+                                        onclick={() => showPassword = !showPassword}
+                                        size="sm"
+                                        type="button"
+                                        variant="ghost"
+                                >
+                                    {#if showPassword}
+                                        <EyeOff class="size-4"/>
+                                    {:else}
+                                        <Eye class="size-4"/>
+                                    {/if}
+                                </Button>
                             </div>
-                            <Input id="password-{id}" name="password" required type="password"/>
                         </div>
                         {#if !effectiveIsLogin}
                             <div class="grid gap-3">
                                 <Label for="confirm-password-{id}">{m["login.confirmPassword"]()}</Label>
                                 <Input
+                                        autocomplete="new-password"
                                         id="confirm-password-{id}"
                                         name="confirmPassword"
-                                        type="password"
                                         placeholder={m["login.confirmPasswordPlaceholder"]()}
                                         required
+                                        type={showPassword ? "text" : "password"}
                                 />
                             </div>
                         {/if}
-                        <Button class="w-full" type="submit">
-                            {effectiveIsLogin ? m["login.signIn"]() : m["login.createAccountButton"]()}
+                        <Button class="w-full" disabled={submitting} size="lg" type="submit">
+                            {#if submitting}
+                                <Spinner class="size-4"/>
+                            {:else}
+                                {effectiveIsLogin ? m["login.signIn"]() : m["login.createAccountButton"]()}
+                            {/if}
                         </Button>
                     </div>
                     {#if effectiveIsLogin && passkeySupported}
@@ -141,7 +174,7 @@
                             <span class="text-xs uppercase text-muted-foreground">{m["login.or"]()}</span>
                             <span class="h-px flex-1 bg-border"></span>
                         </div>
-                        <Button class="w-full" disabled={passkeyBusy} onclick={handlePasskeyLogin} type="button" variant="outline">
+                        <Button class="w-full" disabled={passkeyBusy} onclick={handlePasskeyLogin} size="lg" type="button" variant="outline">
                             <Fingerprint class="size-4"/>
                             {m["login.passkey"]()}
                         </Button>

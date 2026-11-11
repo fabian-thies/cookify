@@ -7,22 +7,35 @@ import Tips from "$lib/components/recipe/view/Tips.svelte";
     import {getSharedRecipeDetails} from "$lib/functions/recipe.remote";
     import {page} from "$app/stores";
     import {m} from "$lib/paraglide/messages";
+    import ErrorState from "$lib/components/ErrorState.svelte";
 
     const {data}: PageProps = $props();
 
     let recipe = $state<any>(null);
+    let failed = $state(false);
+
+    async function loadSharedRecipe() {
+        const token = $page.params.token!;
+        failed = false;
+
+        try {
+            recipe = await getSharedRecipeDetails({token, incrementView: true});
+        } catch (error) {
+            console.error('Failed to load shared recipe:', error);
+            failed = true;
+        }
+    }
 
     $effect(() => {
-        const token = $page.params.token!;
-        getSharedRecipeDetails({token, incrementView: true}).then((result) => {
-            recipe = result;
-        }).catch((error) => {
-            console.error('Failed to load shared recipe:', error);
-        });
+        loadSharedRecipe();
     });
 </script>
 
-{#if recipe}
+{#if failed}
+    <div class="mt-4">
+        <ErrorState message={m["actions.loadRecipeError"]()} onRetry={loadSharedRecipe}/>
+    </div>
+{:else if recipe}
     {#key recipe.id}
         <Overview
                 {...recipe}
@@ -33,7 +46,7 @@ import Tips from "$lib/components/recipe/view/Tips.svelte";
                 sharePath={recipe.sharePath}
         />
     {/key}
-    <div class="grid gap-4 sm:gap-8 lg:grid-cols-3">
+    <div class="grid gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-8">
         <div class="lg:col-span-1">
             <Ingredients ingredients={recipe.ingredients} servings={recipe.servings}/>
         </div>

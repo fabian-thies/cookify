@@ -66,15 +66,15 @@
     </Card.Header>
     <Card.Content>
         <div class="flex flex-col gap-6">
-            <div class="flex items-center gap-6">
+            <div class="flex items-center gap-4">
                 <button aria-controls="avatar"
                         aria-label={m["settings.profile.changeAvatar"]()}
                         class="inline-flex rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background" onclick={openAvatarPicker}
                         type="button">
-                    <Avatar.Root class="cursor-pointer h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24">
-                        <Avatar.Image src={previewUrl ?? user.avatar}/>
-                        <Avatar.Fallback>{user.username.slice(0, 2)}</Avatar.Fallback>
-                    </Avatar.Root>
+                        <Avatar.Root class="cursor-pointer size-16 sm:size-20">
+                            <Avatar.Image src={previewUrl ?? user.avatar}/>
+                            <Avatar.Fallback class="text-lg">{user.username.slice(0, 2).toUpperCase()}</Avatar.Fallback>
+                        </Avatar.Root>
                 </button>
                 <input accept="image/*" bind:this={fileInput} class="sr-only" id="avatar" name="avatar" onchange={handleAvatarChange}
                        type="file"/>
@@ -272,7 +272,7 @@
             </div>
         </div>
     </Card.Content>
-    <Card.Footer class="flex-col gap-2 items-start">
+    <Card.Footer class="flex-col items-start gap-2">
         <Button disabled={password.length > 0 && (!passwordsMatch || password.length < 6)} type="submit">
             {m["settings.profile.save"]()}
         </Button>

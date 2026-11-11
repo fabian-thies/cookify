@@ -13,21 +13,21 @@
 </script>
 
 {#if tips.length > 0}
-    <Card.Root class="w-full mt-6">
-        <Card.Header class="flex items-center gap-4">
-            <Card.Title class="flex flex-col gap-2">
-                <h1 class="text-lg font-bold flex items-center gap-2">
-                    <Lightbulb/>
+    <Card.Root class="mt-4 w-full sm:mt-6">
+        <Card.Header class="border-b border-border/60 pb-4">
+            <Card.Title class="flex flex-col gap-1">
+                <h2 class="flex items-center gap-2 text-base font-semibold">
+                    <Lightbulb class="size-4 text-primary"/>
                     {m["recipe.view.tips.title"]()}
-                </h1>
-                <p class="text-sm text-muted-foreground">{m["recipe.view.tips.subtitle"]()}</p>
+                </h2>
+                <p class="text-sm font-normal text-muted-foreground">{m["recipe.view.tips.subtitle"]()}</p>
             </Card.Title>
         </Card.Header>
-        <Card.Content class="flex flex-col gap-4">
+        <Card.Content class="flex flex-col gap-2">
             {#each tips as tip}
-                <div class="flex gap-3 items-start bg-muted/50 rounded-lg p-3">
-                    <Lightbulb class="w-4 h-4 mt-0.5 text-primary flex-shrink-0"/>
-                    <span>{tip.tip}</span>
+                <div class="flex items-start gap-3 rounded-lg bg-accent/40 p-3">
+                    <Lightbulb class="mt-0.5 size-4 shrink-0 text-primary"/>
+                    <span class="text-sm leading-relaxed">{tip.tip}</span>
                 </div>
             {/each}
         </Card.Content>

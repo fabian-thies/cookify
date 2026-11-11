@@ -2,6 +2,16 @@
   "$schema": "https://inlang.com/schema/inlang-message-format",
   "logout": "Logout",
   "loading": "Loading...",
+  "search": {
+    "clear": "Clear search"
+  },
+  "error": {
+    "notFoundTitle": "Page not found",
+    "notFoundText": "This page does not exist or it has moved.",
+    "title": "Something went wrong",
+    "text": "Please try again in a moment.",
+    "home": "Go to home"
+  },
   "login": {
     "welcomeBack": "Welcome back",
     "createAccount": "Create an account",
@@ -43,6 +53,8 @@
       "steps": "Steps",
       "forServings": "Serves {count}",
       "servingsCount": "{count} servings",
+      "decreaseServings": "Decrease servings",
+      "increaseServings": "Increase servings",
       "nutrition": {
         "title": "Nutrition per serving",
         "calories": "{value} kcal",
@@ -55,6 +67,8 @@
       "reviews": "{count} reviews",
       "ratePrompt": "Rate this recipe",
       "rateSubtitle": "How did you like the recipe?",
+      "rateStars": "{value} of 5 stars",
+      "ratingSaved": "Rating saved",
       "similar": "Similar recipes",
       "difficulty": {
         "easy": "Easy",
@@ -72,6 +86,7 @@
       "authorGroupLabel": "Author",
       "tagsPlaceholder": "Select a tag",
       "tagsGroupLabel": "Tags",
+      "filter": "Filter",
       "filterTitle": "Filter & Sort",
       "filterDescription": "Refine your recipe search",
       "showResults": "Show results",
@@ -109,6 +124,8 @@
       }
     },
     "form": {
+      "createTitle": "New recipe",
+      "editTitle": "Edit recipe",
       "general": {
         "title": "Basic information",
         "nameLabel": "Recipe name",
@@ -236,7 +253,11 @@
       "setMinutes": "Minutes",
       "ingredients": "Ingredients",
       "exit": "Exit",
-      "noSteps": "No steps available"
+      "noSteps": "No steps available",
+      "startStepTimer": "Start {minutes} min timer",
+      "stepLabel": "Step {number}",
+      "restart": "Start over",
+      "timerDone": "Timer finished"
     }
   },
   "routes": {
@@ -256,6 +277,12 @@
   },
   "collection": {
     "noCollections": "No collections yet.",
+    "new": "New collection",
+    "createTitle": "New collection",
+    "nameLabel": "Collection name",
+    "namePlaceholder": "e.g. Meal prep",
+    "create": "Create",
+    "created": "Collection created",
     "editDialog": {
       "title": "Edit collection",
       "titleLabel": "Title"
@@ -270,6 +297,8 @@
     "share": "Share",
     "save": "Save",
     "rate": "Rate",
+    "more": "More",
+    "retry": "Try again",
     "edit": "Edit",
     "cancel": "Cancel",
     "delete": "Delete",
@@ -431,6 +460,8 @@
   "mealPlan": {
     "title": "Meal Plan",
     "today": "Today",
+    "previousWeek": "Previous week",
+    "nextWeek": "Next week",
     "addRecipes": "Add Recipes",
     "closeRecipes": "Close Recipes",
     "searchPlaceholder": "Search recipes...",

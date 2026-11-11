@@ -17,32 +17,26 @@
     }>();
 </script>
 {#snippet Step({id, step, number}: StepParam)}
-    <div class="flex flex-row gap-6">
-        <div class="flex w-full max-w-10 flex-col gap-1.5">
-            <div class="flex flex-shrink-0 w-8 h-8 bg-primary text-primary-foreground rounded-full items-center justify-center text-sm font-medium">
-                {number}
-            </div>
-        </div>
-        <div class="flex w-full flex-col gap-1.5">
-            {step}
-        </div>
-    </div>
+    <li class="flex gap-3 py-4 sm:gap-4">
+        <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/15 text-xs font-semibold tabular-nums text-primary">
+            {number}
+        </span>
+        <p class="pt-0.5 text-[15px] leading-relaxed">{step}</p>
+    </li>
 {/snippet}
 
 <Card.Root class="w-full">
-    <Card.Header class="flex items-center gap-4">
-        <Card.Title class="flex flex-col gap-2">
-            <h1 class="text-lg font-bold">
-                {m["recipe.view.preparation.title"]()}
-            </h1>
-            <p class="text-sm text-muted-foreground">{m["recipe.view.preparation.subtitle"]()}</p>
+    <Card.Header class="border-b border-border/60 pb-4">
+        <Card.Title class="flex flex-col gap-1">
+            <h2 class="text-base font-semibold">{m["recipe.view.preparation.title"]()}</h2>
+            <p class="text-sm font-normal text-muted-foreground">{m["recipe.view.preparation.subtitle"]()}</p>
         </Card.Title>
     </Card.Header>
-    <Card.Content class="flex flex-col gap-6">
-        {#each steps as step }
-            {@render Step(step)}
-        {/each}
+    <Card.Content>
+        <ol class="divide-y divide-border/50">
+            {#each steps as step}
+                {@render Step(step)}
+            {/each}
+        </ol>
     </Card.Content>
-    <Card.Footer>
-    </Card.Footer>
 </Card.Root>

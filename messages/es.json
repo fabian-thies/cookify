@@ -1,6 +1,16 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
   "logout": "Cerrar sesión",
+  "search": {
+    "clear": "Borrar búsqueda"
+  },
+  "error": {
+    "notFoundTitle": "Página no encontrada",
+    "notFoundText": "Esta página no existe o se ha movido.",
+    "title": "Algo salió mal",
+    "text": "Inténtalo de nuevo en un momento.",
+    "home": "Ir al inicio"
+  },
   "loading": "Cargando...",
   "login": {
     "welcomeBack": "Bienvenido de nuevo",
@@ -43,6 +53,8 @@
       "steps": "Pasos",
       "forServings": "Para {count} personas",
       "servingsCount": "{count} porciones",
+      "decreaseServings": "Reducir porciones",
+      "increaseServings": "Aumentar porciones",
       "nutrition": {
         "title": "Nutrición por porción",
         "calories": "{value} kcal",
@@ -55,6 +67,8 @@
       "reviews": "{count} reseñas",
       "ratePrompt": "Valora esta receta",
       "rateSubtitle": "¿Qué te pareció la receta?",
+      "rateStars": "{value} de 5 estrellas",
+      "ratingSaved": "Valoración guardada",
       "similar": "Recetas similares",
       "difficulty": {
         "easy": "Fácil",
@@ -72,6 +86,7 @@
       "authorGroupLabel": "Autor",
       "tagsPlaceholder": "Selecciona una etiqueta",
       "tagsGroupLabel": "Etiquetas",
+      "filter": "Filtros",
       "filterTitle": "Filtrar y ordenar",
       "filterDescription": "Refina tu búsqueda de recetas",
       "showResults": "Mostrar resultados",
@@ -109,6 +124,8 @@
       }
     },
     "form": {
+      "createTitle": "Nueva receta",
+      "editTitle": "Editar receta",
       "general": {
         "title": "Información básica",
         "nameLabel": "Nombre de la receta",
@@ -236,7 +253,11 @@
       "setMinutes": "Minutos",
       "ingredients": "Ingredientes",
       "exit": "Salir",
-      "noSteps": "No hay pasos disponibles"
+      "noSteps": "No hay pasos disponibles",
+      "startStepTimer": "Iniciar temporizador de {minutes} min",
+      "stepLabel": "Paso {number}",
+      "restart": "Empezar de nuevo",
+      "timerDone": "Temporizador terminado"
     }
   },
   "routes": {
@@ -256,6 +277,12 @@
   },
   "collection": {
     "noCollections": "Aún no hay colecciones.",
+    "new": "Nueva colección",
+    "createTitle": "Nueva colección",
+    "nameLabel": "Nombre de la colección",
+    "namePlaceholder": "p. ej. Meal prep",
+    "create": "Crear",
+    "created": "Colección creada",
     "editDialog": {
       "title": "Editar colección",
       "titleLabel": "Título"
@@ -270,6 +297,8 @@
     "share": "Compartir",
     "save": "Guardar",
     "rate": "Calificar",
+    "more": "Más",
+    "retry": "Reintentar",
     "edit": "Editar",
     "cancel": "Cancelar",
     "delete": "Eliminar",
@@ -429,6 +458,8 @@
   "mealPlan": {
     "title": "Plan semanal",
     "today": "Hoy",
+    "previousWeek": "Semana anterior",
+    "nextWeek": "Semana siguiente",
     "addRecipes": "Añadir recetas",
     "closeRecipes": "Cerrar recetas",
     "searchPlaceholder": "Buscar recetas...",
