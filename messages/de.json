@@ -160,6 +160,13 @@
         "tagsLabel": "Schlagwörter",
         "tagsPlaceholder": "Tag eingeben und Enter drücken",
         "previewLabel": "Vorschaubild",
+        "choosePhoto": "Foto auswählen",
+        "changePhoto": "Foto ändern",
+        "photoHint": "Fotomediathek oder Kamera · max. 15 MB",
+        "photoPreview": "Vorschau des Rezeptfotos",
+        "resetPhoto": "Auswahl zurücksetzen",
+        "photoNoPreview": "Für dieses Foto ist keine Vorschau verfügbar.",
+        "photoTooLarge": "Das Foto ist zu groß. Bitte wähle ein Bild mit höchstens 15 MB.",
         "visibility": {
           "label": "Sichtbarkeit",
           "placeholder": "Sichtbarkeit auswählen",

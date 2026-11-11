@@ -161,6 +161,13 @@
         "tagsLabel": "Tags",
         "tagsPlaceholder": "Enter a tag and press Enter",
         "previewLabel": "Cover image",
+        "choosePhoto": "Choose photo",
+        "changePhoto": "Change photo",
+        "photoHint": "Photo library or camera · max. 15 MB",
+        "photoPreview": "Recipe photo preview",
+        "resetPhoto": "Reset selection",
+        "photoNoPreview": "A preview is not available for this photo.",
+        "photoTooLarge": "This photo is too large. Choose an image up to 15 MB.",
         "visibility": {
           "label": "Visibility",
           "placeholder": "Select visibility",

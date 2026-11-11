@@ -161,6 +161,13 @@
         "tagsLabel": "Etiquetas",
         "tagsPlaceholder": "Introduce una etiqueta y presiona Enter",
         "previewLabel": "Imagen de portada",
+        "choosePhoto": "Elegir foto",
+        "changePhoto": "Cambiar foto",
+        "photoHint": "Fototeca o cámara · máx. 15 MB",
+        "photoPreview": "Vista previa de la foto de la receta",
+        "resetPhoto": "Restablecer selección",
+        "photoNoPreview": "No hay vista previa disponible para esta foto.",
+        "photoTooLarge": "La foto es demasiado grande. Elige una imagen de hasta 15 MB.",
         "visibility": {
           "label": "Visibilidad",
           "placeholder": "Selecciona visibilidad",

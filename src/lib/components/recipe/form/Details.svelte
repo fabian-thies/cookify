@@ -5,7 +5,7 @@
     import {m} from "$lib/paraglide/messages";
     import {Clock, Users, X} from "lucide-svelte";
     import SelectComponent from "$lib/components/ui/select/SelectComponent.svelte";
-    import {Badge} from "$lib/components/ui/badge";
+    import PhotoPicker from "./PhotoPicker.svelte";
 
     const {recipe, tags: tagsProp, difficulty}: {recipe?: any; tags?: string[]; difficulty?: string} = $props();
     let selectedDifficulty = $state("");
@@ -33,9 +33,6 @@
             tags = [...tagsProp];
         }
     });
-    let coverFile = $state<FileList | undefined>(undefined);
-    let previewUrl = $state<string>("");
-
     const addTag = () => {
         const value = tagInput.trim();
         if (value && !tags.includes(value) && tags.length < 20) {
@@ -57,21 +54,6 @@
         }
     };
 
-    // Handle image preview
-    $effect(() => {
-        if (coverFile && coverFile.length > 0) {
-            const file = coverFile[0];
-            previewUrl = URL.createObjectURL(file);
-        } else {
-            previewUrl = "";
-        }
-
-        return () => {
-            if (previewUrl) {
-                URL.revokeObjectURL(previewUrl);
-            }
-        };
-    });
 </script>
 
 <Card.Root class="w-full b">
@@ -166,20 +148,6 @@
                 </div>
             {/if}
         </div>
-        <div class="flex w-full flex-col gap-1.5">
-            <div class="flex items-start gap-4">
-                {#if previewUrl || recipe?.image}
-                    <div class="flex-shrink-0">
-                        <img src={previewUrl || recipe?.image} alt="Preview"
-                             class="w-16 h-16 object-cover rounded-md border border-border">
-                    </div>
-                {/if}
-                <div class="flex-1 flex flex-col gap-1.5">
-                    <Label for="picture">{m["recipe.form.details.previewLabel"]()}</Label>
-                    <Input accept="image/*" bind:files={coverFile} id="picture" name="picture" required={!recipe}
-                           type="file"/>
-                </div>
-            </div>
-        </div>
+        <PhotoPicker image={recipe?.image} required={!recipe}/>
     </Card.Content>
 </Card.Root>
