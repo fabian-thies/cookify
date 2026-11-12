@@ -10,6 +10,7 @@ import {
     recipeRating,
     recipes,
     session,
+    shoppingListItems,
     user
 } from "$lib/server/db/schema";
 import type {UserLanguage} from "$lib/types/languages";
@@ -91,6 +92,7 @@ export async function deleteUserAccount(userId: string) {
     await db.delete(favorite).where(eq(favorite.userId, userId));
     await db.delete(passkey).where(eq(passkey.userId, userId));
     await db.delete(mealPlan).where(eq(mealPlan.userId, userId));
+    await db.delete(shoppingListItems).where(eq(shoppingListItems.userId, userId));
     await db.delete(session).where(eq(session.userId, userId));
 
     return db.delete(user).where(eq(user.id, userId));

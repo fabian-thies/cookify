@@ -27,7 +27,11 @@ function load(path, imports = {}) {
 }
 
 const constants = load('src/lib/constants.ts');
-const schema = load('src/lib/server/db/schema.ts', {'../../constants': constants});
+const shoppingList = load('src/lib/shopping-list.ts');
+const schema = load('src/lib/server/db/schema.ts', {
+    '../../constants': constants,
+    '../../shopping-list': shoppingList
+});
 let activeDb = db;
 const recipes = load('src/lib/server/db/recipe.ts', {
     '$lib/server/db/index': {getDb: () => activeDb},

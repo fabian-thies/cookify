@@ -487,7 +487,8 @@
     "error": {
       "load": "Failed to load meal plan",
       "add": "Failed to add recipe",
-      "remove": "Failed to remove recipe"
+      "remove": "Failed to remove recipe",
+      "checkItem": "Failed to save the checkmark"
     },
     "day": {
       "monday": "Monday",
@@ -500,6 +501,16 @@
     },
     "shoppingList": "Shopping List",
     "emptyShoppingList": "No recipes planned for this week",
+    "category": {
+      "produce": "Produce",
+      "meatFish": "Meat & Fish",
+      "dairyEggs": "Dairy & Eggs",
+      "bakery": "Bakery",
+      "pantry": "Pantry",
+      "frozen": "Frozen",
+      "drinks": "Drinks",
+      "other": "Other"
+    },
     "calendar": {
       "button": "Subscribe",
       "title": "Calendar subscription",

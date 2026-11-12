@@ -485,7 +485,8 @@
     "error": {
       "load": "Error al cargar el plan semanal",
       "add": "Error al añadir la receta",
-      "remove": "Error al eliminar la receta"
+      "remove": "Error al eliminar la receta",
+      "checkItem": "No se pudo guardar la marca"
     },
     "day": {
       "monday": "Lunes",
@@ -498,6 +499,16 @@
     },
     "shoppingList": "Lista de compras",
     "emptyShoppingList": "No hay recetas planificadas para esta semana",
+    "category": {
+      "produce": "Frutas y verduras",
+      "meatFish": "Carne y pescado",
+      "dairyEggs": "Lácteos y huevos",
+      "bakery": "Panadería",
+      "pantry": "Despensa",
+      "frozen": "Congelados",
+      "drinks": "Bebidas",
+      "other": "Otros"
+    },
     "calendar": {
       "button": "Suscribirse",
       "title": "Suscripción al calendario",

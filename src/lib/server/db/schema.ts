@@ -13,6 +13,7 @@ import {
     unique
 } from 'drizzle-orm/pg-core';
 import {DIFFICULTIES, LANGUAGES} from "../../constants";
+import {SHOPPING_CATEGORIES} from "../../shopping-list";
 
 const tsvector = customType<{ data: string }>({
     dataType() {
@@ -171,6 +172,23 @@ export const mealPlan = pgTable('meal_plan', {
     unique('meal_plan_user_recipe_date_unique').on(t.userId, t.recipeId, t.date),
 ]);
 
+// Persisted per week (weekStart = Monday) so checkmarks survive reloads and are not recalculated away.
+export const shoppingListItems = pgTable('shopping_list_items', {
+    id: serial('id').primaryKey(),
+    userId: text('user_id').notNull().references(() => user.id),
+    weekStart: date('week_start').notNull(),
+    name: text('name').notNull(),
+    quantity: doublePrecision('quantity').notNull(),
+    unit: text('unit').notNull(),
+    category: text('category', {enum: [...SHOPPING_CATEGORIES]}).notNull().default('other'),
+    checked: boolean('checked').notNull().default(false),
+    createdAt: timestamp('created_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow(),
+}, (t) => [
+    unique('shopping_list_items_user_week_name_unit_unique').on(t.userId, t.weekStart, t.name, t.unit),
+    index('shopping_list_items_user_week_idx').on(t.userId, t.weekStart),
+]);
+
 export const collectionToRecipe = pgTable('collection_to_recipe', {
     id: serial('id').primaryKey(),
     recipeId: integer('recipe_id').notNull().references(() => recipes.id),
@@ -193,6 +211,7 @@ export type RecipeRating = typeof recipeRating.$inferSelect;
 export type CookHistory = typeof cookHistory.$inferSelect;
 export type Tip = typeof tips.$inferSelect;
 export type MealPlan = typeof mealPlan.$inferSelect;
+export type ShoppingListItem = typeof shoppingListItems.$inferSelect;
 export type Collection = typeof collections.$inferSelect;
 export type CollectionToRecipe = typeof collectionToRecipe.$inferSelect;
 export type SiteSettings = typeof siteSettings.$inferSelect;

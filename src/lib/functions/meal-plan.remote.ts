@@ -5,6 +5,7 @@ import {
     removeFromMealPlan as removeFromMealPlanDb,
     getMealPlan as getMealPlanDb,
     getShoppingList as getShoppingListDb,
+    setShoppingListItemChecked as setShoppingListItemCheckedDb,
     getOrCreateCalendarToken,
     rotateCalendarToken,
 } from '$lib/server/db/meal-plan';
@@ -90,4 +91,18 @@ export const getShoppingList = query(v.object({
     }
 
     return await getShoppingListDb(userId, startDate, endDate);
+});
+
+export const setShoppingListItemChecked = command(v.object({
+    itemId: v.pipe(v.number(), v.integer(), v.minValue(1)),
+    checked: v.boolean(),
+}), async ({ itemId, checked }) => {
+    const { locals } = getRequestEvent();
+    const userId = locals.user?.id;
+
+    if (!userId) {
+        throw new Error('User not authenticated');
+    }
+
+    await setShoppingListItemCheckedDb(userId, itemId, checked);
 });

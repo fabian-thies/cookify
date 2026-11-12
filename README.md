@@ -35,7 +35,7 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
     - Group recipes into custom collections for easy organization.
 - **Weekly Meal Plan**
     - Drag and drop recipes onto a weekly calendar to plan your meals.
-    - Auto-generated **shopping list** based on the recipes scheduled for the week.
+    - Auto-generated **shopping list** based on the recipes scheduled for the week, grouped by supermarket category. Items and checkmarks are saved per week.
     - **Calendar subscription (ICS)**: add the plan to Google Calendar, Apple Calendar or any other calendar app.
 - **Installable PWA**
     - Add Cookify to your home screen and keep recently visited pages and images available offline.

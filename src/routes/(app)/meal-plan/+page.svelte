@@ -5,6 +5,7 @@
         addToMealPlan,
         removeFromMealPlan,
         getShoppingList,
+        setShoppingListItemChecked,
         getCalendarFeed,
         rotateCalendarFeed,
     } from "$lib/functions/meal-plan.remote";
@@ -18,6 +19,7 @@
     import { m } from "$lib/paraglide/messages";
     import { getLocale } from "$lib/paraglide/runtime.js";
     import { imageVariantUrl } from "$lib/images";
+    import { SHOPPING_CATEGORIES, type ShoppingCategory } from "$lib/shopping-list";
 
     type MealPlanEntry = Awaited<ReturnType<typeof getMealPlan>>[number];
     type ShoppingItem = Awaited<ReturnType<typeof getShoppingList>>[number];
@@ -72,9 +74,9 @@
     let shoppingListOpen = $state(false);
     let adding = $state(false);
     let loadVersion = 0;
+    let savingItemIds = $state<number[]>([]);
     let selectedRecipeId = $state<number | null>(null);
     let shoppingList = $state<ShoppingItem[]>([]);
-    let checkedItems = $state<Set<string>>(new Set());
     let calendarDialogOpen = $state(false);
     let calendarUrl = $state("");
     let calendarLoading = $state(false);
@@ -93,6 +95,32 @@
         )
     );
 
+    const shoppingGroups = $derived.by(() => {
+        const labels: Record<ShoppingCategory, string> = {
+            produce: m["mealPlan.category.produce"](),
+            meat_fish: m["mealPlan.category.meatFish"](),
+            dairy_eggs: m["mealPlan.category.dairyEggs"](),
+            bakery: m["mealPlan.category.bakery"](),
+            pantry: m["mealPlan.category.pantry"](),
+            frozen: m["mealPlan.category.frozen"](),
+            drinks: m["mealPlan.category.drinks"](),
+            other: m["mealPlan.category.other"](),
+        };
+
+        return SHOPPING_CATEGORIES
+            .map((category) => ({
+                category,
+                label: labels[category],
+                items: shoppingList.filter((item) => item.category === category),
+            }))
+            .filter((group) => group.items.length > 0);
+    });
+
+    function formatQuantity(quantity: number): string {
+        if (Number.isInteger(quantity)) return String(quantity);
+        return String(Number(quantity.toFixed(2)));
+    }
+
     function entriesForDate(date: string): MealPlanEntry[] {
         return mealPlanEntries.filter((e) => e.date === date);
     }
@@ -100,9 +128,9 @@
     async function loadData() {
         if (!userId) return;
         const version = ++loadVersion;
+        shoppingList = [];
         loading = true;
         error = null;
-        checkedItems = new Set();
         try {
             const start = weekDays[0].date;
             const end = weekDays[6].date;
@@ -207,14 +235,24 @@
         e.dataTransfer!.effectAllowed = "copy";
     }
 
-    function toggleChecked(key: string) {
-        const next = new Set(checkedItems);
-        if (next.has(key)) {
-            next.delete(key);
-        } else {
-            next.add(key);
+    async function toggleChecked(item: ShoppingItem) {
+        if (savingItemIds.includes(item.id)) return;
+        savingItemIds = [...savingItemIds, item.id];
+        const next = !item.checked;
+        shoppingList = shoppingList.map((entry) =>
+            entry.id === item.id ? { ...entry, checked: next } : entry
+        );
+
+        try {
+            await setShoppingListItemChecked({ itemId: item.id, checked: next });
+        } catch {
+            shoppingList = shoppingList.map((entry) =>
+                entry.id === item.id ? { ...entry, checked: !next } : entry
+            );
+            error = m["mealPlan.error.checkItem"]();
+        } finally {
+            savingItemIds = savingItemIds.filter((id) => id !== item.id);
         }
-        checkedItems = next;
     }
 
     async function openCalendarDialog() {
@@ -448,27 +486,31 @@
                         {#if shoppingList.length === 0}
                             <p class="text-sm text-muted-foreground text-center py-8">{m["mealPlan.emptyShoppingList"]()}</p>
                         {:else}
-                            {#each shoppingList as item (item.name + item.unit)}
-                                {@const key = `${item.name}|||${item.unit}`}
-                                {@const isChecked = checkedItems.has(key)}
-                                <button
-                                    role="checkbox"
-                                    aria-checked={isChecked}
-                                    class="flex min-h-11 items-center justify-between p-2 rounded-lg border bg-card hover:bg-accent/50 transition-colors text-left w-full {isChecked ? 'opacity-60' : ''}"
-                                    onclick={() => toggleChecked(key)}
-                                >
-                                    <div class="min-w-0 flex-1">
-                                        <p class="text-sm font-medium truncate">{item.name}</p>
-                                        <p class="text-xs text-muted-foreground">{item.quantity} {item.unit}</p>
-                                    </div>
-                                    <div class="shrink-0 ml-2">
-                                        {#if isChecked}
-                                            <span class="text-green-500 text-xs font-bold">✓</span>
-                                        {:else}
-                                            <span class="text-muted-foreground/30 text-xs">○</span>
-                                        {/if}
-                                    </div>
-                                </button>
+                            {#each shoppingGroups as group (group.category)}
+                                <div class="space-y-1.5">
+                                    <h3 class="px-1 pt-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{group.label}</h3>
+                                    {#each group.items as item (item.id)}
+                                        <button
+                                            role="checkbox"
+                                            aria-checked={item.checked}
+                                            disabled={savingItemIds.includes(item.id)}
+                                            class="flex min-h-11 w-full items-center justify-between p-2 rounded-lg border bg-card hover:bg-accent/50 transition-colors text-left {item.checked ? 'opacity-60' : ''}"
+                                            onclick={() => toggleChecked(item)}
+                                        >
+                                            <div class="min-w-0 flex-1">
+                                                <p class="text-sm font-medium truncate {item.checked ? 'line-through' : ''}">{item.name}</p>
+                                                <p class="text-xs text-muted-foreground">{formatQuantity(item.quantity)} {item.unit}</p>
+                                            </div>
+                                            <div class="shrink-0 ml-2">
+                                                {#if item.checked}
+                                                    <span class="text-green-500 text-xs font-bold">✓</span>
+                                                {:else}
+                                                    <span class="text-muted-foreground/30 text-xs">○</span>
+                                                {/if}
+                                            </div>
+                                        </button>
+                                    {/each}
+                                </div>
                             {/each}
                         {/if}
                     </div>

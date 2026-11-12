@@ -54,6 +54,7 @@ function sanitizeDates(data: Record<string, Record<string, unknown>[]>) {
         recipes: ['createdAt', 'updatedAt'],
         recipeRating: ['createdAt', 'updatedAt'],
         passkey: ['createdAt'],
+        shoppingListItems: ['createdAt', 'updatedAt'],
     };
 
     for (const [tableName, fields] of Object.entries(timestampFields)) {
@@ -145,6 +146,7 @@ export const POST = async ({ locals, request }) => {
             await tx.delete(table.collections);
             await tx.delete(table.difficulty);
             await tx.delete(table.mealPlan);
+            await tx.delete(table.shoppingListItems);
             await tx.delete(table.cookHistory);
             await tx.delete(table.session);
             await tx.delete(table.recipes);
@@ -200,13 +202,16 @@ export const POST = async ({ locals, request }) => {
             if (data.mealPlan?.length) {
                 await tx.insert(table.mealPlan).values(data.mealPlan as typeof table.mealPlan.$inferInsert[]);
             }
+            if (data.shoppingListItems?.length) {
+                await tx.insert(table.shoppingListItems).values(data.shoppingListItems as typeof table.shoppingListItems.$inferInsert[]);
+            }
         });
 
         // TODO
         // Resynchronize serial sequences to prevent duplicate key errors on future inserts
         const serialTables = [
             'site_settings', 'recipes', 'difficulty', 'ingredients', 'steps',
-            'favorite', 'tags', 'tips', 'recipe_rating', 'collections', 'collection_to_recipe', 'meal_plan', 'cook_history'
+            'favorite', 'tags', 'tips', 'recipe_rating', 'collections', 'collection_to_recipe', 'meal_plan', 'shopping_list_items', 'cook_history'
         ];
         for (const tableName of serialTables) {
             await db.execute(sql.raw(

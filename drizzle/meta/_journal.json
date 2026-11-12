@@ -141,6 +141,13 @@
       "when": 1794448055024,
       "tag": "0019_cook_history",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1794505902549,
+      "tag": "0020_shopping_list",
+      "breakpoints": true
     }
   ]
 }

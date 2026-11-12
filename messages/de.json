@@ -485,7 +485,8 @@
     "error": {
       "load": "Wochenplan konnte nicht geladen werden",
       "add": "Rezept konnte nicht hinzugefügt werden",
-      "remove": "Rezept konnte nicht entfernt werden"
+      "remove": "Rezept konnte nicht entfernt werden",
+      "checkItem": "Häkchen konnte nicht gespeichert werden"
     },
     "day": {
       "monday": "Montag",
@@ -498,6 +499,16 @@
     },
     "shoppingList": "Einkaufsliste",
     "emptyShoppingList": "Keine Rezepte für diese Woche geplant",
+    "category": {
+      "produce": "Obst & Gemüse",
+      "meatFish": "Fleisch & Fisch",
+      "dairyEggs": "Milchprodukte & Eier",
+      "bakery": "Backwaren",
+      "pantry": "Vorrat",
+      "frozen": "Tiefkühl",
+      "drinks": "Getränke",
+      "other": "Sonstiges"
+    },
     "calendar": {
       "button": "Kalender-Abo",
       "title": "Kalender-Abo",

@@ -1,7 +1,8 @@
 import { getDb } from "$lib/server/db/index";
-import { mealPlan, recipes, difficultyToRecipe, difficulty, ingredients, user } from "$lib/server/db/schema";
-import { and, eq, gte, lte, desc, getTableColumns, or, sql, sum } from "drizzle-orm";
+import { mealPlan, recipes, difficultyToRecipe, difficulty, ingredients, user, shoppingListItems } from "$lib/server/db/schema";
+import { and, eq, gte, lte, desc, getTableColumns, notInArray, or, sql, sum } from "drizzle-orm";
 import { recipeColumns } from "$lib/server/db/recipe";
+import { categorizeIngredient, SHOPPING_CATEGORIES } from "$lib/shopping-list";
 import { randomBytes } from "node:crypto";
 
 // The share token grants access to a recipe, so it must never be part of a meal plan payload.
@@ -153,26 +154,127 @@ export async function getCalendarEvents(userId: string) {
         .orderBy(mealPlan.date, mealPlan.createdAt);
 }
 
+const CATEGORY_RANK = new Map<string, number>(
+    SHOPPING_CATEGORIES.map((category, index) => [category, index])
+);
+
+function compareShoppingItems(
+    a: { category: string; name: string; unit: string },
+    b: { category: string; name: string; unit: string }
+) {
+    const categoryDiff =
+        (CATEGORY_RANK.get(a.category) ?? SHOPPING_CATEGORIES.length) -
+        (CATEGORY_RANK.get(b.category) ?? SHOPPING_CATEGORIES.length);
+    if (categoryDiff !== 0) return categoryDiff;
+
+    const nameDiff = a.name.localeCompare(b.name, 'de');
+    if (nameDiff !== 0) return nameDiff;
+
+    return a.unit.localeCompare(b.unit, 'de');
+}
+
+/**
+ * Returns the persisted shopping list for the given range (the week starting at `startDate`).
+ * Items are recomputed from the meal plan on every read, while `checked` state is kept by the
+ * unique (user, week, name, unit) upsert. Items that left the plan are removed for that week.
+ */
 export async function getShoppingList(userId: string, startDate: string, endDate: string) {
+    if (endDate < startDate) {
+        throw new Error('Invalid date range');
+    }
+
     const db = getDb();
 
-    const items = await db
-        .select({
-            name: ingredients.name,
-            quantity: sum(ingredients.quantity).mapWith(Number),
-            unit: ingredients.unit,
-        })
-        .from(mealPlan)
-        .innerJoin(recipes, eq(mealPlan.recipeId, recipes.id))
-        .innerJoin(ingredients, eq(mealPlan.recipeId, ingredients.recipeId))
-        .where(and(
-            eq(mealPlan.userId, userId),
-            visibleRecipeCondition(userId),
-            gte(mealPlan.date, startDate),
-            lte(mealPlan.date, endDate)
-        ))
-        .groupBy(ingredients.name, ingredients.unit)
-        .orderBy(ingredients.name);
+    return db.transaction(async (tx) => {
+        const aggregated = await tx
+            .select({
+                name: ingredients.name,
+                quantity: sum(ingredients.quantity).mapWith(Number),
+                unit: ingredients.unit,
+            })
+            .from(mealPlan)
+            .innerJoin(recipes, eq(mealPlan.recipeId, recipes.id))
+            .innerJoin(ingredients, eq(mealPlan.recipeId, ingredients.recipeId))
+            .where(and(
+                eq(mealPlan.userId, userId),
+                visibleRecipeCondition(userId),
+                gte(mealPlan.date, startDate),
+                lte(mealPlan.date, endDate)
+            ))
+            .groupBy(ingredients.name, ingredients.unit)
+            .orderBy(ingredients.name);
 
-    return items;
+        if (aggregated.length === 0) {
+            await tx.delete(shoppingListItems).where(and(
+                eq(shoppingListItems.userId, userId),
+                eq(shoppingListItems.weekStart, startDate)
+            ));
+            return [];
+        }
+
+        const inserted = await tx
+            .insert(shoppingListItems)
+            .values(aggregated.map((item) => ({
+                userId,
+                weekStart: startDate,
+                name: item.name,
+                quantity: item.quantity,
+                unit: item.unit,
+                category: categorizeIngredient(item.name),
+            })))
+            .onConflictDoUpdate({
+                target: [
+                    shoppingListItems.userId,
+                    shoppingListItems.weekStart,
+                    shoppingListItems.name,
+                    shoppingListItems.unit,
+                ],
+                set: {
+                    quantity: sql`excluded.quantity`,
+                    category: sql`excluded.category`,
+                    updatedAt: new Date(),
+                },
+            })
+            .returning({ id: shoppingListItems.id });
+
+        await tx.delete(shoppingListItems).where(and(
+            eq(shoppingListItems.userId, userId),
+            eq(shoppingListItems.weekStart, startDate),
+            notInArray(shoppingListItems.id, inserted.map((item) => item.id))
+        ));
+
+        const items = await tx
+            .select({
+                id: shoppingListItems.id,
+                name: shoppingListItems.name,
+                quantity: shoppingListItems.quantity,
+                unit: shoppingListItems.unit,
+                category: shoppingListItems.category,
+                checked: shoppingListItems.checked,
+            })
+            .from(shoppingListItems)
+            .where(and(
+                eq(shoppingListItems.userId, userId),
+                eq(shoppingListItems.weekStart, startDate)
+            ));
+
+        return items.sort(compareShoppingItems);
+    });
+}
+
+export async function setShoppingListItemChecked(userId: string, itemId: number, checked: boolean) {
+    const db = getDb();
+
+    const [row] = await db
+        .update(shoppingListItems)
+        .set({ checked, updatedAt: new Date() })
+        .where(and(
+            eq(shoppingListItems.id, itemId),
+            eq(shoppingListItems.userId, userId)
+        ))
+        .returning({ id: shoppingListItems.id });
+
+    if (!row) {
+        throw new Error('Shopping list item not found');
+    }
 }
