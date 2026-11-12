@@ -1,6 +1,7 @@
 import {getDb} from "$lib/server/db/index";
 import {
     collections, collectionToRecipe,
+    cookHistory,
     difficulty,
     difficultyToRecipe,
     favorite,
@@ -14,7 +15,7 @@ import {
     tips as tipsTable
 } from "$lib/server/db/schema";
 import {getDifficultyId} from "$lib/server/utils";
- import {and, desc, eq, getTableColumns, ne, or, sql} from "drizzle-orm";
+ import {and, desc, eq, getTableColumns, gte, inArray, ne, notInArray, or, sql} from "drizzle-orm";
 import type {CreateRecipeInput, UpdateRecipeInput} from "$lib/types/recipe";
 import {getRequestEvent} from "$app/server";
 import {randomUUID} from "crypto";
@@ -121,6 +122,7 @@ export async function deleteRecipe(userId: string, recipeId: number) {
         await db.delete(mealPlan).where(eq(mealPlan.recipeId, recipeId));
         await db.delete(favorite).where(eq(favorite.recipeId, recipeId));
         await db.delete(recipeRating).where(eq(recipeRating.recipeId, recipeId));
+        await db.delete(cookHistory).where(eq(cookHistory.recipeId, recipeId));
         await db.delete(collectionToRecipe).where(eq(collectionToRecipe.recipeId, recipeId));
         await db.delete(difficultyToRecipe).where(eq(difficultyToRecipe.recipeId, recipeId));
         await db.delete(ingredients).where(eq(ingredients.recipeId, recipeId));
@@ -442,6 +444,175 @@ export async function getDiscoverRecipes() {
     return getRecipes(0, undefined, "random");
 }
 
+type TasteProfile = {
+    tagWeights: Map<string, number>;
+    difficultyWeights: Map<string, number>;
+    interactedRecipeIds: Set<number>;
+    hasSignals: boolean;
+};
+
+async function getTasteProfile(userId: string): Promise<TasteProfile> {
+    const db = getDb();
+    const cutoff = new Date(Date.now() - 180 * 86_400_000);
+
+    const [favoriteRows, ratingRows, cookedRows] = await Promise.all([
+        db.select({recipeId: favorite.recipeId})
+            .from(favorite)
+            .where(and(eq(favorite.userId, userId), eq(favorite.favorite, true))),
+        db.select({recipeId: recipeRating.recipeId, rating: recipeRating.rating})
+            .from(recipeRating)
+            .where(eq(recipeRating.userId, userId)),
+        db.select({
+            recipeId: cookHistory.recipeId,
+            count: sql<number>`COUNT(*)::int`,
+            lastCooked: sql<Date>`MAX(${cookHistory.cookedAt})`
+        })
+            .from(cookHistory)
+            .where(and(eq(cookHistory.userId, userId), gte(cookHistory.cookedAt, cutoff)))
+            .groupBy(cookHistory.recipeId)
+    ]);
+
+    const interactedRecipeIds = new Set<number>([
+        ...favoriteRows.map((row) => row.recipeId),
+        ...ratingRows.map((row) => row.recipeId),
+        ...cookedRows.map((row) => row.recipeId)
+    ]);
+
+    const tagWeights = new Map<string, number>();
+    const difficultyWeights = new Map<string, number>();
+    const addWeight = (map: Map<string, number>, key: string, weight: number) => {
+        map.set(key, (map.get(key) ?? 0) + weight);
+    };
+
+    if (interactedRecipeIds.size > 0) {
+        const details = await db
+            .select({
+                id: recipes.id,
+                difficulty: difficulty.difficulty,
+                tags: tagListSubquery,
+            })
+            .from(recipes)
+            .innerJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
+            .innerJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
+            .where(inArray(recipes.id, [...interactedRecipeIds]));
+
+        const detailsById = new Map(details.map((recipe) => [recipe.id, recipe]));
+        const favoriteIds = new Set(favoriteRows.map((row) => row.recipeId));
+
+        for (const recipe of details) {
+            const tags = recipe.tags ?? [];
+
+            if (favoriteIds.has(recipe.id)) {
+                for (const tag of tags) addWeight(tagWeights, tag, 3);
+                addWeight(difficultyWeights, recipe.difficulty, 2);
+            }
+
+            const rating = ratingRows.find((row) => row.recipeId === recipe.id)?.rating;
+            if (rating != null) {
+                const weight = rating - 3;
+                for (const tag of tags) addWeight(tagWeights, tag, weight);
+                addWeight(difficultyWeights, recipe.difficulty, weight * 0.5);
+            }
+        }
+
+        for (const cooked of cookedRows) {
+            const recipe = detailsById.get(cooked.recipeId);
+            if (!recipe) continue;
+
+            const daysAgo = (Date.now() - new Date(cooked.lastCooked).getTime()) / 86_400_000;
+            const recencyFactor = daysAgo <= 14 ? 1.5 : daysAgo <= 60 ? 1 : 0.6;
+            const weight = Math.min(cooked.count, 3) * recencyFactor * 1.2;
+
+            for (const tag of recipe.tags ?? []) addWeight(tagWeights, tag, weight);
+            addWeight(difficultyWeights, recipe.difficulty, weight * 0.5);
+        }
+    }
+
+    return {
+        tagWeights,
+        difficultyWeights,
+        interactedRecipeIds,
+        hasSignals: [...tagWeights.values()].some((weight) => weight > 0) ||
+            [...difficultyWeights.values()].some((weight) => weight > 0)
+    };
+}
+
+export async function getForYouRecipes(userId: string, limit = 12) {
+    const db = getDb();
+    const profile = await getTasteProfile(userId);
+
+    if (!profile.hasSignals) {
+        return [];
+    }
+
+    const conditions = [
+        eq(recipes.visibility, 'public'),
+        ne(recipes.userId, userId)
+    ];
+
+    if (profile.interactedRecipeIds.size > 0) {
+        conditions.push(notInArray(recipes.id, [...profile.interactedRecipeIds]));
+    }
+
+    const averageRating = sql<number>`COALESCE((
+        SELECT AVG(${recipeRating.rating})::float
+        FROM ${recipeRating}
+        WHERE ${recipeRating.recipeId} = ${recipes.id}
+    ), 0)`;
+    const ratingCount = sql<number>`(
+        SELECT COUNT(*)::int
+        FROM ${recipeRating}
+        WHERE ${recipeRating.recipeId} = ${recipes.id}
+    )`;
+
+    const candidates = await db
+        .select({
+            ...recipeColumns,
+            difficulty: difficulty.difficulty,
+            tags: tagListSubquery,
+            averageRating,
+            ratingCount
+        })
+        .from(recipes)
+        .innerJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
+        .innerJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
+        .where(and(...conditions));
+
+    const maxTagWeight = Math.max(
+        1,
+        ...[...profile.tagWeights.values()].filter((weight) => weight > 0)
+    );
+    const maxDifficultyWeight = Math.max(
+        1,
+        ...[...profile.difficultyWeights.values()].filter((weight) => weight > 0)
+    );
+
+    return candidates
+        .map((recipe) => {
+            const tagScore = (recipe.tags ?? []).reduce(
+                (sum, tag) => sum + Math.max(0, profile.tagWeights.get(tag) ?? 0),
+                0
+            ) / maxTagWeight;
+            const difficultyScore = Math.max(
+                0,
+                profile.difficultyWeights.get(recipe.difficulty) ?? 0
+            ) / maxDifficultyWeight;
+            const ratingScore = recipe.ratingCount > 0 ? (recipe.averageRating - 3) * 1.5 : 0;
+            const popularityScore = Math.log10(1 + recipe.viewCount) * 0.7;
+            const score = tagScore * 6 + difficultyScore * 2 + ratingScore + popularityScore;
+
+            return {...recipe, feedScore: score};
+        })
+        .filter((recipe) => recipe.feedScore > 0.25)
+        .sort((a, b) =>
+            b.feedScore - a.feedScore ||
+            b.viewCount - a.viewCount ||
+            b.createdAt.getTime() - a.createdAt.getTime()
+        )
+        .slice(0, limit)
+        .map(({feedScore, ...recipe}) => recipe);
+}
+
 export async function getFavoriteRecipes(userId: string) {
     const db = getDb();
     return db.select({
@@ -628,6 +799,20 @@ export async function incrementRecipeViewCount(recipeId: number) {
     return db.update(recipes)
         .set({viewCount: sql`${recipes.viewCount} + 1`})
         .where(eq(recipes.id, recipeId));
+}
+
+export async function recordRecipeCooked(userId: string, recipeId: number) {
+    const db = getDb();
+    const [recipe] = await db
+        .select({id: recipes.id, userId: recipes.userId, visibility: recipes.visibility})
+        .from(recipes)
+        .where(eq(recipes.id, recipeId));
+
+    if (!recipe || (recipe.visibility !== 'public' && recipe.userId !== userId)) {
+        throw new Error('Recipe not found');
+    }
+
+    return db.insert(cookHistory).values({userId, recipeId}).returning({id: cookHistory.id});
 }
 
 export async function getRecipeRatingSummary(recipeId: number) {

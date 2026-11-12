@@ -2,7 +2,7 @@
     import RecipeCarousel from "$lib/components/recipe/widgets/RecipeCarousel.svelte";
     import ErrorState from "$lib/components/ErrorState.svelte";
     import {Button} from "$lib/components/ui/button";
-    import {getPopularRecipes, getRecentRecipes, getDiscoverRecipes} from "$lib/functions/recipe.remote";
+    import {getPopularRecipes, getRecentRecipes, getDiscoverRecipes, getForYouRecipes} from "$lib/functions/recipe.remote";
     import type {Recipe} from "$lib/server/db/recipe";
     import {m} from "$lib/paraglide/messages";
     import {Plus, UtensilsCrossed} from "lucide-svelte";
@@ -10,6 +10,7 @@
     let popularRecipes = $state<Recipe[]>([]);
     let recentRecipes = $state<Recipe[]>([]);
     let discoverRecipes = $state<Recipe[]>([]);
+    let forYouRecipes = $state<Recipe[]>([]);
     let loading = $state(true);
     let failed = $state(false);
 
@@ -18,14 +19,16 @@
         failed = false;
 
         try {
-            const [popular, recent, discover] = await Promise.all([
+            const [popular, recent, discover, forYou] = await Promise.all([
                 getPopularRecipes().run(),
                 getRecentRecipes().run(),
-                getDiscoverRecipes().run()
+                getDiscoverRecipes().run(),
+                getForYouRecipes().run()
             ]);
             popularRecipes = popular;
             recentRecipes = recent;
             discoverRecipes = discover;
+            forYouRecipes = forYou;
         } catch {
             failed = true;
         } finally {
@@ -37,7 +40,7 @@
         queueMicrotask(loadRecipes);
     });
 
-    const allEmpty = $derived(!loading && popularRecipes.length + recentRecipes.length + discoverRecipes.length === 0);
+    const allEmpty = $derived(!loading && forYouRecipes.length + popularRecipes.length + recentRecipes.length + discoverRecipes.length === 0);
 </script>
 
 {#if failed}
@@ -57,8 +60,13 @@
     </div>
 {:else}
     <div class="mt-4 mb-8 flex flex-col gap-8 sm:mt-8 sm:gap-14">
+        {#if forYouRecipes.length > 0}
+            <RecipeCarousel recipes={forYouRecipes} title={m["routes.home.forYou"]()} {loading}/>
+        {/if}
         <RecipeCarousel recipes={popularRecipes} title={m["routes.home.popularRecipes"]()} {loading}/>
         <RecipeCarousel recipes={recentRecipes} title={m["routes.home.recentlyAdded"]()} {loading}/>
-        <RecipeCarousel recipes={discoverRecipes} title={m["routes.home.discover"]()} {loading}/>
+        {#if forYouRecipes.length === 0}
+            <RecipeCarousel recipes={discoverRecipes} title={m["routes.home.discover"]()} {loading}/>
+        {/if}
     </div>
 {/if}

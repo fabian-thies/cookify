@@ -23,6 +23,7 @@ export const GET = async ({ locals }) => {
         ingredients: await db.select().from(table.ingredients),
         steps: await db.select().from(table.steps),
         favorite: await db.select().from(table.favorite),
+        cookHistory: await db.select().from(table.cookHistory),
         tags: await db.select().from(table.tags),
         tips: await db.select().from(table.tips),
         recipeRating: await db.select().from(table.recipeRating),

@@ -272,7 +272,8 @@
       "title": "Recipes",
       "popularRecipes": "Popular recipes",
       "recentlyAdded": "Recently added",
-      "discover": "Discover"
+      "discover": "Discover",
+      "forYou": "For you"
     },
     "favorites": {
       "title": "Favorites"
@@ -377,6 +378,14 @@
         "confirmLabel": "Confirmation",
         "confirmPlaceholder": "Enter {username} to continue"
       }
+    },
+    "export": {
+      "title": "My cookbook",
+      "description": "Download your own recipes with ingredients, steps, tips and photos.",
+      "pdf": "Download as PDF",
+      "zip": "Download as ZIP",
+      "pdfHint": "A printable cookbook with one recipe per page.",
+      "zipHint": "The ZIP contains a JSON file with all recipe data and a folder with your uploaded photos."
     }
   },
   "admin": {

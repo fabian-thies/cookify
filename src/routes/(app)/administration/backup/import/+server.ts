@@ -145,6 +145,7 @@ export const POST = async ({ locals, request }) => {
             await tx.delete(table.collections);
             await tx.delete(table.difficulty);
             await tx.delete(table.mealPlan);
+            await tx.delete(table.cookHistory);
             await tx.delete(table.session);
             await tx.delete(table.recipes);
             await tx.delete(table.siteSettings);
@@ -162,6 +163,9 @@ export const POST = async ({ locals, request }) => {
             }
             if (data.recipes?.length) {
                 await tx.insert(table.recipes).values(data.recipes as typeof table.recipes.$inferInsert[]);
+            }
+            if (data.cookHistory?.length) {
+                await tx.insert(table.cookHistory).values(data.cookHistory as typeof table.cookHistory.$inferInsert[]);
             }
             if (data.difficulty?.length) {
                 await tx.insert(table.difficulty).values(data.difficulty as typeof table.difficulty.$inferInsert[]);
@@ -202,7 +206,7 @@ export const POST = async ({ locals, request }) => {
         // Resynchronize serial sequences to prevent duplicate key errors on future inserts
         const serialTables = [
             'site_settings', 'recipes', 'difficulty', 'ingredients', 'steps',
-            'favorite', 'tags', 'tips', 'recipe_rating', 'collections', 'collection_to_recipe', 'meal_plan'
+            'favorite', 'tags', 'tips', 'recipe_rating', 'collections', 'collection_to_recipe', 'meal_plan', 'cook_history'
         ];
         for (const tableName of serialTables) {
             await db.execute(sql.raw(

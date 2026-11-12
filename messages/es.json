@@ -272,7 +272,8 @@
       "title": "Recetas",
       "popularRecipes": "Recetas populares",
       "recentlyAdded": "Añadidas recientemente",
-      "discover": "Descubrir"
+      "discover": "Descubrir",
+      "forYou": "Para ti"
     },
     "favorites": {
       "title": "Favoritos"
@@ -375,6 +376,14 @@
         "confirmLabel": "Confirmación",
         "confirmPlaceholder": "Ingresa {username} para continuar"
       }
+    },
+    "export": {
+      "title": "Mi libro de recetas",
+      "description": "Descarga tus propias recetas con ingredientes, pasos, consejos y fotos.",
+      "pdf": "Descargar como PDF",
+      "zip": "Descargar como ZIP",
+      "pdfHint": "Un libro de recetas imprimible con una receta por página.",
+      "zipHint": "El ZIP contiene un archivo JSON con todos los datos de las recetas y una carpeta con tus fotos subidas."
     }
   },
   "admin": {

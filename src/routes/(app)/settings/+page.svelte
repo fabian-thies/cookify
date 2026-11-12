@@ -2,6 +2,7 @@
     import {enhance} from '$app/forms';
     import {goto, invalidateAll} from '$app/navigation';
     import General from "$lib/components/settings/form/General.svelte";
+    import CookbookExport from "$lib/components/settings/CookbookExport.svelte";
     import Passkey from "$lib/components/settings/Passkey.svelte";
     import {toast} from "svelte-sonner";
     import {m} from "$lib/paraglide/messages";
@@ -43,6 +44,8 @@
 
         <General {user}/>
     </form>
+
+    <CookbookExport/>
 
     <Passkey passkeys={data.passkeys}/>
 </div>

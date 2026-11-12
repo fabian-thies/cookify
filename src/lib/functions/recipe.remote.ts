@@ -15,6 +15,7 @@ import {
     getRecentRecipes as getRecentRecipesFromDb,
     getPopularRecipes as getPopularRecipesFromDb,
     getDiscoverRecipes as getDiscoverRecipesFromDb,
+    getForYouRecipes as getForYouRecipesFromDb,
     getFavoriteRecipes as getFavoriteRecipesFromDb,
     getDifficulties as getDifficultiesFromDb,
     getRecipeById as getRecipeByIdFromDb,
@@ -32,6 +33,7 @@ import {
     createRecipe as createRecipeInDb,
     updateRecipe as updateRecipeInDb,
     incrementRecipeViewCount,
+    recordRecipeCooked as recordRecipeCookedInDb,
     getSimilarRecipes as getSimilarRecipesFromDb
 } from '$lib/server/db/recipe';
 
@@ -223,6 +225,20 @@ export const getPopularRecipes = query(async () => {
 
 export const getDiscoverRecipes = query(async () => {
     return await getDiscoverRecipesFromDb();
+});
+
+export const getForYouRecipes = query(async () => {
+    const {locals} = getRequestEvent();
+    if (!locals.user) throw new Error('User not authenticated');
+    return await getForYouRecipesFromDb(locals.user.id);
+});
+
+export const recordRecipeCooked = command(v.object({
+    recipeId: v.number()
+}), async ({recipeId}) => {
+    const {locals} = getRequestEvent();
+    if (!locals.user) throw new Error('User not authenticated');
+    await recordRecipeCookedInDb(locals.user.id, recipeId);
 });
 
 export const getFavoriteRecipes = query(async () => {

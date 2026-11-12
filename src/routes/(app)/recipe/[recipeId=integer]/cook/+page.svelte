@@ -3,7 +3,7 @@
     import {remainingSeconds} from "$lib/timer";
     import {m} from "$lib/paraglide/messages";
     import {page} from "$app/stores";
-    import {getRecipeDetails} from "$lib/functions/recipe.remote";
+    import {getRecipeDetails, recordRecipeCooked} from "$lib/functions/recipe.remote";
     import * as Dialog from "$lib/components/ui/dialog";
     import {Button} from "$lib/components/ui/button/index.js";
     import {
@@ -29,6 +29,7 @@
     let currentStep = $state(0);
     let showIngredients = $state(false);
     let customMinutes = $state(5);
+    let cookedRecorded = false;
 
     interface TimerData {
         id: number;
@@ -96,11 +97,23 @@
         };
     });
 
+    async function markCooked() {
+        if (cookedRecorded || !recipe) return;
+        cookedRecorded = true;
+
+        try {
+            await recordRecipeCooked({recipeId: recipe.id});
+        } catch (error) {
+            console.error('Failed to save cooking history', error);
+        }
+    }
+
     function nextStep() {
         if (currentStep < totalSteps - 1) {
             currentStep++;
-        } else {
+        } else if (totalSteps > 0) {
             currentStep = totalSteps;
+            void markCooked();
         }
     }
 

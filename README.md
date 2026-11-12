@@ -28,7 +28,9 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
     - Search and filter recipes by difficulty, cook time, or keywords.
     - Powered by PostgreSQL full-text search, with fuzzy matching for typos.
 - **Favorites & Ratings**
-    - Mark recipes as favorites and rate them on a 1–5 scale.
+    - Mark recipes as favorites and rate them on a 1-5 scale.
+- **Personal Cookbook Export**
+    - Download your own recipes as a printable PDF cookbook or as a ZIP with JSON data and all uploaded photos.
 - **Personal Collections**
     - Group recipes into custom collections for easy organization.
 - **Weekly Meal Plan**
@@ -44,6 +46,7 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
     - Generate shareable links for any public recipe.
     - Track view counts to see how often your recipes have been viewed.
 - **Home Dashboard**
+    - A personal **For you** feed learns from favorites, ratings and cooking history.
     - Browse popular recipes, recently added dishes, and discover something new through curated carousels.
 - **Administration & Backup**
     - Admin panel to manage users and toggle new registrations on/off.

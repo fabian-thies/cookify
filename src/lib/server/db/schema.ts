@@ -144,6 +144,16 @@ export const recipeRating = pgTable('recipe_rating', {
     unique('recipe_rating_recipe_user_unique').on(t.recipeId, t.userId),
 ]);
 
+export const cookHistory = pgTable('cook_history', {
+    id: serial('id').primaryKey(),
+    userId: text('user_id').notNull().references(() => user.id),
+    recipeId: integer('recipe_id').notNull().references(() => recipes.id),
+    cookedAt: timestamp('cooked_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow(),
+}, (t) => [
+    index('cook_history_user_cooked_at_idx').on(t.userId, t.cookedAt),
+    index('cook_history_recipe_idx').on(t.recipeId),
+]);
+
 export const collections = pgTable('collections', {
     id: serial('id').primaryKey(),
     userId: text('user_id').notNull().references(() => user.id),
@@ -180,6 +190,7 @@ export type DifficultyToRecipe = typeof difficultyToRecipe.$inferSelect;
 export type Favorite = typeof favorite.$inferSelect;
 export type Tag = typeof tags.$inferSelect;
 export type RecipeRating = typeof recipeRating.$inferSelect;
+export type CookHistory = typeof cookHistory.$inferSelect;
 export type Tip = typeof tips.$inferSelect;
 export type MealPlan = typeof mealPlan.$inferSelect;
 export type Collection = typeof collections.$inferSelect;
