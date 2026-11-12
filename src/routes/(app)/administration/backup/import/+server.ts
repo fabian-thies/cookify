@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const ALLOWED_IMAGE_EXTENSIONS = new Set([
-    '.avif', '.gif', '.jpeg', '.jpg', '.png', '.svg', '.webp'
+    '.avif', '.gif', '.jpeg', '.jpg', '.png', '.webp'
 ]);
 
 const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500 MB

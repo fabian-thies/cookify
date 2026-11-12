@@ -7,6 +7,9 @@ import {IMAGE_VARIANTS, type ImageVariant} from '$lib/images';
 
 export const UPLOAD_DIR = path.join(process.cwd(), 'uploads');
 
+export const MAX_IMAGE_SIZE = 15 * 1024 * 1024;
+const MAX_INPUT_PIXELS = 50_000_000;
+
 const HEIC_EXTENSIONS = new Set(['.heic', '.heif', '.heics', '.heifs']);
 const ORIGINAL_EXTENSIONS = [
     '.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif',
@@ -14,6 +17,7 @@ const ORIGINAL_EXTENSIONS = [
 ];
 const VARIANT_FILE_PATTERN = /^(.+)-(thumb|medium|large)\.webp$/;
 
+// Deliberately no SVG: same-origin SVG can execute script and must never be served inline.
 export const MIME_TYPES: Record<string, string> = {
     '.avif': 'image/avif',
     '.gif': 'image/gif',
@@ -24,21 +28,58 @@ export const MIME_TYPES: Record<string, string> = {
     '.jpeg': 'image/jpeg',
     '.jpg': 'image/jpeg',
     '.png': 'image/png',
-    '.svg': 'image/svg+xml',
     '.webp': 'image/webp'
 };
 
-function extFromMime(mime: string) {
-    if (!mime) return '';
-    if (mime === 'image/jpeg') return '.jpg';
-    if (mime === 'image/png') return '.png';
-    if (mime === 'image/webp') return '.webp';
-    if (mime === 'image/gif') return '.gif';
-    if (mime === 'image/heic') return '.heic';
-    if (mime === 'image/heif') return '.heif';
-    if (mime === 'image/heic-sequence') return '.heics';
-    if (mime === 'image/heif-sequence') return '.heifs';
-    return '';
+export class ImageUploadError extends Error {
+    readonly reason: 'too-large' | 'unsupported-format';
+
+    constructor(reason: 'too-large' | 'unsupported-format') {
+        super(reason === 'too-large' ? 'Image is too large' : 'Unsupported image format');
+        this.name = 'ImageUploadError';
+        this.reason = reason;
+    }
+}
+
+/**
+ * Detects the image format from its magic bytes. The client-supplied MIME type and
+ * filename are attacker-controlled, so they must never decide what gets stored.
+ */
+function detectImageType(input: Buffer): { ext: string; mime: string } | null {
+    if (input.length >= 3 && input[0] === 0xff && input[1] === 0xd8 && input[2] === 0xff) {
+        return {ext: '.jpg', mime: 'image/jpeg'};
+    }
+
+    if (input.length >= 8 && input.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) {
+        return {ext: '.png', mime: 'image/png'};
+    }
+
+    if (input.length >= 6) {
+        const gifSignature = input.subarray(0, 6).toString('ascii');
+        if (gifSignature === 'GIF87a' || gifSignature === 'GIF89a') {
+            return {ext: '.gif', mime: 'image/gif'};
+        }
+    }
+
+    if (input.length >= 12
+        && input.subarray(0, 4).toString('ascii') === 'RIFF'
+        && input.subarray(8, 12).toString('ascii') === 'WEBP') {
+        return {ext: '.webp', mime: 'image/webp'};
+    }
+
+    if (input.length >= 12 && input.subarray(4, 8).toString('ascii') === 'ftyp') {
+        const boxSize = Math.min(input.length, input.readUInt32BE(0));
+        // Also inspect the compatible brands: real AVIF files often use mif1/heic as major brand.
+        const brands = input.subarray(8, Math.max(12, boxSize)).toString('ascii');
+        if (brands.includes('avif') || brands.includes('avis')) {
+            return {ext: '.avif', mime: 'image/avif'};
+        }
+        if (['heic', 'heix', 'hevc', 'hevx', 'heim', 'heis', 'hevm', 'hevs', 'mif1', 'msf1'].includes(brands.slice(0, 4))) {
+            return {ext: '.heic', mime: 'image/heic'};
+        }
+    }
+
+    return null;
 }
 
 const toArrayBuffer = (buf: Buffer): ArrayBuffer =>
@@ -81,7 +122,7 @@ export async function writeImageVariants(input: Buffer, sourceExtension: string,
         : input;
 
     await Promise.all(Object.entries(IMAGE_VARIANTS).map(async ([variant, width]) => {
-        const data = await sharp(normalized, {failOn: 'none'})
+        const data = await sharp(normalized, {failOn: 'none', limitInputPixels: MAX_INPUT_PIXELS})
             .rotate()
             .resize({width, withoutEnlargement: true})
             .webp({quality: 80, effort: 4})
@@ -94,19 +135,21 @@ export async function writeImageVariants(input: Buffer, sourceExtension: string,
 export async function saveImage(file: File): Promise<string> {
     await fs.mkdir(UPLOAD_DIR, {recursive: true});
 
+    if (file.size > MAX_IMAGE_SIZE) {
+        throw new ImageUploadError('too-large');
+    }
+
     const input = Buffer.from(await file.arrayBuffer());
-    const givenExt =
-        extFromMime(file.type) ||
-        path.extname((file as unknown as { name?: string }).name ?? '') ||
-        '';
+    const detected = detectImageType(input);
 
-    const isHeic =
-        file.type === 'image/heic' ||
-        file.type === 'image/heif' ||
-        HEIC_EXTENSIONS.has(givenExt.toLowerCase());
+    // Only known image signatures are accepted, so SVG, HTML and script polyglots are rejected.
+    if (!detected) {
+        throw new ImageUploadError('unsupported-format');
+    }
 
+    const isHeic = HEIC_EXTENSIONS.has(detected.ext);
     const output = isHeic ? await convertHeic(input) : input;
-    const ext = isHeic ? '.jpg' : (givenExt || '.jpg');
+    const ext = isHeic ? '.jpg' : detected.ext;
     const fileName = `${crypto.randomUUID()}${ext}`;
 
     await fs.writeFile(path.join(UPLOAD_DIR, fileName), output);
@@ -120,6 +163,35 @@ export async function saveImage(file: File): Promise<string> {
     }
 
     return `/uploads/${fileName}`;
+}
+
+/**
+ * Removes an uploaded image and its generated variants. Used when a write succeeded but
+ * the surrounding request failed, so uploads cannot accumulate as orphans.
+ */
+export async function deleteImage(imageUrl: string): Promise<void> {
+    const prefix = '/uploads/';
+    if (!imageUrl.startsWith(prefix)) return;
+
+    const fileName = imageUrl.slice(prefix.length);
+    // Only file names generated by saveImage (uuid + extension) may be removed.
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.[a-z0-9]+$/i.test(fileName)) {
+        return;
+    }
+
+    const extension = path.extname(fileName);
+    const baseName = fileName.slice(0, fileName.length - extension.length);
+
+    try {
+        await Promise.all([
+            fs.rm(path.join(UPLOAD_DIR, fileName), {force: true}),
+            ...Object.keys(IMAGE_VARIANTS).map((variant) =>
+                fs.rm(path.join(UPLOAD_DIR, `${baseName}-${variant}.webp`), {force: true}))
+        ]);
+    } catch (error) {
+        // Cleanup is best effort and must never change the response of the calling request.
+        console.error('Failed to delete uploaded image', error);
+    }
 }
 
 async function findOriginalForVariant(variantName: string): Promise<string | null> {

@@ -1,10 +1,15 @@
 import {type Actions, fail, redirect, type RequestEvent} from "@sveltejs/kit";
 import {parseRecipeFormData, validateInputEmpty} from "$lib/server/utils";
-import {saveImage} from "$lib/server/image";
+import {deleteImage, ImageUploadError, saveImage} from "$lib/server/image";
 import {createRecipe} from "$lib/server/db/recipe";
 
 export const actions = {
     createRecipe: async ({request, locals}: RequestEvent) => {
+        // Actions run before layout loads, so the (app) layout guard does not apply here.
+        if (!locals.user) {
+            return fail(401, {invalid: true, unauthorized: true});
+        }
+
         const formData = await request.formData();
 
         const picture = formData.get('picture') as File | null;
@@ -28,6 +33,9 @@ export const actions = {
         try {
             imageUrl = await saveImage(picture);
         } catch (e) {
+            if (e instanceof ImageUploadError) {
+                return fail(400, {invalid: true, imageInvalid: true});
+            }
             console.error('Image save failed', e);
             return fail(500, {internalError: true, imageSaveFailed: true});
         }
@@ -37,10 +45,12 @@ export const actions = {
         try {
             recipeId = await createRecipe({
                 ...data,
-                userId: locals.user!.id,
+                userId: locals.user.id,
                 image: imageUrl
             })
         } catch (e) {
+            // Do not leave an orphaned upload behind when the recipe could not be created.
+            await deleteImage(imageUrl);
             console.error(e);
             return fail(500, {internalError: true});
         }

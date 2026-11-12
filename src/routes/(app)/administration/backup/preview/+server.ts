@@ -3,7 +3,7 @@ import AdmZip from 'adm-zip';
 import path from 'node:path';
 
 const ALLOWED_IMAGE_EXTENSIONS = new Set([
-    '.avif', '.gif', '.jpeg', '.jpg', '.png', '.svg', '.webp'
+    '.avif', '.gif', '.jpeg', '.jpg', '.png', '.webp'
 ]);
 
 const MAX_FILE_SIZE = 5000 * 1024 * 1024; // 5000 MB max backup size

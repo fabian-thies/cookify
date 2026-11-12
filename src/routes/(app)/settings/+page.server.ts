@@ -3,7 +3,7 @@ import {fail, redirect} from "@sveltejs/kit";
 import * as v from 'valibot';
 import {saveProfile, updatePassword, deleteUserAccount} from "$lib/server/db/user";
 import {hashPassword} from "$lib/server/utils";
-import {saveImage} from "$lib/server/image";
+import {ImageUploadError, saveImage} from "$lib/server/image";
 import {isUserLanguage} from "$lib/types/languages";
 import type {UserLanguage} from "$lib/types/languages";
 import {LANGUAGES} from "$lib/constants";
@@ -52,6 +52,9 @@ export const actions = {
             try {
                 avatarUrl = await saveImage(avatarInput);
             } catch (e) {
+                if (e instanceof ImageUploadError) {
+                    return fail(400, {invalid: true, avatarInvalid: true});
+                }
                 console.error("Avatar upload failed", e);
                 return fail(500, {internalError: true, avatarUploadFailed: true});
             }

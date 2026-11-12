@@ -1,8 +1,15 @@
 import { getDb } from "$lib/server/db/index";
 import { mealPlan, recipes, difficultyToRecipe, difficulty, ingredients, user } from "$lib/server/db/schema";
-import { and, eq, gte, lte, desc, getTableColumns, sql, sum } from "drizzle-orm";
+import { and, eq, gte, lte, desc, getTableColumns, or, sql, sum } from "drizzle-orm";
 import { recipeColumns } from "$lib/server/db/recipe";
 import { randomBytes } from "node:crypto";
+
+// The share token grants access to a recipe, so it must never be part of a meal plan payload.
+const { shareToken: _shareToken, ...mealPlanRecipeColumns } = recipeColumns;
+
+function visibleRecipeCondition(userId: string) {
+    return or(eq(recipes.visibility, "public"), eq(recipes.userId, userId));
+}
 
 const CALENDAR_TOKEN_PATTERN = /^[A-Za-z0-9_-]{32}$/;
 
@@ -14,6 +21,23 @@ const tagListSubquery = sql<string[]>`COALESCE(ARRAY(
 
 export async function addToMealPlan(userId: string, recipeId: number, date: string) {
     const db = getDb();
+
+    const [recipe] = await db
+        .select({ userId: recipes.userId, visibility: recipes.visibility })
+        .from(recipes)
+        .where(eq(recipes.id, recipeId))
+        .limit(1);
+
+    if (!recipe) {
+        throw new Error('Recipe not found');
+    }
+
+    // A meal plan is user-owned, but the referenced recipe is shared data: never let a
+    // user add someone else's private recipe to their own plan.
+    if (recipe.visibility !== 'public' && recipe.userId !== userId) {
+        throw new Error('Insufficient permissions');
+    }
+
     const result = await db.insert(mealPlan).values({
         userId,
         recipeId,
@@ -42,7 +66,7 @@ export async function getMealPlan(userId: string, startDate: string, endDate: st
         .select({
             ...getTableColumns(mealPlan),
             recipe: {
-                ...recipeColumns,
+                ...mealPlanRecipeColumns,
                 difficulty: difficulty.difficulty,
                 tags: tagListSubquery,
             },
@@ -53,6 +77,8 @@ export async function getMealPlan(userId: string, startDate: string, endDate: st
         .innerJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
         .where(and(
             eq(mealPlan.userId, userId),
+            // Entries added before the visibility check existed must not leak private recipes.
+            visibleRecipeCondition(userId),
             gte(mealPlan.date, startDate),
             lte(mealPlan.date, endDate)
         ))
@@ -120,7 +146,10 @@ export async function getCalendarEvents(userId: string) {
         })
         .from(mealPlan)
         .innerJoin(recipes, eq(mealPlan.recipeId, recipes.id))
-        .where(eq(mealPlan.userId, userId))
+        .where(and(
+            eq(mealPlan.userId, userId),
+            visibleRecipeCondition(userId)
+        ))
         .orderBy(mealPlan.date, mealPlan.createdAt);
 }
 
@@ -134,9 +163,11 @@ export async function getShoppingList(userId: string, startDate: string, endDate
             unit: ingredients.unit,
         })
         .from(mealPlan)
+        .innerJoin(recipes, eq(mealPlan.recipeId, recipes.id))
         .innerJoin(ingredients, eq(mealPlan.recipeId, ingredients.recipeId))
         .where(and(
             eq(mealPlan.userId, userId),
+            visibleRecipeCondition(userId),
             gte(mealPlan.date, startDate),
             lte(mealPlan.date, endDate)
         ))

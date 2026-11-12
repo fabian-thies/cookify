@@ -303,21 +303,44 @@ export const getRecipesByUserId = query(v.object({
     return await getRecipesByUserIdFromDb(userId, isOwner || isAdmin);
 });
 
+/**
+ * Remote functions are publicly reachable HTTP endpoints, so every recipe-scoped
+ * query must enforce the recipe's visibility itself instead of relying on the UI.
+ */
+async function assertRecipeVisible(recipeId: number) {
+    const {locals} = getRequestEvent();
+    const recipe = await getRecipeByIdFromDb(recipeId);
+
+    if (!recipe) {
+        throw new Error('Recipe not found');
+    }
+
+    const isOwner = recipe.userId === locals.user?.id || !!locals.user?.administrator;
+    if (recipe.visibility === 'private' && !isOwner) {
+        throw new Error('Recipe is private');
+    }
+
+    return recipe;
+}
+
 export const getSteps = query(v.object({
     recipeId: v.number()
 }), async ({recipeId}) => {
+    await assertRecipeVisible(recipeId);
     return await getStepsFromDb(recipeId);
 });
 
 export const getIngredients = query(v.object({
     recipeId: v.number()
 }), async ({recipeId}) => {
+    await assertRecipeVisible(recipeId);
     return await getIngredientsFromDb(recipeId);
 });
 
 export const getTags = query(v.object({
     recipeId: v.number()
 }), async ({recipeId}) => {
+    await assertRecipeVisible(recipeId);
     return await getTagsFromDb(recipeId);
 });
 
@@ -332,6 +355,7 @@ export const getRecipeFavoriteState = query(v.object({
 export const getRecipeRatingSummary = query(v.object({
     recipeId: v.number()
 }), async ({recipeId}) => {
+    await assertRecipeVisible(recipeId);
     return await getRecipeRatingSummaryFromDb(recipeId);
 });
 

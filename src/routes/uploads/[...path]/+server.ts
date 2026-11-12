@@ -36,6 +36,9 @@ export const GET: RequestHandler = async ({params}) => {
         return new Response(webStream, {
             headers: {
                 'Content-Type': contentType,
+                // Uploads are user-controlled bytes: never let the browser reinterpret them.
+                'X-Content-Type-Options': 'nosniff',
+                'Content-Security-Policy': "default-src 'none'; sandbox",
                 'Cache-Control': 'public, max-age=31536000, immutable'
             }
         });
