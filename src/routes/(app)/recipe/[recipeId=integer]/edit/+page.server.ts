@@ -1,6 +1,6 @@
 import {type Actions, error, fail, type RequestEvent} from "@sveltejs/kit";
 import {parseRecipeFormData} from "$lib/server/utils";
-import {deleteImage, ImageUploadError, saveImage} from "$lib/server/image";
+import {deleteImage, ImageUploadError, saveImage, saveImageFromUrl} from "$lib/server/image";
 import {getRecipeById, updateRecipe} from "$lib/server/db/recipe";
 
 export const actions = {
@@ -22,7 +22,9 @@ export const actions = {
         }
 
         const formData = await request.formData();
-        const picture = formData.get('picture') as File | null;
+        const pictureEntry = formData.get('picture');
+        const picture = pictureEntry instanceof File ? pictureEntry : null;
+        const pictureUrl = String(formData.get('pictureUrl') ?? '').trim();
 
         let data;
         try {
@@ -34,12 +36,14 @@ export const actions = {
 
         let imageUrl: string = existing.image ?? "";
         let uploadedImage: string | null = null;
-        if (picture && picture.size > 0) {
-            if (picture.size > 15 * 1024 * 1024) {
+        if ((picture && picture.size > 0) || pictureUrl) {
+            if (picture && picture.size > 15 * 1024 * 1024) {
                 return fail(400, {invalid: true, pictureTooLarge: true});
             }
             try {
-                imageUrl = await saveImage(picture);
+                imageUrl = picture && picture.size > 0
+                    ? await saveImage(picture)
+                    : await saveImageFromUrl(pictureUrl);
                 uploadedImage = imageUrl;
             } catch (e) {
                 if (e instanceof ImageUploadError) {

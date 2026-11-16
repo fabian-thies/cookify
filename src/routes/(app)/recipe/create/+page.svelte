@@ -150,7 +150,9 @@
                 }
 
             } else {
-                toast.error(m["recipe.createError"]());
+                toast.error(result.type === 'failure' && (result.data?.imageInvalid || result.data?.pictureTooLarge || result.data?.imageSaveFailed)
+                    ? m["recipe.form.details.photoImportError"]()
+                    : m["recipe.createError"]());
             }
         }}
     }>

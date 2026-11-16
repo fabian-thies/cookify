@@ -1,12 +1,14 @@
 <script lang="ts">
     import {Camera, ImageIcon} from "lucide-svelte";
     import {m} from "$lib/paraglide/messages";
+    import {Input} from "$lib/components/ui/input";
     import {Button} from "$lib/components/ui/button";
     import {imageVariantUrl} from "$lib/images";
 
     let {image, required = false}: {image?: string; required?: boolean} = $props();
     let input: HTMLInputElement;
     let files = $state<FileList>();
+    let pictureUrl = $state("");
     let previewUrl = $state("");
     let previewFailed = $state(false);
     const selectedFile = $derived(files?.[0]);
@@ -36,7 +38,7 @@
     <div class="group relative overflow-hidden rounded-xl border border-border bg-muted/40 transition-colors hover:bg-accent/40 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background">
         <input
             bind:this={input} bind:files id="picture" name="picture" type="file" accept="image/*"
-            {required} aria-describedby="picture-hint picture-status" aria-invalid={tooLarge}
+            required={required && !pictureUrl.trim()} aria-describedby="picture-hint picture-status" aria-invalid={tooLarge}
             aria-label={previewUrl || image ? m["recipe.form.details.changePhoto"]() : m["recipe.form.details.choosePhoto"]()}
             class="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
         />
@@ -58,6 +60,13 @@
             <Camera class="size-5 shrink-0 text-primary" aria-hidden="true"/>
             {previewUrl || image ? m["recipe.form.details.changePhoto"]() : m["recipe.form.details.choosePhoto"]()}
         </div>
+    </div>
+    <div class="space-y-2">
+        <label for="pictureUrl" class="text-sm font-medium">{m["recipe.form.details.photoUrlLabel"]()}</label>
+        <Input id="pictureUrl" name="pictureUrl" type="url" bind:value={pictureUrl}
+               placeholder="https://example.com/image.jpg" maxlength={2048}
+               disabled={!!selectedFile} aria-describedby="picture-url-hint"/>
+        <p id="picture-url-hint" class="text-sm text-muted-foreground">{m["recipe.form.details.photoUrlHint"]()}</p>
     </div>
     <p id="picture-hint" class="text-sm text-muted-foreground">{m["recipe.form.details.photoHint"]()}</p>
     <div id="picture-status" aria-live="polite" class="space-y-2">

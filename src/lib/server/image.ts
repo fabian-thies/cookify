@@ -2,6 +2,7 @@ import {promises as fs} from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import sharp from 'sharp';
+import {downloadImage} from './remote-image';
 import heicConvert from 'heic-convert';
 import {IMAGE_VARIANTS, type ImageVariant} from '$lib/images';
 
@@ -130,6 +131,16 @@ export async function writeImageVariants(input: Buffer, sourceExtension: string,
 
         await writeFileAtomic(path.join(UPLOAD_DIR, variantFileName(fileName, variant as ImageVariant)), data);
     }));
+}
+
+export async function saveImageFromUrl(url: string): Promise<string> {
+    let file: File;
+    try {
+        file = await downloadImage(url, MAX_IMAGE_SIZE);
+    } catch {
+        throw new ImageUploadError('unsupported-format');
+    }
+    return saveImage(file);
 }
 
 export async function saveImage(file: File): Promise<string> {
