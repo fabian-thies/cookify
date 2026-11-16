@@ -68,7 +68,7 @@
         const recipeId = recipe.id;
         const formEl = document.querySelector('form[enctype="multipart/form-data"]');
         const visibilityInput = formEl?.querySelector('[name="visibility"]') as HTMLInputElement | null;
-        const pictureInput = formEl?.querySelector('[name="picture"]') as HTMLInputElement | null;
+        const pictureInput = formEl?.querySelector('[name="picture"]:not(:disabled)') as HTMLInputElement | null;
         const selectedFiles = pictureInput?.files ? Array.from(pictureInput.files) : [];
         recipe = {
             ...recipe,
@@ -108,7 +108,7 @@
         await tick();
 
         if (selectedFiles.length > 0) {
-            const newInput = document.querySelector('form[enctype="multipart/form-data"] [name="picture"]') as HTMLInputElement | null;
+            const newInput = document.querySelector('form[enctype="multipart/form-data"] [name="picture"]:not(:disabled)') as HTMLInputElement | null;
             if (newInput) {
                 const dataTransfer = new DataTransfer();
                 for (const file of selectedFiles) {
