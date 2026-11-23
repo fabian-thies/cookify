@@ -1,6 +1,6 @@
 import { getDb } from "$lib/server/db/index";
 import { mealPlan, recipes, difficultyToRecipe, difficulty, ingredients, user, shoppingListItems } from "$lib/server/db/schema";
-import { and, eq, gte, lte, desc, getTableColumns, notInArray, or, sql, sum } from "drizzle-orm";
+import { and, eq, gte, lte, desc, getTableColumns, notInArray, or, sql, sum, type SQLWrapper } from "drizzle-orm";
 import { recipeColumns } from "$lib/server/db/recipe";
 import { categorizeIngredient, SHOPPING_CATEGORIES } from "$lib/shopping-list";
 import { randomBytes } from "node:crypto";
@@ -173,10 +173,14 @@ function compareShoppingItems(
     return a.unit.localeCompare(b.unit, 'de');
 }
 
+function shoppingQuantityIncreased(previous: SQLWrapper, current: SQLWrapper) {
+    // Summation can change the last bits of a double when PostgreSQL visits rows in a different order.
+    return sql<boolean>`(${current} - ${previous}) > greatest(abs(${current}), abs(${previous})) * ${16 * Number.EPSILON}`;
+}
+
 /**
  * Returns the persisted shopping list for the given range (the week starting at `startDate`).
- * Items are recomputed from the meal plan on every read, while `checked` state is kept by the
- * unique (user, week, name, unit) upsert. Items that left the plan are removed for that week.
+ * A higher required quantity reopens a checked item until it is checked again.
  */
 export async function getShoppingList(userId: string, startDate: string, endDate: string) {
     if (endDate < startDate) {
@@ -186,6 +190,8 @@ export async function getShoppingList(userId: string, startDate: string, endDate
     const db = getDb();
 
     return db.transaction(async (tx) => {
+        // Serialize recomputations for this week before reading the plan.
+        await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${userId}), hashtext(${startDate}))`);
         const aggregated = await tx
             .select({
                 name: ingredients.name,
@@ -212,6 +218,8 @@ export async function getShoppingList(userId: string, startDate: string, endDate
             return [];
         }
 
+        const quantity = sql`excluded.quantity`;
+        const increase = shoppingQuantityIncreased(shoppingListItems.quantity, quantity);
         const inserted = await tx
             .insert(shoppingListItems)
             .values(aggregated.map((item) => ({
@@ -230,8 +238,10 @@ export async function getShoppingList(userId: string, startDate: string, endDate
                     shoppingListItems.unit,
                 ],
                 set: {
-                    quantity: sql`excluded.quantity`,
+                    quantity,
                     category: sql`excluded.category`,
+                    checked: sql`${shoppingListItems.checked} and not (${increase})`,
+                    quantityIncreased: sql`${shoppingListItems.quantityIncreased} or (${shoppingListItems.checked} and (${increase}))`,
                     updatedAt: new Date(),
                 },
             })
@@ -251,6 +261,7 @@ export async function getShoppingList(userId: string, startDate: string, endDate
                 unit: shoppingListItems.unit,
                 category: shoppingListItems.category,
                 checked: shoppingListItems.checked,
+                quantityIncreased: shoppingListItems.quantityIncreased,
             })
             .from(shoppingListItems)
             .where(and(
@@ -262,19 +273,23 @@ export async function getShoppingList(userId: string, startDate: string, endDate
     });
 }
 
-export async function setShoppingListItemChecked(userId: string, itemId: number, checked: boolean) {
+export async function setShoppingListItemChecked(userId: string, itemId: number, checked: boolean, quantity: number) {
     const db = getDb();
+    const shownQuantity = sql`cast(${quantity} as double precision)`;
+    const newerQuantity = shoppingQuantityIncreased(shownQuantity, shoppingListItems.quantity);
 
     const [row] = await db
         .update(shoppingListItems)
-        .set({ checked, updatedAt: new Date() })
+        .set({ checked, quantityIncreased: checked ? false : undefined, updatedAt: new Date() })
         .where(and(
             eq(shoppingListItems.id, itemId),
-            eq(shoppingListItems.userId, userId)
+            eq(shoppingListItems.userId, userId),
+            checked ? sql`not (${newerQuantity})` : undefined,
         ))
-        .returning({ id: shoppingListItems.id });
+        .returning({ id: shoppingListItems.id, checked: shoppingListItems.checked, quantityIncreased: shoppingListItems.quantityIncreased });
 
     if (!row) {
-        throw new Error('Shopping list item not found');
+        throw new Error('Shopping list item has changed or is unavailable');
     }
+    return row;
 }

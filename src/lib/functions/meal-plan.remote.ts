@@ -96,7 +96,8 @@ export const getShoppingList = query(v.object({
 export const setShoppingListItemChecked = command(v.object({
     itemId: v.pipe(v.number(), v.integer(), v.minValue(1)),
     checked: v.boolean(),
-}), async ({ itemId, checked }) => {
+    quantity: v.pipe(v.number(), v.finite(), v.minValue(0)),
+}), async ({ itemId, checked, quantity }) => {
     const { locals } = getRequestEvent();
     const userId = locals.user?.id;
 
@@ -104,5 +105,5 @@ export const setShoppingListItemChecked = command(v.object({
         throw new Error('User not authenticated');
     }
 
-    await setShoppingListItemCheckedDb(userId, itemId, checked);
+    return await setShoppingListItemCheckedDb(userId, itemId, checked, quantity);
 });

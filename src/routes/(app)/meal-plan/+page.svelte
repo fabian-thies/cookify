@@ -238,18 +238,26 @@
     async function toggleChecked(item: ShoppingItem) {
         if (savingItemIds.includes(item.id)) return;
         savingItemIds = [...savingItemIds, item.id];
+        const version = loadVersion;
         const next = !item.checked;
         shoppingList = shoppingList.map((entry) =>
             entry.id === item.id ? { ...entry, checked: next } : entry
         );
 
         try {
-            await setShoppingListItemChecked({ itemId: item.id, checked: next });
+            const updated = await setShoppingListItemChecked({ itemId: item.id, checked: next, quantity: item.quantity });
+            shoppingList = shoppingList.map((entry) =>
+                entry.id === item.id && entry.quantity === item.quantity ? { ...entry, ...updated } : entry
+            );
         } catch {
             shoppingList = shoppingList.map((entry) =>
-                entry.id === item.id ? { ...entry, checked: !next } : entry
+                entry.id === item.id && entry.quantity === item.quantity ? { ...entry, checked: item.checked } : entry
             );
-            error = m["mealPlan.error.checkItem"]();
+            if (version === loadVersion) {
+                error = m["mealPlan.error.checkItem"]();
+                const list = await getShoppingList({ startDate: weekDays[0].date, endDate: weekDays[6].date }).run().catch(() => null);
+                if (list && version === loadVersion) shoppingList = list;
+            }
         } finally {
             savingItemIds = savingItemIds.filter((id) => id !== item.id);
         }
@@ -500,6 +508,9 @@
                                             <div class="min-w-0 flex-1">
                                                 <p class="text-sm font-medium truncate {item.checked ? 'line-through' : ''}">{item.name}</p>
                                                 <p class="text-xs text-muted-foreground">{formatQuantity(item.quantity)} {item.unit}</p>
+                                                {#if item.quantityIncreased && !item.checked}
+                                                    <p class="text-xs font-medium text-primary">{m["mealPlan.quantityIncreased"]()}</p>
+                                                {/if}
                                             </div>
                                             <div class="shrink-0 ml-2">
                                                 {#if item.checked}

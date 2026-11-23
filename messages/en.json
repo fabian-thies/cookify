@@ -506,6 +506,7 @@
       "sunday": "Sunday"
     },
     "shoppingList": "Shopping List",
+    "quantityIncreased": "Quantity increased",
     "emptyShoppingList": "No recipes planned for this week",
     "category": {
       "produce": "Produce",

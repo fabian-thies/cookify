@@ -87,3 +87,26 @@ await assert.rejects(recipes.createRecipe(draft), /ingredient insert failed/);
 await assert.rejects(recipes.updateRecipe(draft), /ingredient insert failed/);
 assert.equal(rollbacks, 2, 'Failed recipe writes must reject inside a transaction');
 console.log('Recipe transaction checks passed');
+
+const shoppingDb = drizzle(async (sql, params) => {
+    queries.push({sql, params});
+    if (sql.includes('sum(')) return {rows: [['Tomatoes', 800, 'g']]};
+    if (sql.startsWith('insert into "shopping_list_items"')) return {rows: [[1]]};
+    return {rows: []};
+});
+activeDb = {transaction: callback => callback(shoppingDb), update: shoppingDb.update.bind(shoppingDb)};
+const mealPlan = load('src/lib/server/db/meal-plan.ts', {
+    '$lib/server/db/index': {getDb: () => activeDb},
+    '$lib/server/db/schema': schema,
+    '$lib/server/db/recipe': recipes,
+    '$lib/shopping-list': shoppingList
+});
+await mealPlan.getShoppingList('owner', '2026-11-23', '2026-11-29');
+const upsert = queries.find(({sql}) => sql.startsWith('insert into "shopping_list_items"'));
+assert.match(upsert.sql, /"checked" = "shopping_list_items"\."checked" and not \(\(excluded\.quantity - "shopping_list_items"\."quantity"\) >/);
+assert.match(upsert.sql, /"quantity_increased" = "shopping_list_items"\."quantity_increased" or \("shopping_list_items"\."checked" and/);
+assert.ok(upsert.params.includes(800));
+await assert.rejects(mealPlan.setShoppingListItemChecked('owner', 1, true, 500), /has changed/);
+assert.match(queries.at(-1).sql, /not \(\("shopping_list_items"\."quantity" - cast\(\$\d+ as double precision\)\) >/);
+assert.ok(queries.at(-1).params.includes(500));
+console.log('Shopping list amount-change checks passed');

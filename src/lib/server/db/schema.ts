@@ -182,6 +182,7 @@ export const shoppingListItems = pgTable('shopping_list_items', {
     unit: text('unit').notNull(),
     category: text('category', {enum: [...SHOPPING_CATEGORIES]}).notNull().default('other'),
     checked: boolean('checked').notNull().default(false),
+    quantityIncreased: boolean('quantity_increased').notNull().default(false),
     createdAt: timestamp('created_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow(),
 }, (t) => [
