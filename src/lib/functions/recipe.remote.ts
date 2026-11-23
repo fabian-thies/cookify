@@ -533,14 +533,14 @@ const recipeSource = v.optional(v.nullable(v.pipe(
 
 export const createRecipe = command(v.object({
     title: v.pipe(v.string(), v.minLength(1), v.maxLength(255)),
-    description: v.pipe(v.string(), v.minLength(1)),
-    cookTime: v.pipe(v.number(), v.minValue(1)),
-    servings: v.pipe(v.number(), v.minValue(1)),
+    description: v.string(),
+    cookTime: v.pipe(v.number(), v.integer(), v.minValue(0)),
+    servings: v.pipe(v.number(), v.integer(), v.minValue(1)),
     difficulty: v.picklist(['easy', 'medium', 'hard']),
     ingredientsList: v.array(v.object({
         name: v.pipe(v.string(), v.minLength(1)),
         amount: v.number(),
-        unit: v.pipe(v.string(), v.minLength(1))
+        unit: v.string()
     })),
     steps: v.array(v.pipe(v.string(), v.minLength(1))),
     tags: v.array(v.pipe(v.string(), v.minLength(1))),
@@ -569,14 +569,14 @@ export const createRecipe = command(v.object({
 export const updateRecipe = command(v.object({
     id: v.number(),
     title: v.pipe(v.string(), v.minLength(1), v.maxLength(255)),
-    description: v.pipe(v.string(), v.minLength(1)),
-    cookTime: v.pipe(v.number(), v.minValue(1)),
-    servings: v.pipe(v.number(), v.minValue(1)),
+    description: v.string(),
+    cookTime: v.pipe(v.number(), v.integer(), v.minValue(0)),
+    servings: v.pipe(v.number(), v.integer(), v.minValue(1)),
     difficulty: v.picklist(['easy', 'medium', 'hard']),
     ingredientsList: v.array(v.object({
         name: v.pipe(v.string(), v.minLength(1)),
         amount: v.number(),
-        unit: v.pipe(v.string(), v.minLength(1))
+        unit: v.string()
     })),
     steps: v.array(v.pipe(v.string(), v.minLength(1))),
     tags: v.array(v.pipe(v.string(), v.minLength(1))),

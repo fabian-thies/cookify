@@ -70,7 +70,7 @@
                 <Clock size={18}/> {m["recipe.form.details.cookTimeLabel"]()}</Label>
             <Input id="cookTime" min="0" name="cookTime" placeholder={m["recipe.form.details.cookTimePlaceholder"]()}
                    required type="number"
-                   value={recipe?.cookingTime || ''}/>
+                   value={recipe?.cookingTime ?? ''}/>
         </div>
         <div class="flex w-full flex-col gap-1.5">
             <Label for="servings">

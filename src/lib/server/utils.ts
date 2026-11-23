@@ -67,8 +67,18 @@ export function parseRecipeFormData(formData: FormData): {
     if (source !== null && typeof source !== "string") throw new InvalidRecipeSourceUrlError();
     const sourceUrl = source === null ? undefined : normalizeRecipeSourceUrl(source);
     if (source?.trim() && !sourceUrl) throw new InvalidRecipeSourceUrlError();
-    const cookTime: number = Number(formData.get("cookTime"));
-    const servings: number = Number(formData.get("servings"));
+    const cookTimeRaw: string = formData.get("cookTime")?.toString().trim() ?? "";
+    const cookTime: number = Number(cookTimeRaw);
+    if (cookTimeRaw === "" || !Number.isInteger(cookTime) || cookTime < 0) {
+        throw new Error("Invalid cook time");
+    }
+
+    const servingsRaw: string = formData.get("servings")?.toString().trim() ?? "";
+    const servings: number = Number(servingsRaw);
+    if (servingsRaw === "" || !Number.isInteger(servings) || servings < 1) {
+        throw new Error("Invalid servings");
+    }
+
     const difficultyRaw: string = formData.get("difficulty")?.toString() ?? "";
     const visibilityRaw = formData.get("visibility")?.toString() ?? "public";
 
@@ -79,7 +89,7 @@ export function parseRecipeFormData(formData: FormData): {
     const difficulty = difficultyRaw as "easy" | "medium" | "hard";
     const visibility = visibilityRaw === "private" ? "private" : "public" as "public" | "private";
 
-    validateInputEmpty(title, description, cookTime, servings, difficulty);
+    validateInputEmpty(title, difficulty);
 
     const amounts: number[] = [];
     const units: string[] = [];
@@ -89,8 +99,9 @@ export function parseRecipeFormData(formData: FormData): {
     const tipsArr: string[] = [];
 
     for (const amount of formData.getAll("ingredients_amount[]")) {
-        const num = Number(amount);
-        if (!Number.isFinite(num) || num < 0) {
+        const raw = amount.toString().trim();
+        const num = Number(raw);
+        if (raw === "" || !Number.isFinite(num) || num < 0) {
             throw new Error("invalid");
         }
         amounts.push(num);
@@ -107,6 +118,10 @@ export function parseRecipeFormData(formData: FormData): {
             throw new Error("invalid");
         }
         names.push(str);
+    }
+
+    if (amounts.length !== names.length) {
+        throw new Error("Mismatched ingredients fields");
     }
 
     for (const step of formData.getAll("instructions_description[]")) {
@@ -133,7 +148,7 @@ export function parseRecipeFormData(formData: FormData): {
 
     const ingredientsList = amounts.map((amount, index) => ({
         amount: amount,
-        unit: units[index],
+        unit: units[index] ?? "",
         name: names[index]
     }));
 

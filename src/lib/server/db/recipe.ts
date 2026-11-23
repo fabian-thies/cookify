@@ -73,22 +73,26 @@ export async function createRecipe({
 
         await db.insert(difficultyToRecipe).values({recipeId: result[0].id, difficultyId: getDifficultyId(difficulty)});
 
-        await db.insert(ingredients).values(
-            ingredientsList.map((ingredient) => ({
-                recipeId: result[0].id,
-                name: ingredient.name,
-                quantity: ingredient.amount,
-                unit: ingredient.unit,
-            }))
-        );
+        if (ingredientsList.length > 0) {
+            await db.insert(ingredients).values(
+                ingredientsList.map((ingredient) => ({
+                    recipeId: result[0].id,
+                    name: ingredient.name,
+                    quantity: ingredient.amount,
+                    unit: ingredient.unit,
+                }))
+            );
+        }
 
-        await db.insert(stepsTable).values(
-            steps.map((step, index) => ({
-                recipeId: result[0].id,
-                step,
-                number: index + 1,
-            }))
-        );
+        if (steps.length > 0) {
+            await db.insert(stepsTable).values(
+                steps.map((step, index) => ({
+                    recipeId: result[0].id,
+                    step,
+                    number: index + 1,
+                }))
+            );
+        }
 
         if (tags.length > 0) {
             await db.insert(tagsTable).values(
@@ -198,23 +202,27 @@ export async function updateRecipe({
             .where(eq(difficultyToRecipe.recipeId, id));
 
         await db.delete(ingredients).where(eq(ingredients.recipeId, id));
-        await db.insert(ingredients).values(
-            ingredientsList.map((ingredient) => ({
-                recipeId: id,
-                name: ingredient.name,
-                quantity: ingredient.amount,
-                unit: ingredient.unit,
-            }))
-        );
+        if (ingredientsList.length > 0) {
+            await db.insert(ingredients).values(
+                ingredientsList.map((ingredient) => ({
+                    recipeId: id,
+                    name: ingredient.name,
+                    quantity: ingredient.amount,
+                    unit: ingredient.unit,
+                }))
+            );
+        }
 
         await db.delete(stepsTable).where(eq(stepsTable.recipeId, id));
-        await db.insert(stepsTable).values(
-            steps.map((step, index) => ({
-                recipeId: id,
-                step,
-                number: index + 1,
-            }))
-        );
+        if (steps.length > 0) {
+            await db.insert(stepsTable).values(
+                steps.map((step, index) => ({
+                    recipeId: id,
+                    step,
+                    number: index + 1,
+                }))
+            );
+        }
 
         await db.delete(tagsTable).where(eq(tagsTable.recipeId, id));
         if (tags.length > 0) {

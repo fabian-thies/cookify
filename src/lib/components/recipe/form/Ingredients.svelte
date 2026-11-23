@@ -20,11 +20,17 @@
 
     type IngredientLike = Ingredient | IngredientDraft;
 
-    let ingredients: IngredientLike[] = $state(ingredientsProp);
+    const normalizeIngredients = (items: any[]): IngredientLike[] =>
+        items.map((item) => ({
+            ...item,
+            unit: item?.unit ?? ""
+        }));
+
+    let ingredients: IngredientLike[] = $state(normalizeIngredients(ingredientsProp));
 
     $effect(() => {
         if (ingredientsProp.length > 0) {
-            ingredients = ingredientsProp;
+            ingredients = normalizeIngredients(ingredientsProp);
         }
     });
 
@@ -68,7 +74,7 @@
                     type="text"
                     id="ingredients-{index}-unit"
                     name="ingredients_unit[]"
-                    value={item.unit || ''}
+                    bind:value={item.unit}
                     placeholder={m["recipe.form.ingredients.unitPlaceholder"]()}
             />
         </div>
