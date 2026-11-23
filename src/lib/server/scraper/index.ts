@@ -1,8 +1,14 @@
 
+import { fetchPublicResource, UnsafeRemoteUrlError } from '../remote-image.js';
+
+export { UnsafeRemoteUrlError };
+
 /**
  * Recipe scraper - extracts recipe data from external websites
  * using JSON-LD (schema.org/Recipe) structured data and HTML meta tags as fallback.
  */
+
+export const MAX_RECIPE_PAGE_BYTES = 5 * 1024 * 1024;
 
 export interface ScrapedRecipe {
     title: string;
@@ -227,19 +233,18 @@ function extractFromJsonLd(jsonLd: Record<string, unknown>): ScrapedRecipe | nul
 }
 
 export async function fetchRecipePage(url: string): Promise<string> {
-    const response = await fetch(url, {
+    const { buffer } = await fetchPublicResource(url, {
+        maxBytes: MAX_RECIPE_PAGE_BYTES,
+        timeoutMs: 15_000,
+        maxRedirects: 5,
         headers: {
             'User-Agent': 'Mozilla/5.0 (compatible; CookifyRecipeBot/1.0)',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        },
-        signal: AbortSignal.timeout(15000)
+            'Accept-Encoding': 'identity',
+        }
     });
 
-    if (!response.ok) {
-        throw new Error(`Failed to fetch URL: ${response.status} ${response.statusText}`);
-    }
-
-    return response.text();
+    return buffer.toString('utf8');
 }
 
 export function scrapeRecipeFromHtml(html: string, url: string): ScrapedRecipe | null {
