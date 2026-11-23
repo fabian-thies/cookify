@@ -28,8 +28,10 @@ const tagListSubquery = sql<string[]>`COALESCE(ARRAY(
 
 // `search_vector` is maintained in the database and only needed for searching, so keep it out of API payloads.
 const {searchVector: _searchVector, ...recipeColumns} = getTableColumns(recipes);
+// `share_token` grants unauthenticated access to a recipe, so omit it from general recipe queries.
+const {shareToken: _shareToken, ...publicRecipeColumns} = recipeColumns;
 
-export {recipeColumns};
+export {recipeColumns, publicRecipeColumns};
 
 export async function createRecipe({
                                        title,
@@ -261,7 +263,7 @@ export async function updateRecipeNutrition(
 export async function getRecipes(offset = 0, limit?: number, orderBy?: "recent" | "popular" | "random", viewerId?: string) {
     const db = getDb();
     let query = db.select({
-        ...recipeColumns,
+        ...publicRecipeColumns,
         difficulty: difficulty.difficulty,
         tags: tagListSubquery,
     })
@@ -315,7 +317,7 @@ export async function searchRecipesByIngredients(input: string, viewerId: string
     )`);
 
     return getDb().select({
-        ...recipeColumns,
+        ...publicRecipeColumns,
         difficulty: difficulty.difficulty,
         tags: tagListSubquery,
     })
@@ -367,7 +369,7 @@ export async function searchRecipes(searchTerm: string, viewerId?: string, limit
     )`;
 
     return db.select({
-        ...recipeColumns,
+        ...publicRecipeColumns,
         difficulty: difficulty.difficulty,
         tags: tagListSubquery,
     })
@@ -402,7 +404,7 @@ export async function getCollectionRecipes(collectionId: number, userId: string)
     }
 
     const recipesResult = await db.select({
-        ...recipeColumns,
+        ...publicRecipeColumns,
         difficulty: difficulty.difficulty,
         tags: tagListSubquery,
     })
@@ -595,7 +597,7 @@ export async function getForYouRecipes(userId: string, limit = 12) {
 
     const candidates = await db
         .select({
-            ...recipeColumns,
+            ...publicRecipeColumns,
             difficulty: difficulty.difficulty,
             tags: tagListSubquery,
             averageRating,
@@ -644,7 +646,7 @@ export async function getForYouRecipes(userId: string, limit = 12) {
 export async function getFavoriteRecipes(userId: string) {
     const db = getDb();
     return db.select({
-        ...recipeColumns,
+        ...publicRecipeColumns,
         difficulty: difficulty.difficulty,
         tags: tagListSubquery,
     })
@@ -679,7 +681,7 @@ export async function getRecipeByShareToken(token: string) {
     const db = getDb();
     const [row] = await db
         .select({
-            ...recipeColumns,
+            ...publicRecipeColumns,
             difficulty: difficulty.difficulty,
         })
         .from(recipes)
@@ -752,7 +754,7 @@ export async function getRecipesByUserId(userId: string, includePrivate = false)
     const db = getDb();
 
     let query = db.select({
-        ...recipeColumns,
+        ...publicRecipeColumns,
         difficulty: difficulty.difficulty,
         tags: tagListSubquery,
     })
@@ -1110,7 +1112,7 @@ export async function getSimilarRecipes(recipeId: number, limit = 6) {
 
     const similarRecipes = await db
         .select({
-            ...recipeColumns,
+            ...publicRecipeColumns,
             difficulty: difficulty.difficulty,
             tags: tagListSubquery,
             similarityScore,

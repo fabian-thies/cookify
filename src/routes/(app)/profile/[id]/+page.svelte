@@ -6,12 +6,12 @@
     import {getRecipesByUserId} from "$lib/functions/recipe.remote";
     import {getUserById} from "$lib/functions/user.remote";
     import type {Recipe} from "$lib/server/db/recipe";
-    import type {PublicUser} from "$lib/server/db/schema";
+    import type {PublicUserProfile} from "$lib/server/db/user";
     import {page} from "$app/stores";
 
     const {data} = $props();
 
-    let profileUser = $state<PublicUser | null>(null);
+    let profileUser = $state<PublicUserProfile | null>(null);
     let recipes = $state<Recipe[]>([]);
     let loading = $state(true);
     let failed = $state(false);

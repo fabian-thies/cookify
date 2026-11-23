@@ -68,6 +68,16 @@ export const getUsers = query(async () => {
 export const getLocaleByUserId = query(v.object({
     userId: v.string()
 }), async ({userId}) => {
+    const {locals} = getRequestEvent();
+
+    if (!locals.user) {
+        throw new Error('User not authenticated');
+    }
+
+    if (locals.user.id !== userId && !locals.user.administrator) {
+        throw new Error('User not authorized');
+    }
+
     return await getLocaleByUserIdFromDb(userId);
 });
 

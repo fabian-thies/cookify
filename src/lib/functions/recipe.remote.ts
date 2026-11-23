@@ -43,48 +43,44 @@ import {
     getSimilarRecipes as getSimilarRecipesFromDb
 } from '$lib/server/db/recipe';
 
+function requireAuth() {
+    const {locals} = getRequestEvent();
+    if (!locals.user) {
+        throw new Error('User not authenticated');
+    }
+    return locals.user;
+}
+
 export const likeRecipe = command(v.object({
     recipeId: v.number()
 }), async ({recipeId}) => {
-    const {locals} = getRequestEvent();
-    const userId = locals.user?.id;
+    const user = requireAuth();
+    await assertRecipeVisible(recipeId);
 
-    if (!userId) {
-        throw new Error('User not authenticated');
-    }
-
-    return await toggleRecipeFavorite(userId, recipeId);
+    return await toggleRecipeFavorite(user.id, recipeId);
 });
 
 export const deleteRecipe = command(v.object({
     recipeId: v.number()
 }), async ({recipeId}) => {
-    const {locals} = getRequestEvent();
-    const userId = locals.user?.id;
+    const user = requireAuth();
 
-    if (!userId) {
-        throw new Error('User not authenticated');
-    }
-
-    return await deleteRecipeFromDb(userId, recipeId);
+    return await deleteRecipeFromDb(user.id, recipeId);
 });
 
 export const rateRecipe = command(v.object({
     recipeId: v.number(),
     rating: v.pipe(
         v.number(),
+        v.integer(),
         v.minValue(1),
         v.maxValue(5)
     )
 }), async ({recipeId, rating}) => {
-    const {locals} = getRequestEvent();
-    const userId = locals.user?.id;
+    const user = requireAuth();
+    await assertRecipeVisible(recipeId);
 
-    if (!userId) {
-        throw new Error('User not authenticated');
-    }
-
-    const summary = await upsertRecipeRating(userId, recipeId, rating);
+    const summary = await upsertRecipeRating(user.id, recipeId, rating);
 
     return {
         average: summary.average,
@@ -96,24 +92,22 @@ export const rateRecipe = command(v.object({
 export const deleteCollection = command(v.object({
     collectionId: v.number()
 }), async ({collectionId}) => {
+    requireAuth();
     return await deleteCollectionFromDb(collectionId);
 });
 
 export const getCollections = query(async () => {
-    const {locals} = getRequestEvent();
-    const userId = locals.user?.id;
+    const user = requireAuth();
 
-    if (!userId) {
-        throw new Error('User not authenticated');
-    }
-
-    return getCollectionsFromDb(userId, undefined, 4);
+    return getCollectionsFromDb(user.id, undefined, 4);
 });
 
 export const setCollectionTitle = command(v.object({
     title: v.string(),
     collectionId: v.number()
 }), async ({title, collectionId}) => {
+    requireAuth();
+
     if (!title) {
         throw new Error('Collection title is required');
     }
@@ -248,38 +242,39 @@ export const searchRecipes = query(v.object({
 });
 
 export const getRecentRecipes = query(async () => {
+    requireAuth();
     return await getRecentRecipesFromDb();
 });
 
 export const getPopularRecipes = query(async () => {
+    requireAuth();
     return await getPopularRecipesFromDb();
 });
 
 export const getDiscoverRecipes = query(async () => {
+    requireAuth();
     return await getDiscoverRecipesFromDb();
 });
 
 export const getForYouRecipes = query(async () => {
-    const {locals} = getRequestEvent();
-    if (!locals.user) throw new Error('User not authenticated');
-    return await getForYouRecipesFromDb(locals.user.id);
+    const user = requireAuth();
+    return await getForYouRecipesFromDb(user.id);
 });
 
 export const recordRecipeCooked = command(v.object({
     recipeId: v.number()
 }), async ({recipeId}) => {
-    const {locals} = getRequestEvent();
-    if (!locals.user) throw new Error('User not authenticated');
-    await recordRecipeCookedInDb(locals.user.id, recipeId);
+    const user = requireAuth();
+    await recordRecipeCookedInDb(user.id, recipeId);
 });
 
 export const getFavoriteRecipes = query(async () => {
-    const {locals} = getRequestEvent();
-    if (!locals.user) throw new Error('User not authenticated');
-    return await getFavoriteRecipesFromDb(locals.user.id);
+    const user = requireAuth();
+    return await getFavoriteRecipesFromDb(user.id);
 });
 
 export const getDifficulties = query(async () => {
+    requireAuth();
     return await getDifficultiesFromDb();
 });
 
@@ -287,26 +282,14 @@ export const getRecipeById = query(v.object({
     id: v.number(),
     incrementView: v.optional(v.boolean(), false)
 }), async ({id, incrementView}) => {
-    const {locals} = getRequestEvent();
-    const recipe = await getRecipeByIdFromDb(id);
-
-    if (!recipe) {
-        throw new Error('Recipe not found');
-    }
-
-    const viewerId = locals.user?.id;
-    const isAdmin = locals.user?.administrator;
-    const isOwner = recipe.userId === viewerId || !!isAdmin;
-
-    if (recipe.visibility === "private" && !isOwner) {
-        throw new Error('Recipe is private');
-    }
+    const recipe = await assertRecipeVisible(id);
 
     if (incrementView) {
         await incrementRecipeViewCount(id);
     }
 
-    return recipe;
+    const {shareToken: _shareToken, ...recipeWithoutToken} = recipe;
+    return recipeWithoutToken;
 });
 
 export const getRecipeByShareToken = query(v.object({
@@ -329,25 +312,25 @@ export const getRecipeByShareToken = query(v.object({
 export const getRecipesByUserId = query(v.object({
     userId: v.string()
 }), async ({userId}) => {
-    const {locals} = getRequestEvent();
-    const isOwner = locals.user?.id === userId;
-    const isAdmin = locals.user?.administrator;
+    const user = requireAuth();
+    const isOwner = user.id === userId;
+    const isAdmin = user.administrator;
     return await getRecipesByUserIdFromDb(userId, isOwner || isAdmin);
 });
 
 /**
  * Remote functions are publicly reachable HTTP endpoints, so every recipe-scoped
- * query must enforce the recipe's visibility itself instead of relying on the UI.
+ * query must enforce authentication and the recipe's visibility itself instead of relying on the UI.
  */
 async function assertRecipeVisible(recipeId: number) {
-    const {locals} = getRequestEvent();
+    const user = requireAuth();
     const recipe = await getRecipeByIdFromDb(recipeId);
 
     if (!recipe) {
         throw new Error('Recipe not found');
     }
 
-    const isOwner = recipe.userId === locals.user?.id || !!locals.user?.administrator;
+    const isOwner = recipe.userId === user.id || !!user.administrator;
     if (recipe.visibility === 'private' && !isOwner) {
         throw new Error('Recipe is private');
     }
@@ -410,9 +393,9 @@ export const getTags = query(v.object({
 export const getRecipeFavoriteState = query(v.object({
     recipeId: v.number()
 }), async ({recipeId}) => {
-    const {locals} = getRequestEvent();
-    if (!locals.user) throw new Error('User not authenticated');
-    return await getRecipeFavoriteStateFromDb(locals.user.id, recipeId);
+    const user = requireAuth();
+    await assertRecipeVisible(recipeId);
+    return await getRecipeFavoriteStateFromDb(user.id, recipeId);
 });
 
 export const getRecipeRatingSummary = query(v.object({
@@ -425,37 +408,25 @@ export const getRecipeRatingSummary = query(v.object({
 export const getUserRecipeRating = query(v.object({
     recipeId: v.number()
 }), async ({recipeId}) => {
-    const {locals} = getRequestEvent();
-    if (!locals.user) throw new Error('User not authenticated');
-    return await getUserRecipeRatingFromDb(locals.user.id, recipeId);
+    const user = requireAuth();
+    await assertRecipeVisible(recipeId);
+    return await getUserRecipeRatingFromDb(user.id, recipeId);
 });
 
 export const getCollectionRecipes = query(v.object({
     collectionId: v.number()
 }), async ({collectionId}) => {
-    const {locals} = getRequestEvent();
-    if (!locals.user) throw new Error('User not authenticated');
-    return await getCollectionRecipesFromDb(collectionId, locals.user.id);
+    const user = requireAuth();
+    return await getCollectionRecipesFromDb(collectionId, user.id);
 });
 
 export const getRecipeDetails = query(v.object({
     recipeId: v.number(),
     incrementView: v.optional(v.boolean(), false)
 }), async ({recipeId, incrementView}) => {
-    const {locals} = getRequestEvent();
-    const recipe = await getRecipeByIdFromDb(recipeId);
-
-    if (!recipe) {
-        throw new Error('Recipe not found');
-    }
-
-    const viewerId = locals.user?.id;
-    const isAdmin = locals.user?.administrator;
-    const isOwner = recipe.userId === viewerId || !!isAdmin;
-
-    if (recipe.visibility === "private" && !isOwner) {
-        throw new Error('Recipe is private');
-    }
+    const user = requireAuth();
+    const recipe = await assertRecipeVisible(recipeId);
+    const isOwner = recipe.userId === user.id || !!user.administrator;
 
     if (incrementView) {
         await incrementRecipeViewCount(recipeId);
@@ -464,22 +435,14 @@ export const getRecipeDetails = query(v.object({
     const sharePath = isOwner && recipe.shareEnabled && recipe.shareToken ? `/share/${recipe.shareToken}` : null;
     const {shareToken, ...recipeWithoutToken} = recipe;
 
-    const [steps, ingredients, ratingSummary, tips] = await Promise.all([
+    const [steps, ingredients, ratingSummary, tips, isFavorite, userRating] = await Promise.all([
         getStepsFromDb(recipeId),
         getIngredientsFromDb(recipeId),
         getRecipeRatingSummaryFromDb(recipeId),
-        getTipsFromDb(recipeId)
+        getTipsFromDb(recipeId),
+        getRecipeFavoriteStateFromDb(user.id, recipeId),
+        getUserRecipeRatingFromDb(user.id, recipeId)
     ]);
-
-    let isFavorite = false;
-    let userRating = null;
-
-    if (locals.user) {
-        [isFavorite, userRating] = await Promise.all([
-            getRecipeFavoriteStateFromDb(locals.user.id, recipeId),
-            getUserRecipeRatingFromDb(locals.user.id, recipeId)
-        ]);
-    }
 
     return {
         ...recipeWithoutToken,
@@ -497,16 +460,18 @@ export const getRecipeDetails = query(v.object({
 export const getRecipeForEdit = query(v.object({
     recipeId: v.number()
 }), async ({recipeId}) => {
-    const {locals} = getRequestEvent();
+    const user = requireAuth();
     const recipe = await getRecipeByIdFromDb(recipeId);
 
     if (!recipe) {
         throw new Error('Recipe not found');
     }
 
-    if (recipe.userId !== locals.user?.id) {
+    if (recipe.userId !== user.id) {
         throw new Error('You do not have permission to edit this recipe');
     }
+
+    const {shareToken: _shareToken, ...recipeWithoutToken} = recipe;
 
     const [ingredients, steps, tags, tips] = await Promise.all([
         getIngredientsFromDb(recipeId),
@@ -516,7 +481,7 @@ export const getRecipeForEdit = query(v.object({
     ]);
 
     return {
-        ...recipe,
+        ...recipeWithoutToken,
         ingredients,
         steps,
         tags,
@@ -641,5 +606,6 @@ export const getSimilarRecipes = query(v.object({
     recipeId: v.number(),
     limit: v.optional(v.number(), 6)
 }), async ({recipeId, limit}) => {
+    await assertRecipeVisible(recipeId);
     return getSimilarRecipesFromDb(recipeId, limit);
 });
