@@ -1,6 +1,6 @@
 import { getDb } from "$lib/server/db/index";
 import { mealPlan, recipes, difficultyToRecipe, difficulty, ingredients, user, shoppingListItems } from "$lib/server/db/schema";
-import { and, eq, gte, lte, desc, getTableColumns, notInArray, or, sql, sum, type SQLWrapper } from "drizzle-orm";
+import { and, eq, gte, lte, desc, getTableColumns, notInArray, or, sql, type SQLWrapper } from "drizzle-orm";
 import { recipeColumns } from "$lib/server/db/recipe";
 import { categorizeIngredient, SHOPPING_CATEGORIES } from "$lib/shopping-list";
 import { randomBytes } from "node:crypto";
@@ -20,7 +20,7 @@ const tagListSubquery = sql<string[]>`COALESCE(ARRAY(
     WHERE tags.recipe_id = ${recipes.id}
 ), ARRAY[]::text[])`;
 
-export async function addToMealPlan(userId: string, recipeId: number, date: string) {
+export async function addToMealPlan(userId: string, recipeId: number, date: string, servings?: number) {
     const db = getDb();
 
     const [recipe] = await db
@@ -43,8 +43,19 @@ export async function addToMealPlan(userId: string, recipeId: number, date: stri
         userId,
         recipeId,
         date,
+        servings,
     }).returning({ id: mealPlan.id });
     return result[0];
+}
+
+export async function updateMealPlanServings(userId: string, mealPlanId: number, servings: number) {
+    const [entry] = await getDb().update(mealPlan)
+        .set({ servings })
+        .where(and(eq(mealPlan.id, mealPlanId), eq(mealPlan.userId, userId)))
+        .returning({ id: mealPlan.id });
+
+    if (!entry) throw new Error('Meal plan entry not found');
+    return entry;
 }
 
 export async function removeFromMealPlan(mealPlanId: number, userId: string) {
@@ -195,7 +206,12 @@ export async function getShoppingList(userId: string, startDate: string, endDate
         const aggregated = await tx
             .select({
                 name: ingredients.name,
-                quantity: sum(ingredients.quantity).mapWith(Number),
+                quantity: sql<number>`sum(
+                    ${ingredients.quantity} * CASE
+                        WHEN ${mealPlan.servings} IS NULL OR ${recipes.servings} <= 0 THEN 1
+                        ELSE ${mealPlan.servings}::double precision / ${recipes.servings}
+                    END
+                )`.mapWith(Number),
                 unit: ingredients.unit,
             })
             .from(mealPlan)

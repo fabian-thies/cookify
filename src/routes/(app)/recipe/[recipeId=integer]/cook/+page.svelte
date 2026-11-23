@@ -6,6 +6,7 @@
     import {Button} from "$lib/components/ui/button";
     import {getRecipeDetails, recordRecipeCooked} from "$lib/functions/recipe.remote";
     import {getOfflineRecipe, type OfflineRecipe} from "$lib/offline-recipes";
+    import {parseServings, servingsQuery} from "$lib/servings";
     import {m} from "$lib/paraglide/messages";
     import {ChefHat} from "lucide-svelte";
 
@@ -14,6 +15,7 @@
     let offline = $state(false);
     let cookedRecorded = false;
     const recipeId = $derived(Number(page.params.recipeId));
+    const servings = $derived(parseServings(page.url.searchParams.get('servings')));
 
     async function loadRecipe() {
         const id = recipeId;
@@ -52,9 +54,9 @@
 
     function exitCookMode() {
         if (offline) {
-            void goto(`/offline?recipe=${recipeId}`);
+            void goto(`/offline?recipe=${recipeId}${servings ? `&servings=${servings}` : ''}`);
         } else {
-            void goto(`/recipe/${recipeId}`);
+            void goto(`/recipe/${recipeId}${servingsQuery(servings)}`);
         }
     }
 </script>
@@ -63,7 +65,7 @@
 
 {#if recipe && !failed}
     {#key recipe.id}
-        <CookMode {recipe} {exitCookMode} {markCooked}/>
+        <CookMode {recipe} {servings} {exitCookMode} {markCooked}/>
     {/key}
 {:else if failed}
     <div class="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-background p-4">

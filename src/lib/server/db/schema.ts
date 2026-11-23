@@ -167,6 +167,7 @@ export const mealPlan = pgTable('meal_plan', {
     userId: text('user_id').notNull().references(() => user.id),
     recipeId: integer('recipe_id').notNull().references(() => recipes.id),
     date: date('date').notNull(),
+    servings: integer('servings'),
     createdAt: timestamp('created_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow(),
 }, (t) => [
     unique('meal_plan_user_recipe_date_unique').on(t.userId, t.recipeId, t.date),

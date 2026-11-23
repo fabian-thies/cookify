@@ -1,5 +1,6 @@
 <script lang="ts">
     import {remainingSeconds} from "$lib/timer";
+    import {scaleIngredientQuantity} from "$lib/servings";
     import {m} from "$lib/paraglide/messages";
     import type {OfflineRecipe} from "$lib/offline-recipes";
     import * as Dialog from "$lib/components/ui/dialog";
@@ -19,8 +20,9 @@
     import {onMount} from "svelte";
     import {toast} from "svelte-sonner";
 
-    const {recipe, exitCookMode, markCooked}: {
+    const {recipe, servings, exitCookMode, markCooked}: {
         recipe: Pick<OfflineRecipe, "title" | "ingredients" | "steps" | "servings">;
+        servings?: number;
         exitCookMode: () => void;
         markCooked?: () => void;
     } = $props();
@@ -44,6 +46,7 @@
     let steps = $derived(recipe.steps);
     let totalSteps = $derived(steps.length);
     let ingredients = $derived(recipe.ingredients);
+    const desiredServings = $derived(servings ?? recipe.servings);
     let isFinished = $derived(totalSteps > 0 && currentStep >= totalSteps);
 
     let wakeLock: WakeLockSentinel | null = null;
@@ -178,13 +181,13 @@
                 <Dialog.Content>
                     <Dialog.Header>
                         <Dialog.Title>{m["recipe.cookMode.ingredients"]()}</Dialog.Title>
-                        <Dialog.Description>{m["recipe.common.forServings"]({count: recipe.servings})}</Dialog.Description>
+                        <Dialog.Description>{m["recipe.common.forServings"]({count: desiredServings})}</Dialog.Description>
                     </Dialog.Header>
                 <ul class="divide-y divide-border/50">
                     {#each ingredients as ing}
                         <li class="flex items-start gap-3 py-2.5">
                             <span class="min-w-16 text-sm font-semibold tabular-nums text-primary">
-                                {ing.quantity} {ing.unit}
+                                {scaleIngredientQuantity(ing.quantity, recipe.servings, desiredServings)} {ing.unit}
                             </span>
                             <span class="text-sm leading-relaxed">{ing.name}</span>
                         </li>

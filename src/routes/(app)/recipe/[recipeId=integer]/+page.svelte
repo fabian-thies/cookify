@@ -11,6 +11,7 @@
     import {getRecipeDetails} from "$lib/functions/recipe.remote";
     import {page} from "$app/stores";
     import {getOfflineRecipe, removeOfflineRecipe, saveOfflineRecipe} from "$lib/offline-recipes";
+    import {parseServings} from "$lib/servings";
     import {Check, Download} from "lucide-svelte";
     import {onMount} from "svelte";
     import {toast} from "svelte-sonner";
@@ -22,6 +23,7 @@
     let failed = $state(false);
     let offlineReady = $state(false);
     let savedOffline = $state(false);
+    let desiredServings = $state<number>();
 
     onMount(() => {
         if (import.meta.env.PROD && "serviceWorker" in navigator) {
@@ -42,7 +44,7 @@
         } catch (error) {
             if (recipeId !== Number($page.params.recipeId)) return;
             if (error instanceof TypeError && getOfflineRecipe(recipeId, data.user.id)) {
-                location.replace(`/offline?recipe=${recipeId}`);
+                location.replace(`/offline?recipe=${recipeId}${desiredServings ? `&servings=${desiredServings}` : ''}`);
                 return;
             }
             console.error('Failed to load recipe:', error);
@@ -68,6 +70,10 @@
         $page.params.recipeId;
         queueMicrotask(loadRecipe);
     });
+    $effect(() => {
+        $page.params.recipeId;
+        desiredServings = parseServings($page.url.searchParams.get('servings'));
+    });
 </script>
 
 {#if failed}
@@ -76,7 +82,8 @@
     </div>
 {:else if recipe}
     {#key recipe.id}
-        <Overview {...recipe} sharePath={recipe.sharePath ?? undefined} {recipeOwner} aiEnabled={!!data.ai?.configured && !!data.ai?.enabled}/>
+        <Overview {...recipe} sharePath={recipe.sharePath ?? undefined} {recipeOwner} cookServings={desiredServings}
+                  aiEnabled={!!data.ai?.configured && !!data.ai?.enabled}/>
     {/key}
     {#if offlineReady}
         <div class="mb-4 flex flex-wrap items-center gap-2">
@@ -91,7 +98,7 @@
     {/if}
     <div class="grid gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-8">
         <div class="lg:col-span-1">
-            <Ingredients ingredients={recipe.ingredients} servings={recipe.servings}/>
+            <Ingredients ingredients={recipe.ingredients} servings={recipe.servings} bind:desiredServings/>
         </div>
         <div class="lg:col-span-2">
             <Preparation steps={recipe.steps}/>

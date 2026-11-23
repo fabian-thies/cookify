@@ -1,5 +1,6 @@
 /// <reference lib="webworker" />
 import {build, files, prerendered, version} from '$service-worker';
+import {parseServings} from './lib/servings';
 
 const worker = self as unknown as ServiceWorkerGlobalScope;
 const cacheName = `cookify-shell-${version}`;
@@ -49,6 +50,8 @@ worker.addEventListener('fetch', (event) => {
         if (recipe) {
             target.searchParams.set('recipe', recipe[1]);
             if (recipe[2]) target.searchParams.set('cook', '1');
+            const servings = parseServings(url.searchParams.get('servings'));
+            if (servings) target.searchParams.set('servings', String(servings));
         }
         return Response.redirect(target.href);
     }));

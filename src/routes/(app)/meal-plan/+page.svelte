@@ -3,6 +3,7 @@
     import {
         getMealPlan,
         addToMealPlan,
+        updateMealPlanServings,
         removeFromMealPlan,
         getShoppingList,
         setShoppingListItemChecked,
@@ -13,13 +14,14 @@
     import { Input } from "$lib/components/ui/input";
     import { Spinner } from "$lib/components/ui/spinner";
     import * as Dialog from "$lib/components/ui/dialog";
-    import { ChevronLeft, ChevronRight, Clock, Plus, Search, ShoppingCart, Trash2, X, CalendarPlus, Copy, Check, RefreshCw } from "lucide-svelte";
+    import { ChevronLeft, ChevronRight, Clock, Plus, Search, ShoppingCart, Trash2, X, CalendarPlus, Copy, Check, RefreshCw, Pencil } from "lucide-svelte";
     import { toast } from "svelte-sonner";
     import type { Recipe } from "$lib/server/db/recipe";
     import { m } from "$lib/paraglide/messages";
     import { getLocale } from "$lib/paraglide/runtime.js";
     import { imageVariantUrl } from "$lib/images";
     import { SHOPPING_CATEGORIES, type ShoppingCategory } from "$lib/shopping-list";
+    import { MAX_SERVINGS, parseServings, servingsQuery } from "$lib/servings";
 
     type MealPlanEntry = Awaited<ReturnType<typeof getMealPlan>>[number];
     type ShoppingItem = Awaited<ReturnType<typeof getShoppingList>>[number];
@@ -73,6 +75,9 @@
     let sidebarOpen = $state(false);
     let shoppingListOpen = $state(false);
     let adding = $state(false);
+    let servingsDialogOpen = $state(false);
+    let servingsInput = $state<number>();
+    let plannedMeal = $state<{recipeId: number; title: string; date: string; entryId?: number}>();
     let loadVersion = 0;
     let savingItemIds = $state<number[]>([]);
     let selectedRecipeId = $state<number | null>(null);
@@ -168,7 +173,7 @@
         weekOffset = 0;
     }
 
-    async function handleDrop(e: DragEvent, date: string) {
+    function handleDrop(e: DragEvent, date: string) {
         e.preventDefault();
         const recipeId = e.dataTransfer?.getData("text/plain");
         if (!recipeId) return;
@@ -176,44 +181,37 @@
         const id = parseInt(recipeId, 10);
         if (isNaN(id)) return;
 
-        await addRecipeToDate(id, date);
+        planRecipe(id, date);
     }
 
-    // Drag and drop does not exist on touch screens, so a tap on a recipe followed by a tap on a day adds it.
-    async function addRecipeToDate(id: number, date: string) {
-        if (adding) return;
-        const alreadyPlanned = entriesForDate(date).some(
-            (entry) => entry.recipeId === id
-        );
-        if (alreadyPlanned) {
-            selectedRecipeId = null;
-            return;
-        }
+    function planRecipe(id: number, date: string) {
+        const entry = entriesForDate(date).find((entry) => entry.recipeId === id);
+        const recipe = entry?.recipe ?? recipes.find((recipe) => recipe.id === id);
+        if (!recipe || adding) return;
+
+        plannedMeal = {recipeId: id, title: recipe.title, date, entryId: entry?.id};
+        servingsInput = parseServings(entry?.servings ?? recipe.servings) ?? 1;
+        servingsDialogOpen = true;
+    }
+
+    async function savePlannedMeal(event: SubmitEvent) {
+        event.preventDefault();
+        const servings = parseServings(servingsInput);
+        if (!plannedMeal || !servings || adding) return;
 
         adding = true;
+        error = null;
+        const {recipeId, date, entryId} = plannedMeal;
         try {
-            const result = await addToMealPlan({ recipeId: id, date });
-            const recipe = recipes.find((r) => r.id === id);
-            if (recipe) {
-                mealPlanEntries = [
-                    ...mealPlanEntries,
-                    {
-                        id: result.id,
-                        userId: "",
-                        recipeId: id,
-                        date,
-                        createdAt: new Date(),
-                        recipe: {
-                            ...recipe,
-                            difficulty: recipe.difficulty ?? "easy",
-                            tags: recipe.tags ?? [],
-                        },
-                    },
-                ];
+            if (entryId) {
+                await updateMealPlanServings({ mealPlanId: entryId, servings });
+            } else {
+                await addToMealPlan({ recipeId, date, servings });
             }
             selectedRecipeId = null;
-            shoppingList = await getShoppingList({ startDate: weekDays[0].date, endDate: weekDays[6].date }).run();
-        } catch (e: any) {
+            servingsDialogOpen = false;
+            await loadData();
+        } catch {
             error = m["mealPlan.error.add"]();
         } finally {
             adding = false;
@@ -437,7 +435,7 @@
                                 <button
                                     disabled={adding}
                                     class="mt-2 inline-flex min-h-11 w-full items-center justify-center gap-1 rounded-md bg-primary/15 text-sm font-medium text-primary transition hover:bg-primary/25"
-                                    onclick={() => addRecipeToDate(selectedRecipeId!, date)}
+                                    onclick={() => planRecipe(selectedRecipeId!, date)}
                                 >
                                     <Plus class="size-3"/>
                                     {m["mealPlan.addHere"]()}
@@ -452,8 +450,8 @@
                                 </div>
                             {:else}
                                 {#each dayEntries as entry (entry.id)}
-                                    <div class="group flex items-start gap-1 rounded-lg border border-border/60 bg-card p-1.5 transition-colors hover:border-border sm:gap-2 sm:p-2">
-                                        <a class="flex min-w-0 flex-1 items-start gap-2" href={`/recipe/${entry.recipe.id}`}>
+                                    <div class="group flex flex-wrap items-start justify-end gap-1 rounded-lg border border-border/60 bg-card p-1.5 transition-colors hover:border-border sm:p-2">
+                                        <a class="flex min-w-0 flex-1 items-start gap-2" href={`/recipe/${entry.recipe.id}${servingsQuery(entry.servings ?? undefined)}`}>
                                             <img
                                                 src={imageVariantUrl(entry.recipe.image, "thumb")}
                                                 alt={entry.recipe.title}
@@ -464,17 +462,26 @@
                                             <div class="min-w-0 flex-1">
                                                 <p class="line-clamp-2 text-xs font-medium leading-snug sm:text-[13px]">{entry.recipe.title}</p>
                                                 <p class="truncate text-[11px] text-muted-foreground">
-                                                    {entry.recipe.cookingTime} min
+                                                    {m["recipe.common.servingsCount"]({count: entry.servings ?? entry.recipe.servings})}
                                                 </p>
                                             </div>
                                         </a>
-                                        <button
-                                            aria-label={m["actions.delete"]()}
-                                            class="flex size-11 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
-                                            onclick={() => handleRemove(entry.id)}
-                                        >
-                                            <Trash2 class="size-3.5"/>
-                                        </button>
+                                        <div class="flex shrink-0 items-center">
+                                            <button
+                                                aria-label={m["mealPlan.planServings"]()}
+                                                class="flex size-9 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-accent"
+                                                onclick={() => planRecipe(entry.recipeId, entry.date)}
+                                            >
+                                                <Pencil class="size-3.5"/>
+                                            </button>
+                                            <button
+                                                aria-label={m["actions.delete"]()}
+                                                class="flex size-9 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
+                                                onclick={() => handleRemove(entry.id)}
+                                            >
+                                                <Trash2 class="size-3.5"/>
+                                            </button>
+                                        </div>
                                     </div>
                                 {/each}
                             {/if}
@@ -529,6 +536,26 @@
             {/if}
         </div>
     {/if}
+
+    <Dialog.Root bind:open={servingsDialogOpen}>
+        <Dialog.Content>
+            <Dialog.Header>
+                <Dialog.Title>{m["mealPlan.planServings"]()}</Dialog.Title>
+                <Dialog.Description>{plannedMeal?.title}</Dialog.Description>
+            </Dialog.Header>
+            <form class="space-y-4" onsubmit={savePlannedMeal}>
+                <Input aria-label={m["mealPlan.planServings"]()} type="number" bind:value={servingsInput}
+                       required min={1} max={MAX_SERVINGS} step={1}/>
+                {#if error}
+                    <p role="alert" class="text-sm text-destructive">{error}</p>
+                {/if}
+                <Dialog.Footer>
+                    <Dialog.Close class={buttonVariants({variant: "outline"})}>{m["actions.cancel"]()}</Dialog.Close>
+                    <Button type="submit" disabled={adding}>{m["actions.save"]()}</Button>
+                </Dialog.Footer>
+            </form>
+        </Dialog.Content>
+    </Dialog.Root>
 
     <Dialog.Root bind:open={calendarDialogOpen}>
         <Dialog.Content>

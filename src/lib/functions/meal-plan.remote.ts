@@ -1,7 +1,9 @@
 import * as v from 'valibot';
 import { command, getRequestEvent, query } from '$app/server';
+import { MAX_SERVINGS } from '$lib/servings';
 import {
     addToMealPlan as addToMealPlanDb,
+    updateMealPlanServings as updateMealPlanServingsDb,
     removeFromMealPlan as removeFromMealPlanDb,
     getMealPlan as getMealPlanDb,
     getShoppingList as getShoppingListDb,
@@ -10,10 +12,13 @@ import {
     rotateCalendarToken,
 } from '$lib/server/db/meal-plan';
 
+const servingsSchema = v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(MAX_SERVINGS));
+
 export const addToMealPlan = command(v.object({
     recipeId: v.number(),
     date: v.pipe(v.string(), v.regex(/^\d{4}-\d{2}-\d{2}$/)),
-}), async ({ recipeId, date }) => {
+    servings: v.optional(servingsSchema),
+}), async ({ recipeId, date, servings }) => {
     const { locals } = getRequestEvent();
     const userId = locals.user?.id;
 
@@ -21,7 +26,17 @@ export const addToMealPlan = command(v.object({
         throw new Error('User not authenticated');
     }
 
-    return await addToMealPlanDb(userId, recipeId, date);
+    return await addToMealPlanDb(userId, recipeId, date, servings);
+});
+
+export const updateMealPlanServings = command(v.object({
+    mealPlanId: v.pipe(v.number(), v.integer(), v.minValue(1)),
+    servings: servingsSchema,
+}), async ({ mealPlanId, servings }) => {
+    const userId = getRequestEvent().locals.user?.id;
+    if (!userId) throw new Error('User not authenticated');
+
+    return await updateMealPlanServingsDb(userId, mealPlanId, servings);
 });
 
 export const removeFromMealPlan = command(v.object({

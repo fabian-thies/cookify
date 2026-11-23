@@ -507,6 +507,7 @@
     },
     "shoppingList": "Shopping List",
     "quantityIncreased": "Quantity increased",
+    "planServings": "Plan servings",
     "emptyShoppingList": "No recipes planned for this week",
     "category": {
       "produce": "Produce",

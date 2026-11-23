@@ -33,6 +33,7 @@
     import {type Difficulty, difficultyLabels} from "$lib/types/recipe";
     import {Spinner} from "$lib/components/ui/spinner";
     import {imageVariantUrl, isUploadedImage} from "$lib/images";
+    import {servingsQuery} from "$lib/servings";
 
     type props = {
         id: number
@@ -41,6 +42,7 @@
         description: string,
         difficulty: Difficulty,
         servings: number,
+        cookServings?: number,
         cookingTime: number,
         image: string,
         isFavorite: boolean,
@@ -65,6 +67,7 @@
         description,
         difficulty,
         servings,
+        cookServings,
         cookingTime,
         image,
         id: recipeId,
@@ -351,7 +354,7 @@
                 {m["actions.share"]()}
             </Button>
         {:else}
-            <Button class="flex-1 sm:flex-none" href="/recipe/{recipeId}/cook" size="lg">
+            <Button class="flex-1 sm:flex-none" href={`/recipe/${recipeId}/cook${servingsQuery(cookServings)}`} size="lg">
                 <ChefHat class="size-4"/>
                 {m["recipe.cookMode.title"]()}
             </Button>

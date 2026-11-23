@@ -155,6 +155,13 @@
       "when": 1795434187638,
       "tag": "0021_shopping_quantity_increase",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1795434586543,
+      "tag": "0022_meal_plan_servings",
+      "breakpoints": true
     }
   ]
 }

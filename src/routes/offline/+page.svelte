@@ -11,11 +11,19 @@
     import {Toaster} from '$lib/components/ui/sonner';
     import {m} from '$lib/paraglide/messages';
     import {listOfflineRecipes, removeOfflineRecipe, type OfflineRecipe} from '$lib/offline-recipes';
+    import {parseServings} from '$lib/servings';
 
     let recipes = $state<OfflineRecipe[]>([]);
     let offline = $state(false);
     const recipe = $derived(recipes.find(({id}) => id === Number(page.url.searchParams.get('recipe'))));
     const cooking = $derived(page.url.searchParams.get('cook') === '1');
+    let desiredServings = $state<number>();
+    const portionQuery = $derived(desiredServings ? `&servings=${desiredServings}` : '');
+
+    $effect(() => {
+        page.url.searchParams.get('recipe');
+        desiredServings = parseServings(page.url.searchParams.get('servings'));
+    });
 
     function loadCopies() {
         recipes = listOfflineRecipes();
@@ -53,7 +61,8 @@
 
 {#if recipe && cooking}
     {#key recipe.id}
-        <CookMode {recipe} exitCookMode={() => location.assign(`/offline?recipe=${recipe.id}`)}/>
+        <CookMode {recipe} servings={desiredServings}
+                  exitCookMode={() => location.assign(`/offline?recipe=${recipe.id}${portionQuery}`)}/>
     {/key}
 {:else if recipe}
     <main class="mx-auto w-full max-w-5xl space-y-5 px-4 py-8 sm:px-6">
@@ -64,13 +73,13 @@
         <div class="space-y-3">
             <h1 class="page-title">{recipe.title}</h1>
             <p class="whitespace-pre-line text-muted-foreground">{recipe.description}</p>
-            <Button href={`/offline?recipe=${recipe.id}&cook=1`}>
+            <Button href={`/offline?recipe=${recipe.id}&cook=1${portionQuery}`}>
                 <ChefHat class="size-4"/>
                 {m['recipe.cookMode.title']()}
             </Button>
         </div>
         <div class="grid gap-4 lg:grid-cols-3">
-            <Ingredients ingredients={recipe.ingredients} servings={recipe.servings}/>
+            <Ingredients ingredients={recipe.ingredients} servings={recipe.servings} bind:desiredServings/>
             <div class="lg:col-span-2">
                 <Preparation steps={recipe.steps}/>
                 <Tips tips={recipe.tips}/>

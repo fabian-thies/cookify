@@ -505,6 +505,7 @@
     },
     "shoppingList": "Lista de compras",
     "quantityIncreased": "Cantidad aumentada",
+    "planServings": "Planificar porciones",
     "emptyShoppingList": "No hay recetas planificadas para esta semana",
     "category": {
       "produce": "Frutas y verduras",
