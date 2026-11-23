@@ -16,7 +16,7 @@
     const {class: className, title, recipes, loading = false}: Props = $props();
 </script>
 
-<div class={`w-full ${className}`}>
+<div class={className ? `w-full ${className}` : "w-full"}>
     <div class="mb-4 sm:mb-5">
         <h2 class="section-title">{title}</h2>
     </div>

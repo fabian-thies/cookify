@@ -4,11 +4,19 @@
     import ErrorState from "$lib/components/ErrorState.svelte";
     import RecipeCard from "$lib/components/recipe/widgets/RecipeCard.svelte";
     import RecipeCardSkeleton from "$lib/components/recipe/widgets/RecipeCardSkeleton.svelte";
+    import RecipeCarousel from "$lib/components/recipe/widgets/RecipeCarousel.svelte";
     import {Button} from "$lib/components/ui/button";
     import * as Card from "$lib/components/ui/card";
     import {Spinner} from "$lib/components/ui/spinner";
     import {getMealPlan} from "$lib/functions/meal-plan.remote";
-    import {getFavoriteRecipes, getRecipesByUserId} from "$lib/functions/recipe.remote";
+    import {
+        getDiscoverRecipes,
+        getFavoriteRecipes,
+        getForYouRecipes,
+        getPopularRecipes,
+        getRecipesByUserId
+    } from "$lib/functions/recipe.remote";
+    import type {Recipe} from "$lib/server/db/recipe";
     import {imageVariantUrl} from "$lib/images";
     import {m} from "$lib/paraglide/messages";
     import {getLocale} from "$lib/paraglide/runtime.js";
@@ -18,12 +26,14 @@
     type MealPlan = Awaited<ReturnType<typeof getMealPlan>>;
     type RecentRecipes = Awaited<ReturnType<typeof getRecipesByUserId>>;
     type Favorites = Awaited<ReturnType<typeof getFavoriteRecipes>>;
+    type DiscoveryFeeds = {forYou: Recipe[]; popular: Recipe[]; discover: Recipe[]};
     type RecipePreview = {id: number; title: string; image: string; cookingTime: number};
 
     const {data}: PageProps = $props();
     let meals = $state<Promise<MealPlan>>();
     let recent = $state<Promise<RecentRecipes>>();
     let favorites = $state<Promise<Favorites>>();
+    let discovery = $state<Promise<DiscoveryFeeds>>();
     let planDate: string | undefined;
 
     function localDate(): string {
@@ -50,6 +60,14 @@
             .slice(0, 4));
     }
 
+    function loadDiscovery() {
+        discovery = Promise.all([
+            getForYouRecipes().run(),
+            getPopularRecipes().run(),
+            getDiscoverRecipes().run()
+        ]).then(([forYou, popular, discover]) => ({forYou, popular, discover}));
+    }
+
     function refreshDate() {
         if (planDate && planDate !== localDate()) loadMeals();
     }
@@ -60,6 +78,7 @@
             loadMeals();
             loadRecent();
             loadFavorites();
+            loadDiscovery();
         });
     });
 </script>
@@ -232,4 +251,28 @@
             {/await}
         </section>
     </div>
+
+    {#await discovery}
+        <div class="mt-2 flex flex-col gap-8 border-t border-border/60 pt-8 sm:gap-12 sm:pt-10">
+            <RecipeCarousel recipes={[]} title={m["routes.home.discover"]()} loading/>
+        </div>
+    {:then feeds}
+        {#if feeds && (feeds.forYou.length > 0 || feeds.popular.length > 0 || feeds.discover.length > 0)}
+            <div class="mt-2 flex flex-col gap-8 border-t border-border/60 pt-8 sm:gap-12 sm:pt-10">
+                {#if feeds.forYou.length > 0}
+                    <RecipeCarousel recipes={feeds.forYou} title={m["routes.home.forYou"]()}/>
+                {/if}
+                {#if feeds.popular.length > 0}
+                    <RecipeCarousel recipes={feeds.popular} title={m["routes.home.popularRecipes"]()}/>
+                {/if}
+                {#if feeds.discover.length > 0}
+                    <RecipeCarousel recipes={feeds.discover} title={m["routes.home.discover"]()}/>
+                {/if}
+            </div>
+        {/if}
+    {:catch}
+        <div class="mt-2 border-t border-border/60 pt-8 sm:pt-10">
+            <ErrorState onRetry={loadDiscovery}/>
+        </div>
+    {/await}
 </div>
