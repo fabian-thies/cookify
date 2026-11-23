@@ -545,13 +545,18 @@
   "mealPlan.tapToPlan": "Select a recipe and add it to a day",
   "pwa": {
     "installTitle": "Install Cookify",
-    "installText": "Add Cookify to your home screen and keep your recipes and meal plan available offline.",
+    "installText": "Add Cookify to your home screen and use selected recipes offline.",
     "install": "Install",
     "installed": "Cookify is installed"
   },
   "offline": {
     "title": "You are offline",
-    "text": "Cached pages are still available. Reconnect to load fresh recipes and plans.",
-    "retry": "Try again"
+    "text": "Recipes you save offline on this device appear here.",
+    "retry": "Try again",
+    "saveRecipe": "Save offline",
+    "removeRecipe": "Remove offline copy",
+    "savedRecipes": "Recipes saved offline",
+    "saveError": "Could not save the offline copy.",
+    "removeError": "Could not remove the offline copy."
   }
 }

@@ -543,13 +543,18 @@
   "mealPlan.tapToPlan": "Selecciona una receta y añádela a un día",
   "pwa": {
     "installTitle": "Instalar Cookify",
-    "installText": "Añade Cookify a tu pantalla de inicio y mantén tus recetas y el plan semanal disponibles sin conexión.",
+    "installText": "Añade Cookify a tu pantalla de inicio y consulta recetas guardadas sin conexión.",
     "install": "Instalar",
     "installed": "Cookify está instalado"
   },
   "offline": {
     "title": "Estás sin conexión",
-    "text": "Las páginas guardadas siguen disponibles. Vuelve a conectarte para cargar recetas y planes actualizados.",
-    "retry": "Reintentar"
+    "text": "Aquí aparecen las recetas que guardes sin conexión en este dispositivo.",
+    "retry": "Reintentar",
+    "saveRecipe": "Guardar sin conexión",
+    "removeRecipe": "Quitar copia sin conexión",
+    "savedRecipes": "Recetas guardadas sin conexión",
+    "saveError": "No se pudo guardar la copia sin conexión.",
+    "removeError": "No se pudo quitar la copia sin conexión."
   }
 }

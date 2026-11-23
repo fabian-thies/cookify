@@ -9,16 +9,15 @@ export function registerServiceWorker(): void {
         return;
     }
 
-    window.addEventListener('load', () => {
+    function register() {
         navigator.serviceWorker.register('/sw.js', {scope: '/'}).catch((error) => {
             console.error('Service worker registration failed', error);
         });
-    }, {once: true});
-}
-
-export function clearOfflineCaches(): void {
-    if (!('serviceWorker' in navigator)) {
-        return;
     }
-    navigator.serviceWorker.controller?.postMessage({type: 'CLEAR_CACHES'});
+
+    if (document.readyState === 'complete') {
+        register();
+    } else {
+        window.addEventListener('load', register, {once: true});
+    }
 }

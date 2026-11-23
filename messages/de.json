@@ -543,13 +543,18 @@
   "mealPlan.tapToPlan": "Rezept auswählen und einem Tag hinzufügen",
   "pwa": {
     "installTitle": "Cookify installieren",
-    "installText": "Zum Startbildschirm hinzufügen und Rezepte sowie Wochenplan offline verfügbar machen.",
+    "installText": "Zum Startbildschirm hinzufügen und ausgewählte Rezepte offline nutzen.",
     "install": "Installieren",
     "installed": "Cookify ist installiert"
   },
   "offline": {
     "title": "Du bist offline",
-    "text": "Zwischengespeicherte Seiten bleiben verfügbar. Stelle eine Verbindung her, um aktuelle Rezepte und Pläne zu laden.",
-    "retry": "Erneut versuchen"
+    "text": "Hier erscheinen Rezepte, die du für dieses Gerät offline gespeichert hast.",
+    "retry": "Erneut versuchen",
+    "saveRecipe": "Offline speichern",
+    "removeRecipe": "Offline-Kopie entfernen",
+    "savedRecipes": "Offline gespeicherte Rezepte",
+    "saveError": "Die Offline-Kopie konnte nicht gespeichert werden.",
+    "removeError": "Die Offline-Kopie konnte nicht entfernt werden."
   }
 }

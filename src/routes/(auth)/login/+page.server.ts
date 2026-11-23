@@ -54,7 +54,7 @@ export const actions: Actions = {
 
         const sessionToken = auth.generateSessionToken();
         const session = await auth.createSession(sessionToken, existingUser.id);
-        auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
+        auth.setSessionTokenCookie(event, sessionToken, session);
 
         if (redirectTo && typeof redirectTo === 'string' && redirectTo.startsWith('/') && !redirectTo.startsWith('//')) {
             return redirect(302, redirectTo);
@@ -108,7 +108,7 @@ export const actions: Actions = {
 
             const sessionToken = auth.generateSessionToken();
             const session = await auth.createSession(sessionToken, userId);
-            auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
+            auth.setSessionTokenCookie(event, sessionToken, session);
         } catch(e: unknown) {
             const pgCode = (e as any)?.cause?.code as string | undefined;
             const constraint = (e as any)?.cause?.constraint_name as string | undefined;

@@ -38,7 +38,7 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
     - Auto-generated **shopping list** based on the recipes scheduled for the week, grouped by supermarket category. Items and checkmarks are saved per week.
     - **Calendar subscription (ICS)**: add the plan to Google Calendar, Apple Calendar or any other calendar app.
 - **Installable PWA**
-    - Add Cookify to your home screen and keep recently visited pages and images available offline.
+    - Add Cookify to your home screen and save individual recipes for offline browsing and cooking.
 - **Cook Mode**
     - Full-screen, step-by-step cooking experience that keeps your screen awake.
     - Built-in **multiple timers** — start a timer per step or add custom timers on the fly.

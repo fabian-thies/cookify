@@ -4,6 +4,7 @@ import type {Handle} from '@sveltejs/kit';
 import {paraglideMiddleware} from '$lib/paraglide/server';
 import {env} from '$env/dynamic/private';
 import {resolveAppLocale} from '$lib/server/locale';
+import {OFFLINE_ACCOUNT_COOKIE} from '$lib/offline-recipes';
 
 const handleParaglide: Handle = async ({event, resolve}) => {
     const locale = resolveAppLocale(env.DEFAULT_LOCALE, event.cookies.get('PARAGLIDE_LOCALE'), event.locals.user?.language);
@@ -26,6 +27,7 @@ const handleAuth: Handle = async ({event, resolve}) => {
     const sessionToken = event.cookies.get(auth.sessionCookieName);
 
     if (!sessionToken) {
+        if (event.cookies.get(OFFLINE_ACCOUNT_COOKIE)) auth.deleteSessionTokenCookie(event);
         event.locals.user = null;
         event.locals.session = null;
         return resolve(event);
@@ -34,7 +36,7 @@ const handleAuth: Handle = async ({event, resolve}) => {
     const {session, user} = await auth.validateSessionToken(sessionToken);
 
     if (session) {
-        auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
+        auth.setSessionTokenCookie(event, sessionToken, session);
     } else {
         auth.deleteSessionTokenCookie(event);
     }

@@ -4,6 +4,7 @@ import {sha256} from '@oslojs/crypto/sha2';
 import {encodeBase64url, encodeHexLowerCase} from '@oslojs/encoding';
 import {getDb} from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
+import {OFFLINE_ACCOUNT_COOKIE} from '$lib/offline-recipes';
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
@@ -78,10 +79,16 @@ export async function invalidateSession(sessionId: string) {
     await db.delete(table.session).where(eq(table.session.id, sessionId));
 }
 
-export function setSessionTokenCookie(event: RequestEvent, token: string, expiresAt: Date) {
+export function setSessionTokenCookie(event: RequestEvent, token: string, session: table.Session) {
     event.cookies.set(sessionCookieName, token, {
-        expires: expiresAt,
+        expires: session.expiresAt,
         path: '/'
+    });
+    // Identifies local offline copies. Only the HttpOnly session cookie authenticates requests.
+    event.cookies.set(OFFLINE_ACCOUNT_COOKIE, session.userId, {
+        expires: session.expiresAt,
+        path: '/',
+        httpOnly: false
     });
 }
 
@@ -89,4 +96,5 @@ export function deleteSessionTokenCookie(event: RequestEvent) {
     event.cookies.delete(sessionCookieName, {
         path: '/'
     });
+    event.cookies.delete(OFFLINE_ACCOUNT_COOKIE, {path: '/', httpOnly: false});
 }
