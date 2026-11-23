@@ -45,9 +45,8 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
 - **Recipe Sharing**
     - Generate shareable links for any public recipe.
     - Track view counts to see how often your recipes have been viewed.
-- **Home Dashboard**
-    - A personal **For you** feed learns from favorites, ratings and cooking history.
-    - Browse popular recipes, recently added dishes, and discover something new through curated carousels.
+- **Personal Cookbook Home**
+    - Open today’s planned meals, your favorites, or recently added recipes. Use the shortcuts to search or create a recipe.
 - **Administration & Backup**
     - Admin panel to manage users and toggle new registrations on/off.
     - **Backup & Restore**: export the entire database plus all uploaded images as a ZIP file, or import a backup to restore everything.

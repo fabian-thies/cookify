@@ -1,10 +1,10 @@
 <script lang="ts">
     import {page} from "$app/state";
-    import {BookOpen, CalendarDays, Compass, Heart, Library} from "lucide-svelte";
+    import {BookOpen, CalendarDays, Heart, House, Library} from "lucide-svelte";
     import {m} from "$lib/paraglide/messages";
 
     const items = [
-        {href: "/", label: m["nav.explore"], icon: Compass},
+        {href: "/", label: m["nav.cookbook"], icon: House},
         {href: "/recipe/search", label: m["nav.recipes"], icon: BookOpen},
         {href: "/favorites", label: m["nav.favorites"], icon: Heart},
         {href: "/collection", label: m["nav.collection"], icon: Library},

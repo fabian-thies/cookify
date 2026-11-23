@@ -13,7 +13,7 @@
     const {user}: { user: PublicUser } = $props();
 
     const links = [
-        {href: "/", label: m["nav.explore"]},
+        {href: "/", label: m["nav.cookbook"]},
         {href: "/recipe/search", label: m["nav.recipes"]},
         {href: "/favorites", label: m["nav.favorites"]},
         {href: "/collection", label: m["nav.collection"]},
