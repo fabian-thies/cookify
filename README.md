@@ -14,7 +14,7 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
     - Choose your preferred language and update your avatar.
 - **Recipe Management**
     - Add, edit, and delete recipes with full detail: ingredients (amounts + units), steps, servings, cook time, difficulty, tags, and tips.
-    - Upload custom images to personalize each recipe. Uploads are converted to responsive WebP thumbnails automatically.
+    - Add an optional cover photo and keep a link to the original recipe. Uploaded photos are converted to responsive WebP thumbnails.
     - Set recipes as **public** or **private** to control who can see them.
 - **Import from URL (Recipe Scraper)**
     - Paste a recipe URL and let Cookify extract title, ingredients, steps, and image automatically via JSON-LD structured data.

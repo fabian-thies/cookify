@@ -131,7 +131,9 @@
         "nameLabel": "Recipe name",
         "namePlaceholder": "e.g. Italian pasta carbonara",
         "descriptionLabel": "Description",
-        "descriptionPlaceholder": "Briefly describe your recipe"
+        "descriptionPlaceholder": "Briefly describe your recipe",
+        "sourceUrlLabel": "Original recipe URL (optional)",
+        "sourceUrlInvalid": "Enter a valid recipe URL beginning with http:// or https://."
       },
       "ingredients": {
         "title": "Ingredients",
@@ -160,7 +162,7 @@
         "difficultyGroupLabel": "Difficulty",
         "tagsLabel": "Tags",
         "tagsPlaceholder": "Enter a tag and press Enter",
-        "previewLabel": "Cover image",
+        "previewLabel": "Cover image (optional)",
         "choosePhoto": "Choose photo",
         "changePhoto": "Change photo",
         "photoUpload": "Upload",
@@ -537,6 +539,7 @@
       "security": "Anyone with this link can see your meal plan. Create a new link to revoke old ones."
     }
   },
+  "recipe.common.originalRecipe": "Original recipe",
   "a11y.skipToContent": "Skip to content",
   "actions.close": "Close",
   "recipe.form.unsavedChanges": "You have unsaved changes. Leave without saving?",

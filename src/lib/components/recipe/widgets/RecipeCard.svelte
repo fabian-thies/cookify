@@ -1,7 +1,7 @@
 <script lang="ts">
     import {m} from "$lib/paraglide/messages";
     import {Badge} from "$lib/components/ui/badge";
-    import {Clock, Star, UserRound} from "lucide-svelte";
+    import {Clock, Star, UserRound, UtensilsCrossed} from "lucide-svelte";
     import {type Difficulty, difficultyLabels} from "$lib/types/recipe";
     import {imageVariantUrl, isUploadedImage} from "$lib/images";
 
@@ -29,15 +29,21 @@
         href="/recipe/{id}"
 >
     <div class="relative aspect-[4/3] w-full overflow-hidden bg-muted">
-        <img
-                alt={title}
-                class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-                decoding="async"
-                loading="lazy"
-                sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
-                src={thumbnail}
-                srcset={thumbnailSrcset}
-        >
+        {#if thumbnail}
+            <img
+                    alt={title}
+                    class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                    decoding="async"
+                    loading="lazy"
+                    sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    src={thumbnail}
+                    srcset={thumbnailSrcset}
+            >
+        {:else}
+            <div class="grid h-full place-items-center text-muted-foreground/70">
+                <UtensilsCrossed class="size-8" aria-hidden="true"/>
+            </div>
+        {/if}
         <Badge class="absolute right-2.5 top-2.5 border-transparent bg-background/75 text-foreground backdrop-blur-md" variant="secondary">
             {difficultyLabels[difficulty] ?? difficulty}
         </Badge>

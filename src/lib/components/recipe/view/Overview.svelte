@@ -3,6 +3,7 @@
         Clock,
         Edit,
         Ellipsis,
+        ExternalLink,
         Heart,
         Link2Off,
         Plus,
@@ -33,6 +34,7 @@
     import {type Difficulty, difficultyLabels} from "$lib/types/recipe";
     import {Spinner} from "$lib/components/ui/spinner";
     import {imageVariantUrl, isUploadedImage} from "$lib/images";
+    import {normalizeRecipeSourceUrl} from "$lib/recipe-source";
     import {servingsQuery} from "$lib/servings";
 
     type props = {
@@ -40,6 +42,7 @@
         userId: string,
         title: string,
         description: string,
+        sourceUrl?: string | null,
         difficulty: Difficulty,
         servings: number,
         cookServings?: number,
@@ -65,6 +68,7 @@
     let {
         title,
         description,
+        sourceUrl,
         difficulty,
         servings,
         cookServings,
@@ -112,6 +116,7 @@
     let isShareEnabled = $state(shareEnabled || !!sharePathState);
 
     const heroImage = $derived(imageVariantUrl(image, "medium"));
+    const sourceLink = $derived(normalizeRecipeSourceUrl(sourceUrl));
     const heroSrcset = $derived(isUploadedImage(image)
         ? `${imageVariantUrl(image, "medium")} 960w, ${imageVariantUrl(image, "large")} 1600w`
         : undefined);
@@ -308,17 +313,19 @@
     }
 </script>
 
-<div class="-mx-4 -mt-3 mb-6 sm:mx-0 sm:mt-0">
-    <img
-            alt={title}
-            class="aspect-[3/2] w-full border-b border-border/60 object-cover sm:aspect-[2/1] sm:rounded-2xl sm:border"
-            decoding="async"
-            fetchpriority="high"
-            sizes="(min-width: 1280px) 1152px, 100vw"
-            src={heroImage}
-            srcset={heroSrcset}
-    >
-</div>
+{#if heroImage}
+    <div class="-mx-4 -mt-3 mb-6 sm:mx-0 sm:mt-0">
+        <img
+                alt={title}
+                class="aspect-[3/2] w-full border-b border-border/60 object-cover sm:aspect-[2/1] sm:rounded-2xl sm:border"
+                decoding="async"
+                fetchpriority="high"
+                sizes="(min-width: 1280px) 1152px, 100vw"
+                src={heroImage}
+                srcset={heroSrcset}
+        >
+    </div>
+{/if}
 
 <div class="mb-6 w-full sm:mb-8 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-x-8">
     <h1 class="text-2xl font-semibold leading-tight tracking-tight sm:text-4xl lg:col-start-1">{title}</h1>
@@ -330,7 +337,16 @@
         <span class="size-1 rounded-full bg-border"></span>
         <p>{m["recipe.common.reviews"]({count: ratingCount})}</p>
     </div>
-    <p class="mt-2 max-w-[65ch] text-[15px] leading-relaxed text-muted-foreground sm:text-base lg:col-start-1">{description}</p>
+    <div class="mt-2 max-w-[65ch] text-[15px] leading-relaxed text-muted-foreground sm:text-base lg:col-start-1">
+        <p>{description}</p>
+        {#if sourceLink}
+            <a class="mt-2 inline-flex w-fit items-center gap-1.5 text-sm font-medium text-primary underline underline-offset-4"
+               href={sourceLink} target="_blank" rel="noopener noreferrer">
+                {m["recipe.common.originalRecipe"]()}
+                <ExternalLink class="size-3.5" aria-hidden="true"/>
+            </a>
+        {/if}
+    </div>
 
     <div class="mt-4 flex flex-wrap items-center gap-2 lg:col-start-1">
         <span class="inline-flex h-8 items-center gap-1.5 rounded-full border border-border/70 bg-card px-3 text-[13px] font-medium">

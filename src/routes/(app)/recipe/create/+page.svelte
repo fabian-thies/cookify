@@ -8,7 +8,7 @@
     import Details from "$lib/components/recipe/form/Details.svelte";
     import {Button} from "$lib/components/ui/button/index.js";
     import {m} from "$lib/paraglide/messages";
-    import {goto, invalidateAll} from "$app/navigation";
+    import {goto} from "$app/navigation";
     import {toast} from "svelte-sonner";
     import {Spinner} from "$lib/components/ui/spinner/index.js";
 
@@ -17,8 +17,9 @@
 
     let formElement = $state<HTMLFormElement>();
     let saved = $state(false);
+    let sourceUrl = $state("");
 
-    const {form, data} = $props();
+    const {data} = $props();
     const aiEnabled = $derived(!!data.ai?.configured && !!data.ai?.enabled);
 
     type ScrapedRecipe = {
@@ -57,6 +58,7 @@
 
         const descInput = formEl.querySelector('[name="description"]') as HTMLInputElement;
         if (descInput && recipe.description) descInput.value = recipe.description;
+        if (recipe.sourceUrl) sourceUrl = recipe.sourceUrl;
 
         const cookTimeInput = formEl.querySelector('[name="cookTime"]') as HTMLInputElement;
         if (cookTimeInput && recipe.cookTime) cookTimeInput.value = String(recipe.cookTime);
@@ -150,9 +152,13 @@
                 }
 
             } else {
-                toast.error(result.type === 'failure' && (result.data?.imageInvalid || result.data?.pictureTooLarge || result.data?.imageSaveFailed)
-                    ? m["recipe.form.details.photoImportError"]()
-                    : m["recipe.createError"]());
+                if (result.type === 'failure' && result.data?.sourceUrlInvalid) {
+                    toast.error(m["recipe.form.general.sourceUrlInvalid"]());
+                } else {
+                    toast.error(result.type === 'failure' && (result.data?.imageInvalid || result.data?.pictureTooLarge || result.data?.imageSaveFailed)
+                        ? m["recipe.form.details.photoImportError"]()
+                        : m["recipe.createError"]());
+                }
             }
         }}
     }>
@@ -162,7 +168,7 @@
         </div>
         <div class="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-8">
             <div class="space-y-5 lg:col-span-2 lg:space-y-6">
-                <General/>
+                <General bind:sourceUrl/>
                 <Ingredients ingredients={ingredients}/>
                 <Steps steps={steps}/>
                 <Tips tips={tips}/>

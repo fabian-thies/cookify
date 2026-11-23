@@ -17,12 +17,12 @@ test.afterAll(async () => {
 });
 
 for (const width of [390, 1280]) {
-    test(`photo selection, validation and reset at ${width}px`, async ({page, baseURL}) => {
+    test(`photo selection, validation and reset at ${width}px`, async ({page, baseURL}, testInfo) => {
         await page.setViewportSize({width, height: 844});
         await page.context().addCookies([{name: 'PARAGLIDE_LOCALE', value: 'de', url: baseURL!}]);
         await page.goto(route);
         await page.locator('main[data-ready="true"]').waitFor();
-        const input = page.locator('input[type=file]');
+        const input = page.locator('#picture');
         await expect(input).toHaveAccessibleName('Foto auswählen');
         await expect.poll(() => input.evaluate((el: HTMLInputElement) => el.validity.valueMissing)).toBe(true);
         await input.focus();
@@ -41,14 +41,14 @@ for (const width of [390, 1280]) {
         await input.setInputFiles({name: 'Rezeptfoto.png', mimeType: 'image/png', buffer: png});
         await expect(input).toHaveAttribute('aria-invalid', 'false');
         await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-        await page.screenshot({path: `artifacts/ui-audit/photo-picker-${width}.png`});
+        await page.screenshot({path: testInfo.outputPath(`photo-picker-${width}.png`)});
     });
 }
 
 test('resetting a replacement keeps the existing recipe photo', async ({page}) => {
     await page.goto(route + '?edit');
     await page.locator('main[data-ready="true"]').waitFor();
-    const input = page.locator('input[type=file]');
+    const input = page.locator('#picture');
     const original = await page.getByRole('img').getAttribute('src');
     await input.setInputFiles({name: 'Replacement.png', mimeType: 'image/png', buffer: png});
     await expect(page.getByRole('img')).toHaveAttribute('src', /^blob:/);

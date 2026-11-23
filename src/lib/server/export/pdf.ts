@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import type {CookbookData, CookbookRecipe} from './cookbook';
 import type {UserLanguage} from '$lib/types/languages';
+import {normalizeRecipeSourceUrl} from '$lib/recipe-source';
 
 type Labels = {
     myCookbook: string;
@@ -12,6 +13,7 @@ type Labels = {
     ingredients: string;
     steps: string;
     tips: string;
+    source: string;
     minutes: string;
     servings: string;
     difficulty: string;
@@ -34,6 +36,7 @@ const LABELS: Record<UserLanguage, Labels> = {
         ingredients: 'Ingredients',
         steps: 'Method',
         tips: 'Tips',
+        source: 'Original recipe',
         minutes: 'min',
         servings: 'servings',
         difficulty: 'Difficulty',
@@ -54,6 +57,7 @@ const LABELS: Record<UserLanguage, Labels> = {
         ingredients: 'Zutaten',
         steps: 'Zubereitung',
         tips: 'Tipps',
+        source: 'Originalrezept',
         minutes: 'Min',
         servings: 'Portionen',
         difficulty: 'Schwierigkeit',
@@ -74,6 +78,7 @@ const LABELS: Record<UserLanguage, Labels> = {
         ingredients: 'Ingredientes',
         steps: 'Preparación',
         tips: 'Consejos',
+        source: 'Receta original',
         minutes: 'min',
         servings: 'porciones',
         difficulty: 'Dificultad',
@@ -196,6 +201,13 @@ function renderRecipe(doc: PDFKit.PDFDocument, recipe: CookbookRecipe, image: Pd
     if (recipe.description) {
         doc.font('Helvetica-Oblique').fontSize(11).fillColor(COLORS.body)
             .text(recipe.description, {width});
+        doc.moveDown(0.5);
+    }
+
+    const source = normalizeRecipeSourceUrl(recipe.sourceUrl);
+    if (source) {
+        doc.font('Helvetica').fontSize(9.5).fillColor(COLORS.accent)
+            .text(`${labels.source} · ${source}`, {width, link: source, underline: true});
         doc.moveDown(0.5);
     }
 

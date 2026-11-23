@@ -34,6 +34,7 @@ export {recipeColumns};
 export async function createRecipe({
                                        title,
                                        description,
+                                       sourceUrl = null,
                                        cookTime,
                                        servings,
                                        userId,
@@ -55,6 +56,7 @@ export async function createRecipe({
         const result = await db.insert(recipes).values({
             title,
             description,
+            sourceUrl,
             image,
             cookingTime: cookTime,
             servings,
@@ -139,6 +141,7 @@ export async function updateRecipe({
                                        id,
                                        title,
                                        description,
+                                       sourceUrl,
                                        cookTime,
                                        servings,
                                        userId,
@@ -173,6 +176,7 @@ export async function updateRecipe({
             .set({
                 title,
                 description,
+                sourceUrl,
                 image,
                 cookingTime: cookTime,
                 servings,
@@ -893,6 +897,7 @@ export async function getCollections(userId: string, recipeId?: number, thumbnai
                 FROM ${collectionToRecipe}
                 JOIN ${recipes} ON ${recipes.id} = ${collectionToRecipe.recipeId}
                 WHERE ${collectionToRecipe.collectionId} = ${collections.id}
+                    AND ${recipes.image} <> ''
                 ORDER BY ${recipes.createdAt} DESC
                 LIMIT ${thumbnailLimit}
             ), ARRAY[]::text[])`,

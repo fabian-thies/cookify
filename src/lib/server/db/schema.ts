@@ -60,6 +60,7 @@ export const recipes = pgTable('recipes', {
     id: serial('id').primaryKey(),
     title: text('title').notNull(),
     description: text('description').notNull(),
+    sourceUrl: text('source_url'),
     image: text('image').notNull(),
     createdAt: timestamp('created_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow(),

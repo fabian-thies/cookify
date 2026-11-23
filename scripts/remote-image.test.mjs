@@ -74,6 +74,7 @@ console.log('Remote image download checks passed');
 // Exercise both form actions: URL-only recipes, unchanged edits, authorization and cleanup.
 let savedUrl;
 let writtenImage;
+let writtenSource;
 let cleanedImage;
 let downloadFails = false;
 class ImageUploadError extends Error {}
@@ -90,38 +91,60 @@ const imageImports = {
 let dbFails = false;
 const imports = {
     '@sveltejs/kit': {fail: (status, data) => ({status, data})},
-    '$lib/server/utils': {parseRecipeFormData: () => ({title: 'Test'})},
     '$lib/server/image': imageImports,
     '$lib/server/db/recipe': {
         getRecipeById: async () => ({id: 1, userId: 'owner', image: '/uploads/existing.jpg'}),
         createRecipe: async data => {
             if (dbFails) throw new Error('Database failure');
             writtenImage = data.image;
+            writtenSource = data.sourceUrl;
             return [{id: 1}];
         },
-        updateRecipe: async data => {writtenImage = data.image;}
+        updateRecipe: async data => {
+            writtenImage = data.image;
+            writtenSource = data.sourceUrl;
+        }
     }
 };
-function loadAction(path) {
+function loadModule(path, dependencies = imports) {
     const exports = {};
     vm.runInNewContext(ts.transpileModule(readFileSync(path, 'utf8'), {
         compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022}
-    }).outputText, {exports, File, console: {error() {}, log() {}}, require: name => imports[name] ?? require(name)});
-    return exports.actions;
+    }).outputText, {exports, File, URL, console: {error() {}, log() {}}, require: name => dependencies[name] ?? require(name)});
+    return exports;
 }
-const create = loadAction('src/routes/(app)/recipe/create/+page.server.ts').createRecipe;
-const edit = loadAction('src/routes/(app)/recipe/[recipeId=integer]/edit/+page.server.ts').updateRecipe;
-function event(url, owner = 'owner') {
+imports['$lib/server/utils'] = loadModule('src/lib/server/utils.ts', {
+    '../recipe-source': loadModule('src/lib/recipe-source.ts')
+});
+const create = loadModule('src/routes/(app)/recipe/create/+page.server.ts').actions.createRecipe;
+const edit = loadModule('src/routes/(app)/recipe/[recipeId=integer]/edit/+page.server.ts').actions.updateRecipe;
+function event(url, owner = 'owner', source) {
     const data = new FormData();
+    data.set('title', 'Test');
+    data.set('description', 'Test recipe');
+    data.set('cookTime', '5');
+    data.set('servings', '2');
+    data.set('difficulty', 'easy');
     if (url) data.set('pictureUrl', url);
+    if (source !== undefined) data.set('sourceUrl', source);
     return {locals: {user: owner ? {id: owner} : null}, params: {recipeId: '1'}, request: {formData: async () => data}};
 }
 assert.equal((await create(event('https://images.example/photo'))).success, true);
 assert.equal(savedUrl, 'https://images.example/photo');
 assert.equal(writtenImage, '/uploads/downloaded.jpg');
-assert.equal((await create(event())).data.pictureMissing, true);
+assert.equal((await create(event(null, 'owner', ' https://Example.COM/recipe '))).success, true);
+assert.equal(writtenImage, '');
+assert.equal(writtenSource, 'https://example.com/recipe');
+assert.equal(savedUrl, 'https://images.example/photo', 'The source URL must never be used to fetch a cover');
 assert.equal((await edit(event())).success, true);
-assert.equal(writtenImage, '/uploads/existing.jpg');
+assert.equal(writtenImage, undefined, 'The stored photo must be left untouched on an unrelated edit');
+assert.equal(writtenSource, undefined, 'An edit from an older form must leave the source alone');
+assert.equal((await edit(event(null, 'owner', ''))).success, true);
+assert.equal(writtenSource, null, 'Clearing the source field must remove the source');
+for (const invalid of ['ftp://example.com/recipe', 'https://user:password@example.com/recipe', 'example.com', new File(['wrong field'], 'test.txt')]) {
+    assert.equal((await create(event(null, 'owner', invalid))).data.sourceUrlInvalid, true);
+    assert.equal((await edit(event(null, 'owner', invalid))).data.sourceUrlInvalid, true);
+}
 assert.equal((await edit(event('https://images.example/photo'))).success, true);
 assert.equal(writtenImage, '/uploads/downloaded.jpg');
 assert.equal((await edit(event('https://images.example/photo', 'other'))).status, 403);

@@ -1,5 +1,5 @@
-import {type Actions, fail, redirect, type RequestEvent} from "@sveltejs/kit";
-import {parseRecipeFormData, validateInputEmpty} from "$lib/server/utils";
+import {type Actions, fail, type RequestEvent} from "@sveltejs/kit";
+import {InvalidRecipeSourceUrlError, parseRecipeFormData} from "$lib/server/utils";
 import {deleteImage, ImageUploadError, saveImage, saveImageFromUrl} from "$lib/server/image";
 import {createRecipe} from "$lib/server/db/recipe";
 
@@ -16,9 +16,6 @@ export const actions = {
         const picture = pictureEntry instanceof File ? pictureEntry : null;
         const pictureUrl = String(formData.get('pictureUrl') ?? '').trim();
 
-        if ((!picture || picture.size === 0) && !pictureUrl) {
-            return fail(400, {invalid: true, pictureMissing: true});
-        }
         if (picture && picture.size > 15 * 1024 * 1024) {
             return fail(400, {invalid: true, pictureTooLarge: true});
         }
@@ -27,15 +24,17 @@ export const actions = {
         try {
             data = parseRecipeFormData(formData);
         } catch (e) {
+            if (e instanceof InvalidRecipeSourceUrlError) {
+                return fail(400, {invalid: true, sourceUrlInvalid: true});
+            }
             console.error(e);
             return fail(400, {invalid: true});
         }
 
-        let imageUrl: string;
+        let imageUrl = "";
         try {
-            imageUrl = picture && picture.size > 0
-                    ? await saveImage(picture)
-                    : await saveImageFromUrl(pictureUrl);
+            if (picture && picture.size > 0) imageUrl = await saveImage(picture);
+            else if (pictureUrl) imageUrl = await saveImageFromUrl(pictureUrl);
         } catch (e) {
             if (e instanceof ImageUploadError) {
                 return fail(400, {invalid: true, imageInvalid: true});
@@ -54,12 +53,10 @@ export const actions = {
             })
         } catch (e) {
             // Do not leave an orphaned upload behind when the recipe could not be created.
-            await deleteImage(imageUrl);
+            if (imageUrl) await deleteImage(imageUrl);
             console.error(e);
             return fail(500, {internalError: true});
         }
-
-        console.log(recipeId)
 
         return {
             success: true,

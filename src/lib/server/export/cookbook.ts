@@ -21,6 +21,7 @@ export type CookbookRecipe = {
     id: number;
     title: string;
     description: string;
+    sourceUrl: string | null;
     image: string;
     cookingTime: number;
     servings: number;
@@ -117,6 +118,7 @@ export async function getCookbookData(userId: string): Promise<CookbookData> {
             id: recipe.id,
             title: recipe.title,
             description: recipe.description,
+            sourceUrl: recipe.sourceUrl,
             image: recipe.image,
             cookingTime: recipe.cookingTime,
             servings: recipe.servings,

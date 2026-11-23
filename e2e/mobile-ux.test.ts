@@ -62,6 +62,7 @@ test('URL import updates the visible difficulty and decimal ingredient amount', 
     await dialog.getByRole('button', {name: 'Import', exact: true}).click();
     await expect(dialog).not.toBeVisible();
     await expect(page.locator('#title')).toHaveValue('Imported recipe');
+    await expect(page.getByLabel('Original recipe URL (optional)')).toHaveValue('https://example.com/recipe');
     await expect(page.locator('[name="ingredients_amount[]"]').first()).toHaveValue('0.5');
     await expect(page.locator('#difficulty')).toHaveText('Easy');
 });

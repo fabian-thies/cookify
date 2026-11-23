@@ -5,8 +5,9 @@
     import * as Card from "$lib/components/ui/card/index.js";
     import {ChefHat} from "lucide-svelte";
     import {m} from "$lib/paraglide/messages";
+    import {MAX_RECIPE_SOURCE_URL_LENGTH} from "$lib/recipe-source";
 
-    const {recipe}: {recipe?: any} = $props();
+    let {recipe, sourceUrl = $bindable("")}: {recipe?: any; sourceUrl?: string} = $props();
 
     let description = $state(recipe?.description ?? '');
 </script>
@@ -30,6 +31,11 @@
             <Label for="description">{m["recipe.form.general.descriptionLabel"]()}</Label>
             <Textarea id="description" name="description" placeholder={m["recipe.form.general.descriptionPlaceholder"]()}
                    bind:value={description} />
+        </div>
+        <div class="flex w-full flex-col gap-1.5">
+            <Label for="sourceUrl">{m["recipe.form.general.sourceUrlLabel"]()}</Label>
+            <Input id="sourceUrl" name="sourceUrl" type="url" maxlength={MAX_RECIPE_SOURCE_URL_LENGTH}
+                   bind:value={sourceUrl}/>
         </div>
     </Card.Content>
 </Card.Root>

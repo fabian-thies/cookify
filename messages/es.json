@@ -131,7 +131,9 @@
         "nameLabel": "Nombre de la receta",
         "namePlaceholder": "p. ej. pasta carbonara italiana",
         "descriptionLabel": "Descripción",
-        "descriptionPlaceholder": "Describe brevemente tu receta"
+        "descriptionPlaceholder": "Describe brevemente tu receta",
+        "sourceUrlLabel": "Enlace a la receta original (opcional)",
+        "sourceUrlInvalid": "Introduce un enlace válido que comience por http:// o https://."
       },
       "ingredients": {
         "title": "Ingredientes",
@@ -160,7 +162,7 @@
         "difficultyGroupLabel": "Dificultad",
         "tagsLabel": "Etiquetas",
         "tagsPlaceholder": "Introduce una etiqueta y presiona Enter",
-        "previewLabel": "Imagen de portada",
+        "previewLabel": "Imagen de portada (opcional)",
         "choosePhoto": "Elegir foto",
         "changePhoto": "Cambiar foto",
         "photoUpload": "Subir",
@@ -535,6 +537,7 @@
       "security": "Cualquiera con este enlace puede ver tu plan semanal. Crea un enlace nuevo para revocar los anteriores."
     }
   },
+  "recipe.common.originalRecipe": "Receta original",
   "a11y.skipToContent": "Saltar al contenido",
   "actions.close": "Cerrar",
   "recipe.form.unsavedChanges": "Tienes cambios sin guardar. ¿Salir sin guardar?",

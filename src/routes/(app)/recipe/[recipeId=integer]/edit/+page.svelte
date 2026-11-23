@@ -24,6 +24,7 @@
 
     let formElement = $state<HTMLFormElement>();
     let saved = $state(false);
+    let sourceUrl = $state("");
 
     const {data} = $props();
     const aiEnabled = $derived(!!data.ai?.configured && !!data.ai?.enabled);
@@ -126,6 +127,7 @@
         const recipeId = Number($page.params.recipeId);
         getRecipeForEdit({recipeId}).run().then((result) => {
             recipe = result;
+            sourceUrl = result.sourceUrl ?? "";
             ingredients = result.ingredients;
             steps = result.steps;
             tips = result.tips;
@@ -166,6 +168,8 @@
                     if (recipeId) {
                         await goto(`/recipe/${recipeId}`);
                     }
+                } else if (result.type === 'failure' && result.data?.sourceUrlInvalid) {
+                    toast.error(m["recipe.form.general.sourceUrlInvalid"]());
                 } else {
                     toast.error(result.type === 'failure' && (result.data?.imageInvalid || result.data?.pictureTooLarge || result.data?.imageSaveFailed)
                         ? m["recipe.form.details.photoImportError"]()
@@ -178,7 +182,7 @@
         {/if}
         <div class="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-8">
                 <div class="space-y-5 lg:col-span-2 lg:space-y-6">
-                    <General {recipe}/>
+                    <General {recipe} bind:sourceUrl/>
                     <Ingredients {ingredients} {recipe}/>
                     <Steps {steps}/>
                     <Tips {tips}/>

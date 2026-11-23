@@ -148,6 +148,6 @@
                 </div>
             {/if}
         </div>
-        <PhotoPicker image={recipe?.image} required={!recipe}/>
+        <PhotoPicker image={recipe?.image}/>
     </Card.Content>
 </Card.Root>

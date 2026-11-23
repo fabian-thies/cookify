@@ -14,7 +14,7 @@
     import { Input } from "$lib/components/ui/input";
     import { Spinner } from "$lib/components/ui/spinner";
     import * as Dialog from "$lib/components/ui/dialog";
-    import { ChevronLeft, ChevronRight, Clock, Plus, Search, ShoppingCart, Trash2, X, CalendarPlus, Copy, Check, RefreshCw, Pencil } from "lucide-svelte";
+    import { ChevronLeft, ChevronRight, Clock, Plus, Search, ShoppingCart, Trash2, X, CalendarPlus, Copy, Check, RefreshCw, Pencil, UtensilsCrossed } from "lucide-svelte";
     import { toast } from "svelte-sonner";
     import type { Recipe } from "$lib/server/db/recipe";
     import { m } from "$lib/paraglide/messages";
@@ -307,6 +307,17 @@
     }
 </script>
 
+{#snippet thumbnail(image: string, size: string)}
+    {#if image}
+        <img src={imageVariantUrl(image, "thumb")} alt="" class="{size} shrink-0 rounded-md object-cover"
+             decoding="async" loading="lazy"/>
+    {:else}
+        <span class="{size} grid shrink-0 place-items-center rounded-md bg-muted text-muted-foreground">
+            <UtensilsCrossed class="size-4" aria-hidden="true"/>
+        </span>
+    {/if}
+{/snippet}
+
 <div class="mt-2 flex flex-col gap-5">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div class="space-y-1">
@@ -393,13 +404,7 @@
                                     }}
                                     ondragstart={(e) => handleDragStart(e, recipe.id)}
                                 >
-                                    <img
-                                        src={imageVariantUrl(recipe.image, "thumb")}
-                                        alt={recipe.title}
-                                        class="h-10 w-10 rounded-md object-cover shrink-0"
-                                        decoding="async"
-                                        loading="lazy"
-                                    />
+                                    {@render thumbnail(recipe.image, "size-10")}
                                     <div class="min-w-0 flex-1">
                                         <p class="text-sm font-medium truncate">{recipe.title}</p>
                                         <p class="text-xs text-muted-foreground flex items-center gap-1">
@@ -452,13 +457,7 @@
                                 {#each dayEntries as entry (entry.id)}
                                     <div class="group flex flex-wrap items-start justify-end gap-1 rounded-lg border border-border/60 bg-card p-1.5 transition-colors hover:border-border sm:p-2">
                                         <a class="flex min-w-0 flex-1 items-start gap-2" href={`/recipe/${entry.recipe.id}${servingsQuery(entry.servings ?? undefined)}`}>
-                                            <img
-                                                src={imageVariantUrl(entry.recipe.image, "thumb")}
-                                                alt={entry.recipe.title}
-                                                class="size-9 shrink-0 rounded-md object-cover sm:size-10"
-                                                decoding="async"
-                                                loading="lazy"
-                                            />
+                                            {@render thumbnail(entry.recipe.image, "size-9 sm:size-10")}
                                             <div class="min-w-0 flex-1">
                                                 <p class="line-clamp-2 text-xs font-medium leading-snug sm:text-[13px]">{entry.recipe.title}</p>
                                                 <p class="truncate text-[11px] text-muted-foreground">

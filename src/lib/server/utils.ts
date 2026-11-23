@@ -1,4 +1,7 @@
 import {hash} from "@node-rs/argon2";
+import {normalizeRecipeSourceUrl} from "../recipe-source";
+
+export class InvalidRecipeSourceUrlError extends Error {}
 
 /**
  * Throws an error if any of the inputs is empty
@@ -43,6 +46,7 @@ export const getDifficultyId = (difficulty: string): number => {
 export function parseRecipeFormData(formData: FormData): {
     title: string;
     description: string;
+    sourceUrl: string | null | undefined;
     cookTime: number;
     servings: number;
     difficulty: "easy" | "medium" | "hard";
@@ -59,6 +63,10 @@ export function parseRecipeFormData(formData: FormData): {
 } {
     const title: string = formData.get("title")?.toString() ?? "";
     const description: string = formData.get("description")?.toString() ?? "";
+    const source = formData.get("sourceUrl");
+    if (source !== null && typeof source !== "string") throw new InvalidRecipeSourceUrlError();
+    const sourceUrl = source === null ? undefined : normalizeRecipeSourceUrl(source);
+    if (source?.trim() && !sourceUrl) throw new InvalidRecipeSourceUrlError();
     const cookTime: number = Number(formData.get("cookTime"));
     const servings: number = Number(formData.get("servings"));
     const difficultyRaw: string = formData.get("difficulty")?.toString() ?? "";
@@ -140,6 +148,7 @@ export function parseRecipeFormData(formData: FormData): {
     return {
         title,
         description,
+        sourceUrl,
         cookTime,
         servings,
         difficulty,

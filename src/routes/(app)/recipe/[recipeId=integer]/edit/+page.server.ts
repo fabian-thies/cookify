@@ -1,5 +1,5 @@
-import {type Actions, error, fail, type RequestEvent} from "@sveltejs/kit";
-import {parseRecipeFormData} from "$lib/server/utils";
+import {type Actions, fail, type RequestEvent} from "@sveltejs/kit";
+import {InvalidRecipeSourceUrlError, parseRecipeFormData} from "$lib/server/utils";
 import {deleteImage, ImageUploadError, saveImage, saveImageFromUrl} from "$lib/server/image";
 import {getRecipeById, updateRecipe} from "$lib/server/db/recipe";
 
@@ -30,21 +30,22 @@ export const actions = {
         try {
             data = parseRecipeFormData(formData);
         } catch (e) {
+            if (e instanceof InvalidRecipeSourceUrlError) {
+                return fail(400, {invalid: true, sourceUrlInvalid: true});
+            }
             console.error(e);
             return fail(400, {invalid: true});
         }
 
-        let imageUrl: string = existing.image ?? "";
-        let uploadedImage: string | null = null;
+        let uploadedImage: string | undefined;
         if ((picture && picture.size > 0) || pictureUrl) {
             if (picture && picture.size > 15 * 1024 * 1024) {
                 return fail(400, {invalid: true, pictureTooLarge: true});
             }
             try {
-                imageUrl = picture && picture.size > 0
+                uploadedImage = picture && picture.size > 0
                     ? await saveImage(picture)
                     : await saveImageFromUrl(pictureUrl);
-                uploadedImage = imageUrl;
             } catch (e) {
                 if (e instanceof ImageUploadError) {
                     return fail(400, {invalid: true, imageInvalid: true});
@@ -59,7 +60,7 @@ export const actions = {
                 id: recipeId,
                 userId: locals.user.id,
                 ...data,
-                image: imageUrl
+                image: uploadedImage
             });
         } catch (e) {
             if (uploadedImage) {

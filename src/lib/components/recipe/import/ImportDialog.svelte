@@ -6,6 +6,7 @@
     import {m} from "$lib/paraglide/messages";
     import {Spinner} from "$lib/components/ui/spinner/index.js";
     import {toast} from "svelte-sonner";
+    import {MAX_RECIPE_SOURCE_URL_LENGTH, normalizeRecipeSourceUrl} from "$lib/recipe-source";
 
     type ScrapedRecipe = {
         title: string;
@@ -48,10 +49,8 @@
             return;
         }
 
-        try {
-            const parsed = new URL(trimmedUrl);
-            if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('Invalid protocol');
-        } catch {
+        const sourceUrl = normalizeRecipeSourceUrl(trimmedUrl);
+        if (!sourceUrl) {
             error = m["recipe.import.invalidUrl"]();
             return;
         }
@@ -63,7 +62,7 @@
             const response = await fetch('/api/recipes/scrape', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: trimmedUrl })
+                body: JSON.stringify({ url: sourceUrl })
             });
 
             if (!response.ok) {
@@ -76,7 +75,7 @@
             }
 
             const recipe: ScrapedRecipe = await response.json();
-            await onImport(recipe);
+            await onImport({...recipe, sourceUrl: normalizeRecipeSourceUrl(recipe.sourceUrl) ?? sourceUrl});
             open = false;
             url = '';
             toast.success(m["recipe.import.success"]());
@@ -112,6 +111,7 @@
                     bind:value={url}
                     placeholder={m["recipe.import.urlPlaceholder"]()}
                     type="url"
+                    maxlength={MAX_RECIPE_SOURCE_URL_LENGTH}
                     disabled={loading}
                     onkeydown={(e) => {
                         if (e.key === 'Enter') {

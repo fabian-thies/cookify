@@ -4,6 +4,7 @@ import {DIFFICULTIES} from "$lib/constants";
 export interface CreateRecipeInput {
     title: string;
     description: string;
+    sourceUrl?: string | null;
     cookTime: number;
     servings: number;
     userId: string;
@@ -21,8 +22,9 @@ export interface CreateRecipeInput {
     fiber?: number | null;
 }
 
-export interface UpdateRecipeInput extends CreateRecipeInput {
+export interface UpdateRecipeInput extends Omit<CreateRecipeInput, "image"> {
     id: number;
+    image?: string;
 }
 
 export type Difficulty = typeof DIFFICULTIES[number];

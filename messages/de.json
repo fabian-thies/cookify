@@ -131,7 +131,9 @@
         "nameLabel": "Rezeptname",
         "namePlaceholder": "z.B. Italienische Pasta Carbonara",
         "descriptionLabel": "Beschreibung",
-        "descriptionPlaceholder": "Beschreibe dein Rezept kurz"
+        "descriptionPlaceholder": "Beschreibe dein Rezept kurz",
+        "sourceUrlLabel": "Link zum Originalrezept (optional)",
+        "sourceUrlInvalid": "Gib einen gültigen Rezeptlink ein, der mit http:// oder https:// beginnt."
       },
       "ingredients": {
         "title": "Zutaten",
@@ -160,7 +162,7 @@
         "difficultyGroupLabel": "Schwierigkeitsgrad",
         "tagsLabel": "Schlagwörter",
         "tagsPlaceholder": "Tag eingeben und Enter drücken",
-        "previewLabel": "Vorschaubild",
+        "previewLabel": "Vorschaubild (optional)",
         "choosePhoto": "Foto auswählen",
         "changePhoto": "Foto ändern",
         "photoUpload": "Hochladen",
@@ -535,6 +537,7 @@
       "security": "Jeder mit diesem Link kann deinen Wochenplan sehen. Erzeuge einen neuen Link, um alte zu widerrufen."
     }
   },
+  "recipe.common.originalRecipe": "Originalrezept",
   "a11y.skipToContent": "Zum Inhalt springen",
   "actions.close": "Schließen",
   "recipe.form.unsavedChanges": "Du hast ungespeicherte Änderungen. Ohne Speichern verlassen?",

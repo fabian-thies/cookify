@@ -13,7 +13,7 @@
 
     let {collectionId, title, images, recipeCount}: Props = $props();
 
-    const cover = $derived(images?.[0] ?? "");
+    const cover = $derived(images?.find(Boolean) ?? "");
     const coverSrcset = $derived(isUploadedImage(cover)
         ? `${imageVariantUrl(cover, "thumb")} 480w, ${imageVariantUrl(cover, "medium")} 960w`
         : undefined);
@@ -24,7 +24,7 @@
         href="/collection/{collectionId}"
 >
     <div class="relative aspect-[16/9] w-full overflow-hidden bg-muted">
-        {#if images && images.length > 0}
+        {#if cover}
             <img
                     alt=""
                     class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out motion-safe:group-hover:scale-[1.03] motion-reduce:transition-none"

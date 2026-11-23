@@ -1,5 +1,6 @@
 import * as v from 'valibot';
 import {command, getRequestEvent, query} from '$app/server';
+import {normalizeRecipeSourceUrl} from '$lib/recipe-source';
 import {
     toggleRecipeFavorite,
     deleteRecipe as deleteRecipeFromDb,
@@ -496,6 +497,13 @@ export const getSharedRecipeDetails = query(v.object({
     };
 });
 
+const recipeSource = v.optional(v.nullable(v.pipe(
+    v.string(),
+    v.trim(),
+    v.check(value => value === '' || normalizeRecipeSourceUrl(value) !== null, 'Invalid original recipe URL'),
+    v.transform((value: string) => normalizeRecipeSourceUrl(value))
+)));
+
 export const createRecipe = command(v.object({
     title: v.pipe(v.string(), v.minLength(1), v.maxLength(255)),
     description: v.pipe(v.string(), v.minLength(1)),
@@ -510,7 +518,8 @@ export const createRecipe = command(v.object({
     steps: v.array(v.pipe(v.string(), v.minLength(1))),
     tags: v.array(v.pipe(v.string(), v.minLength(1))),
     tips: v.array(v.pipe(v.string(), v.minLength(1))),
-    image: v.pipe(v.string(), v.minLength(1)),
+    image: v.optional(v.string(), ''),
+    sourceUrl: recipeSource,
     visibility: v.picklist(['public', 'private']),
     calories: v.optional(v.nullable(v.number()), null),
     protein: v.optional(v.nullable(v.number()), null),
@@ -545,7 +554,8 @@ export const updateRecipe = command(v.object({
     steps: v.array(v.pipe(v.string(), v.minLength(1))),
     tags: v.array(v.pipe(v.string(), v.minLength(1))),
     tips: v.array(v.pipe(v.string(), v.minLength(1))),
-    image: v.pipe(v.string(), v.minLength(1)),
+    image: v.optional(v.string()),
+    sourceUrl: recipeSource,
     visibility: v.picklist(['public', 'private']),
     calories: v.optional(v.nullable(v.number()), null),
     protein: v.optional(v.nullable(v.number()), null),
