@@ -32,46 +32,49 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
 
 - **User Accounts**
     - Create your own account with login, registration, and profile settings.
+    - Add and manage passkeys in Settings for passwordless sign-in.
     - Choose your preferred language and update your avatar.
 - **Recipe Management**
-    - Add, edit, and delete recipes with full detail: ingredients (amounts + units), steps, servings, cook time, difficulty, tags, and tips.
-    - Upload custom images to personalize each recipe. Uploads are converted to responsive WebP thumbnails automatically.
-    - Set recipes as **public** or **private** to control who can see them.
+    - Add, edit, and delete recipes with ingredients, steps, servings, cook time, difficulty, tags, tips, and optional nutrition per serving.
+    - Change the serving count on a recipe to scale its ingredient quantities.
+    - Upload a cover photo or paste an image URL to preview and save it. Cookify generates responsive WebP variants for saved recipe images.
+    - Set recipes as **public** or **private** to control who can find and open them in Cookify.
 - **Import from URL (Recipe Scraper)**
-    - Paste a recipe URL and let Cookify extract title, ingredients, steps, and image automatically via JSON-LD structured data.
-    - If a page has no structured data, a configured AI model extracts the recipe as a fallback.
+    - Paste a recipe page URL to import its title, ingredients, steps, and image when available in JSON-LD structured data.
+    - When the structured recipe is missing or incomplete, Cookify can try to extract it with AI if configured and enabled.
 - **AI Recipes (optional)**
     - Create recipes from a text idea or a photo (cookbook page, handwritten note, finished dish, or fridge contents).
     - Edit existing recipes with natural language (e.g. "make it vegan" or "for 8 servings").
     - AI-generated recipes include estimated nutrition per serving; nutrition can also be estimated for existing recipes.
     - Admins can enable or disable AI features globally at any time.
 - **Smart Search & Filters**
-    - Search and filter recipes by difficulty, cook time, or keywords.
+    - Search by keyword and filter by difficulty, cook time, or tag. Limit results to your own recipes or click a recipe tag to browse matching dishes.
     - Powered by PostgreSQL full-text search, with fuzzy matching for typos.
 - **Favorites & Ratings**
     - Mark recipes as favorites and rate them on a 1-5 scale.
 - **Personal Cookbook Export**
-    - Download your own recipes as a printable PDF cookbook or as a ZIP with JSON data and all uploaded photos.
+    - Download your own recipes as a printable PDF cookbook or as a ZIP with recipe data, collection information, and locally stored cover photos.
 - **Personal Collections**
     - Group recipes into custom collections for easy organization.
 - **Weekly Meal Plan**
-    - Drag and drop recipes onto a weekly calendar to plan your meals.
+    - Plan meals by dragging recipes onto the weekly calendar or by selecting a recipe and then a day.
     - Auto-generated **shopping list** based on the recipes scheduled for the week, grouped by supermarket category. Items and checkmarks are saved per week.
-    - **Calendar subscription (ICS)**: add the plan to Google Calendar, Apple Calendar or any other calendar app.
+    - **Calendar subscription (ICS)** lets you follow your meal plan in a calendar app. Anyone with the subscription URL can read the feed, including titles of private recipes on the plan. Keep the URL private and regenerate it if exposed. Hosted calendar services need a URL they can reach.
 - **Installable PWA**
-    - Add Cookify to your home screen and keep recently visited pages and images available offline.
+    - Install Cookify on your device. The service worker caches recently loaded pages and images for limited offline access. Sign-in, edits, and features that fetch live data require a connection.
 - **Cook Mode**
-    - Full-screen, step-by-step cooking experience that keeps your screen awake.
-    - Built-in **multiple timers** — start a timer per step or add custom timers on the fly.
+    - Follow recipes step by step and open the ingredient list as you cook. Cookify keeps the screen awake on supported browsers.
+    - Run multiple countdowns at once with preset or custom timers. Cookify also offers a timer when it recognizes a duration in the current step.
 - **Recipe Sharing**
-    - Generate shareable links for any public recipe.
+    - Owners can create a share link for either a public or a private recipe. Anyone with the active link can view the recipe without an account. Revoke the link separately to end access through it.
     - Track view counts to see how often your recipes have been viewed.
 - **Home Dashboard**
     - A personal **For you** feed learns from favorites, ratings and cooking history.
     - Browse popular recipes, recently added dishes, and discover something new through curated carousels.
+    - Find similar dishes on recipe detail pages.
 - **Administration & Backup**
     - Admin panel to manage users and toggle new registrations on/off.
-    - **Backup & Restore**: export the entire database plus all uploaded images as a ZIP file, or import a backup to restore everything.
+    - Export app data and uploaded files as a ZIP. Store and transfer backup archives securely because they include password hashes and calendar subscription tokens. Avoid restoring from this branch with the supplied Docker Compose setup. Restoration can replace database records and remove uploaded files before failing on the uploads mount.
 - **Multilingual Support**
     - Available in **English**, **German**, and **Spanish**.
 
@@ -93,42 +96,38 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
     POSTGRES_DB=cookify
     ```
 
-2. Start the containers:
+    Replace `secret` with the same URL-safe password in both database settings.
 
-    ```bash
-    docker compose up -d --build
+2. Create a `docker-compose.override.yml` to publish the app on your local machine:
+
+    ```yaml
+    services:
+      app:
+        ports:
+          - "127.0.0.1:3000:3000"
     ```
 
+3. Run `docker compose up -d --build` and open `http://localhost:3000`. The first account you register becomes the administrator.
+
 ### Configuration Notes
-
-* The **app container** exposes port **3000**.
-  To access it from your host, add a port mapping under `app` in your `docker-compose.yml`:
-
-  ```yaml
-  services:
-    app:
-      ports:
-        - "3000:3000"
-  ```
 
 * File uploads are persisted in the `./uploads` directory (mounted into the container).
 
 * **AI configuration (optional):**
-  The AI features use an OpenAI-compatible chat completions endpoint and are disabled when no key is set.
+  The AI features use an OpenAI-compatible chat completions endpoint. They become available once a key is configured unless an administrator has disabled AI. Leave the key unset to keep AI unavailable.
   Add these variables to your `.env` / Coolify environment:
 
   ```dotenv
   OPENAI_KEY=your_api_key
-  OPENAI_BASE_URL=https://ollama.com/v1   # Ollama Cloud; use https://api.openai.com/v1 for OpenAI
+  OPENAI_BASE_URL=https://ollama.com/v1
   OPENAI_MODEL=deepseek-v4.1-flash:1017          # text model
   OPENAI_VISION_MODEL=deepseek-v4.1-flash:1017   # used for image input
   ```
 
-  After deploying, an administrator can turn the features on or off under **Administration → AI**.
-  Recipe text and photos are sent to the configured provider; review its privacy policy before enabling AI.
+  This example uses Ollama Cloud. For another provider, set its base URL and both model IDs to values supported by that provider. Administrators can turn AI on or off under **Administration → AI**.
+  AI requests send relevant recipe text, photos, or imported page content to the configured provider. Review its privacy policy before enabling AI.
 
 * Database **migrations** run automatically on container start (`scripts/migrate.ts`).
 
-* **Coolify Deployment:**
-  The provided `docker-compose.yml` works out of the box with **Coolify**. Just make sure your domain in Coolify is forwarded to the app’s exposed port (`3000`).
+* **Coolify deployment** uses `docker-compose.yml`. Route your public HTTPS domain to the `app` service on port `3000` and set `ORIGIN` to that public URL. HTTPS is required for passkeys and PWA features on a remote deployment. On a fresh instance, registration is open by default and the first account becomes administrator. Restrict access until you have registered that account.
 * **Default language:** Set `DEFAULT_LOCALE=de` in the runtime environment (supported: `en`, `de`, `es`; fallback: `en`). Profile language takes priority, followed by a saved language cookie. New visitors and newly registered accounts use the default. Existing account preferences are preserved. Redeploy after changing the environment variable.
