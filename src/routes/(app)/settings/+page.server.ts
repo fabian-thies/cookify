@@ -1,5 +1,6 @@
 import type {RequestEvent} from "@sveltejs/kit";
 import {fail, redirect} from "@sveltejs/kit";
+import type {PageServerLoad} from "./$types";
 import * as v from 'valibot';
 import {saveProfile, updatePassword, deleteUserAccount} from "$lib/server/db/user";
 import {hashPassword} from "$lib/server/utils";
@@ -11,8 +12,13 @@ import {validatePassword, validateUsername} from "$lib/utils";
 import {deleteSessionTokenCookie, invalidateSession} from "$lib/server/auth";
 import {deletePasskey, getPasskeysByUserId} from "$lib/server/db/passkey";
 
-export const load = async ({locals}: RequestEvent) => {
-    return {passkeys: await getPasskeysByUserId(locals.user!.id)};
+export const load: PageServerLoad = async ({locals, parent}) => {
+    await parent();
+    if (!locals.user) {
+        return {passkeys: []};
+    }
+
+    return {passkeys: await getPasskeysByUserId(locals.user.id)};
 };
 
 const ProfileSchema = v.object({

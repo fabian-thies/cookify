@@ -230,6 +230,10 @@ async function findOriginalForVariant(variantName: string): Promise<string | nul
  * the image cannot be converted.
  */
 export async function resolveImageVariant(requestedPath: string): Promise<{filePath: string; contentType: string} | null> {
+    if (path.dirname(requestedPath) !== UPLOAD_DIR) {
+        return null;
+    }
+
     const originalPath = await findOriginalForVariant(path.basename(requestedPath));
     if (!originalPath) {
         return null;

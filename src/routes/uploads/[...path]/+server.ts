@@ -19,14 +19,23 @@ export const GET: RequestHandler = async ({params}) => {
     let filePath = requestedPath;
     let contentType = MIME_TYPES[path.extname(requestedPath).toLowerCase()] ?? 'application/octet-stream';
 
+    let stat;
     try {
-        await fs.access(filePath);
-    } catch {
+        stat = await fs.stat(filePath);
+    } catch (e) {
+        const err = e as NodeJS.ErrnoException;
+        if (err?.code !== 'ENOENT') {
+            throw error(404, 'Not found');
+        }
         // Variants for images uploaded before the image pipeline existed are generated lazily.
         const resolved = await resolveImageVariant(requestedPath);
         if (!resolved) throw error(404, 'Not found');
         filePath = resolved.filePath;
         contentType = resolved.contentType;
+    }
+
+    if (stat && !stat.isFile()) {
+        throw error(404, 'Not found');
     }
 
     try {

@@ -4,17 +4,21 @@ import {
     collectionToRecipe,
     collections,
     cookHistory,
+    difficultyToRecipe,
     favorite,
+    ingredients,
     mealPlan,
     passkey,
     recipeRating,
     recipes,
     session,
     shoppingListItems,
+    steps,
+    tags,
+    tips,
     user
 } from "$lib/server/db/schema";
 import type {UserLanguage} from "$lib/types/languages";
-import {deleteRecipe} from "$lib/server/db/recipe";
 
 export async function saveProfile(userId: string, username: string, email: string, avatar: string, language: UserLanguage) {
     const db = getDb();
@@ -77,27 +81,40 @@ export async function updateUserEmail(userId: string, email: string) {
 export async function deleteUserAccount(userId: string) {
     const db = getDb();
 
-    const userRecipes = await db.select({id: recipes.id}).from(recipes).where(eq(recipes.userId, userId));
-    for (const {id} of userRecipes) {
-        await deleteRecipe(userId, id);
-    }
+    return await db.transaction(async (tx) => {
+        const userRecipes = await tx.select({id: recipes.id}).from(recipes).where(eq(recipes.userId, userId));
+        const recipeIds = userRecipes.map((recipe) => recipe.id);
+        if (recipeIds.length > 0) {
+            await tx.delete(mealPlan).where(inArray(mealPlan.recipeId, recipeIds));
+            await tx.delete(favorite).where(inArray(favorite.recipeId, recipeIds));
+            await tx.delete(recipeRating).where(inArray(recipeRating.recipeId, recipeIds));
+            await tx.delete(cookHistory).where(inArray(cookHistory.recipeId, recipeIds));
+            await tx.delete(collectionToRecipe).where(inArray(collectionToRecipe.recipeId, recipeIds));
+            await tx.delete(difficultyToRecipe).where(inArray(difficultyToRecipe.recipeId, recipeIds));
+            await tx.delete(ingredients).where(inArray(ingredients.recipeId, recipeIds));
+            await tx.delete(steps).where(inArray(steps.recipeId, recipeIds));
+            await tx.delete(tags).where(inArray(tags.recipeId, recipeIds));
+            await tx.delete(tips).where(inArray(tips.recipeId, recipeIds));
+            await tx.delete(recipes).where(inArray(recipes.id, recipeIds));
+        }
 
-    const userCollections = await db.select({id: collections.id}).from(collections).where(eq(collections.userId, userId));
-    const collectionIds = userCollections.map((collection) => collection.id);
-    if (collectionIds.length > 0) {
-        await db.delete(collectionToRecipe).where(inArray(collectionToRecipe.collectionId, collectionIds));
-        await db.delete(collections).where(inArray(collections.id, collectionIds));
-    }
+        const userCollections = await tx.select({id: collections.id}).from(collections).where(eq(collections.userId, userId));
+        const collectionIds = userCollections.map((collection) => collection.id);
+        if (collectionIds.length > 0) {
+            await tx.delete(collectionToRecipe).where(inArray(collectionToRecipe.collectionId, collectionIds));
+            await tx.delete(collections).where(inArray(collections.id, collectionIds));
+        }
 
-    await db.delete(recipeRating).where(eq(recipeRating.userId, userId));
-    await db.delete(cookHistory).where(eq(cookHistory.userId, userId));
-    await db.delete(favorite).where(eq(favorite.userId, userId));
-    await db.delete(passkey).where(eq(passkey.userId, userId));
-    await db.delete(mealPlan).where(eq(mealPlan.userId, userId));
-    await db.delete(shoppingListItems).where(eq(shoppingListItems.userId, userId));
-    await db.delete(session).where(eq(session.userId, userId));
+        await tx.delete(recipeRating).where(eq(recipeRating.userId, userId));
+        await tx.delete(cookHistory).where(eq(cookHistory.userId, userId));
+        await tx.delete(favorite).where(eq(favorite.userId, userId));
+        await tx.delete(passkey).where(eq(passkey.userId, userId));
+        await tx.delete(mealPlan).where(eq(mealPlan.userId, userId));
+        await tx.delete(shoppingListItems).where(eq(shoppingListItems.userId, userId));
+        await tx.delete(session).where(eq(session.userId, userId));
 
-    return db.delete(user).where(eq(user.id, userId));
+        return tx.delete(user).where(eq(user.id, userId));
+    });
 }
 
 export async function getLocaleByUserId(userId: string) {
