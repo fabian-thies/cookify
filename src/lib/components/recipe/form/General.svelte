@@ -35,7 +35,7 @@
         <div class="flex w-full flex-col gap-1.5">
             <Label for="sourceUrl">{m["recipe.form.general.sourceUrlLabel"]()}</Label>
             <Input id="sourceUrl" name="sourceUrl" type="url" maxlength={MAX_RECIPE_SOURCE_URL_LENGTH}
-                   bind:value={sourceUrl}/>
+                   placeholder={m["recipe.import.urlPlaceholder"]()} bind:value={sourceUrl}/>
         </div>
     </Card.Content>
 </Card.Root>

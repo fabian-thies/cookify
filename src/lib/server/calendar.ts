@@ -1,3 +1,5 @@
+import {servingsQuery} from '$lib/servings';
+
 type CalendarEvent = {
     id: number;
     date: string;
@@ -6,6 +8,7 @@ type CalendarEvent = {
     title: string;
     cookingTime: number;
     servings: number;
+    plannedServings?: number | null;
 };
 
 const encoder = new TextEncoder();
@@ -77,11 +80,12 @@ export function buildMealPlanCalendar(events: CalendarEvent[], origin: string, c
     ];
 
     for (const event of events) {
-        const recipeUrl = `${origin}/recipe/${event.recipeId}`;
+        const servings = event.plannedServings ?? event.servings;
+        const recipeUrl = `${origin}/recipe/${event.recipeId}${servingsQuery(event.plannedServings ?? undefined)}`;
         const description = [
             recipeUrl,
             `${event.cookingTime} min`,
-            `${event.servings} servings`
+            `${servings} servings`
         ].join('\n');
 
         lines.push(

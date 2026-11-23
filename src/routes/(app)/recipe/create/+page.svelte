@@ -58,7 +58,7 @@
 
         const descInput = formEl.querySelector('[name="description"]') as HTMLInputElement;
         if (descInput && recipe.description) descInput.value = recipe.description;
-        if (recipe.sourceUrl) sourceUrl = recipe.sourceUrl;
+        if (recipe.sourceUrl !== undefined) sourceUrl = recipe.sourceUrl ?? "";
 
         const cookTimeInput = formEl.querySelector('[name="cookTime"]') as HTMLInputElement;
         if (cookTimeInput && recipe.cookTime) cookTimeInput.value = String(recipe.cookTime);

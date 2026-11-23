@@ -10,6 +10,7 @@
     } from "$lib/functions/meal-plan.remote";
     import { Button, buttonVariants } from "$lib/components/ui/button";
     import { Input } from "$lib/components/ui/input";
+    import { Label } from "$lib/components/ui/label";
     import { Spinner } from "$lib/components/ui/spinner";
     import * as Dialog from "$lib/components/ui/dialog";
     import { ChevronLeft, ChevronRight, Clock, Plus, Search, ShoppingCart, Trash2, X, CalendarPlus, Copy, Check, RefreshCw, Pencil, UtensilsCrossed } from "lucide-svelte";
@@ -74,6 +75,7 @@
     let adding = $state(false);
     let servingsDialogOpen = $state(false);
     let servingsInput = $state<number>();
+    let servingsError = $state<string | null>(null);
     let plannedMeal = $state<{recipeId: number; title: string; date: string; entryId?: number}>();
     let loadVersion = 0;
     let shoppingRevision = $state(0);
@@ -158,6 +160,7 @@
 
         plannedMeal = {recipeId: id, title: recipe.title, date, entryId: entry?.id};
         servingsInput = parseServings(entry?.servings ?? recipe.servings) ?? 1;
+        servingsError = null;
         servingsDialogOpen = true;
     }
 
@@ -167,7 +170,7 @@
         if (!plannedMeal || !servings || adding) return;
 
         adding = true;
-        error = null;
+        servingsError = null;
         const {recipeId, date, entryId} = plannedMeal;
         try {
             if (entryId) {
@@ -180,7 +183,7 @@
             shoppingRevision++;
             await loadData();
         } catch {
-            error = m["mealPlan.error.add"]();
+            servingsError = m["mealPlan.error.add"]();
         } finally {
             adding = false;
         }
@@ -378,6 +381,7 @@
                             </div>
                             {#if selectedRecipeId != null}
                                 <button
+                                    type="button"
                                     disabled={adding}
                                     class="mt-2 inline-flex min-h-11 w-full items-center justify-center gap-1 rounded-md bg-primary/15 text-sm font-medium text-primary transition hover:bg-primary/25"
                                     onclick={() => planRecipe(selectedRecipeId!, date)}
@@ -395,8 +399,8 @@
                                 </div>
                             {:else}
                                 {#each dayEntries as entry (entry.id)}
-                                    <div class="group flex flex-wrap items-start justify-end gap-1 rounded-lg border border-border/60 bg-card p-1.5 transition-colors hover:border-border sm:p-2">
-                                        <a class="flex min-w-0 flex-1 items-start gap-2" href={`/recipe/${entry.recipe.id}${servingsQuery(entry.servings ?? undefined)}`}>
+                                    <div class="group flex flex-col gap-1.5 rounded-lg border border-border/60 bg-card p-2 transition-colors hover:border-border">
+                                        <a class="flex min-w-0 items-start gap-2" href={`/recipe/${entry.recipe.id}${servingsQuery(entry.servings ?? undefined)}`}>
                                             {@render thumbnail(entry.recipe.image, "size-9 sm:size-10")}
                                             <div class="min-w-0 flex-1">
                                                 <p class="line-clamp-2 text-xs font-medium leading-snug sm:text-[13px]">{entry.recipe.title}</p>
@@ -405,17 +409,19 @@
                                                 </p>
                                             </div>
                                         </a>
-                                        <div class="flex shrink-0 items-center">
+                                        <div class="flex items-center justify-end gap-0.5 border-t border-border/40 pt-1">
                                             <button
+                                                type="button"
                                                 aria-label={m["mealPlan.planServings"]()}
-                                                class="flex size-9 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-accent"
+                                                class="flex size-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
                                                 onclick={() => planRecipe(entry.recipeId, entry.date)}
                                             >
                                                 <Pencil class="size-3.5"/>
                                             </button>
                                             <button
+                                                type="button"
                                                 aria-label={m["actions.delete"]()}
-                                                class="flex size-9 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
+                                                class="flex size-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
                                                 onclick={() => handleRemove(entry.id)}
                                             >
                                                 <Trash2 class="size-3.5"/>
@@ -439,21 +445,26 @@
         </div>
     {/if}
 
-    <Dialog.Root bind:open={servingsDialogOpen}>
+    <Dialog.Root bind:open={servingsDialogOpen} onOpenChange={(open) => { if (!open) servingsError = null; }}>
         <Dialog.Content>
             <Dialog.Header>
                 <Dialog.Title>{m["mealPlan.planServings"]()}</Dialog.Title>
                 <Dialog.Description>{plannedMeal?.title}</Dialog.Description>
             </Dialog.Header>
             <form class="space-y-4" onsubmit={savePlannedMeal}>
-                <Input aria-label={m["mealPlan.planServings"]()} type="number" bind:value={servingsInput}
-                       required min={1} max={MAX_SERVINGS} step={1}/>
-                {#if error}
-                    <p role="alert" class="text-sm text-destructive">{error}</p>
+                <div class="grid gap-2">
+                    <Label for="planned-servings">{m["recipe.form.details.servingsLabel"]()}</Label>
+                    <Input id="planned-servings" aria-label={m["mealPlan.planServings"]()} type="number" bind:value={servingsInput}
+                           required min={1} max={MAX_SERVINGS} step={1}/>
+                </div>
+                {#if servingsError}
+                    <p role="alert" class="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{servingsError}</p>
                 {/if}
                 <Dialog.Footer>
                     <Dialog.Close class={buttonVariants({variant: "outline"})}>{m["actions.cancel"]()}</Dialog.Close>
-                    <Button type="submit" disabled={adding}>{m["actions.save"]()}</Button>
+                    <Button type="submit" disabled={adding}>
+                        {#if adding}<Spinner/>{:else}{m["actions.save"]()}{/if}
+                    </Button>
                 </Dialog.Footer>
             </form>
         </Dialog.Content>

@@ -1,5 +1,7 @@
 <script lang="ts">
     import {Input} from "$lib/components/ui/input";
+    import {Checkbox} from "$lib/components/ui/checkbox";
+    import {Label} from "$lib/components/ui/label";
     import SelectComponent from "$lib/components/ui/select/SelectComponent.svelte";
     import RecipeCard from "$lib/components/recipe/widgets/RecipeCard.svelte";
     import RecipeCardSkeleton from "$lib/components/recipe/widgets/RecipeCardSkeleton.svelte";
@@ -182,7 +184,7 @@
                 {#if title}
                     <h1 class="page-title">{title}</h1>
                 {/if}
-                {#if !loading}
+                {#if !loading && !(searching && remoteRecipes === null)}
                     <p role="status" aria-live="polite" aria-atomic="true" class="text-sm text-muted-foreground">
                         {m["recipe.list.results"]({count: filteredRecipes.length})}
                     </p>
@@ -198,157 +200,163 @@
     {/if}
 
     {#if showFilters}
-        <div class="flex items-center gap-2">
-            <div class="relative flex-1">
-                <Search class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"/>
-                <Input
-                    aria-label={(ingredientsOnly ? m["recipe.list.ingredientSearchLabel"]() : m["recipe.list.searchPlaceholder"]())}
-                    bind:value={search}
-                    class="h-11 pl-9 pr-10"
-                    placeholder={ingredientsOnly ? m["recipe.list.ingredientSearchPlaceholder"]() : m["recipe.list.searchPlaceholder"]()}
-                    type="search"
-                />
-                {#if searching}
-                    <Loader2 class="pointer-events-none absolute right-11 top-1/2 size-4 -translate-y-1/2 animate-spin text-muted-foreground"/>
-                {/if}
-                {#if search}
-                    <button
-                        aria-label={m["search.clear"]()}
-                        class="absolute right-0 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition hover:bg-accent hover:text-foreground"
-                        onclick={() => search = ""}
-                        type="button"
-                    >
-                        <X class="size-4"/>
-                    </button>
-                {/if}
-            </div>
-
-            <Popover.Root bind:open={filterPopoverOpen}>
-                <Popover.Trigger aria-label={m["recipe.list.filter"]()} class={buttonVariants({ variant: "outline" }) + " h-11 gap-2 px-3"}>
-                    <SlidersHorizontal class="size-4"/>
-                    <span class="hidden sm:inline">{m["recipe.list.filter"]()}</span>
-                    {#if activeFilterCount > 0}
-                        <span class="flex size-5 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-primary-foreground">
-                            {activeFilterCount}
-                        </span>
+        <div class="flex flex-col gap-3">
+            <div class="flex items-center gap-2">
+                <div class="relative flex-1">
+                    <Search class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"/>
+                    <Input
+                        aria-label={(ingredientsOnly ? m["recipe.list.ingredientSearchLabel"]() : m["recipe.list.searchPlaceholder"]())}
+                        bind:value={search}
+                        class="h-11 pl-9 pr-10"
+                        placeholder={ingredientsOnly ? m["recipe.list.ingredientSearchPlaceholder"]() : m["recipe.list.searchPlaceholder"]()}
+                        type="search"
+                    />
+                    {#if searching}
+                        <Loader2 class="pointer-events-none absolute right-11 top-1/2 size-4 -translate-y-1/2 animate-spin text-muted-foreground"/>
                     {/if}
-                </Popover.Trigger>
-                <Popover.Content class="max-h-[70dvh] w-[calc(100vw-2rem)] overflow-y-auto border-border/70 bg-popover shadow-xl sm:w-80" align="end">
-                    <div class="flex flex-col gap-4">
-                        <div class="flex items-center justify-between">
-                            <h4 class="flex items-center gap-2 text-sm font-semibold">
-                                <Filter class="size-4 text-primary"/>
-                                {m["recipe.list.filterTitle"]()}
-                            </h4>
-                            {#if filterActive}
-                                <button class="min-h-11 px-2 text-sm text-muted-foreground transition hover:text-foreground" onclick={clearFilters} type="button">
-                                    {m["recipe.list.clearAll"]()}
-                                </button>
-                            {/if}
-                        </div>
-
-                        <div class="space-y-1.5">
-                            <p class="text-xs font-medium text-muted-foreground">{m["recipe.list.groupLabel"]()}</p>
-                            <SelectComponent
-                                options={difficultySelectOptions}
-                                placeholder={m["recipe.list.difficultyPlaceholder"]()}
-                                groupLabel={m["recipe.list.groupLabel"]()}
-                                name="category"
-                                class="w-full"
-                                bind:value={selectedDifficulty}
-                            />
-                        </div>
-
-                        <div class="space-y-1.5">
-                            <p class="text-xs font-medium text-muted-foreground">{m["recipe.list.cookTimeGroupLabel"]()}</p>
-                            <SelectComponent
-                                options={cookTimeSelectOptions}
-                                placeholder={m["recipe.list.cookTimePlaceholder"]()}
-                                groupLabel={m["recipe.list.cookTimeGroupLabel"]()}
-                                name="cookTime"
-                                class="w-full"
-                                bind:value={selectedCookTime}
-                            />
-                        </div>
-
-                        <div class="space-y-1.5">
-                            <p class="text-xs font-medium text-muted-foreground">{m["recipe.list.tagsGroupLabel"]()}</p>
-                            <SelectComponent
-                                options={availableTags}
-                                placeholder={m["recipe.list.tagsPlaceholder"]()}
-                                groupLabel={m["recipe.list.tagsGroupLabel"]()}
-                                name="tags"
-                                class="w-full"
-                                bind:value={selectedTag}
-                                disabled={availableTags.length === 0}
-                            />
-                        </div>
-
-                        <div class="space-y-1.5">
-                            <p class="text-xs font-medium text-muted-foreground">{m["recipe.list.authorGroupLabel"]()}</p>
-                            <SelectComponent
-                                options={authorSelectOptions}
-                                placeholder={m["recipe.list.authorPlaceholder"]()}
-                                groupLabel={m["recipe.list.authorGroupLabel"]()}
-                                name="author"
-                                class="w-full"
-                                bind:value={author}
-                            />
-                        </div>
-                    </div>
-                </Popover.Content>
-            </Popover.Root>
-        </div>
-
-        {#if serverSearch}
-            <label class="-mt-2 flex min-h-8 w-fit cursor-pointer items-center gap-2 text-sm text-muted-foreground">
-                <input type="checkbox" class="size-4 rounded border-input accent-primary" bind:checked={ingredientsOnly}/>
-                {m["recipe.list.ingredientsOnly"]()}
-            </label>
-            {#if ingredientsOnly}
-                <p class="-mt-4 text-xs text-muted-foreground">{m["recipe.list.ingredientSearchHint"]()}</p>
-            {/if}
-        {/if}
-
-        {#if filterActive}
-            <div class="-mt-2 flex flex-wrap items-center gap-1.5">
-                {#if selectedDifficulty}
-                    <Badge class="gap-1 py-1 pl-2.5 pr-1.5" variant="secondary">
-                        {difficultySelectOptions.find(d => d.value === selectedDifficulty)?.label}
-                        <button aria-label={m["recipe.list.clearFilters"]()} class="-mr-0.5 inline-flex size-8 items-center justify-center rounded-full transition hover:bg-background/60" onclick={() => selectedDifficulty = ""} type="button">
-                            <X class="size-3"/>
+                    {#if search}
+                        <button
+                            aria-label={m["search.clear"]()}
+                            class="absolute right-0 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition hover:bg-accent hover:text-foreground"
+                            onclick={() => search = ""}
+                            type="button"
+                        >
+                            <X class="size-4"/>
                         </button>
-                    </Badge>
-                {/if}
-                {#if selectedCookTime}
-                    <Badge class="gap-1 py-1 pl-2.5 pr-1.5" variant="secondary">
-                        {cookTimeSelectOptions.find(c => c.value === selectedCookTime)?.label}
-                        <button aria-label={m["recipe.list.clearFilters"]()} class="-mr-0.5 inline-flex size-8 items-center justify-center rounded-full transition hover:bg-background/60" onclick={() => selectedCookTime = ""} type="button">
-                            <X class="size-3"/>
-                        </button>
-                    </Badge>
-                {/if}
-                {#if selectedTag}
-                    <Badge class="gap-1 py-1 pl-2.5 pr-1.5" variant="secondary">
-                        {selectedTag}
-                        <button aria-label={m["recipe.list.clearFilters"]()} class="-mr-0.5 inline-flex size-8 items-center justify-center rounded-full transition hover:bg-background/60" onclick={() => selectedTag = ""} type="button">
-                            <X class="size-3"/>
-                        </button>
-                    </Badge>
-                {/if}
-                {#if author && author !== "all"}
-                    <Badge class="gap-1 py-1 pl-2.5 pr-1.5" variant="secondary">
-                        {authorSelectOptions.find(a => a.value === author)?.label}
-                        <button aria-label={m["recipe.list.clearFilters"]()} class="-mr-0.5 inline-flex size-8 items-center justify-center rounded-full transition hover:bg-background/60" onclick={() => author = ""} type="button">
-                            <X class="size-3"/>
-                        </button>
-                    </Badge>
-                {/if}
-                <Button class="px-2 text-sm text-muted-foreground" onclick={clearFilters} size="sm" variant="ghost">
-                    {m["recipe.list.clearAll"]()}
-                </Button>
+                    {/if}
+                </div>
+
+                <Popover.Root bind:open={filterPopoverOpen}>
+                    <Popover.Trigger aria-label={m["recipe.list.filter"]()} class={buttonVariants({ variant: "outline" }) + " h-11 gap-2 px-3"}>
+                        <SlidersHorizontal class="size-4"/>
+                        <span class="hidden sm:inline">{m["recipe.list.filter"]()}</span>
+                        {#if activeFilterCount > 0}
+                            <span class="flex size-5 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-primary-foreground">
+                                {activeFilterCount}
+                            </span>
+                        {/if}
+                    </Popover.Trigger>
+                    <Popover.Content class="max-h-[70dvh] w-[calc(100vw-2rem)] overflow-y-auto border-border/70 bg-popover shadow-xl sm:w-80" align="end">
+                        <div class="flex flex-col gap-4">
+                            <div class="flex items-center justify-between">
+                                <h4 class="flex items-center gap-2 text-sm font-semibold">
+                                    <Filter class="size-4 text-primary"/>
+                                    {m["recipe.list.filterTitle"]()}
+                                </h4>
+                                {#if filterActive}
+                                    <button class="min-h-11 px-2 text-sm text-muted-foreground transition hover:text-foreground" onclick={clearFilters} type="button">
+                                        {m["recipe.list.clearAll"]()}
+                                    </button>
+                                {/if}
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <p class="text-xs font-medium text-muted-foreground">{m["recipe.list.groupLabel"]()}</p>
+                                <SelectComponent
+                                    options={difficultySelectOptions}
+                                    placeholder={m["recipe.list.difficultyPlaceholder"]()}
+                                    groupLabel={m["recipe.list.groupLabel"]()}
+                                    name="category"
+                                    class="w-full"
+                                    bind:value={selectedDifficulty}
+                                />
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <p class="text-xs font-medium text-muted-foreground">{m["recipe.list.cookTimeGroupLabel"]()}</p>
+                                <SelectComponent
+                                    options={cookTimeSelectOptions}
+                                    placeholder={m["recipe.list.cookTimePlaceholder"]()}
+                                    groupLabel={m["recipe.list.cookTimeGroupLabel"]()}
+                                    name="cookTime"
+                                    class="w-full"
+                                    bind:value={selectedCookTime}
+                                />
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <p class="text-xs font-medium text-muted-foreground">{m["recipe.list.tagsGroupLabel"]()}</p>
+                                <SelectComponent
+                                    options={availableTags}
+                                    placeholder={m["recipe.list.tagsPlaceholder"]()}
+                                    groupLabel={m["recipe.list.tagsGroupLabel"]()}
+                                    name="tags"
+                                    class="w-full"
+                                    bind:value={selectedTag}
+                                    disabled={availableTags.length === 0}
+                                />
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <p class="text-xs font-medium text-muted-foreground">{m["recipe.list.authorGroupLabel"]()}</p>
+                                <SelectComponent
+                                    options={authorSelectOptions}
+                                    placeholder={m["recipe.list.authorPlaceholder"]()}
+                                    groupLabel={m["recipe.list.authorGroupLabel"]()}
+                                    name="author"
+                                    class="w-full"
+                                    bind:value={author}
+                                />
+                            </div>
+                        </div>
+                    </Popover.Content>
+                </Popover.Root>
             </div>
-        {/if}
+
+            {#if serverSearch}
+                <div class="flex flex-col gap-1">
+                    <div class="flex min-h-8 w-fit items-center gap-2">
+                        <Checkbox id="ingredients-only-filter" aria-labelledby="ingredients-only-label" bind:checked={ingredientsOnly}/>
+                        <Label id="ingredients-only-label" for="ingredients-only-filter" class="cursor-pointer font-normal text-muted-foreground">
+                            {m["recipe.list.ingredientsOnly"]()}
+                        </Label>
+                    </div>
+                    {#if ingredientsOnly}
+                        <p class="text-xs text-muted-foreground">{m["recipe.list.ingredientSearchHint"]()}</p>
+                    {/if}
+                </div>
+            {/if}
+
+            {#if filterActive}
+                <div class="flex flex-wrap items-center gap-1.5">
+                    {#if selectedDifficulty}
+                        <Badge class="gap-1 py-1 pl-2.5 pr-1.5" variant="secondary">
+                            {difficultySelectOptions.find(d => d.value === selectedDifficulty)?.label}
+                            <button aria-label={m["recipe.list.clearFilters"]()} class="-mr-0.5 inline-flex size-8 items-center justify-center rounded-full transition hover:bg-background/60" onclick={() => selectedDifficulty = ""} type="button">
+                                <X class="size-3"/>
+                            </button>
+                        </Badge>
+                    {/if}
+                    {#if selectedCookTime}
+                        <Badge class="gap-1 py-1 pl-2.5 pr-1.5" variant="secondary">
+                            {cookTimeSelectOptions.find(c => c.value === selectedCookTime)?.label}
+                            <button aria-label={m["recipe.list.clearFilters"]()} class="-mr-0.5 inline-flex size-8 items-center justify-center rounded-full transition hover:bg-background/60" onclick={() => selectedCookTime = ""} type="button">
+                                <X class="size-3"/>
+                            </button>
+                        </Badge>
+                    {/if}
+                    {#if selectedTag}
+                        <Badge class="gap-1 py-1 pl-2.5 pr-1.5" variant="secondary">
+                            {selectedTag}
+                            <button aria-label={m["recipe.list.clearFilters"]()} class="-mr-0.5 inline-flex size-8 items-center justify-center rounded-full transition hover:bg-background/60" onclick={() => selectedTag = ""} type="button">
+                                <X class="size-3"/>
+                            </button>
+                        </Badge>
+                    {/if}
+                    {#if author && author !== "all"}
+                        <Badge class="gap-1 py-1 pl-2.5 pr-1.5" variant="secondary">
+                            {authorSelectOptions.find(a => a.value === author)?.label}
+                            <button aria-label={m["recipe.list.clearFilters"]()} class="-mr-0.5 inline-flex size-8 items-center justify-center rounded-full transition hover:bg-background/60" onclick={() => author = ""} type="button">
+                                <X class="size-3"/>
+                            </button>
+                        </Badge>
+                    {/if}
+                    <Button class="px-2 text-sm text-muted-foreground" onclick={clearFilters} size="sm" variant="ghost">
+                        {m["recipe.list.clearAll"]()}
+                    </Button>
+                </div>
+            {/if}
+        </div>
     {/if}
 
     {#if loading || (searching && remoteRecipes === null)}

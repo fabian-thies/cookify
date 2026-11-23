@@ -26,22 +26,23 @@ test('household shopping items sync and access can be revoked', async ({page, br
     try {
         const partnerPage = await partnerContext.newPage();
         const partner = await openShoppingList(partnerPage);
-        const listPicker = partner.getByRole('combobox', {name: 'Choose shopping list'});
-        await expect(listPicker.getByRole('option', {name: `List from ${ownerUsername}`})).toHaveCount(0);
+        const listPicker = partner.getByRole('button', {name: 'Choose shopping list'});
+        await expect(listPicker).toHaveCount(0);
 
         await owner.getByRole('textbox', {name: 'Add an item'}).fill(name);
         await owner.getByRole('button', {name: 'Add', exact: true}).click();
         const ownerItem = owner.getByRole('checkbox', {name, exact: true});
         await expect(ownerItem).toBeVisible();
 
-        await owner.getByText('Share list', {exact: true}).click();
+        await owner.getByRole('button', {name: 'Share list', exact: true}).click();
         await owner.getByRole('textbox', {name: 'Username', exact: true}).fill(partnerUsername!);
         await owner.getByRole('button', {name: 'Give access', exact: true}).click();
         const revoke = owner.getByRole('button', {name: `Remove access for ${partnerUsername}`});
         await expect(revoke).toBeVisible();
 
         await expect(listPicker).toBeVisible({timeout: 12_000});
-        await listPicker.selectOption({label: `List from ${ownerUsername}`}, {timeout: 5000});
+        await listPicker.click();
+        await partnerPage.getByRole('option', {name: `List from ${ownerUsername}`}).click({timeout: 5000});
         const sharedItem = partner.getByRole('checkbox', {name, exact: true});
         await expect(sharedItem).toBeVisible();
         const alreadyHave = (element: typeof sharedItem) => element.locator('..').getByRole('button', {name: 'Already have'});
@@ -53,7 +54,7 @@ test('household shopping items sync and access can be revoked', async ({page, br
         await expect(owner.getByRole('checkbox', {name: partnerItem, exact: true})).toBeVisible({timeout: 12_000});
 
         await revoke.click();
-        await expect(listPicker.getByRole('option', {name: `List from ${ownerUsername}`})).toHaveCount(0, {timeout: 12_000});
+        await expect(listPicker).toHaveCount(0, {timeout: 12_000});
         await expect(sharedItem).toHaveCount(0);
     } finally {
         await partnerContext.close();

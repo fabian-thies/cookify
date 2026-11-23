@@ -6,14 +6,12 @@
     import Ingredients from "$lib/components/recipe/view/Ingredients.svelte";
     import Overview from "$lib/components/recipe/view/Overview.svelte";
     import ErrorState from "$lib/components/ErrorState.svelte";
-    import {Button} from "$lib/components/ui/button";
     import {m} from "$lib/paraglide/messages";
     import type {PageProps} from "./$types";
     import {getRecipeDetails} from "$lib/functions/recipe.remote";
     import {page} from "$app/stores";
     import {getOfflineRecipe, removeOfflineRecipe, saveOfflineRecipe} from "$lib/offline-recipes";
     import {parseServings} from "$lib/servings";
-    import {Check, Download} from "lucide-svelte";
     import {onMount} from "svelte";
     import {toast} from "svelte-sonner";
 
@@ -42,6 +40,13 @@
             recipe = result;
             recipeOwner = data.user!.id === result.userId;
             savedOffline = !!getOfflineRecipe(recipeId, data.user.id);
+            if (savedOffline) {
+                try {
+                    saveOfflineRecipe(result, data.user.id);
+                } catch {
+                    // Keep the existing offline copy if refreshing storage fails.
+                }
+            }
         } catch (error) {
             if (recipeId !== Number($page.params.recipeId)) return;
             if (error instanceof TypeError && getOfflineRecipe(recipeId, data.user.id)) {
@@ -83,20 +88,17 @@
     </div>
 {:else if recipe}
     {#key recipe.id}
-        <Overview {...recipe} sharePath={recipe.sharePath ?? undefined} {recipeOwner} cookServings={desiredServings}
-                  aiEnabled={!!data.ai?.configured && !!data.ai?.enabled}/>
+        <Overview
+            {...recipe}
+            sharePath={recipe.sharePath ?? undefined}
+            {recipeOwner}
+            cookServings={desiredServings}
+            aiEnabled={!!data.ai?.configured && !!data.ai?.enabled}
+            {offlineReady}
+            {savedOffline}
+            onToggleOffline={toggleOfflineRecipe}
+        />
     {/key}
-    {#if offlineReady}
-        <div class="mb-4 flex flex-wrap items-center gap-2">
-            <Button onclick={toggleOfflineRecipe} size="sm" variant="outline">
-                {#if savedOffline}<Check class="size-4"/>{:else}<Download class="size-4"/>{/if}
-                {savedOffline ? m["offline.removeRecipe"]() : m["offline.saveRecipe"]()}
-            </Button>
-            {#if savedOffline}
-                <Button href="/offline" size="sm" variant="ghost">{m["offline.savedRecipes"]()}</Button>
-            {/if}
-        </div>
-    {/if}
     <div class="grid gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-8">
         <div class="lg:col-span-1">
             <Ingredients ingredients={recipe.ingredients} servings={recipe.servings} bind:desiredServings/>

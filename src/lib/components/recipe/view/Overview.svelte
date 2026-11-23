@@ -1,6 +1,8 @@
 <script lang="ts">
     import {
+        Check,
         Clock,
+        Download,
         Edit,
         Ellipsis,
         ExternalLink,
@@ -12,7 +14,8 @@
         Trash2,
         Users,
         ChefHat,
-        Sparkles
+        Sparkles,
+        WifiOff
     } from "lucide-svelte";
     import * as Dialog from "$lib/components/ui/dialog/index.js";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
@@ -63,6 +66,9 @@
         fat?: number | null;
         fiber?: number | null;
         aiEnabled?: boolean;
+        offlineReady?: boolean;
+        savedOffline?: boolean;
+        onToggleOffline?: () => void;
     };
 
     let {
@@ -89,7 +95,10 @@
         carbs: initialCarbs = null,
         fat: initialFat = null,
         fiber: initialFiber = null,
-        aiEnabled = false
+        aiEnabled = false,
+        offlineReady = false,
+        savedOffline = false,
+        onToggleOffline
     }: props = $props();
 
     let averageRating = $state<number | null>(initialAverageRating);
@@ -337,16 +346,20 @@
         <span class="size-1 rounded-full bg-border"></span>
         <p>{m["recipe.common.reviews"]({count: ratingCount})}</p>
     </div>
-    <div class="mt-2 max-w-[65ch] text-[15px] leading-relaxed text-muted-foreground sm:text-base lg:col-start-1">
-        <p>{description}</p>
-        {#if sourceLink}
-            <a class="mt-2 inline-flex w-fit items-center gap-1.5 text-sm font-medium text-primary underline underline-offset-4"
-               href={sourceLink} target="_blank" rel="noopener noreferrer">
-                {m["recipe.common.originalRecipe"]()}
-                <ExternalLink class="size-3.5" aria-hidden="true"/>
-            </a>
-        {/if}
-    </div>
+    {#if description || sourceLink}
+        <div class="mt-2 max-w-[65ch] text-[15px] leading-relaxed text-muted-foreground sm:text-base lg:col-start-1">
+            {#if description}
+                <p>{description}</p>
+            {/if}
+            {#if sourceLink}
+                <a class="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-primary underline underline-offset-4 transition-colors hover:text-primary/80 {description ? 'mt-2' : ''}"
+                   href={sourceLink} target="_blank" rel="noopener noreferrer">
+                    {m["recipe.common.originalRecipe"]()}
+                    <ExternalLink class="size-3.5" aria-hidden="true"/>
+                </a>
+            {/if}
+        </div>
+    {/if}
 
     <div class="mt-4 flex flex-wrap items-center gap-2 lg:col-start-1">
         <span class="inline-flex h-8 items-center gap-1.5 rounded-full border border-border/70 bg-card px-3 text-[13px] font-medium">
@@ -362,7 +375,7 @@
         </span>
     </div>
 
-    <div class="mt-4 flex items-center gap-2 lg:col-start-2 lg:row-span-4 lg:row-start-1 lg:mt-0 lg:self-start">
+    <div class="mt-4 flex flex-wrap items-center gap-2 lg:col-start-2 lg:row-span-4 lg:row-start-1 lg:mt-0 lg:justify-end lg:self-start">
         {#if readonly}
             <Button class="flex-1 sm:flex-none" onclick={shareRecipeOnClick} size="lg" variant="secondary"
                     disabled={isSharing || isUpdatingShare || !sharePathState}>
@@ -426,6 +439,22 @@
                     </Dialog.Footer>
                 </Dialog.Content>
             </Dialog.Root>
+            {#if offlineReady && onToggleOffline}
+                <Button
+                    aria-label={savedOffline ? m["offline.removeRecipe"]() : m["offline.saveRecipe"]()}
+                    aria-pressed={savedOffline}
+                    onclick={onToggleOffline}
+                    size="lg"
+                    variant={savedOffline ? "secondary" : "outline"}
+                >
+                    {#if savedOffline}
+                        <Check class="size-4 text-primary"/>
+                    {:else}
+                        <Download class="size-4"/>
+                    {/if}
+                    <span class="hidden xl:inline">{savedOffline ? m["offline.removeRecipe"]() : m["offline.saveRecipe"]()}</span>
+                </Button>
+            {/if}
             <DropdownMenu.Root>
                 <DropdownMenu.Trigger aria-label={m["actions.more"]()} class={buttonVariants({variant: "outline", size: "icon"}) + " size-12"}>
                     <Ellipsis class="size-5"/>
@@ -489,6 +518,14 @@
                             <DropdownMenu.Item class="gap-2.5" disabled={isEstimatingNutrition} onclick={estimateNutritionOnClick}>
                                 <Sparkles class="size-4 text-muted-foreground"/>
                                 <span>{m["recipe.ai.nutrition.button"]()}</span>
+                            </DropdownMenu.Item>
+                        {/if}
+                        {#if offlineReady && savedOffline}
+                            <DropdownMenu.Item>
+                                <a class="flex w-full items-center gap-2.5" href="/offline">
+                                    <WifiOff class="size-4 text-muted-foreground"/>
+                                    <span>{m["offline.savedRecipes"]()}</span>
+                                </a>
                             </DropdownMenu.Item>
                         {/if}
                         {#if recipeOwner}

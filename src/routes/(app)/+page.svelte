@@ -5,13 +5,15 @@
     import RecipeCard from "$lib/components/recipe/widgets/RecipeCard.svelte";
     import RecipeCardSkeleton from "$lib/components/recipe/widgets/RecipeCardSkeleton.svelte";
     import {Button} from "$lib/components/ui/button";
+    import * as Card from "$lib/components/ui/card";
+    import {Spinner} from "$lib/components/ui/spinner";
     import {getMealPlan} from "$lib/functions/meal-plan.remote";
     import {getFavoriteRecipes, getRecipesByUserId} from "$lib/functions/recipe.remote";
     import {imageVariantUrl} from "$lib/images";
     import {m} from "$lib/paraglide/messages";
     import {getLocale} from "$lib/paraglide/runtime.js";
     import {servingsQuery} from "$lib/servings";
-    import {ChevronRight, Plus, Search, UtensilsCrossed} from "lucide-svelte";
+    import {CalendarDays, ChevronRight, Heart, Plus, Search, UtensilsCrossed} from "lucide-svelte";
 
     type MealPlan = Awaited<ReturnType<typeof getMealPlan>>;
     type RecentRecipes = Awaited<ReturnType<typeof getRecipesByUserId>>;
@@ -22,7 +24,7 @@
     let meals = $state<Promise<MealPlan>>();
     let recent = $state<Promise<RecentRecipes>>();
     let favorites = $state<Promise<Favorites>>();
-    let planDate: string;
+    let planDate: string | undefined;
 
     function localDate(): string {
         const date = new Date();
@@ -49,10 +51,11 @@
     }
 
     function refreshDate() {
-        if (planDate !== localDate()) loadMeals();
+        if (planDate && planDate !== localDate()) loadMeals();
     }
 
     onMount(() => {
+        planDate = localDate();
         queueMicrotask(() => {
             loadMeals();
             loadRecent();
@@ -64,9 +67,9 @@
 <svelte:window onfocus={refreshDate}/>
 
 {#snippet recipeRow(recipe: RecipePreview, href: string, detail?: string)}
-    <li>
+    <li class="py-1 first:pt-0 last:pb-0">
         <a
-            class="group flex min-h-14 items-center gap-3 rounded-lg px-2 py-1.5 outline-offset-2 transition-colors hover:bg-accent/50 focus-visible:outline-2 focus-visible:outline-ring"
+            class="group -mx-2 flex min-h-14 items-center gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-accent/50"
             {href}
         >
             <div class="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted text-muted-foreground">
@@ -80,20 +83,24 @@
                 <p class="truncate text-sm font-medium">{recipe.title}</p>
                 <p class="text-xs text-muted-foreground">{detail ?? m["recipe.common.duration"]({count: recipe.cookingTime})}</p>
             </div>
-            <ChevronRight class="size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground" aria-hidden="true"/>
+            <ChevronRight class="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" aria-hidden="true"/>
         </a>
     </li>
 {/snippet}
 
-{#snippet loading()}
-    <p role="status" class="py-2 text-sm text-muted-foreground">{m.loading()}</p>
+{#snippet loadingState()}
+    <div role="status" class="flex items-center justify-center py-6">
+        <Spinner/>
+        <span class="sr-only">{m.loading()}</span>
+    </div>
 {/snippet}
 
 {#snippet recentSkeleton()}
-    <div class="grid gap-4 min-[480px]:grid-cols-2" role="status">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2" role="status">
         <span class="sr-only">{m.loading()}</span>
-        <RecipeCardSkeleton/>
-        <RecipeCardSkeleton/>
+        {#each Array(4) as _}
+            <RecipeCardSkeleton/>
+        {/each}
     </div>
 {/snippet}
 
@@ -101,8 +108,8 @@
     <title>{m["routes.home.cookbook"]()} · Cookify</title>
 </svelte:head>
 
-<div class="flex flex-col gap-7 pb-5 sm:gap-10">
-    <header class="flex flex-col gap-3 border-b border-border/70 pb-5 sm:flex-row sm:items-center sm:justify-between">
+<div class="mt-2 flex flex-col gap-6 sm:gap-8">
+    <header class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 class="page-title">{m["routes.home.cookbook"]()}</h1>
         <div class="flex flex-wrap items-center gap-2">
             <Button href="/recipe/search" variant="outline" class="min-h-11">
@@ -116,69 +123,83 @@
         </div>
     </header>
 
-    <div class="grid items-start gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-12">
-        <div class="grid gap-7 sm:grid-cols-2 lg:grid-cols-1">
+    <div class="grid items-start gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-8">
+        <div class="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-1">
             <section aria-labelledby="today-meals" class="min-w-0">
-                <div class="mb-2 flex flex-wrap items-center justify-between gap-x-3">
-                    <h2 id="today-meals" class="section-title">{m["routes.home.todayPlanned"]()}</h2>
-                    <Button href="/meal-plan" variant="ghost" size="sm" class="min-h-11 px-2 text-primary">
-                        {m["nav.mealPlan"]()}
-                        <ChevronRight class="size-4" aria-hidden="true"/>
-                    </Button>
-                </div>
-                {#await meals}
-                    {@render loading()}
-                {:then entries}
-                    {#if entries?.length}
-                        <ul class="divide-y divide-border/60">
-                            {#each entries as entry (entry.id)}
-                                {@const href = `/recipe/${entry.recipe.id}${servingsQuery(entry.servings ?? undefined)}`}
-                                {@const count = entry.servings ?? entry.recipe.servings}
-                                {@render recipeRow(entry.recipe, href, m["recipe.common.servingsCount"]({count}))}
-                            {/each}
-                        </ul>
-                    {:else if entries}
-                        <p class="py-2 text-sm text-muted-foreground">{m["routes.home.noMealsToday"]()}</p>
-                    {:else}
-                        {@render loading()}
-                    {/if}
-                {:catch}
-                    <ErrorState onRetry={loadMeals}/>
-                {/await}
+                <Card.Root class="w-full">
+                    <Card.Header class="flex flex-row items-center justify-between gap-2 border-b border-border/60 pb-4">
+                        <h2 id="today-meals" class="flex items-center gap-2 text-base font-semibold">
+                            <CalendarDays class="size-4 shrink-0 text-primary" aria-hidden="true"/>
+                            {m["routes.home.todayPlanned"]()}
+                        </h2>
+                        <Button href="/meal-plan" variant="ghost" size="sm" class="px-2 text-primary">
+                            {m["nav.mealPlan"]()}
+                            <ChevronRight class="size-4" aria-hidden="true"/>
+                        </Button>
+                    </Card.Header>
+                    <Card.Content>
+                        {#await meals}
+                            {@render loadingState()}
+                        {:then entries}
+                            {#if entries?.length}
+                                <ul class="divide-y divide-border/50">
+                                    {#each entries as entry (entry.id)}
+                                        {@const href = `/recipe/${entry.recipe.id}${servingsQuery(entry.servings ?? undefined)}`}
+                                        {@const count = entry.servings ?? entry.recipe.servings}
+                                        {@render recipeRow(entry.recipe, href, m["recipe.common.servingsCount"]({count}))}
+                                    {/each}
+                                </ul>
+                            {:else if entries}
+                                <p class="py-4 text-center text-sm text-muted-foreground">{m["routes.home.noMealsToday"]()}</p>
+                            {:else}
+                                {@render loadingState()}
+                            {/if}
+                        {:catch}
+                            <ErrorState onRetry={loadMeals}/>
+                        {/await}
+                    </Card.Content>
+                </Card.Root>
             </section>
 
             <section aria-labelledby="cookbook-favorites" class="min-w-0">
-                <div class="mb-2 flex flex-wrap items-center justify-between gap-x-3">
-                    <h2 id="cookbook-favorites" class="section-title">{m["routes.favorites.title"]()}</h2>
-                    <Button href="/favorites" variant="ghost" size="sm" class="min-h-11 px-2 text-primary">
-                        {m["routes.home.allFavorites"]()}
-                        <ChevronRight class="size-4" aria-hidden="true"/>
-                    </Button>
-                </div>
-                {#await favorites}
-                    {@render loading()}
-                {:then recipes}
-                    {#if recipes?.length}
-                        <ul class="divide-y divide-border/60">
-                            {#each recipes as recipe (recipe.id)}
-                                {@render recipeRow(recipe, `/recipe/${recipe.id}`)}
-                            {/each}
-                        </ul>
-                    {:else if recipes}
-                        <p class="py-2 text-sm text-muted-foreground">{m["routes.home.noFavorites"]()}</p>
-                    {:else}
-                        {@render loading()}
-                    {/if}
-                {:catch}
-                    <ErrorState onRetry={loadFavorites}/>
-                {/await}
+                <Card.Root class="w-full">
+                    <Card.Header class="flex flex-row items-center justify-between gap-2 border-b border-border/60 pb-4">
+                        <h2 id="cookbook-favorites" class="flex items-center gap-2 text-base font-semibold">
+                            <Heart class="size-4 shrink-0 text-primary" aria-hidden="true"/>
+                            {m["routes.favorites.title"]()}
+                        </h2>
+                        <Button href="/favorites" variant="ghost" size="sm" class="px-2 text-primary">
+                            {m["routes.home.allFavorites"]()}
+                            <ChevronRight class="size-4" aria-hidden="true"/>
+                        </Button>
+                    </Card.Header>
+                    <Card.Content>
+                        {#await favorites}
+                            {@render loadingState()}
+                        {:then recipes}
+                            {#if recipes?.length}
+                                <ul class="divide-y divide-border/50">
+                                    {#each recipes as recipe (recipe.id)}
+                                        {@render recipeRow(recipe, `/recipe/${recipe.id}`)}
+                                    {/each}
+                                </ul>
+                            {:else if recipes}
+                                <p class="py-4 text-center text-sm text-muted-foreground">{m["routes.home.noFavorites"]()}</p>
+                            {:else}
+                                {@render loadingState()}
+                            {/if}
+                        {:catch}
+                            <ErrorState onRetry={loadFavorites}/>
+                        {/await}
+                    </Card.Content>
+                </Card.Root>
             </section>
         </div>
 
         <section aria-labelledby="recent-recipes" class="min-w-0">
-            <div class="mb-2 flex flex-wrap items-center justify-between gap-x-3">
+            <div class="mb-4 flex flex-wrap items-center justify-between gap-x-3">
                 <h2 id="recent-recipes" class="section-title">{m["routes.home.recentlyAdded"]()}</h2>
-                <Button href={`/profile/${data.user.id}`} variant="ghost" size="sm" class="min-h-11 px-2 text-primary">
+                <Button href={`/profile/${data.user.id}`} variant="ghost" size="sm" class="px-2 text-primary">
                     {m["routes.home.allOwnRecipes"]()}
                     <ChevronRight class="size-4" aria-hidden="true"/>
                 </Button>
@@ -187,13 +208,22 @@
                 {@render recentSkeleton()}
             {:then recipes}
                 {#if recipes?.length}
-                    <div class="grid gap-4 min-[480px]:grid-cols-2">
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         {#each recipes as recipe (recipe.id)}
                             <RecipeCard {...recipe}/>
                         {/each}
                     </div>
                 {:else if recipes}
-                    <p class="py-2 text-sm text-muted-foreground">{m["recipe.list.noRecipes"]()}</p>
+                    <div class="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border/70 px-6 py-14 text-center">
+                        <div class="flex size-12 items-center justify-center rounded-full bg-muted">
+                            <UtensilsCrossed class="size-5 text-muted-foreground" aria-hidden="true"/>
+                        </div>
+                        <p class="text-sm text-muted-foreground">{m["recipe.list.noRecipes"]()}</p>
+                        <Button href="/recipe/create" size="sm" variant="outline">
+                            <Plus class="size-4" aria-hidden="true"/>
+                            {m["nav.create"]()}
+                        </Button>
+                    </div>
                 {:else}
                     {@render recentSkeleton()}
                 {/if}

@@ -1,6 +1,7 @@
 <script lang="ts">
     import {goto} from "$app/navigation";
     import {page} from "$app/state";
+    import type {PageProps} from "./$types";
     import CookMode from "$lib/components/recipe/view/CookMode.svelte";
     import ErrorState from "$lib/components/ErrorState.svelte";
     import {Button} from "$lib/components/ui/button";
@@ -10,6 +11,7 @@
     import {m} from "$lib/paraglide/messages";
     import {ChefHat} from "lucide-svelte";
 
+    const {data}: PageProps = $props();
     let recipe = $state<Pick<OfflineRecipe, "id" | "title" | "ingredients" | "steps" | "servings"> | null>(null);
     let failed = $state(false);
     let offline = $state(false);
@@ -26,7 +28,7 @@
             if (id === recipeId) recipe = result;
         } catch (error) {
             if (id !== recipeId) return;
-            const saved = error instanceof TypeError ? getOfflineRecipe(id) : null;
+            const saved = error instanceof TypeError ? getOfflineRecipe(id, data.user.id) : null;
             if (saved) {
                 recipe = saved;
                 offline = true;

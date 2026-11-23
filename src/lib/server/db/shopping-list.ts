@@ -157,8 +157,9 @@ export async function addManualShoppingItem(viewerId: string, ownerId: string, w
     await editWeek(viewerId, ownerId, weekStart, async (tx) => {
         await tx.insert(shoppingListItems)
             .values({userId: ownerId, weekStart, name, quantity: 1, unit: '', category: categorizeIngredient(name), manual: true})
-            .onConflictDoNothing({
+            .onConflictDoUpdate({
                 target: [shoppingListItems.userId, shoppingListItems.weekStart, shoppingListItems.name, shoppingListItems.unit, shoppingListItems.manual],
+                set: {checked: false, alreadyHave: false, updatedAt: new Date()},
             });
     });
 }

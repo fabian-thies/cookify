@@ -1,9 +1,10 @@
 <script lang="ts">
     import {onMount} from 'svelte';
-    import {Check, Plus, Trash2, X} from 'lucide-svelte';
+    import {Check, ChevronDown, Plus, Share2, Trash2, X} from 'lucide-svelte';
     import ErrorState from '$lib/components/ErrorState.svelte';
     import {Button} from '$lib/components/ui/button';
     import {Input} from '$lib/components/ui/input';
+    import SelectComponent from '$lib/components/ui/select/SelectComponent.svelte';
     import {Spinner} from '$lib/components/ui/spinner';
     import {
         addShoppingItem,
@@ -33,10 +34,18 @@
     let itemName = $state('');
     let username = $state('');
     let invalidUsername = $state(false);
+    let shareOpen = $state(false);
     let request = 0;
 
     const scope = $derived({ownerId: ownerId || undefined, weekStart});
     const data = $derived(result?.week === weekStart && result.owner === ownerId ? result.data : undefined);
+    const listOptions = $derived([
+        {value: '', label: m['mealPlan.shopping.ownList']()},
+        ...(result?.data.sharedBy ?? []).map(owner => ({
+            value: owner.id,
+            label: m['mealPlan.shopping.sharedList']({username: owner.username}),
+        })),
+    ]);
     const groups = $derived.by(() => {
         if (!data) return [];
         const labels: Record<ShoppingCategory, string> = {
@@ -55,12 +64,13 @@
         })).filter(group => group.items.length > 0);
     });
 
-    async function refresh() {
+    async function refresh(resetError = false) {
         if (busy) return;
         const version = ++request;
         const week = weekStart;
         const owner = ownerId;
         const revision = planRevision;
+        if (resetError || !data) loadFailed = false;
 
         try {
             const next = await getShoppingList({ownerId: owner || undefined, weekStart: week}).run();
@@ -83,7 +93,7 @@
         ownerId;
         weekStart;
         planRevision;
-        queueMicrotask(refresh);
+        queueMicrotask(() => refresh(true));
     });
 
     onMount(() => {
@@ -137,6 +147,7 @@
         event.preventDefault();
         const exactUsername = username.trim();
         if (!exactUsername) return;
+        invalidUsername = false;
         void change(async () => {
             invalidUsername = !await shareShoppingList({username: exactUsername});
             if (!invalidUsername) username = '';
@@ -148,49 +159,46 @@
     }
 </script>
 
-<section aria-label={m['mealPlan.shoppingList']()} class="order-first flex w-full shrink-0 flex-col gap-3 rounded-xl border bg-card/50 p-4 lg:order-none lg:w-72">
+<section aria-label={m['mealPlan.shoppingList']()} class="order-first flex w-full shrink-0 flex-col gap-3 rounded-xl border border-border/70 bg-card/50 p-4 lg:order-none lg:w-72">
     <div class="flex items-center justify-between">
         <h2 class="text-sm font-semibold">{m['mealPlan.shoppingList']()}</h2>
-        <Button aria-label={m['mealPlan.shopping.close']()} size="icon" variant="ghost" onclick={onClose}>
+        <Button aria-label={m['mealPlan.shopping.close']()} class="size-9 text-muted-foreground" size="icon" variant="ghost" onclick={onClose}>
             <X class="size-4"/>
         </Button>
     </div>
 
     {#if result?.data.sharedBy.length}
-        <select
-            aria-label={m['mealPlan.shopping.listLabel']()}
-            class="h-11 w-full rounded-lg border border-border bg-background px-2 text-sm"
+        <SelectComponent
+            options={listOptions}
             bind:value={ownerId}
+            groupLabel={m['mealPlan.shopping.listLabel']()}
+            placeholder={m['mealPlan.shopping.ownList']()}
+            class="w-full"
             disabled={busy}
-        >
-            <option value="">{m['mealPlan.shopping.ownList']()}</option>
-            {#each result.data.sharedBy as owner (owner.id)}
-                <option value={owner.id}>{m['mealPlan.shopping.sharedList']({username: owner.username})}</option>
-            {/each}
-        </select>
+        />
     {/if}
 
     {#if data}
-        <form class="flex min-w-0 gap-2" onsubmit={addItem}>
+        <form class="flex min-w-0 items-center gap-2" onsubmit={addItem}>
             <Input
                 aria-label={m['mealPlan.shopping.itemName']()}
                 placeholder={m['mealPlan.shopping.itemName']()}
                 bind:value={itemName}
-                class="min-w-0"
+                class="min-w-0 flex-1"
                 maxlength={100}
                 disabled={busy}
                 required
             />
-            <Button aria-label={m['mealPlan.shopping.add']()} size="icon" type="submit" disabled={busy || !itemName.trim()}>
+            <Button aria-label={m['mealPlan.shopping.add']()} class="shrink-0" size="icon" type="submit" disabled={busy || !itemName.trim()}>
                 <Plus class="size-4"/>
             </Button>
         </form>
     {/if}
     {#if actionError}
-        <p role="alert" class="text-xs text-destructive">{actionError}</p>
+        <p role="alert" class="rounded-lg bg-destructive/10 px-3 py-2 text-xs text-destructive">{actionError}</p>
     {/if}
     {#if loadFailed}
-        <ErrorState message={m['mealPlan.shopping.loadError']()} onRetry={refresh}/>
+        <ErrorState message={m['mealPlan.shopping.loadError']()} onRetry={() => refresh(true)}/>
     {:else if !data}
         <div class="flex justify-center py-8"><Spinner/></div>
     {:else if data.items.length === 0}
@@ -201,37 +209,58 @@
                 <div class="space-y-1.5">
                     <h3 class="px-1 pt-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{group.label}</h3>
                     {#each group.items as item (item.id)}
-                        <div class="rounded-lg border bg-card">
+                        <div class="rounded-lg border border-border/60 bg-card transition-colors hover:border-border">
                             <button
+                                type="button"
                                 role="checkbox"
                                 aria-checked={item.checked}
                                 disabled={busy}
-                                class="flex min-h-11 w-full items-center justify-between rounded-t-lg p-2 text-left hover:bg-accent/50 {item.checked ? 'opacity-60' : ''}"
+                                class="flex min-h-11 w-full items-center justify-between gap-2 rounded-t-lg px-2.5 py-2 text-left transition-colors hover:bg-accent/40 {item.checked || item.alreadyHave ? 'opacity-65' : ''}"
                                 onclick={() => setStatus(item, item.checked ? 'open' : 'bought')}
                             >
                                 <span class="min-w-0">
-                                    <span id={`shopping-item-${item.id}`} class="block break-words text-sm font-medium {item.checked ? 'line-through' : ''}">{item.name}</span>
+                                    <span id={`shopping-item-${item.id}`} class="block break-words text-sm font-medium {item.checked || item.alreadyHave ? 'line-through' : ''}">{item.name}</span>
                                     {#if !item.manual}
-                                        <span class="block text-xs text-muted-foreground">{formatQuantity(item.quantity)} {item.unit}</span>
+                                        <span class="block text-xs text-muted-foreground">
+                                            {formatQuantity(item.quantity)}{item.unit ? ` ${item.unit}` : ''}
+                                        </span>
                                     {/if}
                                     {#if item.quantityIncreased}
-                                        <span class="block text-xs font-medium text-primary">{m['mealPlan.quantityIncreased']()}</span>
+                                        <span class="mt-0.5 inline-block text-xs font-medium text-primary">{m['mealPlan.quantityIncreased']()}</span>
                                     {/if}
                                 </span>
-                                {#if item.checked}
-                                    <Check class="ml-2 size-4 shrink-0 text-green-500"/>
-                                {:else}
-                                    <span aria-hidden="true" class="ml-2 text-xs text-muted-foreground">○</span>
-                                {/if}
+                                <span
+                                    aria-hidden="true"
+                                    class="flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors {item.checked ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-background'}"
+                                >
+                                    {#if item.checked}
+                                        <Check class="size-3"/>
+                                    {/if}
+                                </span>
                             </button>
-                            <div class="flex items-center justify-between px-1 pb-1">
-                                <Button aria-describedby={`shopping-item-${item.id}`} aria-pressed={item.alreadyHave} disabled={busy} size="sm" variant={item.alreadyHave ? 'secondary' : 'ghost'} onclick={() => setStatus(item, item.alreadyHave ? 'open' : 'have')}>
-                                    {#if item.alreadyHave}<Check class="size-3.5"/>{/if}
+                            <div class="flex items-center justify-between gap-1 border-t border-border/40 px-1.5 py-1">
+                                <Button
+                                    aria-describedby={`shopping-item-${item.id}`}
+                                    aria-pressed={item.alreadyHave}
+                                    class="h-8 px-2 text-xs {item.alreadyHave ? 'text-foreground' : 'text-muted-foreground'}"
+                                    disabled={busy}
+                                    size="sm"
+                                    variant={item.alreadyHave ? 'secondary' : 'ghost'}
+                                    onclick={() => setStatus(item, item.alreadyHave ? 'open' : 'have')}
+                                >
+                                    {#if item.alreadyHave}<Check class="size-3.5 text-primary"/>{/if}
                                     {m['mealPlan.shopping.alreadyHave']()}
                                 </Button>
                                 {#if item.manual}
-                                    <Button aria-label={m['mealPlan.shopping.removeItem']({name: item.name})} disabled={busy} size="icon" variant="ghost" onclick={() => change(() => removeShoppingItem({...scope, itemId: item.id}))}>
-                                        <Trash2 class="size-4"/>
+                                    <Button
+                                        aria-label={m['mealPlan.shopping.removeItem']({name: item.name})}
+                                        class="size-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                                        disabled={busy}
+                                        size="icon"
+                                        variant="ghost"
+                                        onclick={() => change(() => removeShoppingItem({...scope, itemId: item.id}))}
+                                    >
+                                        <Trash2 class="size-3.5"/>
                                     </Button>
                                 {/if}
                             </div>
@@ -243,28 +272,61 @@
     {/if}
 
     {#if data && !ownerId}
-        <details class="border-t pt-2">
-            <summary class="cursor-pointer py-2 text-sm font-semibold">{m['mealPlan.shopping.share']()}</summary>
-            <p class="pb-2 text-xs text-muted-foreground">{m['mealPlan.shopping.shareHint']()}</p>
-            <form class="flex flex-wrap gap-2" onsubmit={grant}>
-                <Input aria-label={m['mealPlan.shopping.username']()} placeholder={m['mealPlan.shopping.username']()} bind:value={username} maxlength={100} required disabled={busy}/>
-                <Button type="submit" size="sm" variant="outline" disabled={busy || !username.trim()}>{m['mealPlan.shopping.grant']()}</Button>
-            </form>
-            {#if invalidUsername}
-                <p role="alert" class="pt-2 text-xs text-destructive">{m['mealPlan.shopping.userUnavailable']()}</p>
+        <div class="border-t border-border/60 pt-2">
+            <button
+                type="button"
+                aria-expanded={shareOpen}
+                class="flex min-h-10 w-full items-center justify-between rounded-lg px-1.5 py-1.5 text-sm font-semibold transition-colors hover:bg-accent/50"
+                onclick={() => shareOpen = !shareOpen}
+            >
+                <span class="flex items-center gap-2">
+                    <Share2 class="size-4 text-primary" aria-hidden="true"/>
+                    {m['mealPlan.shopping.share']()}
+                </span>
+                <ChevronDown class="size-4 text-muted-foreground transition-transform {shareOpen ? 'rotate-180' : ''}" aria-hidden="true"/>
+            </button>
+            {#if shareOpen}
+                <div class="mt-2 space-y-2.5">
+                    <p class="text-xs leading-relaxed text-muted-foreground">{m['mealPlan.shopping.shareHint']()}</p>
+                    <form class="flex min-w-0 items-center gap-2" onsubmit={grant}>
+                        <Input
+                            aria-label={m['mealPlan.shopping.username']()}
+                            placeholder={m['mealPlan.shopping.username']()}
+                            bind:value={username}
+                            oninput={() => invalidUsername = false}
+                            class="min-w-0 flex-1"
+                            maxlength={100}
+                            required
+                            disabled={busy}
+                        />
+                        <Button class="shrink-0" type="submit" size="sm" variant="outline" disabled={busy || !username.trim()}>
+                            {m['mealPlan.shopping.grant']()}
+                        </Button>
+                    </form>
+                    {#if invalidUsername}
+                        <p role="alert" class="rounded-lg bg-destructive/10 px-3 py-2 text-xs text-destructive">{m['mealPlan.shopping.userUnavailable']()}</p>
+                    {/if}
+                    {#if data.sharedWith.length}
+                        <ul class="space-y-1.5">
+                            {#each data.sharedWith as member (member.id)}
+                                <li class="flex items-center justify-between gap-2 rounded-lg border border-border/60 bg-card px-2.5 py-1.5 text-sm">
+                                    <span class="min-w-0 truncate">{member.username}</span>
+                                    <Button
+                                        aria-label={m['mealPlan.shopping.revoke']({username: member.username})}
+                                        class="size-8 shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                                        disabled={busy}
+                                        size="icon"
+                                        variant="ghost"
+                                        onclick={() => change(() => unshareShoppingList({memberId: member.id}))}
+                                    >
+                                        <X class="size-4"/>
+                                    </Button>
+                                </li>
+                            {/each}
+                        </ul>
+                    {/if}
+                </div>
             {/if}
-            {#if data.sharedWith.length}
-                <ul class="pt-2">
-                    {#each data.sharedWith as member (member.id)}
-                        <li class="flex items-center justify-between gap-1 text-sm">
-                            <span class="break-all">{member.username}</span>
-                            <Button aria-label={m['mealPlan.shopping.revoke']({username: member.username})} disabled={busy} size="icon" variant="ghost" onclick={() => change(() => unshareShoppingList({memberId: member.id}))}>
-                                <X class="size-4"/>
-                            </Button>
-                        </li>
-                    {/each}
-                </ul>
-            {/if}
-        </details>
+        </div>
     {/if}
 </section>

@@ -154,6 +154,7 @@ export async function getCalendarEvents(userId: string) {
             title: recipes.title,
             cookingTime: recipes.cookingTime,
             servings: recipes.servings,
+            plannedServings: mealPlan.servings,
         })
         .from(mealPlan)
         .innerJoin(recipes, eq(mealPlan.recipeId, recipes.id))
