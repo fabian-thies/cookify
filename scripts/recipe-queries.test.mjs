@@ -95,18 +95,20 @@ const shoppingDb = drizzle(async (sql, params) => {
     return {rows: []};
 });
 activeDb = {transaction: callback => callback(shoppingDb), update: shoppingDb.update.bind(shoppingDb)};
-const mealPlan = load('src/lib/server/db/meal-plan.ts', {
+const shopping = load('src/lib/server/db/shopping-list.ts', {
     '$lib/server/db/index': {getDb: () => activeDb},
     '$lib/server/db/schema': schema,
-    '$lib/server/db/recipe': recipes,
     '$lib/shopping-list': shoppingList
 });
-await mealPlan.getShoppingList('owner', '2026-11-23', '2026-11-29');
+await shopping.getWeeklyShoppingList('owner', 'owner', '2026-11-23');
 const upsert = queries.find(({sql}) => sql.startsWith('insert into "shopping_list_items"'));
 assert.match(upsert.sql, /"checked" = "shopping_list_items"\."checked" and not \(\(excluded\.quantity - "shopping_list_items"\."quantity"\) >/);
-assert.match(upsert.sql, /"quantity_increased" = "shopping_list_items"\."quantity_increased" or \("shopping_list_items"\."checked" and/);
+assert.match(upsert.sql, /"already_have" = "shopping_list_items"\."already_have" and not/);
+assert.match(upsert.sql, /"quantity_increased" = "shopping_list_items"\."quantity_increased" or \(\("shopping_list_items"\."checked" or "shopping_list_items"\."already_have"\) and/);
 assert.ok(upsert.params.includes(800));
-await assert.rejects(mealPlan.setShoppingListItemChecked('owner', 1, true, 500), /has changed/);
+assert.equal(await shopping.changeShoppingItemStatus('owner', 'owner', '2026-11-23', 1, {checked: false, alreadyHave: false, quantity: 500}, 'bought'), false);
 assert.match(queries.at(-1).sql, /not \(\("shopping_list_items"\."quantity" - cast\(\$\d+ as double precision\)\) >/);
 assert.ok(queries.at(-1).params.includes(500));
+assert.equal((await shopping.getWeeklyShoppingList('other', 'owner', '2026-11-23')).accessible, false);
+await assert.rejects(shopping.addManualShoppingItem('other', 'owner', '2026-11-23', 'Soap'), /unavailable/);
 console.log('Shopping list amount-change checks passed');

@@ -38,6 +38,12 @@ export async function readBackup(request: Request) {
                 throw new Error(`Invalid backup: missing or invalid table "${name}"`);
             }
         }
+        if (data.shoppingListShares !== undefined && (
+            !Array.isArray(data.shoppingListShares) ||
+            data.shoppingListShares.some(share => typeof share?.ownerId !== 'string' || typeof share?.memberId !== 'string')
+        )) {
+            throw new Error('Invalid backup: invalid table "shoppingListShares"');
+        }
 
         for (const [name, fields] of Object.entries(timestampFields)) {
             const rows = data[name];

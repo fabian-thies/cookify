@@ -2,6 +2,7 @@ import {
     integer,
     doublePrecision,
     boolean,
+    check,
     customType,
     date,
     index,
@@ -12,6 +13,7 @@ import {
     timestamp,
     unique
 } from 'drizzle-orm/pg-core';
+import {sql} from 'drizzle-orm';
 import {DIFFICULTIES, LANGUAGES} from "../../constants";
 import {SHOPPING_CATEGORIES} from "../../shopping-list";
 
@@ -184,12 +186,24 @@ export const shoppingListItems = pgTable('shopping_list_items', {
     unit: text('unit').notNull(),
     category: text('category', {enum: [...SHOPPING_CATEGORIES]}).notNull().default('other'),
     checked: boolean('checked').notNull().default(false),
+    alreadyHave: boolean('already_have').notNull().default(false),
+    manual: boolean('manual').notNull().default(false),
     quantityIncreased: boolean('quantity_increased').notNull().default(false),
     createdAt: timestamp('created_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow(),
 }, (t) => [
-    unique('shopping_list_items_user_week_name_unit_unique').on(t.userId, t.weekStart, t.name, t.unit),
+    unique('shopping_list_items_user_week_name_unit_manual_unique').on(t.userId, t.weekStart, t.name, t.unit, t.manual),
+    check('shopping_list_items_one_status_check', sql`not (${t.checked} and ${t.alreadyHave})`),
     index('shopping_list_items_user_week_idx').on(t.userId, t.weekStart),
+]);
+
+export const shoppingListShares = pgTable('shopping_list_shares', {
+    ownerId: text('owner_id').notNull().references(() => user.id, {onDelete: 'cascade'}),
+    memberId: text('member_id').notNull().references(() => user.id, {onDelete: 'cascade'}),
+}, (t) => [
+    primaryKey({columns: [t.ownerId, t.memberId]}),
+    check('shopping_list_shares_distinct_users_check', sql`${t.ownerId} <> ${t.memberId}`),
+    index('shopping_list_shares_member_idx').on(t.memberId),
 ]);
 
 export const collectionToRecipe = pgTable('collection_to_recipe', {

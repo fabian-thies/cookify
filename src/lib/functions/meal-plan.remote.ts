@@ -6,8 +6,6 @@ import {
     updateMealPlanServings as updateMealPlanServingsDb,
     removeFromMealPlan as removeFromMealPlanDb,
     getMealPlan as getMealPlanDb,
-    getShoppingList as getShoppingListDb,
-    setShoppingListItemChecked as setShoppingListItemCheckedDb,
     getOrCreateCalendarToken,
     rotateCalendarToken,
 } from '$lib/server/db/meal-plan';
@@ -92,33 +90,4 @@ export const rotateCalendarFeed = command(async () => {
 
     const token = await rotateCalendarToken(userId);
     return { url: calendarFeedUrl(url.origin, token) };
-});
-
-export const getShoppingList = query(v.object({
-    startDate: v.pipe(v.string(), v.regex(/^\d{4}-\d{2}-\d{2}$/)),
-    endDate: v.pipe(v.string(), v.regex(/^\d{4}-\d{2}-\d{2}$/)),
-}), async ({ startDate, endDate }) => {
-    const { locals } = getRequestEvent();
-    const userId = locals.user?.id;
-
-    if (!userId) {
-        throw new Error('User not authenticated');
-    }
-
-    return await getShoppingListDb(userId, startDate, endDate);
-});
-
-export const setShoppingListItemChecked = command(v.object({
-    itemId: v.pipe(v.number(), v.integer(), v.minValue(1)),
-    checked: v.boolean(),
-    quantity: v.pipe(v.number(), v.finite(), v.minValue(0)),
-}), async ({ itemId, checked, quantity }) => {
-    const { locals } = getRequestEvent();
-    const userId = locals.user?.id;
-
-    if (!userId) {
-        throw new Error('User not authenticated');
-    }
-
-    return await setShoppingListItemCheckedDb(userId, itemId, checked, quantity);
 });

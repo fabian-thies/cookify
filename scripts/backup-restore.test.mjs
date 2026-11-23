@@ -36,10 +36,14 @@ const table = load('src/lib/server/db/schema.ts', {
 });
 const archive = load(`${backupDir}/archive.ts`, {'@sveltejs/kit': kit});
 const data = new Map([
-    [table.user, [{id: 'owner', username: 'owner', email: 'owner@example.test', passwordHash: 'test'}]],
+    [table.user, [
+        {id: 'owner', username: 'owner', email: 'owner@example.test', passwordHash: 'test'},
+        {id: 'member', username: 'member', email: 'member@example.test', passwordHash: 'test'},
+    ]],
     [table.recipes, [{id: 1, userId: 'owner', title: 'Soup', description: 'Soup', image: '/uploads/cover.png', servings: 2, cookingTime: 10}]],
     [table.cookHistory, [{id: 1, userId: 'owner', recipeId: 1, cookedAt: new Date(timestamp)}]],
     [table.mealPlan, [{id: 1, userId: 'owner', recipeId: 1, date, createdAt: new Date(timestamp)}]],
+    [table.shoppingListShares, [{ownerId: 'owner', memberId: 'member'}]],
 ]);
 
 const proxy = drizzle(async () => ({rows: []}));
@@ -110,6 +114,7 @@ try {
     assert.equal((await firstRestore).status, 200);
     assert.deepEqual(inserts.get(table.cookHistory), [1, 'owner', 1, timestamp]);
     assert.deepEqual(inserts.get(table.mealPlan), [1, 'owner', 1, date, timestamp]);
+    assert.deepEqual(inserts.get(table.shoppingListShares), ['owner', 'member']);
     assert.equal(fs.statSync(uploads).ino, rootInode);
     assert.equal(fs.readFileSync(restored, 'utf8'), 'saved photo bytes');
     assert.deepEqual(fs.readdirSync(uploads), ['cover.png']);

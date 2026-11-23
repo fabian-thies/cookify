@@ -169,6 +169,13 @@
       "when": 1795434789983,
       "tag": "0023_recipe_source_url",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1795434954067,
+      "tag": "0024_shopping_list_household",
+      "breakpoints": true
     }
   ]
 }

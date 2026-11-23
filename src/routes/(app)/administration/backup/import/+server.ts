@@ -75,9 +75,11 @@ export const POST = async ({ locals, request }) => {
             const tables = [
                 table.passkey, table.recipeRating, table.favorite, table.tips, table.tags,
                 table.steps, table.ingredients, table.difficultyToRecipe, table.collectionToRecipe,
-                table.collections, table.difficulty, table.mealPlan, table.shoppingListItems,
+                table.collections, table.difficulty, table.mealPlan, table.shoppingListItems, table.shoppingListShares,
                 table.cookHistory, table.session, table.recipes, table.siteSettings, table.user,
             ];
+            // Wait for active shared-list operations before taking locks on the list items they update.
+            await tx.execute(sql`LOCK TABLE ${sql.identifier(getTableName(table.shoppingListShares))} IN EXCLUSIVE MODE`);
             const names = tables.map(target => sql.identifier(getTableName(target)));
             await tx.execute(sql`LOCK TABLE ${sql.join(names, sql`, `)} IN SHARE ROW EXCLUSIVE MODE`);
             // The table list is in reverse dependency order.
@@ -134,6 +136,9 @@ export const POST = async ({ locals, request }) => {
             }
             if (data.shoppingListItems?.length) {
                 await tx.insert(table.shoppingListItems).values(data.shoppingListItems as typeof table.shoppingListItems.$inferInsert[]);
+            }
+            if (data.shoppingListShares?.length) {
+                await tx.insert(table.shoppingListShares).values(data.shoppingListShares as typeof table.shoppingListShares.$inferInsert[]);
             }
             // Restart sequences transactionally so a failed restore keeps the previous counters.
             const serialTables = [

@@ -5,8 +5,6 @@
         addToMealPlan,
         updateMealPlanServings,
         removeFromMealPlan,
-        getShoppingList,
-        setShoppingListItemChecked,
         getCalendarFeed,
         rotateCalendarFeed,
     } from "$lib/functions/meal-plan.remote";
@@ -20,11 +18,10 @@
     import { m } from "$lib/paraglide/messages";
     import { getLocale } from "$lib/paraglide/runtime.js";
     import { imageVariantUrl } from "$lib/images";
-    import { SHOPPING_CATEGORIES, type ShoppingCategory } from "$lib/shopping-list";
+    import ShoppingList from "$lib/components/meal-plan/ShoppingList.svelte";
     import { MAX_SERVINGS, parseServings, servingsQuery } from "$lib/servings";
 
     type MealPlanEntry = Awaited<ReturnType<typeof getMealPlan>>[number];
-    type ShoppingItem = Awaited<ReturnType<typeof getShoppingList>>[number];
 
     let { data } = $props();
     let userId: string;
@@ -79,9 +76,8 @@
     let servingsInput = $state<number>();
     let plannedMeal = $state<{recipeId: number; title: string; date: string; entryId?: number}>();
     let loadVersion = 0;
-    let savingItemIds = $state<number[]>([]);
+    let shoppingRevision = $state(0);
     let selectedRecipeId = $state<number | null>(null);
-    let shoppingList = $state<ShoppingItem[]>([]);
     let calendarDialogOpen = $state(false);
     let calendarUrl = $state("");
     let calendarLoading = $state(false);
@@ -100,32 +96,6 @@
         )
     );
 
-    const shoppingGroups = $derived.by(() => {
-        const labels: Record<ShoppingCategory, string> = {
-            produce: m["mealPlan.category.produce"](),
-            meat_fish: m["mealPlan.category.meatFish"](),
-            dairy_eggs: m["mealPlan.category.dairyEggs"](),
-            bakery: m["mealPlan.category.bakery"](),
-            pantry: m["mealPlan.category.pantry"](),
-            frozen: m["mealPlan.category.frozen"](),
-            drinks: m["mealPlan.category.drinks"](),
-            other: m["mealPlan.category.other"](),
-        };
-
-        return SHOPPING_CATEGORIES
-            .map((category) => ({
-                category,
-                label: labels[category],
-                items: shoppingList.filter((item) => item.category === category),
-            }))
-            .filter((group) => group.items.length > 0);
-    });
-
-    function formatQuantity(quantity: number): string {
-        if (Number.isInteger(quantity)) return String(quantity);
-        return String(Number(quantity.toFixed(2)));
-    }
-
     function entriesForDate(date: string): MealPlanEntry[] {
         return mealPlanEntries.filter((e) => e.date === date);
     }
@@ -133,21 +103,18 @@
     async function loadData() {
         if (!userId) return;
         const version = ++loadVersion;
-        shoppingList = [];
         loading = true;
         error = null;
         try {
             const start = weekDays[0].date;
             const end = weekDays[6].date;
-            const [plan, userRecipes, list] = await Promise.all([
+            const [plan, userRecipes] = await Promise.all([
                 getMealPlan({ startDate: start, endDate: end }).run(),
                 getRecipesByUserId({ userId }).run(),
-                getShoppingList({ startDate: start, endDate: end }).run(),
             ]);
             if (version !== loadVersion) return;
             mealPlanEntries = plan;
             recipes = userRecipes;
-            shoppingList = list;
         } catch (e: any) {
             if (version === loadVersion) error = m["mealPlan.error.load"]();
         } finally {
@@ -210,6 +177,7 @@
             }
             selectedRecipeId = null;
             servingsDialogOpen = false;
+            shoppingRevision++;
             await loadData();
         } catch {
             error = m["mealPlan.error.add"]();
@@ -222,7 +190,7 @@
         try {
             await removeFromMealPlan({ mealPlanId: entryId });
             mealPlanEntries = mealPlanEntries.filter((e) => e.id !== entryId);
-            shoppingList = await getShoppingList({ startDate: weekDays[0].date, endDate: weekDays[6].date }).run();
+            shoppingRevision++;
         } catch (e: any) {
             error = e.message ?? m["mealPlan.error.remove"]();
         }
@@ -231,34 +199,6 @@
     function handleDragStart(e: DragEvent, recipeId: number) {
         e.dataTransfer?.setData("text/plain", String(recipeId));
         e.dataTransfer!.effectAllowed = "copy";
-    }
-
-    async function toggleChecked(item: ShoppingItem) {
-        if (savingItemIds.includes(item.id)) return;
-        savingItemIds = [...savingItemIds, item.id];
-        const version = loadVersion;
-        const next = !item.checked;
-        shoppingList = shoppingList.map((entry) =>
-            entry.id === item.id ? { ...entry, checked: next } : entry
-        );
-
-        try {
-            const updated = await setShoppingListItemChecked({ itemId: item.id, checked: next, quantity: item.quantity });
-            shoppingList = shoppingList.map((entry) =>
-                entry.id === item.id && entry.quantity === item.quantity ? { ...entry, ...updated } : entry
-            );
-        } catch {
-            shoppingList = shoppingList.map((entry) =>
-                entry.id === item.id && entry.quantity === item.quantity ? { ...entry, checked: item.checked } : entry
-            );
-            if (version === loadVersion) {
-                error = m["mealPlan.error.checkItem"]();
-                const list = await getShoppingList({ startDate: weekDays[0].date, endDate: weekDays[6].date }).run().catch(() => null);
-                if (list && version === loadVersion) shoppingList = list;
-            }
-        } finally {
-            savingItemIds = savingItemIds.filter((id) => id !== item.id);
-        }
     }
 
     async function openCalendarDialog() {
@@ -337,7 +277,7 @@
         </div>
     {/if}
 
-    <div class="flex items-center justify-between gap-2">
+    <div class="flex flex-wrap items-center justify-between gap-2">
         <div class="inline-flex items-center rounded-lg border border-border/70 bg-card p-0.5">
             <Button aria-label={m["mealPlan.previousWeek"]()} class="size-9 rounded-md" size="icon" variant="ghost" onclick={prevWeek}>
                 <ChevronLeft class="size-4"/>
@@ -490,48 +430,11 @@
             </div>
 
             {#if shoppingListOpen}
-                <div class="order-first flex w-full shrink-0 flex-col gap-3 rounded-xl border bg-card/50 p-4 lg:order-none lg:w-72">
-                    <div class="flex items-center justify-between">
-                        <h2 class="font-semibold text-sm">{m["mealPlan.shoppingList"]()}</h2>                        <button aria-label={m["mealPlan.shoppingList"]()} class="flex size-11 items-center justify-center rounded text-muted-foreground transition hover:bg-accent hover:text-foreground" onclick={() => (shoppingListOpen = false)}>
-                            <X class="size-4"/>
-                        </button>
-                    </div>
-                    <div class="flex-1 overflow-y-auto space-y-2 max-h-[60vh]">
-                        {#if shoppingList.length === 0}
-                            <p class="text-sm text-muted-foreground text-center py-8">{m["mealPlan.emptyShoppingList"]()}</p>
-                        {:else}
-                            {#each shoppingGroups as group (group.category)}
-                                <div class="space-y-1.5">
-                                    <h3 class="px-1 pt-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{group.label}</h3>
-                                    {#each group.items as item (item.id)}
-                                        <button
-                                            role="checkbox"
-                                            aria-checked={item.checked}
-                                            disabled={savingItemIds.includes(item.id)}
-                                            class="flex min-h-11 w-full items-center justify-between p-2 rounded-lg border bg-card hover:bg-accent/50 transition-colors text-left {item.checked ? 'opacity-60' : ''}"
-                                            onclick={() => toggleChecked(item)}
-                                        >
-                                            <div class="min-w-0 flex-1">
-                                                <p class="text-sm font-medium truncate {item.checked ? 'line-through' : ''}">{item.name}</p>
-                                                <p class="text-xs text-muted-foreground">{formatQuantity(item.quantity)} {item.unit}</p>
-                                                {#if item.quantityIncreased && !item.checked}
-                                                    <p class="text-xs font-medium text-primary">{m["mealPlan.quantityIncreased"]()}</p>
-                                                {/if}
-                                            </div>
-                                            <div class="shrink-0 ml-2">
-                                                {#if item.checked}
-                                                    <span class="text-green-500 text-xs font-bold">✓</span>
-                                                {:else}
-                                                    <span class="text-muted-foreground/30 text-xs">○</span>
-                                                {/if}
-                                            </div>
-                                        </button>
-                                    {/each}
-                                </div>
-                            {/each}
-                        {/if}
-                    </div>
-                </div>
+                <ShoppingList
+                    weekStart={weekDays[0].date}
+                    planRevision={shoppingRevision}
+                    onClose={() => shoppingListOpen = false}
+                />
             {/if}
         </div>
     {/if}

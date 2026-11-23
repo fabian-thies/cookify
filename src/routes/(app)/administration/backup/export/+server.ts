@@ -32,6 +32,7 @@ export const GET = async ({ locals }) => {
         collectionToRecipe: await db.select().from(table.collectionToRecipe),
         mealPlan: await db.select().from(table.mealPlan),
         shoppingListItems: await db.select().from(table.shoppingListItems),
+        shoppingListShares: await db.select().from(table.shoppingListShares),
     };
 
     const zip = new AdmZip();
