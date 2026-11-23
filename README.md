@@ -62,7 +62,6 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
 
     ```dotenv
     # App
-    NODE_ENV=production
     ORIGIN=http://localhost:3000
     DATABASE_URL=postgres://cookify:secret@db:5432/cookify
 

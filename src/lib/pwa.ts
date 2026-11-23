@@ -1,3 +1,5 @@
+import {version} from '$app/environment';
+
 export function isStandalone(): boolean {
     if (typeof window === 'undefined') return false;
     return window.matchMedia('(display-mode: standalone)').matches ||
@@ -10,7 +12,10 @@ export function registerServiceWorker(): void {
     }
 
     function register() {
-        navigator.serviceWorker.register('/sw.js', {scope: '/'}).catch((error) => {
+        navigator.serviceWorker.register(`/sw.js?v=${encodeURIComponent(version)}`, {
+            scope: '/',
+            updateViaCache: 'none'
+        }).catch((error) => {
             console.error('Service worker registration failed', error);
         });
     }
