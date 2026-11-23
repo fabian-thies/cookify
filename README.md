@@ -7,6 +7,27 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
 
 </div>
 
+## Screenshots
+
+![Cookify favorites with six recipe cards, a search bar, and filters](docs/screenshots/recipe-library.png)
+
+<details>
+<summary>Recipe details, weekly meal plan, and Cook Mode</summary>
+
+### Recipe details
+
+![A rigatoni recipe with adjustable servings, an ingredient list, and step-by-step preparation](docs/screenshots/recipe-detail.png)
+
+### Weekly meal plan
+
+![A week of planned meals beside the generated shopping list, with cherry tomatoes checked off](docs/screenshots/meal-plan.png)
+
+### Cook Mode
+
+![A cooking step with an active countdown timer and navigation controls](docs/screenshots/cook-mode.png)
+
+</details>
+
 ## Features
 
 - **User Accounts**
