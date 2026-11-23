@@ -1,94 +1,59 @@
 import { error, json } from '@sveltejs/kit';
-import { sql } from 'drizzle-orm';
+import { getTableName, sql } from 'drizzle-orm';
 import { getDb } from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
-import AdmZip from 'adm-zip';
 import fs from 'node:fs';
 import path from 'node:path';
+import { readBackup, RESTORE_DIRECTORY_PREFIX } from '../archive';
 
-const ALLOWED_IMAGE_EXTENSIONS = new Set([
-    '.avif', '.gif', '.jpeg', '.jpg', '.png', '.webp'
-]);
+let restoreInProgress = false;
 
-const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500 MB
-
-function validateBackup(zip: AdmZip): Record<string, Record<string, unknown>[]> {
-    const dataEntry = zip.getEntry('data.json');
-    if (!dataEntry) {
-        throw new Error('Invalid backup: missing data.json');
-    }
-
-    let raw: Record<string, unknown[]>;
-    try {
-        raw = JSON.parse(dataEntry.getData().toString('utf-8'));
-    } catch {
-        throw new Error('Invalid backup: data.json is not valid JSON');
-    }
-
-    const requiredTables = ['users', 'recipes', 'ingredients', 'steps'];
-    for (const t of requiredTables) {
-        if (!Array.isArray(raw[t])) {
-            throw new Error(`Invalid backup: missing or invalid table "${t}"`);
-        }
-    }
-
-    for (const entry of zip.getEntries()) {
-        if (entry.entryName.startsWith('uploads/') && !entry.isDirectory) {
-            const ext = path.extname(entry.entryName).toLowerCase();
-            if (!ALLOWED_IMAGE_EXTENSIONS.has(ext)) {
-                throw new Error(`Invalid backup: disallowed file type "${ext}"`);
-            }
-            const normalized = path.normalize(entry.entryName);
-            if (!normalized.startsWith('uploads/')) {
-                throw new Error('Invalid backup: path traversal detected');
-            }
-        }
-    }
-
-    return raw as Record<string, Record<string, unknown>[]>;
-}
-
-function sanitizeDates(data: Record<string, Record<string, unknown>[]>) {
-    const timestampFields: Record<string, string[]> = {
-        siteSettings: ['updatedAt'],
-        recipes: ['createdAt', 'updatedAt'],
-        recipeRating: ['createdAt', 'updatedAt'],
-        passkey: ['createdAt'],
-        shoppingListItems: ['createdAt', 'updatedAt'],
-    };
-
-    for (const [tableName, fields] of Object.entries(timestampFields)) {
-        const rows = data[tableName];
-        if (!rows) continue;
-        for (const row of rows) {
-            for (const field of fields) {
-                const val = row[field];
-                if (typeof val === 'string') {
-                    row[field] = new Date(val);
-                }
-            }
-        }
-    }
-}
-
-function restoreUploads(zip: AdmZip) {
+function stageUploads(uploads: Awaited<ReturnType<typeof readBackup>>['uploads']) {
     const uploadsDir = path.resolve(process.cwd(), 'uploads');
+    // Stage on the same filesystem so a Docker bind mount stays in place during the moves.
+    fs.mkdirSync(uploadsDir, {recursive: true});
+    const workDir = fs.mkdtempSync(path.join(uploadsDir, RESTORE_DIRECTORY_PREFIX));
+    const incoming = path.join(workDir, 'incoming');
+    const previous = path.join(workDir, 'previous');
+    const savedNames: string[] = [];
+    const restoredNames: string[] = [];
+    const cleanup = () => fs.rmSync(workDir, {recursive: true, force: true});
 
-    if (fs.existsSync(uploadsDir)) {
-        fs.rmSync(uploadsDir, { recursive: true, force: true });
+    try {
+        fs.mkdirSync(incoming);
+        fs.mkdirSync(previous);
+        for (const entry of uploads) {
+            const destination = path.join(incoming, entry.entryName.slice('uploads/'.length));
+            fs.mkdirSync(path.dirname(destination), {recursive: true});
+            fs.writeFileSync(destination, entry.getData(), {flag: 'wx'});
+        }
+    } catch (error) {
+        cleanup();
+        throw error;
     }
 
-    const entries = zip.getEntries().filter((e) => e.entryName.startsWith('uploads/'));
-    for (const entry of entries) {
-        if (entry.isDirectory) continue;
-
-        const relativePath = entry.entryName.replace(/^uploads\//, '');
-        const destPath = path.join(uploadsDir, relativePath);
-        const destDir = path.dirname(destPath);
-
-        fs.mkdirSync(destDir, { recursive: true });
-        fs.writeFileSync(destPath, entry.getData());
-    }
+    return {
+        replace() {
+            for (const name of fs.readdirSync(uploadsDir)) {
+                if (name.startsWith(RESTORE_DIRECTORY_PREFIX)) continue;
+                fs.renameSync(path.join(uploadsDir, name), path.join(previous, name));
+                savedNames.push(name);
+            }
+            for (const name of fs.readdirSync(incoming)) {
+                fs.renameSync(path.join(incoming, name), path.join(uploadsDir, name));
+                restoredNames.push(name);
+            }
+        },
+        rollback() {
+            for (const name of restoredNames) {
+                fs.rmSync(path.join(uploadsDir, name), {recursive: true, force: true});
+            }
+            for (const name of savedNames) {
+                fs.renameSync(path.join(previous, name), path.join(uploadsDir, name));
+            }
+        },
+        cleanup,
+    };
 }
 
 export const POST = async ({ locals, request }) => {
@@ -96,62 +61,27 @@ export const POST = async ({ locals, request }) => {
         throw error(401, 'Unauthorized');
     }
 
-    const formData = await request.formData();
-    const file = formData.get('file');
-
-    if (!(file instanceof File)) {
-        throw error(400, 'No file provided');
-    }
-
-    if (file.size > MAX_FILE_SIZE) {
-        throw error(400, 'File too large');
-    }
-
-    if (!file.name.endsWith('.zip')) {
-        throw error(400, 'Only .zip files are accepted');
-    }
-
-    let zip: AdmZip;
-    try {
-        const buffer = Buffer.from(await file.arrayBuffer());
-        zip = new AdmZip(buffer);
-    } catch {
-        throw error(400, 'Invalid zip file');
-    }
-
-    let data: Record<string, Record<string, unknown>[]>;
-    try {
-        data = validateBackup(zip);
-    } catch (e) {
-        throw error(400, (e as Error).message);
-    }
-
-    const db = getDb();
-
-    // Convert ISO date strings from JSON back to Date objects
-    sanitizeDates(data);
+    const {data, uploads} = await readBackup(request);
+    if (restoreInProgress) throw error(409, 'A backup restore is already in progress');
+    restoreInProgress = true;
+    let staged: ReturnType<typeof stageUploads> | undefined;
+    let committed = false;
 
     try {
+        const db = getDb();
+        staged = stageUploads(uploads);
+        const uploadRestore = staged;
         await db.transaction(async (tx) => {
-            // Clear in reverse dependency order (children first)
-            await tx.delete(table.passkey);
-            await tx.delete(table.recipeRating);
-            await tx.delete(table.favorite);
-            await tx.delete(table.tips);
-            await tx.delete(table.tags);
-            await tx.delete(table.steps);
-            await tx.delete(table.ingredients);
-            await tx.delete(table.difficultyToRecipe);
-            await tx.delete(table.collectionToRecipe);
-            await tx.delete(table.collections);
-            await tx.delete(table.difficulty);
-            await tx.delete(table.mealPlan);
-            await tx.delete(table.shoppingListItems);
-            await tx.delete(table.cookHistory);
-            await tx.delete(table.session);
-            await tx.delete(table.recipes);
-            await tx.delete(table.siteSettings);
-            await tx.delete(table.user);
+            const tables = [
+                table.passkey, table.recipeRating, table.favorite, table.tips, table.tags,
+                table.steps, table.ingredients, table.difficultyToRecipe, table.collectionToRecipe,
+                table.collections, table.difficulty, table.mealPlan, table.shoppingListItems,
+                table.cookHistory, table.session, table.recipes, table.siteSettings, table.user,
+            ];
+            const names = tables.map(target => sql.identifier(getTableName(target)));
+            await tx.execute(sql`LOCK TABLE ${sql.join(names, sql`, `)} IN SHARE ROW EXCLUSIVE MODE`);
+            // The table list is in reverse dependency order.
+            for (const target of tables) await tx.delete(target);
 
             // Insert in dependency order (parents first)
             if (data.users?.length) {
@@ -205,27 +135,42 @@ export const POST = async ({ locals, request }) => {
             if (data.shoppingListItems?.length) {
                 await tx.insert(table.shoppingListItems).values(data.shoppingListItems as typeof table.shoppingListItems.$inferInsert[]);
             }
+            // Restart sequences transactionally so a failed restore keeps the previous counters.
+            const serialTables = [
+                'site_settings', 'recipes', 'difficulty', 'ingredients', 'steps',
+                'favorite', 'tags', 'tips', 'recipe_rating', 'collections', 'collection_to_recipe',
+                'meal_plan', 'shopping_list_items', 'cook_history'
+            ];
+            for (const tableName of serialTables) {
+                await tx.execute(sql.raw(
+                    `DO $restore$
+                    DECLARE
+                        sequence_name regclass := pg_get_serial_sequence('${tableName}', 'id');
+                        next_id bigint;
+                    BEGIN
+                        SELECT COALESCE(MAX(id), 0)::bigint + 1 INTO next_id FROM "${tableName}";
+                        EXECUTE format('ALTER SEQUENCE %s RESTART WITH %s', sequence_name, next_id);
+                    END;
+                    $restore$;`
+                ));
+            }
+            uploadRestore.replace();
         });
-
-        // TODO
-        // Resynchronize serial sequences to prevent duplicate key errors on future inserts
-        const serialTables = [
-            'site_settings', 'recipes', 'difficulty', 'ingredients', 'steps',
-            'favorite', 'tags', 'tips', 'recipe_rating', 'collections', 'collection_to_recipe', 'meal_plan', 'shopping_list_items', 'cook_history'
-        ];
-        for (const tableName of serialTables) {
-            await db.execute(sql.raw(
-                `SELECT setval(pg_get_serial_sequence('${tableName}', 'id'), ` +
-                `COALESCE((SELECT MAX(id) FROM "${tableName}"), 0) + 1, false)`
-            ));
-        }
-
-        // Restore uploads after successful DB import
-        restoreUploads(zip);
-
-        return json({ success: true });
+        committed = true;
+        return json({success: true});
     } catch (e) {
         console.error('Import failed:', e);
         throw error(500, 'Failed to import backup');
+    } finally {
+        if (staged) {
+            try {
+                if (!committed) staged.rollback();
+                staged.cleanup();
+            } catch (e) {
+                // Leave the recovery directory in place if restoring the old files fails.
+                console.error('Could not clean up restored uploads:', e);
+            }
+        }
+        restoreInProgress = false;
     }
 };

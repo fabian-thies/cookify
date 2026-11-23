@@ -5,6 +5,7 @@ import { recipeColumns } from '$lib/server/db/recipe';
 import AdmZip from 'adm-zip';
 import fs from 'node:fs';
 import path from 'node:path';
+import { RESTORE_DIRECTORY_PREFIX } from '../archive';
 
 export const GET = async ({ locals }) => {
     if (!locals.user?.administrator) {
@@ -40,6 +41,7 @@ export const GET = async ({ locals }) => {
     if (fs.existsSync(uploadsDir)) {
         const entries = fs.readdirSync(uploadsDir, { withFileTypes: true });
         for (const entry of entries) {
+            if (entry.name.startsWith(RESTORE_DIRECTORY_PREFIX)) continue;
             const fullPath = path.join(uploadsDir, entry.name);
             if (entry.isDirectory()) {
                 zip.addLocalFolder(fullPath, `uploads/${entry.name}`);
