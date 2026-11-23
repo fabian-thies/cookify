@@ -243,10 +243,13 @@ const recipeRemote = load('src/lib/functions/recipe.remote.ts', {
     '$app/server': appServerMock,
 });
 
+const utils = load('src/lib/utils.ts');
+
 const userRemote = load('src/lib/functions/user.remote.ts', {
     'valibot': v,
     '$lib/server/db/user': userDb,
     '$lib/server/utils': {hashPassword: async pw => `hashed:${pw}`},
+    '$lib/utils': utils,
     '$app/server': appServerMock,
 });
 

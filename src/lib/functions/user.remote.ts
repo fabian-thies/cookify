@@ -2,6 +2,7 @@ import {command, getRequestEvent, query} from "$app/server";
 import * as v from "valibot";
 import {updatePassword, updateUserEmail, deleteUserAccount, getUsers as getUsersFromDb, getUserById as getUserByIdFromDb, getLocaleByUserId as getLocaleByUserIdFromDb, saveProfile as saveProfileInDb, updatePassword as updatePasswordInDb, deleteUserAccount as deleteUserAccountFromDb} from "$lib/server/db/user";
 import {hashPassword} from "$lib/server/utils";
+import {validateUsername} from "$lib/utils";
 
 function ensureAdmin() {
     const {locals} = getRequestEvent();
@@ -94,7 +95,7 @@ export const getUserById = query(v.object({
 });
 
 export const saveProfile = command(v.object({
-    username: v.pipe(v.string(), v.minLength(1)),
+    username: v.pipe(v.string(), v.check((username) => validateUsername(username))),
     email: v.pipe(v.string(), v.email()),
     avatar: v.string(),
     language: v.picklist(['en', 'de', 'es'])

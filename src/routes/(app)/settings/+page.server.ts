@@ -7,6 +7,7 @@ import {ImageUploadError, saveImage} from "$lib/server/image";
 import {isUserLanguage} from "$lib/types/languages";
 import type {UserLanguage} from "$lib/types/languages";
 import {LANGUAGES} from "$lib/constants";
+import {validatePassword, validateUsername} from "$lib/utils";
 import {deleteSessionTokenCookie, invalidateSession} from "$lib/server/auth";
 import {deletePasskey, getPasskeysByUserId} from "$lib/server/db/passkey";
 
@@ -15,7 +16,7 @@ export const load = async ({locals}: RequestEvent) => {
 };
 
 const ProfileSchema = v.object({
-    username: v.string(),
+    username: v.pipe(v.string(), v.check((username) => validateUsername(username))),
     email: v.pipe(v.string(), v.email()),
     password: v.optional(v.string()),
     language: v.picklist(LANGUAGES)
@@ -37,12 +38,19 @@ export const actions = {
             password: String(formData.get("password") ?? ""),
             language: rawLanguage as UserLanguage,
         };
+        const passwordConfirm = String(formData.get("passwordConfirm") ?? "");
 
         let parsed: v.InferOutput<typeof ProfileSchema>;
         try {
             parsed = v.parse(ProfileSchema, data);
         } catch (e) {
             return fail(400, {invalid: true});
+        }
+
+        if (parsed.password && parsed.password.length > 0) {
+            if (!validatePassword(parsed.password) || parsed.password !== passwordConfirm) {
+                return fail(400, {invalid: true});
+            }
         }
 
         const avatarInput = formData.get("avatar");

@@ -93,8 +93,9 @@
 
             <div class="flex w-full flex-col gap-1.5">
                 <Label for="username">{m["settings.profile.username"]()}</Label>
-                <Input id="username" name="username" placeholder={m["settings.profile.usernamePlaceholder"]()}
-                       required type="text" value={user.username}/>
+                <Input autocapitalize="none" id="username" maxlength={31} minlength={3} name="username"
+                       pattern="[a-zA-Z0-9_-]+" placeholder={m["settings.profile.usernamePlaceholder"]()}
+                       required spellcheck={false} type="text" value={user.username}/>
             </div>
 
             <div class="flex w-full flex-col gap-1.5">
@@ -139,6 +140,7 @@
                                     class="pr-10"
                                     id="password"
                                     autocomplete="new-password"
+                                    maxlength={255}
                                     minlength={6}
                                     name="password"
                                     placeholder={m["settings.profile.newPasswordPlaceholder"]()}
@@ -188,6 +190,7 @@
                                     bind:value={passwordConfirm}
                                     class="pr-10 {passwordConfirm.length > 0 && !passwordsMatch ? 'border-red-500' : ''}"
                                     id="passwordConfirm"
+                                    maxlength={255}
                                     name="passwordConfirm"
                                     placeholder={m["settings.profile.confirmPasswordPlaceholder"]()}
                                     type={showPasswordConfirm ? "text" : "password"}
