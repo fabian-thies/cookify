@@ -17,7 +17,7 @@
 <Toaster offset={84} position="top-center" richColors/>
 
 <a class="skip-link" href="#main-content">{m["a11y.skipToContent"]()}</a>
-<main id="main-content" tabindex="-1" class="mx-auto w-full max-w-7xl px-4 pt-5 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:px-6 lg:pb-12">
+<main id="main-content" tabindex="-1" class="mx-auto w-full max-w-7xl px-4 pt-6 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-8 lg:pb-12">
     {@render children()}
 </main>
 

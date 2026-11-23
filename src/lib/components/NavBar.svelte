@@ -24,7 +24,7 @@
         href === "/" ? page.url.pathname === "/" : page.url.pathname.startsWith(href === "/recipe/search" ? "/recipe/" : href);
 </script>
 
-<nav class="sticky top-0 z-40 mx-auto flex w-full max-w-6xl items-center justify-between gap-2 border-b border-border/60 bg-background/80 px-4 py-2 pt-[max(0.5rem,env(safe-area-inset-top))] backdrop-blur-xl sm:top-3 sm:w-[calc(100%-2rem)] sm:rounded-2xl sm:border sm:border-border/70 sm:bg-card/70 sm:px-5 sm:shadow-sm lg:px-6">
+<nav class="sticky top-0 z-40 mx-auto flex w-full max-w-6xl items-center justify-between gap-2 border-b border-border/60 bg-background/80 px-4 py-2 pt-[max(0.5rem,env(safe-area-inset-top))] backdrop-blur-xl sm:top-3 sm:mt-3 sm:w-[calc(100%-2rem)] sm:rounded-2xl sm:border sm:border-border/70 sm:bg-card/70 sm:px-5 sm:shadow-sm lg:px-6">
     <a class="flex items-center gap-2 rounded-lg px-1 py-1 transition hover:opacity-80" href="/">
         <h2 class="cookify text-xl font-semibold tracking-tight lg:text-2xl">
             cookify

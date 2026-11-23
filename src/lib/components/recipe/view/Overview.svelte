@@ -323,7 +323,7 @@
 </script>
 
 {#if heroImage}
-    <div class="-mx-4 -mt-3 mb-6 sm:mx-0 sm:mt-0">
+    <div class="-mx-4 -mt-6 mb-6 sm:mx-0 sm:mt-0">
         <img
                 alt={title}
                 class="aspect-[3/2] w-full border-b border-border/60 object-cover sm:aspect-[2/1] sm:rounded-2xl sm:border"

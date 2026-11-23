@@ -133,7 +133,7 @@
 
 <UnsavedChanges form={formElement} {saved}/>
 
-<div class="mx-auto mt-2 sm:mt-6">
+<div class="mx-auto mt-2">
     <div class="mb-5 space-y-1">
         <h1 class="page-title">{m["recipe.form.createTitle"]()}</h1>
     </div>
