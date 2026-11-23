@@ -1,4 +1,8 @@
 import * as v from 'valibot';
+import {and, eq} from 'drizzle-orm';
+import {error} from '@sveltejs/kit';
+import {getDb} from '$lib/server/db';
+import {recipeNotes} from '$lib/server/db/schema';
 import {command, getRequestEvent, query} from '$app/server';
 import {normalizeRecipeSourceUrl} from '$lib/recipe-source';
 import {
@@ -31,6 +35,7 @@ import {
     getUserRecipeRating as getUserRecipeRatingFromDb,
     getCollectionRecipes as getCollectionRecipesFromDb,
     searchRecipes as searchRecipesFromDb,
+    searchRecipesByIngredients,
     createRecipe as createRecipeInDb,
     updateRecipe as updateRecipeInDb,
     incrementRecipeViewCount,
@@ -209,11 +214,12 @@ export const getRecipes = query(v.optional(v.object({
 });
 
 export const searchRecipes = query(v.object({
-    query: v.pipe(v.string(), v.trim(), v.minLength(1), v.maxLength(100))
-}), async ({query}) => {
+    query: v.pipe(v.string(), v.trim(), v.minLength(1), v.maxLength(100)),
+    ingredientsOnly: v.optional(v.boolean(), false),
+}), async ({query, ingredientsOnly}) => {
     const {locals} = getRequestEvent();
     if (!locals.user) throw new Error('User not authenticated');
-    return await searchRecipesFromDb(query, locals.user.id);
+    return ingredientsOnly ? searchRecipesByIngredients(query, locals.user.id) : searchRecipesFromDb(query, locals.user.id);
 });
 
 export const getRecentRecipes = query(async () => {
@@ -323,6 +329,37 @@ async function assertRecipeVisible(recipeId: number) {
 
     return recipe;
 }
+
+const noteRecipeId = v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(2_147_483_647));
+
+async function requireNoteAccess(recipeId: number) {
+    const userId = getRequestEvent().locals.user?.id;
+    if (!userId) error(401, 'User not authenticated');
+    await assertRecipeVisible(recipeId);
+    return userId;
+}
+
+export const getRecipeNote = query(v.object({recipeId: noteRecipeId}), async ({recipeId}) => {
+    const userId = await requireNoteAccess(recipeId);
+    const [row] = await getDb().select({note: recipeNotes.note}).from(recipeNotes)
+        .where(and(eq(recipeNotes.userId, userId), eq(recipeNotes.recipeId, recipeId)));
+    return row?.note ?? '';
+});
+
+export const saveRecipeNote = command(v.object({
+    recipeId: noteRecipeId,
+    note: v.pipe(v.string(), v.trim(), v.maxLength(4000)),
+}), async ({recipeId, note}) => {
+    const userId = await requireNoteAccess(recipeId);
+    const db = getDb();
+    if (!note) {
+        await db.delete(recipeNotes).where(and(eq(recipeNotes.userId, userId), eq(recipeNotes.recipeId, recipeId)));
+    } else {
+        await db.insert(recipeNotes).values({userId, recipeId, note})
+            .onConflictDoUpdate({target: [recipeNotes.userId, recipeNotes.recipeId], set: {note}});
+    }
+    return note;
+});
 
 export const getSteps = query(v.object({
     recipeId: v.number()

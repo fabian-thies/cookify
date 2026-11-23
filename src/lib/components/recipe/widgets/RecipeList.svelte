@@ -58,6 +58,7 @@
     let {userId, recipes, initialTag = "", title, showFilters = true, serverSearch = false, loading = false, emptyHref = "/recipe/create", emptyLabel = m["nav.create"](), actions}: Props = $props();
 
     let search = $state("");
+    let ingredientsOnly = $state(false);
     let remoteRecipes = $state<Recipe[] | null>(null);
     let searching = $state(false);
     let selectedDifficulty = $state("");
@@ -73,6 +74,7 @@
         }
 
         const term = search.trim();
+        const byIngredient = ingredientsOnly;
         if (!term) {
             remoteRecipes = null;
             searching = false;
@@ -81,10 +83,11 @@
 
         let cancelled = false;
         searching = true;
+        remoteRecipes = null;
 
         const timer = setTimeout(async () => {
             try {
-                const result = await searchRecipes({query: term.slice(0, 100)}).run();
+                const result = await searchRecipes({query: term.slice(0, 100), ingredientsOnly: byIngredient}).run();
                 if (!cancelled) {
                     remoteRecipes = result as Recipe[];
                 }
@@ -160,6 +163,7 @@
 
     const clearFilters = () => {
         search = "";
+        ingredientsOnly = false;
         selectedDifficulty = "";
         selectedCookTime = "";
         selectedTag = "";
@@ -198,10 +202,10 @@
             <div class="relative flex-1">
                 <Search class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"/>
                 <Input
-                    aria-label={m["recipe.list.searchPlaceholder"]()}
+                    aria-label={(ingredientsOnly ? m["recipe.list.ingredientSearchLabel"]() : m["recipe.list.searchPlaceholder"]())}
                     bind:value={search}
                     class="h-11 pl-9 pr-10"
-                    placeholder={m["recipe.list.searchPlaceholder"]()}
+                    placeholder={ingredientsOnly ? m["recipe.list.ingredientSearchPlaceholder"]() : m["recipe.list.searchPlaceholder"]()}
                     type="search"
                 />
                 {#if searching}
@@ -295,6 +299,16 @@
                 </Popover.Content>
             </Popover.Root>
         </div>
+
+        {#if serverSearch}
+            <label class="-mt-2 flex min-h-8 w-fit cursor-pointer items-center gap-2 text-sm text-muted-foreground">
+                <input type="checkbox" class="size-4 rounded border-input accent-primary" bind:checked={ingredientsOnly}/>
+                {m["recipe.list.ingredientsOnly"]()}
+            </label>
+            {#if ingredientsOnly}
+                <p class="-mt-4 text-xs text-muted-foreground">{m["recipe.list.ingredientSearchHint"]()}</p>
+            {/if}
+        {/if}
 
         {#if filterActive}
             <div class="-mt-2 flex flex-wrap items-center gap-1.5">

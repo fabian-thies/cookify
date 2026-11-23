@@ -25,7 +25,8 @@ Upload photos, rate dishes, build collections, and find inspiration in your own 
     - AI-generated recipes include estimated nutrition per serving; nutrition can also be estimated for existing recipes.
     - Admins can enable or disable AI features globally at any time.
 - **Smart Search & Filters**
-    - Search and filter recipes by difficulty, cook time, or keywords.
+    - Search by keywords or require every ingredient in a comma-separated list. Filter by difficulty or cooking time.
+    - Keep a private cooking note on each recipe.
     - Powered by PostgreSQL full-text search, with fuzzy matching for typos.
 - **Favorites & Ratings**
     - Mark recipes as favorites and rate them on a 1-5 scale.

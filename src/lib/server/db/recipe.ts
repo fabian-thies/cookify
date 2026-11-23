@@ -303,6 +303,30 @@ function searchTerms(input: string): string[] {
         .filter((term) => term.length > 0);
 }
 
+export async function searchRecipesByIngredients(input: string, viewerId: string) {
+    const terms = [...new Set(input.toLowerCase().split(',').map(term => term.trim()).filter(Boolean))];
+    if (!terms.length) return [];
+
+    // Each comma-separated term must match an ingredient name on the same recipe.
+    const matches = terms.map(term => sql`exists (
+        select 1 from ${ingredients}
+        where ${ingredients.recipeId} = ${recipes.id}
+          and strpos(lower(${ingredients.name}), ${term}) > 0
+    )`);
+
+    return getDb().select({
+        ...recipeColumns,
+        difficulty: difficulty.difficulty,
+        tags: tagListSubquery,
+    })
+        .from(recipes)
+        .innerJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
+        .innerJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
+        .where(and(or(eq(recipes.visibility, 'public'), eq(recipes.userId, viewerId)), ...matches))
+        .orderBy(desc(recipes.createdAt), desc(recipes.id))
+        .limit(60);
+}
+
 export async function searchRecipes(searchTerm: string, viewerId?: string, limit = 60) {
     const query = searchTerm.trim();
     const terms = searchTerms(query);

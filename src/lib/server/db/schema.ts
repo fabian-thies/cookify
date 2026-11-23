@@ -148,6 +148,12 @@ export const recipeRating = pgTable('recipe_rating', {
     unique('recipe_rating_recipe_user_unique').on(t.recipeId, t.userId),
 ]);
 
+export const recipeNotes = pgTable('recipe_notes', {
+    userId: text('user_id').notNull().references(() => user.id, {onDelete: 'cascade'}),
+    recipeId: integer('recipe_id').notNull().references(() => recipes.id, {onDelete: 'cascade'}),
+    note: text('note').notNull(),
+}, (t) => [primaryKey({columns: [t.userId, t.recipeId]})]);
+
 export const cookHistory = pgTable('cook_history', {
     id: serial('id').primaryKey(),
     userId: text('user_id').notNull().references(() => user.id),

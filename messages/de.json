@@ -562,6 +562,15 @@
       "security": "Jeder mit diesem Link kann deinen Wochenplan sehen. Erzeuge einen neuen Link, um alte zu widerrufen."
     }
   },
+  "recipe.list.ingredientsOnly": "Nur Zutaten",
+  "recipe.list.ingredientSearchLabel": "Zutaten suchen",
+  "recipe.list.ingredientSearchPlaceholder": "z. B. Zucchini, Feta",
+  "recipe.list.ingredientSearchHint": "Trenne mehrere Zutaten mit Kommas.",
+  "recipe.note.title": "Persönliche Notiz",
+  "recipe.note.private": "Nur in deinem Konto sichtbar.",
+  "recipe.note.loadError": "Notiz konnte nicht geladen werden.",
+  "recipe.note.saveError": "Notiz konnte nicht gespeichert werden.",
+  "recipe.note.saved": "Notiz gespeichert.",
   "recipe.common.originalRecipe": "Originalrezept",
   "a11y.skipToContent": "Zum Inhalt springen",
   "actions.close": "Schließen",

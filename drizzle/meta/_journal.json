@@ -176,6 +176,13 @@
       "when": 1795434954067,
       "tag": "0024_shopping_list_household",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1795436098418,
+      "tag": "0025_recipe_notes",
+      "breakpoints": true
     }
   ]
 }

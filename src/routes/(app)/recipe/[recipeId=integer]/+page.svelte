@@ -1,4 +1,5 @@
 <script lang="ts">
+    import RecipeNote from "$lib/components/recipe/view/RecipeNote.svelte";
     import Preparation from "$lib/components/recipe/view/Preparation.svelte";
     import SimilarRecipes from "$lib/components/recipe/view/SimilarRecipes.svelte";
     import Tips from "$lib/components/recipe/view/Tips.svelte";
@@ -103,6 +104,7 @@
         <div class="lg:col-span-2">
             <Preparation steps={recipe.steps}/>
             <Tips tips={recipe.tips}/>
+            {#key recipe.id}<RecipeNote recipeId={recipe.id}/>{/key}
         </div>
     </div>
     <SimilarRecipes recipeId={recipe.id}/>

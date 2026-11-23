@@ -45,6 +45,13 @@ export async function readBackup(request: Request) {
             throw new Error('Invalid backup: invalid table "shoppingListShares"');
         }
 
+        if (data.recipeNotes !== undefined && (
+            !Array.isArray(data.recipeNotes) || data.recipeNotes.some(row =>
+                typeof row?.userId !== 'string' || !Number.isInteger(row.recipeId) || typeof row.note !== 'string')
+        )) {
+            throw new Error('Invalid backup: invalid table "recipeNotes"');
+        }
+
         for (const [name, fields] of Object.entries(timestampFields)) {
             const rows = data[name];
             if (rows === undefined) continue;

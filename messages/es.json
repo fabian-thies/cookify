@@ -562,6 +562,15 @@
       "security": "Cualquiera con este enlace puede ver tu plan semanal. Crea un enlace nuevo para revocar los anteriores."
     }
   },
+  "recipe.list.ingredientsOnly": "Solo ingredientes",
+  "recipe.list.ingredientSearchLabel": "Buscar ingredientes",
+  "recipe.list.ingredientSearchPlaceholder": "p. ej. calabacín, feta",
+  "recipe.list.ingredientSearchHint": "Separa los ingredientes con comas.",
+  "recipe.note.title": "Nota personal",
+  "recipe.note.private": "Solo visible en tu cuenta.",
+  "recipe.note.loadError": "No se pudo cargar la nota.",
+  "recipe.note.saveError": "No se pudo guardar la nota.",
+  "recipe.note.saved": "Nota guardada.",
   "recipe.common.originalRecipe": "Receta original",
   "a11y.skipToContent": "Saltar al contenido",
   "actions.close": "Cerrar",

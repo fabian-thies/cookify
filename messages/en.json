@@ -564,6 +564,15 @@
       "security": "Anyone with this link can see your meal plan. Create a new link to revoke old ones."
     }
   },
+  "recipe.list.ingredientsOnly": "Ingredients only",
+  "recipe.list.ingredientSearchLabel": "Search ingredients",
+  "recipe.list.ingredientSearchPlaceholder": "e.g. zucchini, feta",
+  "recipe.list.ingredientSearchHint": "Separate multiple ingredients with commas.",
+  "recipe.note.title": "Personal note",
+  "recipe.note.private": "Only visible in your account.",
+  "recipe.note.loadError": "Could not load the note.",
+  "recipe.note.saveError": "Could not save the note.",
+  "recipe.note.saved": "Note saved.",
   "recipe.common.originalRecipe": "Original recipe",
   "a11y.skipToContent": "Skip to content",
   "actions.close": "Close",

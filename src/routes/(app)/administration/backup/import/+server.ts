@@ -76,7 +76,7 @@ export const POST = async ({ locals, request }) => {
                 table.passkey, table.recipeRating, table.favorite, table.tips, table.tags,
                 table.steps, table.ingredients, table.difficultyToRecipe, table.collectionToRecipe,
                 table.collections, table.difficulty, table.mealPlan, table.shoppingListItems, table.shoppingListShares,
-                table.cookHistory, table.session, table.recipes, table.siteSettings, table.user,
+                table.recipeNotes, table.cookHistory, table.session, table.recipes, table.siteSettings, table.user,
             ];
             // Wait for active shared-list operations before taking locks on the list items they update.
             await tx.execute(sql`LOCK TABLE ${sql.identifier(getTableName(table.shoppingListShares))} IN EXCLUSIVE MODE`);
@@ -97,6 +97,9 @@ export const POST = async ({ locals, request }) => {
             }
             if (data.recipes?.length) {
                 await tx.insert(table.recipes).values(data.recipes as typeof table.recipes.$inferInsert[]);
+            }
+            if (data.recipeNotes?.length) {
+                await tx.insert(table.recipeNotes).values(data.recipeNotes as typeof table.recipeNotes.$inferInsert[]);
             }
             if (data.cookHistory?.length) {
                 await tx.insert(table.cookHistory).values(data.cookHistory as typeof table.cookHistory.$inferInsert[]);

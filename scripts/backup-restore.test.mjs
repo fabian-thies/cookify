@@ -43,6 +43,7 @@ const data = new Map([
     [table.recipes, [{id: 1, userId: 'owner', title: 'Soup', description: 'Soup', image: '/uploads/cover.png', servings: 2, cookingTime: 10}]],
     [table.cookHistory, [{id: 1, userId: 'owner', recipeId: 1, cookedAt: new Date(timestamp)}]],
     [table.mealPlan, [{id: 1, userId: 'owner', recipeId: 1, date, createdAt: new Date(timestamp)}]],
+    [table.recipeNotes, [{userId: 'owner', recipeId: 1, note: 'Less salt next time'}]],
     [table.shoppingListShares, [{ownerId: 'owner', memberId: 'member'}]],
 ]);
 
@@ -114,6 +115,7 @@ try {
     assert.equal((await firstRestore).status, 200);
     assert.deepEqual(inserts.get(table.cookHistory), [1, 'owner', 1, timestamp]);
     assert.deepEqual(inserts.get(table.mealPlan), [1, 'owner', 1, date, timestamp]);
+    assert.deepEqual(inserts.get(table.recipeNotes), ['owner', 1, 'Less salt next time']);
     assert.deepEqual(inserts.get(table.shoppingListShares), ['owner', 'member']);
     assert.equal(fs.statSync(uploads).ino, rootInode);
     assert.equal(fs.readFileSync(restored, 'utf8'), 'saved photo bytes');
