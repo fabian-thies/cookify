@@ -120,45 +120,66 @@ function parseIngredient(raw: string): { name: string; amount: number | null; un
     return { name: trimmed, amount: null, unit: '' };
 }
 
-function extractFromJsonLd(jsonLd: Record<string, unknown>): ScrapedRecipe | null {
-    if (jsonLd['@graph'] && Array.isArray(jsonLd['@graph'])) {
-        for (const item of jsonLd['@graph'] as Record<string, unknown>[]) {
+export function extractFromJsonLd(jsonLd: unknown): ScrapedRecipe | null {
+    if (!jsonLd || typeof jsonLd !== 'object') return null;
+
+    if (Array.isArray(jsonLd)) {
+        let fallback: ScrapedRecipe | null = null;
+        for (const item of jsonLd) {
             const recipe = extractFromJsonLd(item);
-            if (recipe) return recipe;
+            if (recipe?.title) return recipe;
+            if (recipe && !fallback) fallback = recipe;
         }
+        return fallback;
     }
 
-    const types = jsonLd['@type'];
+    const record = jsonLd as Record<string, unknown>;
+    let graphFallback: ScrapedRecipe | null = null;
+    if (Array.isArray(record['@graph'])) {
+        const recipe = extractFromJsonLd(record['@graph']);
+        if (recipe?.title) return recipe;
+        if (recipe) graphFallback = recipe;
+    }
+
+    const types = record['@type'];
     const typeList = Array.isArray(types) ? types : [types];
-    const isRecipe = typeList.some(t => String(t).includes('Recipe'));
+    const isRecipe = typeList.some(t => typeof t === 'string' && t.includes('Recipe'));
 
-    if (!isRecipe) return null;
+    if (!isRecipe) return graphFallback;
 
-    const name = typeof jsonLd['name'] === 'string' ? jsonLd['name'] : '';
-    const description = typeof jsonLd['description'] === 'string' ? jsonLd['description'] : '';
+    const name = typeof record['name'] === 'string' ? record['name'] : '';
+    const description = typeof record['description'] === 'string' ? record['description'] : '';
 
     let image: string | null = null;
-    const imageData = jsonLd['image'];
+    const imageData = record['image'];
     if (typeof imageData === 'string') {
         image = imageData;
     } else if (Array.isArray(imageData)) {
-        const firstImage = imageData.find((img: unknown) => typeof img === 'string');
-        if (firstImage) image = firstImage as string;
-        else if (imageData[0] && typeof imageData[0] === 'object') {
-            image = (imageData[0] as Record<string, unknown>)['url'] as string || null;
+        for (const img of imageData) {
+            if (typeof img === 'string' && img.trim()) {
+                image = img;
+                break;
+            }
+            if (img && typeof img === 'object' && typeof (img as Record<string, unknown>)['url'] === 'string') {
+                const candidate = (img as Record<string, unknown>)['url'] as string;
+                if (candidate.trim()) {
+                    image = candidate;
+                    break;
+                }
+            }
         }
-    } else if (imageData && typeof imageData === 'object') {
+    } else if (imageData && typeof imageData === 'object' && typeof (imageData as Record<string, unknown>)['url'] === 'string') {
         image = (imageData as Record<string, unknown>)['url'] as string || null;
     }
 
-    const cookTime = parseCookTime(jsonLd['cookTime']) 
-        ?? parseCookTime(jsonLd['totalTime']) 
-        ?? parseCookTime(jsonLd['prepTime']);
+    const cookTime = parseCookTime(record['cookTime']) 
+        ?? parseCookTime(record['totalTime']) 
+        ?? parseCookTime(record['prepTime']);
 
-    const servings = parseServings(String(jsonLd['recipeYield'] ?? jsonLd['yield'] ?? ''));
+    const servings = parseServings(String(record['recipeYield'] ?? record['yield'] ?? ''));
 
     const difficulty = (() => {
-        const d = jsonLd['recipeDifficulty'];
+        const d = record['recipeDifficulty'];
         if (typeof d === 'string') return d.toLowerCase();
         if (typeof d === 'number') {
             if (d <= 1) return 'easy';
@@ -168,10 +189,12 @@ function extractFromJsonLd(jsonLd: Record<string, unknown>): ScrapedRecipe | nul
         return null;
     })();
 
-    const rawIngredients = Array.isArray(jsonLd['recipeIngredient']) ? jsonLd['recipeIngredient'] : [];
-    const ingredients = (rawIngredients as string[]).map(parseIngredient);
+    const rawIngredients = Array.isArray(record['recipeIngredient']) ? record['recipeIngredient'] : [];
+    const ingredients = rawIngredients
+        .filter((ing): ing is string => typeof ing === 'string')
+        .map(parseIngredient);
 
-    const instructions = jsonLd['recipeInstructions'];
+    const instructions = record['recipeInstructions'];
     let steps: string[] = [];
 
     function extractStepsFromInstructions(data: unknown): string[] {
@@ -203,19 +226,19 @@ function extractFromJsonLd(jsonLd: Record<string, unknown>): ScrapedRecipe | nul
     steps = extractStepsFromInstructions(instructions);
 
     const tags: string[] = [];
-    const categories = jsonLd['recipeCategory'];
+    const categories = record['recipeCategory'];
     if (typeof categories === 'string') tags.push(categories);
-    else if (Array.isArray(categories)) tags.push(...(categories as string[]));
+    else if (Array.isArray(categories)) tags.push(...categories.filter((c): c is string => typeof c === 'string'));
 
-    const cuisines = jsonLd['recipeCuisine'];
+    const cuisines = record['recipeCuisine'];
     if (typeof cuisines === 'string') tags.push(cuisines);
-    else if (Array.isArray(cuisines)) tags.push(...(cuisines as string[]));
+    else if (Array.isArray(cuisines)) tags.push(...cuisines.filter((c): c is string => typeof c === 'string'));
 
-    const keywords = jsonLd['keywords'];
+    const keywords = record['keywords'];
     if (typeof keywords === 'string') {
         tags.push(...keywords.split(',').map(k => k.trim()));
     } else if (Array.isArray(keywords)) {
-        tags.push(...(keywords as string[]));
+        tags.push(...keywords.filter((k): k is string => typeof k === 'string'));
     }
 
     return {
@@ -228,8 +251,19 @@ function extractFromJsonLd(jsonLd: Record<string, unknown>): ScrapedRecipe | nul
         ingredients,
         steps,
         tags: [...new Set(tags.filter(Boolean))],
-        sourceUrl: (jsonLd['url'] as string) || ''
+        sourceUrl: typeof record['url'] === 'string' ? record['url'] : ''
     };
+}
+
+function resolveUrl(candidate: string | null, baseUrl: string): string | null {
+    if (!candidate) return null;
+    const trimmed = candidate.trim();
+    if (!trimmed) return null;
+    try {
+        return new URL(trimmed, baseUrl).href;
+    } catch {
+        return trimmed;
+    }
 }
 
 export async function fetchRecipePage(url: string): Promise<string> {
@@ -248,15 +282,18 @@ export async function fetchRecipePage(url: string): Promise<string> {
 }
 
 export function scrapeRecipeFromHtml(html: string, url: string): ScrapedRecipe | null {
-    const jsonLdRegex = /<script\s+type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi;
+    const jsonLdRegex = /<script\b[^>]*\btype=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
     let match: RegExpExecArray | null;
 
     while ((match = jsonLdRegex.exec(html)) !== null) {
         try {
-            const jsonLd = JSON.parse(match[1]) as Record<string, unknown>;
+            const jsonLd: unknown = JSON.parse(match[1]);
             const recipe = extractFromJsonLd(jsonLd);
             if (recipe && recipe.title) {
                 recipe.sourceUrl = url;
+                if (recipe.image) {
+                    recipe.image = resolveUrl(recipe.image, url);
+                }
                 return recipe;
             }
         } catch {
@@ -274,7 +311,7 @@ export function scrapeRecipeFromHtml(html: string, url: string): ScrapedRecipe |
         return {
             title: decodeHtmlEntities(titleMatch[1].trim()),
             description: descMatch ? decodeHtmlEntities(descMatch[1].trim()) : '',
-            image: imageMatch ? imageMatch[1] : null,
+            image: imageMatch ? resolveUrl(decodeHtmlEntities(imageMatch[1].trim()), url) : null,
             cookTime: null,
             servings: null,
             difficulty: null,

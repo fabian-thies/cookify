@@ -112,12 +112,24 @@
 
         if (recipe.image) {
             try {
-                const res = await fetch(recipe.image);
+                const imageUrl = recipe.image.trim();
+                let res: Response | null = null;
+                if (imageUrl.startsWith('blob:')) {
+                    res = await fetch(imageUrl);
+                } else if (/^https?:\/\//i.test(imageUrl)) {
+                    res = await fetch('/api/recipes/image', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({url: imageUrl})
+                    });
+                }
+                if (!res || !res.ok) return;
                 const blob = await res.blob();
-                const file = new File([blob], 'imported-image.jpg', {type: blob.type || 'image/jpeg'});
+                const fileName = blob.type === 'image/webp' ? 'imported-image.webp' : 'imported-image.jpg';
+                const file = new File([blob], fileName, {type: blob.type || 'image/jpeg'});
                 const dt = new DataTransfer();
                 dt.items.add(file);
-                const fileInput = formEl.querySelector('[name="picture"]') as HTMLInputElement;
+                const fileInput = (formEl.querySelector('#picture') ?? formEl.querySelector('[name="picture"]')) as HTMLInputElement | null;
                 if (fileInput) {
                     fileInput.files = dt.files;
                     fileInput.dispatchEvent(new Event('change', {bubbles: true}));
