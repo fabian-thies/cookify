@@ -902,25 +902,29 @@ export async function getCollections(userId: string, recipeId?: number, thumbnai
         throw new Error('User ID is required.');
     }
 
-    // TODO
+    const recipeVisibilityCondition = sql`(${recipes.visibility} = 'public' OR ${recipes.userId} = ${userId})`;
+
     return db
         .select({
             ...getTableColumns(collections),
-            recipeCount: sql<number>`COALESCE(COUNT(${collectionToRecipe.id})::int, 0)`,
+            recipeCount: sql<number>`COALESCE(COUNT(${recipes.id})::int, 0)`,
             isInCollection:
                 recipeId != null
                     ? sql<boolean>`COALESCE(EXISTS (
-                SELECT 1
-                FROM ${collectionToRecipe}
+                        SELECT 1
+                        FROM ${collectionToRecipe}
+                        JOIN ${recipes} ON ${recipes.id} = ${collectionToRecipe.recipeId}
                         WHERE ${collectionToRecipe.collectionId} = ${collections.id}
-                        AND ${collectionToRecipe.recipeId} = ${recipeId}
-                        ), false)`
+                            AND ${collectionToRecipe.recipeId} = ${recipeId}
+                            AND ${recipeVisibilityCondition}
+                    ), false)`
                     : sql<boolean>`false`,
             thumbnails: sql<string[]>`COALESCE(ARRAY(
                 SELECT ${recipes.image}
                 FROM ${collectionToRecipe}
                 JOIN ${recipes} ON ${recipes.id} = ${collectionToRecipe.recipeId}
                 WHERE ${collectionToRecipe.collectionId} = ${collections.id}
+                    AND ${recipeVisibilityCondition}
                     AND ${recipes.image} <> ''
                 ORDER BY ${recipes.createdAt} DESC
                 LIMIT ${thumbnailLimit}
@@ -930,6 +934,13 @@ export async function getCollections(userId: string, recipeId?: number, thumbnai
         .leftJoin(
             collectionToRecipe,
             eq(collectionToRecipe.collectionId, collections.id)
+        )
+        .leftJoin(
+            recipes,
+            and(
+                eq(recipes.id, collectionToRecipe.recipeId),
+                or(eq(recipes.visibility, 'public'), eq(recipes.userId, userId))
+            )
         )
         .where(eq(collections.userId, userId))
         .groupBy(collections.id, collections.userId, collections.title);
@@ -965,11 +976,41 @@ export async function setCollectionTitle(collectionId: number, title: string) {
     return updated;
 }
 
-export async function toggleRecipeInCollection(recipeId: number, collectionId: number) {
+export async function toggleRecipeInCollection(userId: string, recipeId: number, collectionId: number) {
     const db = getDb();
+
+    if (!userId) {
+        throw new Error('User ID is required.');
+    }
 
     if (!recipeId || !collectionId) {
         throw new Error('Recipe ID and Collection ID are required.');
+    }
+
+    const [collection] = await db
+        .select({userId: collections.userId})
+        .from(collections)
+        .where(eq(collections.id, collectionId));
+
+    if (!collection) {
+        throw new Error('Collection not found.');
+    }
+
+    if (collection.userId !== userId) {
+        throw new Error('Insufficient permissions');
+    }
+
+    const [recipe] = await db
+        .select({userId: recipes.userId, visibility: recipes.visibility})
+        .from(recipes)
+        .where(eq(recipes.id, recipeId));
+
+    if (!recipe) {
+        throw new Error('Recipe not found');
+    }
+
+    if (recipe.visibility !== 'public' && recipe.userId !== userId) {
+        throw new Error('Recipe is private');
     }
 
     const [existing] = await db
@@ -1000,12 +1041,27 @@ export async function createCollection(userId: string, title: string, recipeId?:
         throw new Error('User ID and title are required.');
     }
 
+    if (recipeId != null) {
+        const [recipe] = await db
+            .select({userId: recipes.userId, visibility: recipes.visibility})
+            .from(recipes)
+            .where(eq(recipes.id, recipeId));
+
+        if (!recipe) {
+            throw new Error('Recipe not found');
+        }
+
+        if (recipe.visibility !== 'public' && recipe.userId !== userId) {
+            throw new Error('Recipe is private');
+        }
+    }
+
     const [collection] = await db.insert(collections).values({
         userId,
         title,
     }).returning({id: collections.id, title: collections.title});
 
-    if (recipeId) {
+    if (recipeId != null) {
         await db.insert(collectionToRecipe).values({
             recipeId,
             collectionId: collection.id

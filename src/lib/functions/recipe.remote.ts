@@ -125,36 +125,58 @@ export const setCollectionTitle = command(v.object({
     return(setCollectionTitleInDb(collectionId, title));
 });
 
+const MAX_INT32 = 2_147_483_647;
+const positiveInt = v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(MAX_INT32));
+
+function parsePositiveInt(value: string | undefined): number | undefined {
+    if (!value || !/^\d+$/.test(value)) {
+        return undefined;
+    }
+
+    const parsed = Number(value);
+    if (!Number.isSafeInteger(parsed) || parsed < 1 || parsed > MAX_INT32) {
+        return undefined;
+    }
+
+    return parsed;
+}
+
 export const getCollectionsForRecipe = query(async () => {
     const {locals, params} = getRequestEvent();
     const userId = locals.user?.id;
-    const recipeId = Number(params.recipeId);
+    const recipeId = parsePositiveInt(params.recipeId);
 
     if (!userId) {
         throw new Error('User not authenticated');
     }
 
-    if (!recipeId) {
+    if (recipeId === undefined) {
         throw new Error('Recipe ID not provided');
     }
+
+    await assertRecipeVisible(recipeId);
 
     return getCollectionsFromDb(userId, recipeId);
 });
 
 export const toggleRecipeInCollection = command(v.object({
-    collectionId: v.number()
+    collectionId: positiveInt
 }), async ({collectionId}) => {
     const {locals, params} = getRequestEvent();
+    const userId = locals.user?.id;
 
-    if (!params.recipeId) {
+    if (!userId) {
+        throw new Error('User not authenticated');
+    }
+
+    const recipeId = parsePositiveInt(params.recipeId);
+    if (recipeId === undefined) {
         throw new Error('Recipe ID not provided');
     }
 
-    if (!collectionId) {
-        throw new Error('Collection ID not provided');
-    }
+    await assertRecipeVisible(recipeId);
 
-    return toggleRecipeInCollectionInDb(Number(params.recipeId), collectionId);
+    return toggleRecipeInCollectionInDb(userId, recipeId, collectionId);
 });
 
 export const createCollection = command(v.object({
@@ -171,9 +193,12 @@ export const createCollection = command(v.object({
         throw new Error('User not authenticated');
     }
 
-    const recipeId = Number(params.recipeId);
+    const recipeId = parsePositiveInt(params.recipeId);
+    if (recipeId !== undefined) {
+        await assertRecipeVisible(recipeId);
+    }
 
-    return createCollectionInDb(userId, title, Number.isFinite(recipeId) ? recipeId : undefined);
+    return createCollectionInDb(userId, title, recipeId);
 });
 
 export const enableRecipeShare = command(v.object({
