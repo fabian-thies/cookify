@@ -60,6 +60,10 @@ assert.equal(queries.length, before + 1, 'Unauthorized access must stop before f
 collectionOwner = 'owner';
 await recipes.getCollectionRecipes(1, 'owner');
 assert.deepEqual(queries.at(-1).params, [1, 'public', 'owner']);
+
+await recipes.getSteps(42);
+assert.deepEqual(queries.at(-1).params, [42]);
+assert.match(queries.at(-1).sql, /order by "steps"\."number" asc, "steps"\."id" asc/);
 console.log('Recipe query checks passed');
 
 let rollbacks = 0;

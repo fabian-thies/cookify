@@ -15,7 +15,7 @@ import {
     tips as tipsTable
 } from "$lib/server/db/schema";
 import {getDifficultyId} from "$lib/server/utils";
- import {and, desc, eq, getTableColumns, gte, inArray, ne, notInArray, or, sql} from "drizzle-orm";
+import {and, asc, desc, eq, getTableColumns, gte, inArray, ne, notInArray, or, sql} from "drizzle-orm";
 import type {CreateRecipeInput, UpdateRecipeInput} from "$lib/types/recipe";
 import {getRequestEvent} from "$app/server";
 import {randomUUID} from "crypto";
@@ -792,7 +792,11 @@ export async function getRecipeFavoriteState(userId: string, recipeId: number) {
 
 export async function getSteps(recipeId: number) {
     const db = getDb();
-    return db.select(getTableColumns(steps)).from(steps).where(eq(steps.recipeId, recipeId));
+    return db
+        .select(getTableColumns(steps))
+        .from(steps)
+        .where(eq(steps.recipeId, recipeId))
+        .orderBy(asc(steps.number), asc(steps.id));
 }
 
 export async function getIngredients(recipeId: number) {
