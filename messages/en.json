@@ -507,6 +507,11 @@
     "noRecipes": "No recipes found",
     "dropHere": "Drop recipe here",
     "addHere": "Add here",
+    "filter": {
+      "all": "All",
+      "mine": "Mine",
+      "favorites": "Favorites"
+    },
     "error": {
       "load": "Failed to load meal plan",
       "add": "Failed to add recipe",

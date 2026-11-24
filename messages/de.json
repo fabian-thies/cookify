@@ -505,6 +505,11 @@
     "noRecipes": "Keine Rezepte gefunden",
     "dropHere": "Rezept hier ablegen",
     "addHere": "Hier hinzufügen",
+    "filter": {
+      "all": "Alle",
+      "mine": "Meine",
+      "favorites": "Favoriten"
+    },
     "error": {
       "load": "Wochenplan konnte nicht geladen werden",
       "add": "Rezept konnte nicht hinzugefügt werden",

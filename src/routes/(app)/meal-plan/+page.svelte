@@ -1,5 +1,10 @@
 <script lang="ts">
-    import { getRecipesByUserId } from "$lib/functions/recipe.remote";
+    import {
+        getFavoriteRecipes,
+        getRecipes,
+        getRecipesByUserId,
+        searchRecipes,
+    } from "$lib/functions/recipe.remote";
     import {
         getMealPlan,
         addToMealPlan,
@@ -13,7 +18,7 @@
     import { Label } from "$lib/components/ui/label";
     import { Spinner } from "$lib/components/ui/spinner";
     import * as Dialog from "$lib/components/ui/dialog";
-    import { ChevronLeft, ChevronRight, Clock, Plus, Search, ShoppingCart, Trash2, X, CalendarPlus, Copy, Check, RefreshCw, Pencil, UtensilsCrossed } from "lucide-svelte";
+    import { ChevronLeft, ChevronRight, Clock, Heart, Loader2, Plus, Search, ShoppingCart, Trash2, X, CalendarPlus, Copy, Check, RefreshCw, Pencil, UtensilsCrossed } from "lucide-svelte";
     import { toast } from "svelte-sonner";
     import type { Recipe } from "$lib/server/db/recipe";
     import { m } from "$lib/paraglide/messages";
@@ -23,12 +28,10 @@
     import { MAX_SERVINGS, parseServings, servingsQuery } from "$lib/servings";
 
     type MealPlanEntry = Awaited<ReturnType<typeof getMealPlan>>[number];
+    type RecipeScope = "all" | "mine" | "favorites";
 
     let { data } = $props();
-    let userId: string;
-    $effect(() => {
-        userId = data.userId ?? '';
-    });
+    const userId = $derived(data.userId ?? '');
 
     const dayNames = $derived([
         m["mealPlan.day.monday"](),
@@ -66,7 +69,12 @@
 
     let weekOffset = $state(0);
     let mealPlanEntries = $state<MealPlanEntry[]>([]);
-    let recipes = $state<Recipe[]>([]);
+    let ownRecipes = $state<Recipe[]>([]);
+    let favoriteRecipes = $state<Recipe[]>([]);
+    let publicRecipes = $state<Recipe[]>([]);
+    let remoteSearchRecipes = $state<Recipe[] | null>(null);
+    let searchingRecipes = $state(false);
+    let recipeScope = $state<RecipeScope>("all");
     let recipeSearch = $state("");
     let loading = $state(true);
     let error = $state<string | null>(null);
@@ -78,6 +86,7 @@
     let servingsError = $state<string | null>(null);
     let plannedMeal = $state<{recipeId: number; title: string; date: string; entryId?: number}>();
     let loadVersion = 0;
+    let recipesLoadVersion = 0;
     let shoppingRevision = $state(0);
     let selectedRecipeId = $state<number | null>(null);
     let calendarDialogOpen = $state(false);
@@ -92,17 +101,81 @@
     const weekDays = $derived(getWeekDays(monday));
     const today = $derived(formatDate(new Date()));
 
-    const filteredRecipes = $derived(
-        recipes.filter((r) =>
-            r.title.toLowerCase().includes(recipeSearch.toLowerCase())
-        )
-    );
+    function mergeRecipes(...lists: Recipe[][]): Recipe[] {
+        const seen = new Set<number>();
+        const merged: Recipe[] = [];
+        for (const list of lists) {
+            for (const recipe of list) {
+                if (!seen.has(recipe.id)) {
+                    seen.add(recipe.id);
+                    merged.push(recipe);
+                }
+            }
+        }
+        return merged;
+    }
+
+    const favoriteIds = $derived(new Set(favoriteRecipes.map((r) => r.id)));
+    const allRecipes = $derived(mergeRecipes(favoriteRecipes, ownRecipes, publicRecipes));
+    const recipes = $derived(mergeRecipes(allRecipes, remoteSearchRecipes ?? []));
+
+    $effect(() => {
+        const term = recipeSearch.trim();
+        if (recipeScope !== "all" || !term) {
+            remoteSearchRecipes = null;
+            searchingRecipes = false;
+            return;
+        }
+
+        let cancelled = false;
+        searchingRecipes = true;
+        const timer = setTimeout(async () => {
+            try {
+                const results = await searchRecipes({ query: term.slice(0, 100) }).run();
+                if (!cancelled) {
+                    remoteSearchRecipes = results as Recipe[];
+                }
+            } catch {
+                if (!cancelled) {
+                    remoteSearchRecipes = null;
+                }
+            } finally {
+                if (!cancelled) {
+                    searchingRecipes = false;
+                }
+            }
+        }, 250);
+
+        return () => {
+            cancelled = true;
+            clearTimeout(timer);
+        };
+    });
+
+    const filteredRecipes = $derived.by(() => {
+        const term = recipeSearch.trim().toLowerCase();
+        const matchesTerm = (recipe: Recipe) =>
+            !term ||
+            recipe.title.toLowerCase().includes(term) ||
+            (recipe.tags ?? []).some((tag) => tag.toLowerCase().includes(term));
+
+        if (recipeScope === "mine") {
+            return ownRecipes.filter(matchesTerm);
+        }
+        if (recipeScope === "favorites") {
+            return favoriteRecipes.filter(matchesTerm);
+        }
+        if (!term) {
+            return allRecipes;
+        }
+        return mergeRecipes(allRecipes.filter(matchesTerm), remoteSearchRecipes ?? []);
+    });
 
     function entriesForDate(date: string): MealPlanEntry[] {
         return mealPlanEntries.filter((e) => e.date === date);
     }
 
-    async function loadData() {
+    async function loadPlan() {
         if (!userId) return;
         const version = ++loadVersion;
         loading = true;
@@ -110,13 +183,9 @@
         try {
             const start = weekDays[0].date;
             const end = weekDays[6].date;
-            const [plan, userRecipes] = await Promise.all([
-                getMealPlan({ startDate: start, endDate: end }).run(),
-                getRecipesByUserId({ userId }).run(),
-            ]);
+            const plan = await getMealPlan({ startDate: start, endDate: end }).run();
             if (version !== loadVersion) return;
             mealPlanEntries = plan;
-            recipes = userRecipes;
         } catch (e: any) {
             if (version === loadVersion) error = m["mealPlan.error.load"]();
         } finally {
@@ -124,10 +193,33 @@
         }
     }
 
+    async function loadRecipes() {
+        if (!userId) return;
+        const version = ++recipesLoadVersion;
+        try {
+            const [userRecipes, favorites, visibleRecipes] = await Promise.all([
+                getRecipesByUserId({ userId }).run(),
+                getFavoriteRecipes().run(),
+                getRecipes({ limit: 100, orderBy: "recent" }).run(),
+            ]);
+            if (version !== recipesLoadVersion) return;
+            ownRecipes = userRecipes;
+            favoriteRecipes = favorites as Recipe[];
+            publicRecipes = visibleRecipes;
+        } catch {
+            if (version === recipesLoadVersion) error = m["mealPlan.error.load"]();
+        }
+    }
+
     $effect(() => {
         weekDays;
         userId;
-        queueMicrotask(loadData);
+        queueMicrotask(loadPlan);
+    });
+
+    $effect(() => {
+        userId;
+        queueMicrotask(loadRecipes);
     });
 
     function prevWeek() {
@@ -181,7 +273,7 @@
             selectedRecipeId = null;
             servingsDialogOpen = false;
             shoppingRevision++;
-            await loadData();
+            await loadPlan();
         } catch {
             servingsError = m["mealPlan.error.add"]();
         } finally {
@@ -327,10 +419,39 @@
                         <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/>
                         <Input
                             aria-label={m["mealPlan.searchPlaceholder"]()}
-                            class="pl-9"
+                            class="pl-9 {searchingRecipes ? 'pr-9' : ''}"
                             placeholder={m["mealPlan.searchPlaceholder"]()}
                             bind:value={recipeSearch}
                         />
+                        {#if searchingRecipes}
+                            <Loader2 class="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 animate-spin text-muted-foreground"/>
+                        {/if}
+                    </div>
+                    <div class="grid grid-cols-3 gap-1 rounded-lg border border-border/70 bg-background/60 p-1" role="group" aria-label={m["recipe.list.filter"]()}>
+                        <button
+                            type="button"
+                            aria-pressed={recipeScope === "all"}
+                            class="rounded-md px-2 py-1.5 text-xs font-medium transition-colors {recipeScope === 'all' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}"
+                            onclick={() => recipeScope = "all"}
+                        >
+                            {m["mealPlan.filter.all"]()}
+                        </button>
+                        <button
+                            type="button"
+                            aria-pressed={recipeScope === "mine"}
+                            class="rounded-md px-2 py-1.5 text-xs font-medium transition-colors {recipeScope === 'mine' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}"
+                            onclick={() => recipeScope = "mine"}
+                        >
+                            {m["mealPlan.filter.mine"]()}
+                        </button>
+                        <button
+                            type="button"
+                            aria-pressed={recipeScope === "favorites"}
+                            class="rounded-md px-2 py-1.5 text-xs font-medium transition-colors {recipeScope === 'favorites' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}"
+                            onclick={() => recipeScope = "favorites"}
+                        >
+                            {m["mealPlan.filter.favorites"]()}
+                        </button>
                     </div>
                     <div class="flex-1 overflow-y-auto space-y-2 max-h-[60vh]">
                         {#if filteredRecipes.length === 0}
@@ -354,6 +475,9 @@
                                             <Clock class="h-3 w-3"/>{recipe.cookingTime} min
                                         </p>
                                     </div>
+                                    {#if favoriteIds.has(recipe.id)}
+                                        <Heart class="size-3.5 shrink-0 text-primary" fill="currentColor" aria-hidden="true"/>
+                                    {/if}
                                 </button>
                             {/each}
                         {/if}
