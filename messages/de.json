@@ -590,6 +590,7 @@
     }
   },
   "recipe.list.ingredientsOnly": "Nur Zutaten",
+  "recipe.list.searchModeLabel": "Suchmodus",
   "recipe.list.ingredientSearchLabel": "Zutaten suchen",
   "recipe.list.ingredientSearchPlaceholder": "z. B. Zucchini, Feta",
   "recipe.list.ingredientSearchHint": "Trenne mehrere Zutaten mit Kommas.",

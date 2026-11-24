@@ -590,6 +590,7 @@
     }
   },
   "recipe.list.ingredientsOnly": "Solo ingredientes",
+  "recipe.list.searchModeLabel": "Modo de búsqueda",
   "recipe.list.ingredientSearchLabel": "Buscar ingredientes",
   "recipe.list.ingredientSearchPlaceholder": "p. ej. calabacín, feta",
   "recipe.list.ingredientSearchHint": "Separa los ingredientes con comas.",

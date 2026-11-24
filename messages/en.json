@@ -592,6 +592,7 @@
     }
   },
   "recipe.list.ingredientsOnly": "Ingredients only",
+  "recipe.list.searchModeLabel": "Search mode",
   "recipe.list.ingredientSearchLabel": "Search ingredients",
   "recipe.list.ingredientSearchPlaceholder": "e.g. zucchini, feta",
   "recipe.list.ingredientSearchHint": "Separate multiple ingredients with commas.",

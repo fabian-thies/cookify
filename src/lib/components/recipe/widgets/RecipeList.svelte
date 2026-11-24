@@ -1,7 +1,4 @@
 <script lang="ts">
-    import {Input} from "$lib/components/ui/input";
-    import {Checkbox} from "$lib/components/ui/checkbox";
-    import {Label} from "$lib/components/ui/label";
     import SelectComponent from "$lib/components/ui/select/SelectComponent.svelte";
     import RecipeCard from "$lib/components/recipe/widgets/RecipeCard.svelte";
     import RecipeCardSkeleton from "$lib/components/recipe/widgets/RecipeCardSkeleton.svelte";
@@ -332,27 +329,51 @@
     {#if showFilters}
         <div class="flex flex-col gap-3">
             <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-                <div class="relative flex-1">
-                    <Search class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"/>
-                    <Input
+                <div class="flex h-11 flex-1 items-center gap-1 rounded-lg border border-input bg-background pl-3 pr-1.5 transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 dark:bg-input/20">
+                    <Search class="size-4 shrink-0 text-muted-foreground" aria-hidden="true"/>
+                    <input
                         aria-label={(ingredientsOnly ? m["recipe.list.ingredientSearchLabel"]() : m["recipe.list.searchPlaceholder"]())}
                         bind:value={search}
-                        class="h-11 pl-9 pr-10"
+                        class="h-full min-w-0 flex-1 bg-transparent px-1.5 text-base outline-none placeholder:text-muted-foreground/70 md:text-sm [&::-webkit-search-cancel-button]:appearance-none"
                         placeholder={ingredientsOnly ? m["recipe.list.ingredientSearchPlaceholder"]() : m["recipe.list.searchPlaceholder"]()}
                         type="search"
                     />
                     {#if searching}
-                        <Loader2 class="pointer-events-none absolute right-11 top-1/2 size-4 -translate-y-1/2 animate-spin text-muted-foreground"/>
+                        <Loader2 class="size-4 shrink-0 animate-spin text-muted-foreground" aria-hidden="true"/>
                     {/if}
                     {#if search}
                         <button
                             aria-label={m["search.clear"]()}
-                            class="absolute right-0 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground transition hover:bg-accent hover:text-foreground"
+                            class="flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
                             onclick={() => search = ""}
                             type="button"
                         >
                             <X class="size-4"/>
                         </button>
+                    {/if}
+                    {#if serverSearch}
+                        <div
+                            class="flex h-8 shrink-0 items-center rounded-md bg-muted/70 p-0.5"
+                            role="group"
+                            aria-label={m["recipe.list.searchModeLabel"]()}
+                        >
+                            <button
+                                type="button"
+                                aria-pressed={!ingredientsOnly}
+                                class="flex h-7 items-center rounded-[5px] px-2 text-xs font-medium transition-colors sm:px-2.5 {!ingredientsOnly ? 'bg-background text-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground'}"
+                                onclick={() => ingredientsOnly = false}
+                            >
+                                {m["nav.recipes"]()}
+                            </button>
+                            <button
+                                type="button"
+                                aria-pressed={ingredientsOnly}
+                                class="flex h-7 items-center rounded-[5px] px-2 text-xs font-medium transition-colors sm:px-2.5 {ingredientsOnly ? 'bg-background text-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground'}"
+                                onclick={() => ingredientsOnly = true}
+                            >
+                                {m["recipe.common.ingredients"]()}
+                            </button>
+                        </div>
                     {/if}
                 </div>
 
@@ -444,18 +465,8 @@
                 </div>
             </div>
 
-            {#if serverSearch}
-                <div class="flex flex-col gap-1">
-                    <div class="flex min-h-8 w-fit items-center gap-2">
-                        <Checkbox id="ingredients-only-filter" aria-labelledby="ingredients-only-label" bind:checked={ingredientsOnly}/>
-                        <Label id="ingredients-only-label" for="ingredients-only-filter" class="cursor-pointer font-normal text-muted-foreground">
-                            {m["recipe.list.ingredientsOnly"]()}
-                        </Label>
-                    </div>
-                    {#if ingredientsOnly}
-                        <p class="text-xs text-muted-foreground">{m["recipe.list.ingredientSearchHint"]()}</p>
-                    {/if}
-                </div>
+            {#if serverSearch && ingredientsOnly}
+                <p class="text-xs text-muted-foreground">{m["recipe.list.ingredientSearchHint"]()}</p>
             {/if}
 
             {#if filterActive}
