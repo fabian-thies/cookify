@@ -442,4 +442,133 @@ describe('remote auth, shareToken isolation, private recipe guards, and user pro
         currentEvent = {locals: {user: {id: 'bob', administrator: true}}, params: {}};
         assert.equal(await userRemote.getLocaleByUserId({userId: 'alice'}), 'en');
     });
+
+    test('unused remote mutation commands are not exported from recipe.remote.ts or user.remote.ts', () => {
+        assert.equal('createRecipe' in recipeRemote, false, 'recipe.remote.ts must not export createRecipe');
+        assert.equal('updateRecipe' in recipeRemote, false, 'recipe.remote.ts must not export updateRecipe');
+        assert.equal('saveProfile' in userRemote, false, 'user.remote.ts must not export saveProfile');
+        assert.equal('updateUserPassword' in userRemote, false, 'user.remote.ts must not export updateUserPassword');
+        assert.equal('deleteOwnAccount' in userRemote, false, 'user.remote.ts must not export deleteOwnAccount');
+    });
+
+    test('getRecipes validates offset and limit bounds and integer types', async () => {
+        currentEvent = {locals: {user: {id: 'alice', administrator: false}}, params: {}};
+
+        const invalidInputs = [
+            {offset: -1},
+            {offset: 1.5},
+            {offset: 100_001},
+            {limit: 0},
+            {limit: -5},
+            {limit: 101},
+            {limit: 10.5},
+        ];
+
+        for (const input of invalidInputs) {
+            await assert.rejects(
+                () => recipeRemote.getRecipes(input),
+                v.ValiError,
+                `getRecipes must reject ${JSON.stringify(input)}`
+            );
+        }
+        assert.equal(queries.length, 0, 'Rejected getRecipes inputs must not hit the DB');
+
+        const validDefault = await recipeRemote.getRecipes(undefined);
+        assert.ok(Array.isArray(validDefault));
+
+        const validBounded = await recipeRemote.getRecipes({offset: 0, limit: 100, orderBy: 'recent'});
+        assert.ok(Array.isArray(validBounded));
+    });
+
+    test('getSimilarRecipes validates recipeId and limit bounds', async () => {
+        currentEvent = {locals: {user: {id: 'alice', administrator: false}}, params: {}};
+
+        const invalidInputs = [
+            {recipeId: 10, limit: 0},
+            {recipeId: 10, limit: -1},
+            {recipeId: 10, limit: 25},
+            {recipeId: 10, limit: 2.5},
+            {recipeId: 0, limit: 6},
+            {recipeId: -1, limit: 6},
+            {recipeId: 1.5, limit: 6},
+            {recipeId: 2_147_483_648, limit: 6},
+        ];
+
+        for (const input of invalidInputs) {
+            await assert.rejects(
+                () => recipeRemote.getSimilarRecipes(input),
+                v.ValiError,
+                `getSimilarRecipes must reject ${JSON.stringify(input)}`
+            );
+        }
+        assert.equal(queries.length, 0, 'Rejected getSimilarRecipes inputs must not hit the DB');
+
+        const valid = await recipeRemote.getSimilarRecipes({recipeId: 10, limit: 24});
+        assert.ok(Array.isArray(valid));
+    });
+
+    test('setCollectionTitle validates trimmed title length and collectionId', async () => {
+        currentEvent = {locals: {user: {id: 'alice', administrator: false}}, params: {}};
+
+        const invalidInputs = [
+            {collectionId: 1, title: ''},
+            {collectionId: 1, title: '   \t\n  '},
+            {collectionId: 1, title: 'a'.repeat(101)},
+            {collectionId: 0, title: 'Valid'},
+            {collectionId: -1, title: 'Valid'},
+            {collectionId: 1.5, title: 'Valid'},
+            {collectionId: 2_147_483_648, title: 'Valid'},
+        ];
+
+        for (const input of invalidInputs) {
+            await assert.rejects(
+                () => recipeRemote.setCollectionTitle(input),
+                v.ValiError,
+                `setCollectionTitle must reject ${JSON.stringify(input)}`
+            );
+        }
+        assert.equal(queries.length, 0, 'Rejected setCollectionTitle inputs must not hit the DB');
+    });
+
+    test('ID, token, and userId parameters reject non-integer, out-of-range, empty, or oversized values', async () => {
+        currentEvent = {locals: {user: {id: 'alice', administrator: false}}, params: {}};
+
+        for (const badId of [0, -1, 1.5, 2_147_483_648, Number.NaN]) {
+            await assert.rejects(
+                () => recipeRemote.getRecipeById({id: badId}),
+                v.ValiError,
+                `getRecipeById must reject id=${badId}`
+            );
+            await assert.rejects(
+                () => recipeRemote.likeRecipe({recipeId: badId}),
+                v.ValiError,
+                `likeRecipe must reject recipeId=${badId}`
+            );
+        }
+
+        for (const badStr of ['', 'x'.repeat(129)]) {
+            await assert.rejects(
+                () => recipeRemote.getRecipeByShareToken({token: badStr}),
+                v.ValiError
+            );
+            await assert.rejects(
+                () => recipeRemote.getSharedRecipeDetails({token: badStr}),
+                v.ValiError
+            );
+            await assert.rejects(
+                () => recipeRemote.getRecipesByUserId({userId: badStr}),
+                v.ValiError
+            );
+            await assert.rejects(
+                () => userRemote.getUserById({userId: badStr}),
+                v.ValiError
+            );
+            await assert.rejects(
+                () => userRemote.getLocaleByUserId({userId: badStr}),
+                v.ValiError
+            );
+        }
+
+        assert.equal(queries.length, 0, 'Rejected validation inputs must not hit the DB');
+    });
 });

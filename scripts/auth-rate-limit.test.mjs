@@ -71,7 +71,7 @@ describe('password minimum length validation', () => {
         assert.equal(utils.validateLoginPassword(undefined), false);
     });
 
-    test('user.remote setUserPassword and updateUserPassword enforce MIN_PASSWORD_LENGTH', async () => {
+    test('user.remote setUserPassword enforces MIN_PASSWORD_LENGTH and updateUserPassword is not exported', async () => {
         let currentEvent = {locals: {user: {id: 'admin-1', administrator: true}}};
         const updated = [];
         const userRemote = loadModule('src/lib/functions/user.remote.ts', {
@@ -90,19 +90,17 @@ describe('password minimum length validation', () => {
                 getUsers: async () => [],
                 getUserById: async () => null,
                 getLocaleByUserId: async () => 'en',
-                saveProfile: async () => {},
             },
             '$lib/server/utils': {hashPassword: async (pw) => `hashed:${pw}`},
             '$lib/utils': utils,
         });
 
+        assert.equal('updateUserPassword' in userRemote, false);
         await assert.rejects(() => userRemote.setUserPassword({userId: 'u1', password: '123456789'}), v.ValiError);
-        await assert.rejects(() => userRemote.updateUserPassword({password: '123456789'}), v.ValiError);
         assert.equal(updated.length, 0);
 
         await userRemote.setUserPassword({userId: 'u1', password: '1234567890'});
-        await userRemote.updateUserPassword({password: '1234567890'});
-        assert.equal(updated.length, 2);
+        assert.equal(updated.length, 1);
     });
 });
 

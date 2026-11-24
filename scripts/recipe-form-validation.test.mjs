@@ -4,7 +4,6 @@ import {createRequire} from 'node:module';
 import test from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
-import * as v from 'valibot';
 
 const require = createRequire(import.meta.url);
 
@@ -180,48 +179,19 @@ test('createRecipe and updateRecipe do not crash or insert empty arrays when ing
     assert.ok(!insertedTables.includes(schema.steps), 'updateRecipe must skip steps insert when empty');
 });
 
-test('recipe.remote.ts createRecipe and updateRecipe schemas match form validation', () => {
-    const schemas = [];
-    const command = (schema, handler) => {
-        schemas.push(schema);
-        return {schema, handler};
-    };
+test('recipe.remote.ts does not export unused createRecipe or updateRecipe commands', () => {
+    const command = (schema, handler) => ({schema, handler});
     const query = (schemaOrFn, handler) => ({schemaOrFn, handler});
     const remote = loadModule('src/lib/functions/recipe.remote.ts', {
         '@sveltejs/kit': {error: (status, message) => { throw new Error(`${status}: ${message}`); }},
         '$lib/server/db': {},
         '$lib/server/db/schema': {},
         '$app/server': {command, query, getRequestEvent: () => ({locals: {user: {id: 'u1'}}})},
-        '$lib/recipe-source': recipeSource,
         '$lib/server/db/recipe': {}
     });
 
-    const validCreate = {
-        title: 'No-Cook Salad',
-        description: '',
-        cookTime: 0,
-        servings: 1,
-        difficulty: 'easy',
-        ingredientsList: [{name: 'Apple', amount: 1, unit: ''}],
-        steps: [],
-        tags: [],
-        tips: [],
-        visibility: 'public'
-    };
-    const validUpdate = {id: 1, ...validCreate};
-
-    assert.equal(v.safeParse(remote.createRecipe.schema, validCreate).success, true);
-    assert.equal(v.safeParse(remote.updateRecipe.schema, validUpdate).success, true);
-
-    assert.equal(v.safeParse(remote.createRecipe.schema, {...validCreate, cookTime: -1}).success, false);
-    assert.equal(v.safeParse(remote.createRecipe.schema, {...validCreate, cookTime: 1.5}).success, false);
-    assert.equal(v.safeParse(remote.createRecipe.schema, {...validCreate, servings: 0}).success, false);
-    assert.equal(v.safeParse(remote.createRecipe.schema, {...validCreate, servings: 1.5}).success, false);
-
-    assert.equal(v.safeParse(remote.updateRecipe.schema, {...validUpdate, cookTime: -1}).success, false);
-    assert.equal(v.safeParse(remote.updateRecipe.schema, {...validUpdate, cookTime: 1.5}).success, false);
-    assert.equal(v.safeParse(remote.updateRecipe.schema, {...validUpdate, servings: 0}).success, false);
-    assert.equal(v.safeParse(remote.updateRecipe.schema, {...validUpdate, servings: 1.5}).success, false);
+    assert.equal('createRecipe' in remote, false, 'recipe.remote.ts must not export createRecipe');
+    assert.equal('updateRecipe' in remote, false, 'recipe.remote.ts must not export updateRecipe');
 });
 
 test('Ingredients.svelte two-way binds item.unit', () => {

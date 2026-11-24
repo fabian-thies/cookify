@@ -209,7 +209,13 @@ describe('profile settings username, password validation, re-authentication, and
         currentEvent = {locals: {user: {id: 'user-1', email: 'user@example.com', avatar: '/uploads/existing.png'}}};
     });
 
-    test('rejects invalid usernames with 400 in settings action without saving avatar or DB and in remote saveProfile', async () => {
+    test('user.remote.ts does not export unused saveProfile, updateUserPassword, or deleteOwnAccount commands', () => {
+        assert.equal('saveProfile' in userRemote, false, 'user.remote.ts must not export saveProfile');
+        assert.equal('updateUserPassword' in userRemote, false, 'user.remote.ts must not export updateUserPassword');
+        assert.equal('deleteOwnAccount' in userRemote, false, 'user.remote.ts must not export deleteOwnAccount');
+    });
+
+    test('rejects invalid usernames with 400 in settings action without saving avatar or DB', async () => {
         const invalidUsernames = ['', 'ab', 'a'.repeat(32), 'Fabian Müller', 'user name'];
 
         for (const username of invalidUsernames) {
@@ -221,18 +227,6 @@ describe('profile settings username, password validation, re-authentication, and
             assert.equal(saveImageCalls.length, 0, 'Avatar must not be saved when username is invalid');
             assert.equal(saveProfileCalls.length, 0, 'DB saveProfile must not be called when username is invalid');
             assert.equal(updatePasswordCalls.length, 0, 'DB updatePassword must not be called when username is invalid');
-
-            await assert.rejects(
-                () => userRemote.saveProfile({
-                    username,
-                    email: 'user@example.com',
-                    avatar: '/uploads/existing.png',
-                    language: 'en'
-                }),
-                v.ValiError,
-                `Expected remote saveProfile to reject invalid username ${JSON.stringify(username)}`
-            );
-            assert.equal(saveProfileCalls.length, 0, 'Remote saveProfile must not call DB when username is invalid');
         }
     });
 
@@ -373,15 +367,6 @@ describe('profile settings username, password validation, re-authentication, and
         assert.equal(updatePasswordCalls.length, 0);
         assert.equal(createSessionCalls.length, 0);
         assert.equal(setSessionTokenCookieCalls.length, 0);
-
-        // Remote saveProfile also accepts valid usernames
-        await userRemote.saveProfile({
-            username: 'a'.repeat(31),
-            email: 'fabian@example.com',
-            avatar: '/uploads/existing.png',
-            language: 'en'
-        });
-        assert.equal(saveProfileCalls.length, 2);
     });
 
     test('valid password change with valid currentPassword updates password, rotates session, and succeeds', async () => {

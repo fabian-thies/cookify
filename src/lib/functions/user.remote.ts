@@ -1,8 +1,10 @@
 import {command, getRequestEvent, query} from "$app/server";
 import * as v from "valibot";
-import {updatePassword, updateUserEmail, deleteUserAccount, getUsers as getUsersFromDb, getUserById as getUserByIdFromDb, getLocaleByUserId as getLocaleByUserIdFromDb, saveProfile as saveProfileInDb, updatePassword as updatePasswordInDb, deleteUserAccount as deleteUserAccountFromDb} from "$lib/server/db/user";
+import {updatePassword, updateUserEmail, deleteUserAccount, getUsers as getUsersFromDb, getUserById as getUserByIdFromDb, getLocaleByUserId as getLocaleByUserIdFromDb} from "$lib/server/db/user";
 import {hashPassword} from "$lib/server/utils";
-import {MIN_PASSWORD_LENGTH, validateUsername} from "$lib/utils";
+import {MIN_PASSWORD_LENGTH} from "$lib/utils";
+
+const userIdSchema = v.pipe(v.string(), v.minLength(1), v.maxLength(128));
 
 function ensureAdmin() {
     const {locals} = getRequestEvent();
@@ -20,7 +22,7 @@ function ensureAdmin() {
 }
 
 export const setUserEmail = command(v.object({
-    userId: v.string(),
+    userId: userIdSchema,
     email: v.pipe(v.string(), v.email()),
 }), async ({userId, email}) => {
     ensureAdmin();
@@ -30,7 +32,7 @@ export const setUserEmail = command(v.object({
 });
 
 export const setUserPassword = command(v.object({
-    userId: v.string(),
+    userId: userIdSchema,
     password: v.pipe(
         v.string(),
         v.minLength(MIN_PASSWORD_LENGTH),
@@ -45,7 +47,7 @@ export const setUserPassword = command(v.object({
 });
 
 export const removeUser = command(v.object({
-    userId: v.string(),
+    userId: userIdSchema,
 }), async ({userId}) => {
     const currentUser = ensureAdmin();
 
@@ -67,7 +69,7 @@ export const getUsers = query(async () => {
 });
 
 export const getLocaleByUserId = query(v.object({
-    userId: v.string()
+    userId: userIdSchema
 }), async ({userId}) => {
     const {locals} = getRequestEvent();
 
@@ -83,7 +85,7 @@ export const getLocaleByUserId = query(v.object({
 });
 
 export const getUserById = query(v.object({
-    userId: v.string()
+    userId: userIdSchema
 }), async ({userId}) => {
     const {locals} = getRequestEvent();
 
@@ -92,48 +94,4 @@ export const getUserById = query(v.object({
     }
 
     return await getUserByIdFromDb(userId);
-});
-
-export const saveProfile = command(v.object({
-    username: v.pipe(v.string(), v.check((username) => validateUsername(username))),
-    email: v.pipe(v.string(), v.email()),
-    avatar: v.string(),
-    language: v.picklist(['en', 'de', 'es'])
-}), async (data) => {
-    const {locals} = getRequestEvent();
-
-    if (!locals.user) {
-        throw new Error('User not authenticated');
-    }
-
-    return await saveProfileInDb(
-        locals.user.id,
-        data.username,
-        data.email,
-        data.avatar,
-        data.language
-    );
-});
-
-export const updateUserPassword = command(v.object({
-    password: v.pipe(v.string(), v.minLength(MIN_PASSWORD_LENGTH), v.maxLength(255))
-}), async ({password}) => {
-    const {locals} = getRequestEvent();
-
-    if (!locals.user) {
-        throw new Error('User not authenticated');
-    }
-
-    const hash = await hashPassword(password);
-    return await updatePasswordInDb(locals.user.id, hash);
-});
-
-export const deleteOwnAccount = command(v.object({}), async () => {
-    const {locals} = getRequestEvent();
-
-    if (!locals.user) {
-        throw new Error('User not authenticated');
-    }
-
-    return await deleteUserAccountFromDb(locals.user.id);
 });
