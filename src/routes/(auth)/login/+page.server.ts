@@ -7,7 +7,7 @@ import * as auth from '$lib/server/auth';
 import {getDb} from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
 import type {PageServerLoad} from "./$types";
-import {validateEmail, validatePassword, validateUsername} from "$lib/utils";
+import {sanitizeRedirectPath, validateEmail, validatePassword, validateUsername} from "$lib/utils";
 import {hashPassword} from "$lib/server/utils";
 import {getAllowRegistrations} from "$lib/functions/site.remote";
 
@@ -56,11 +56,7 @@ export const actions: Actions = {
         const session = await auth.createSession(sessionToken, existingUser.id);
         auth.setSessionTokenCookie(event, sessionToken, session);
 
-        if (redirectTo && typeof redirectTo === 'string' && redirectTo.startsWith('/') && !redirectTo.startsWith('//')) {
-            return redirect(302, redirectTo);
-        }
-
-        return redirect(302, '/');
+        return redirect(302, sanitizeRedirectPath(redirectTo, event.url.origin));
     },
     register: async (event) => {
         const formData = await event.request.formData();
@@ -128,11 +124,7 @@ export const actions: Actions = {
             return fail(500, {message: 'An error has occurred'});
         }
 
-        if (redirectTo && typeof redirectTo === 'string' && redirectTo.startsWith('/') && !redirectTo.startsWith('//')) {
-            return redirect(302, redirectTo);
-        }
-
-        return redirect(302, '/');
+        return redirect(302, sanitizeRedirectPath(redirectTo, event.url.origin));
     },
 };
 

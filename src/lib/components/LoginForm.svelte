@@ -6,7 +6,7 @@
     import CircleAlertIcon from "@lucide/svelte/icons/circle-alert";
     import {Label} from "$lib/components/ui/label/index.js";
     import {Input} from "$lib/components/ui/input/index.js";
-    import {cn} from "$lib/utils.js";
+    import {cn, sanitizeRedirectPath} from "$lib/utils.js";
     import type {HTMLAttributes} from "svelte/elements";
     import {m} from "$lib/paraglide/messages.js";
     import {page} from "$app/state";
@@ -51,7 +51,7 @@
         passkeyBusy = true;
         try {
             await loginWithPasskey();
-            await goto(redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//") ? redirectTo : "/");
+            await goto(sanitizeRedirectPath(redirectTo, page.url.origin));
         } catch (e) {
             console.error(e);
             toast.error(m["login.passkeyError"]());
