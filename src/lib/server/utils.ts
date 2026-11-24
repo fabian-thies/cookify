@@ -1,4 +1,4 @@
-import {hash} from "@node-rs/argon2";
+import {hash, verify} from "@node-rs/argon2";
 import {normalizeRecipeSourceUrl} from "../recipe-source";
 
 export class InvalidRecipeSourceUrlError extends Error {}
@@ -20,15 +20,21 @@ export const validateInputEmpty = (...inputs: (string | number)[]): void => {
     }
 }
 
+const ARGON2_OPTIONS = {
+    // recommended minimum parameters
+    memoryCost: 19456,
+    timeCost: 2,
+    outputLen: 32,
+    parallelism: 1,
+};
+
 export const hashPassword = async (password: string): Promise<string> => {
-    return await hash(password, {
-        // recommended minimum parameters
-        memoryCost: 19456,
-        timeCost: 2,
-        outputLen: 32,
-        parallelism: 1,
-    })
-}
+    return await hash(password, ARGON2_OPTIONS);
+};
+
+export const verifyPassword = async (passwordHash: string, password: string): Promise<boolean> => {
+    return await verify(passwordHash, password, ARGON2_OPTIONS);
+};
 
 export const getDifficultyId = (difficulty: string): number => {
     switch (difficulty.toLowerCase()) {

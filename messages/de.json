@@ -349,6 +349,11 @@
         "es": "Spanisch"
       },
       "changePassword": "Passwort ändern",
+      "currentPassword": "Aktuelles Passwort",
+      "currentPasswordPlaceholder": "Aktuelles Passwort eingeben",
+      "currentPasswordHint": "Erforderlich beim Ändern der E-Mail-Adresse oder des Passworts.",
+      "currentPasswordInvalid": "Das aktuelle Passwort ist nicht korrekt.",
+      "currentPasswordRequired": "Bitte gib dein aktuelles Passwort ein, um diese Änderung zu bestätigen.",
       "newPassword": "Neues Passwort",
       "newPasswordPlaceholder": "Neues Passwort eingeben",
       "passwordStrength": {

@@ -11,7 +11,7 @@
     const {data} = $props();
 
     const user = $derived(data.user);
-    const language = user.language;
+    let passwordResetKey = $state(0);
 </script>
 
 <div class="mt-2 flex flex-col gap-5">
@@ -23,6 +23,7 @@
             enctype="multipart/form-data"
             method="POST"
             use:enhance={() => {
+            const previousLanguage = user.language;
             return async ({ result }) => {
                 if (result.type === 'redirect') {
                     return goto(result.location, { replaceState: true });
@@ -30,8 +31,9 @@
 
                 if (result.type === 'success') {
                     await invalidateAll();
+                    passwordResetKey += 1;
 
-                    if (user.language !== language) {
+                    if (user.language !== previousLanguage) {
                         setLocale(user.language);
                     }
 
@@ -39,10 +41,21 @@
                     return;
                 }
 
+                if (result.type === 'failure') {
+                    if (result.data?.currentPasswordRequired) {
+                        toast.error(m["settings.profile.currentPasswordRequired"]());
+                        return;
+                    }
+                    if (result.data?.currentPasswordInvalid) {
+                        toast.error(m["settings.profile.currentPasswordInvalid"]());
+                        return;
+                    }
+                }
+
                 toast.error(m["settings.profile.error"]());
             }}}>
 
-        <General {user}/>
+        <General {user} {passwordResetKey}/>
     </form>
 
     <CookbookExport/>

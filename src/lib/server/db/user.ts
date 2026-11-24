@@ -27,11 +27,26 @@ export async function saveProfile(userId: string, username: string, email: strin
         .where(eq(user.id, userId));
 }
 
+export async function getUserPasswordHash(userId: string): Promise<string | null> {
+    const db = getDb();
+    const rows = await db
+        .select({passwordHash: user.passwordHash})
+        .from(user)
+        .where(eq(user.id, userId))
+        .limit(1);
+
+    return rows[0]?.passwordHash ?? null;
+}
+
 export async function updatePassword(userId: string, passwordHash: string) {
     const db = getDb();
-    return db.update(user)
-        .set({passwordHash})
-        .where(eq(user.id, userId));
+    return await db.transaction(async (tx) => {
+        const result = await tx.update(user)
+            .set({passwordHash})
+            .where(eq(user.id, userId));
+        await tx.delete(session).where(eq(session.userId, userId));
+        return result;
+    });
 }
 
 export async function getUsers() {

@@ -2,14 +2,20 @@ import type {RequestEvent} from "@sveltejs/kit";
 import {fail, redirect} from "@sveltejs/kit";
 import type {PageServerLoad} from "./$types";
 import * as v from 'valibot';
-import {saveProfile, updatePassword, deleteUserAccount} from "$lib/server/db/user";
-import {hashPassword} from "$lib/server/utils";
+import {saveProfile, updatePassword, deleteUserAccount, getUserPasswordHash} from "$lib/server/db/user";
+import {hashPassword, verifyPassword} from "$lib/server/utils";
 import {ImageUploadError, saveImage} from "$lib/server/image";
 import {isUserLanguage} from "$lib/types/languages";
 import type {UserLanguage} from "$lib/types/languages";
 import {LANGUAGES} from "$lib/constants";
 import {validatePassword, validateUsername} from "$lib/utils";
-import {deleteSessionTokenCookie, invalidateSession} from "$lib/server/auth";
+import {
+    createSession,
+    deleteSessionTokenCookie,
+    generateSessionToken,
+    invalidateSession,
+    setSessionTokenCookie
+} from "$lib/server/auth";
 import {deletePasskey, getPasskeysByUserId} from "$lib/server/db/passkey";
 
 export const load: PageServerLoad = async ({locals, parent}) => {
@@ -29,7 +35,8 @@ const ProfileSchema = v.object({
 });
 
 export const actions = {
-    save: async ({request, locals}: RequestEvent) => {
+    save: async (event: RequestEvent) => {
+        const {request, locals} = event;
         if (!locals.user) return fail(401);
 
         const formData = await request.formData();
@@ -53,9 +60,27 @@ export const actions = {
             return fail(400, {invalid: true});
         }
 
-        if (parsed.password && parsed.password.length > 0) {
+        const isChangingPassword = Boolean(parsed.password && parsed.password.length > 0);
+        const isChangingEmail = parsed.email !== locals.user.email;
+
+        if (isChangingPassword) {
             if (!validatePassword(parsed.password) || parsed.password !== passwordConfirm) {
                 return fail(400, {invalid: true});
+            }
+        }
+
+        if (isChangingPassword || isChangingEmail) {
+            const currentPassword = String(formData.get("currentPassword") ?? "");
+            if (!currentPassword) {
+                return fail(400, {invalid: true, currentPasswordRequired: true});
+            }
+
+            const storedHash = await getUserPasswordHash(locals.user.id);
+            const validCurrentPassword = storedHash
+                ? await verifyPassword(storedHash, currentPassword)
+                : false;
+            if (!validCurrentPassword) {
+                return fail(403, {invalid: true, currentPasswordInvalid: true});
             }
         }
 
@@ -83,9 +108,13 @@ export const actions = {
                 parsed.language
             );
 
-            if (parsed.password && parsed.password.length > 0) {
+            if (isChangingPassword && parsed.password) {
                 const passwordHash = await hashPassword(parsed.password);
                 await updatePassword(locals.user.id, passwordHash);
+
+                const newToken = generateSessionToken();
+                const newSession = await createSession(newToken, locals.user.id);
+                setSessionTokenCookie(event, newToken, newSession);
             }
 
             return {success: true};
@@ -106,6 +135,20 @@ export const actions = {
     },
     delete: async (event: RequestEvent) => {
         if (!event.locals.user) return fail(401);
+
+        const formData = await event.request.formData();
+        const currentPassword = String(formData.get("currentPassword") ?? "");
+        if (!currentPassword) {
+            return fail(400, {invalid: true, currentPasswordRequired: true});
+        }
+
+        const storedHash = await getUserPasswordHash(event.locals.user.id);
+        const validCurrentPassword = storedHash
+            ? await verifyPassword(storedHash, currentPassword)
+            : false;
+        if (!validCurrentPassword) {
+            return fail(403, {invalid: true, currentPasswordInvalid: true});
+        }
 
         try {
             await deleteUserAccount(event.locals.user.id);

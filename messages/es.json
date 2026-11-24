@@ -367,6 +367,11 @@
         "es": "Español"
       },
       "changePassword": "Cambiar contraseña",
+      "currentPassword": "Contraseña actual",
+      "currentPasswordPlaceholder": "Ingresa tu contraseña actual",
+      "currentPasswordHint": "Obligatoria al cambiar tu correo electrónico o contraseña.",
+      "currentPasswordInvalid": "Tu contraseña actual es incorrecta.",
+      "currentPasswordRequired": "Ingresa tu contraseña actual para confirmar este cambio.",
       "newPassword": "Nueva contraseña",
       "newPasswordPlaceholder": "Ingresa una nueva contraseña",
       "passwordStrength": {
