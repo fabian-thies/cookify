@@ -35,6 +35,7 @@ function loadModule(filename, imports = {}) {
 }
 
 const utils = loadModule('src/lib/utils.ts');
+const authRateLimit = loadModule('src/lib/server/auth-rate-limit.ts');
 const {sanitizeRedirectPath} = utils;
 const ORIGIN = 'https://cookify.example';
 
@@ -93,6 +94,7 @@ describe('sanitizeRedirectPath', () => {
 
 describe('login and register server actions redirect sanitization', () => {
     function loadLoginPageServer() {
+        authRateLimit.clearAuthRateLimits();
         const userRow = {
             id: 'user-1',
             username: 'chefuser',
@@ -137,6 +139,7 @@ describe('login and register server actions redirect sanitization', () => {
             '$lib/utils': utils,
             '$lib/server/utils': {hashPassword: async () => 'hashed-password'},
             '$lib/functions/site.remote': {getAllowRegistrations: async () => true},
+            '$lib/server/auth-rate-limit': authRateLimit,
         });
     }
 

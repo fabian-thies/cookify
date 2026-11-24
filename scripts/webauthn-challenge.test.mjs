@@ -130,6 +130,7 @@ const webauthn = load('src/lib/server/webauthn.ts', {
     '$lib/server/db': {getDb: () => db},
     '$lib/server/db/schema': schema
 });
+const authRateLimit = load('src/lib/server/auth-rate-limit.ts');
 
 let nextGeneratedChallenge = 'server-generated-challenge-1';
 let authVerifyCalls = [];
@@ -197,7 +198,8 @@ const authMock = {
 const loginOptions = load('src/routes/(auth)/login/passkey/options/+server.ts', {
     '@sveltejs/kit': kitMock,
     '@simplewebauthn/server': simpleWebauthnMock,
-    '$lib/server/webauthn': webauthn
+    '$lib/server/webauthn': webauthn,
+    '$lib/server/auth-rate-limit': authRateLimit
 });
 
 const loginVerify = load('src/routes/(auth)/login/passkey/verify/+server.ts', {
@@ -211,7 +213,8 @@ const loginVerify = load('src/routes/(auth)/login/passkey/verify/+server.ts', {
     },
     '$lib/server/auth': authMock,
     '$lib/server/db/passkey': passkeyDbMock,
-    '$lib/server/webauthn': webauthn
+    '$lib/server/webauthn': webauthn,
+    '$lib/server/auth-rate-limit': authRateLimit
 });
 
 const settingsOptions = load('src/routes/(app)/settings/passkey/options/+server.ts', {
@@ -270,6 +273,7 @@ function sha256Hex(value) {
 
 describe('server-side single-use WebAuthn challenge storage', () => {
     beforeEach(() => {
+        authRateLimit.clearAuthRateLimits();
         challengeStore.clear();
         queries = [];
         authVerifyCalls = [];

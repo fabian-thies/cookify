@@ -4,8 +4,13 @@ import {verifyAuthenticationResponse, type AuthenticatorTransportFuture} from '@
 import * as auth from '$lib/server/auth';
 import {getPasskeyById, updatePasskeyCounter} from '$lib/server/db/passkey';
 import {consumeChallenge} from '$lib/server/webauthn';
+import {checkPasskeyVerifyRateLimit, getClientIp} from '$lib/server/auth-rate-limit';
 
 export const POST = async (event) => {
+    if (!checkPasskeyVerifyRateLimit(getClientIp(event))) {
+        throw error(429, 'Too many attempts. Please try again later.');
+    }
+
     const challenge = await consumeChallenge(event, 'authentication');
     if (!challenge) {
         throw error(400, 'Challenge expired');

@@ -172,6 +172,7 @@ describe('profile settings username and password validation', () => {
     test('rejects invalid or mismatched passwords with 400 without touching DB or avatar', async () => {
         const invalidCases = [
             {label: 'too short (5 chars)', password: '12345', passwordConfirm: '12345'},
+            {label: 'too short (9 chars)', password: '123456789', passwordConfirm: '123456789'},
             {label: 'too long (256 chars)', password: 'a'.repeat(256), passwordConfirm: 'a'.repeat(256)},
             {label: 'mismatched confirmation', password: 'validpassword', passwordConfirm: 'differentpassword'},
             {label: 'missing confirmation', password: 'validpassword', passwordConfirm: undefined},
@@ -227,7 +228,7 @@ describe('profile settings username and password validation', () => {
     });
 
     test('allows valid profile save with valid matching password and calls both saveProfile and updatePassword', async () => {
-        const validPasswords = ['123456', 'a'.repeat(255)];
+        const validPasswords = ['1234567890', 'a'.repeat(255)];
 
         for (const password of validPasswords) {
             saveImageCalls = [];

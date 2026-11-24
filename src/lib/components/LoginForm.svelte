@@ -6,7 +6,7 @@
     import CircleAlertIcon from "@lucide/svelte/icons/circle-alert";
     import {Label} from "$lib/components/ui/label/index.js";
     import {Input} from "$lib/components/ui/input/index.js";
-    import {cn, sanitizeRedirectPath} from "$lib/utils.js";
+    import {cn, LEGACY_MIN_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH, sanitizeRedirectPath} from "$lib/utils.js";
     import type {HTMLAttributes} from "svelte/elements";
     import {m} from "$lib/paraglide/messages.js";
     import {page} from "$app/state";
@@ -136,7 +136,7 @@
                                         class="pr-11"
                                         id="password-{id}"
                                         name="password"
-                                        minlength={6}
+                                        minlength={effectiveIsLogin ? LEGACY_MIN_PASSWORD_LENGTH : MIN_PASSWORD_LENGTH}
                                         maxlength={255}
                                         required
                                         type={showPassword ? "text" : "password"}
@@ -166,7 +166,7 @@
                                         id="confirm-password-{id}"
                                         name="confirmPassword"
                                         placeholder={m["login.confirmPasswordPlaceholder"]()}
-                                        minlength={6}
+                                        minlength={MIN_PASSWORD_LENGTH}
                                         maxlength={255}
                                         required
                                         type={showPassword ? "text" : "password"}

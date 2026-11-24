@@ -11,6 +11,7 @@
     import {Camera, Eye, EyeOff, Languages, Lock, Trash2} from "lucide-svelte";
     import SelectComponent from "$lib/components/ui/select/SelectComponent.svelte";
     import {imageVariantUrl} from "$lib/images";
+    import {MIN_PASSWORD_LENGTH} from "$lib/utils";
 
     const {user, formId = 'settings-form'}: { user: PublicUser, formId?: string } = $props();
 
@@ -41,8 +42,8 @@
     let passwordsMatch = $derived(password === passwordConfirm && password.length > 0);
     let passwordStrength = $derived(() => {
         if (password.length === 0) return 'none';
-        if (password.length < 6) return 'weak';
-        if (password.length < 10) return 'medium';
+        if (password.length < MIN_PASSWORD_LENGTH) return 'weak';
+        if (password.length < 14) return 'medium';
         return 'strong';
     });
 
@@ -141,7 +142,7 @@
                                     id="password"
                                     autocomplete="new-password"
                                     maxlength={255}
-                                    minlength={6}
+                                    minlength={MIN_PASSWORD_LENGTH}
                                     name="password"
                                     placeholder={m["settings.profile.newPasswordPlaceholder"]()}
                                     type={showPassword ? "text" : "password"}
@@ -282,7 +283,7 @@
         </div>
     </Card.Content>
     <Card.Footer class="flex-col items-start gap-2">
-        <Button disabled={password.length > 0 && (!passwordsMatch || password.length < 6)} type="submit">
+        <Button disabled={password.length > 0 && (!passwordsMatch || password.length < MIN_PASSWORD_LENGTH)} type="submit">
             {m["settings.profile.save"]()}
         </Button>
     </Card.Footer>

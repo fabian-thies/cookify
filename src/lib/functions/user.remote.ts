@@ -2,7 +2,7 @@ import {command, getRequestEvent, query} from "$app/server";
 import * as v from "valibot";
 import {updatePassword, updateUserEmail, deleteUserAccount, getUsers as getUsersFromDb, getUserById as getUserByIdFromDb, getLocaleByUserId as getLocaleByUserIdFromDb, saveProfile as saveProfileInDb, updatePassword as updatePasswordInDb, deleteUserAccount as deleteUserAccountFromDb} from "$lib/server/db/user";
 import {hashPassword} from "$lib/server/utils";
-import {validateUsername} from "$lib/utils";
+import {MIN_PASSWORD_LENGTH, validateUsername} from "$lib/utils";
 
 function ensureAdmin() {
     const {locals} = getRequestEvent();
@@ -33,7 +33,7 @@ export const setUserPassword = command(v.object({
     userId: v.string(),
     password: v.pipe(
         v.string(),
-        v.minLength(6),
+        v.minLength(MIN_PASSWORD_LENGTH),
         v.maxLength(255)
     ),
 }), async ({userId, password}) => {
@@ -116,7 +116,7 @@ export const saveProfile = command(v.object({
 });
 
 export const updateUserPassword = command(v.object({
-    password: v.pipe(v.string(), v.minLength(6), v.maxLength(255))
+    password: v.pipe(v.string(), v.minLength(MIN_PASSWORD_LENGTH), v.maxLength(255))
 }), async ({password}) => {
     const {locals} = getRequestEvent();
 

@@ -14,10 +14,21 @@ export function validateUsername(username: unknown): username is string {
     );
 }
 
+export const MIN_PASSWORD_LENGTH = 10;
+export const LEGACY_MIN_PASSWORD_LENGTH = 6;
+
 export function validatePassword(password: unknown): password is string {
     return (
         typeof password === 'string' &&
-        password.length >= 6 &&
+        password.length >= MIN_PASSWORD_LENGTH &&
+        password.length <= 255
+    );
+}
+
+export function validateLoginPassword(password: unknown): password is string {
+    return (
+        typeof password === 'string' &&
+        password.length >= LEGACY_MIN_PASSWORD_LENGTH &&
         password.length <= 255
     );
 }
