@@ -10,11 +10,14 @@
     import {m} from "$lib/paraglide/messages";
     import {difficultySelectOptions} from "$lib/types/recipe";
     import type {Snippet} from "svelte";
+    import {onMount, untrack} from "svelte";
+    import {afterNavigate, replaceState} from "$app/navigation";
+    import {page} from "$app/state";
     import * as Popover from "$lib/components/ui/popover";
     import {Badge} from "$lib/components/ui/badge";
     import {Filter, Loader2, Plus, Search, SearchX, SlidersHorizontal, X} from "lucide-svelte";
     import {searchRecipes} from "$lib/functions/recipe.remote";
-    import {matchesCookTimeFilter} from "$lib/recipe-filters";
+    import {applyRecipeFilterParams, matchesCookTimeFilter, parseRecipeFilterParams} from "$lib/recipe-filters";
 
     type Props = {
         recipes: Recipe[];
@@ -22,6 +25,7 @@
         userId: string;
         title?: string;
         showFilters?: boolean;
+        syncUrl?: boolean;
         serverSearch?: boolean;
         loading?: boolean;
         emptyHref?: string;
@@ -41,18 +45,65 @@
         {value: "user", label: m["recipe.list.author.options.user"]()}
     ];
 
-    let {userId, recipes, initialTag = "", title, showFilters = true, serverSearch = false, loading = false, emptyHref = "/recipe/create", emptyLabel = m["nav.create"](), actions}: Props = $props();
+    let {userId, recipes, initialTag = "", title, showFilters = true, syncUrl, serverSearch = false, loading = false, emptyHref = "/recipe/create", emptyLabel = m["nav.create"](), actions}: Props = $props();
 
-    let search = $state("");
-    let ingredientsOnly = $state(false);
+    const shouldSyncUrl = $derived(syncUrl ?? showFilters);
+
+    const initialFilters = untrack(() =>
+        (syncUrl ?? showFilters)
+            ? parseRecipeFilterParams(page.url.searchParams, {fallbackTag: initialTag, allowIngredientsOnly: serverSearch})
+            : {search: "", ingredientsOnly: false, difficulty: "", cookTime: "", tag: initialTag, author: ""}
+    );
+
+    let search = $state(initialFilters.search);
+    let ingredientsOnly = $state(initialFilters.ingredientsOnly);
     let remoteRecipes = $state<Recipe[] | null>(null);
     let searching = $state(false);
-    let selectedDifficulty = $state("");
-    let selectedCookTime = $state("");
-    let selectedTag = $state("");
-    $effect(() => { selectedTag = initialTag; });
-    let author = $state("");
+    let selectedDifficulty = $state(initialFilters.difficulty);
+    let selectedCookTime = $state(initialFilters.cookTime);
+    let selectedTag = $state(initialFilters.tag);
+    let author = $state(initialFilters.author);
     let filterPopoverOpen = $state(false);
+    let mounted = $state(false);
+
+    onMount(() => {
+        mounted = true;
+    });
+
+    afterNavigate(({to}) => {
+        if (!shouldSyncUrl || !to) return;
+        const next = parseRecipeFilterParams(to.url.searchParams, {
+            fallbackTag: initialTag,
+            allowIngredientsOnly: serverSearch
+        });
+        if (search.trim() !== next.search.trim()) {
+            search = next.search;
+        }
+        ingredientsOnly = next.ingredientsOnly;
+        selectedDifficulty = next.difficulty;
+        selectedCookTime = next.cookTime;
+        selectedTag = next.tag;
+        author = next.author;
+    });
+
+    $effect(() => {
+        if (!mounted || !shouldSyncUrl) return;
+        const nextUrl = applyRecipeFilterParams(
+            untrack(() => page.url),
+            {
+                search,
+                ingredientsOnly,
+                difficulty: selectedDifficulty,
+                cookTime: selectedCookTime,
+                tag: selectedTag,
+                author
+            },
+            {allowIngredientsOnly: serverSearch}
+        );
+        if (nextUrl.search !== untrack(() => page.url.search)) {
+            replaceState(nextUrl, untrack(() => page.state));
+        }
+    });
 
     $effect(() => {
         if (!serverSearch) {
@@ -107,6 +158,9 @@
         const tags = new Set<string>();
         for (const recipe of recipes) {
             (recipe.tags ?? []).forEach(tag => tag && tags.add(tag));
+        }
+        if (selectedTag) {
+            tags.add(selectedTag);
         }
 
         return Array.from(tags)
