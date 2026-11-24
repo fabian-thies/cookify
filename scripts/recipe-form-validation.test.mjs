@@ -148,6 +148,7 @@ test('createRecipe and updateRecipe do not crash or insert empty arrays when ing
         '$lib/server/db/index': {getDb: () => ({transaction: (cb) => cb(tx)})},
         '$lib/server/db/schema': schema,
         '$lib/server/utils': {getDifficultyId: () => 1},
+        '$lib/server/image': {deleteImage: async () => {}},
         '$app/server': {}
     });
 

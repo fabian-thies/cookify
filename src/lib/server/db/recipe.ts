@@ -15,6 +15,7 @@ import {
     tips as tipsTable
 } from "$lib/server/db/schema";
 import {getDifficultyId} from "$lib/server/utils";
+import {deleteImage} from "$lib/server/image";
 import {and, asc, desc, eq, getTableColumns, gte, inArray, ne, notInArray, or, sql} from "drizzle-orm";
 import type {CreateRecipeInput, UpdateRecipeInput} from "$lib/types/recipe";
 import {getRequestEvent} from "$app/server";
@@ -118,8 +119,8 @@ export async function createRecipe({
 
 export async function deleteRecipe(userId: string, recipeId: number) {
     const db = getDb();
-    return db.transaction(async (db) => {
-        const recipe = await db.select().from(recipes)
+    const {deleted, imageToDelete} = await db.transaction(async (tx) => {
+        const recipe = await tx.select({userId: recipes.userId, image: recipes.image}).from(recipes)
             .where(and(eq(recipes.id, recipeId), eq(recipes.userId, userId)))
             .limit(1);
 
@@ -127,20 +128,33 @@ export async function deleteRecipe(userId: string, recipeId: number) {
             throw new Error('Insufficient permissions');
         }
 
-        await db.delete(mealPlan).where(eq(mealPlan.recipeId, recipeId));
-        await db.delete(favorite).where(eq(favorite.recipeId, recipeId));
-        await db.delete(recipeRating).where(eq(recipeRating.recipeId, recipeId));
-        await db.delete(cookHistory).where(eq(cookHistory.recipeId, recipeId));
-        await db.delete(collectionToRecipe).where(eq(collectionToRecipe.recipeId, recipeId));
-        await db.delete(difficultyToRecipe).where(eq(difficultyToRecipe.recipeId, recipeId));
-        await db.delete(ingredients).where(eq(ingredients.recipeId, recipeId));
-        await db.delete(stepsTable).where(eq(stepsTable.recipeId, recipeId));
-        await db.delete(tagsTable).where(eq(tagsTable.recipeId, recipeId));
-        await db.delete(tipsTable).where(eq(tipsTable.recipeId, recipeId));
-        return db.delete(recipes)
+        await tx.delete(mealPlan).where(eq(mealPlan.recipeId, recipeId));
+        await tx.delete(favorite).where(eq(favorite.recipeId, recipeId));
+        await tx.delete(recipeRating).where(eq(recipeRating.recipeId, recipeId));
+        await tx.delete(cookHistory).where(eq(cookHistory.recipeId, recipeId));
+        await tx.delete(collectionToRecipe).where(eq(collectionToRecipe.recipeId, recipeId));
+        await tx.delete(difficultyToRecipe).where(eq(difficultyToRecipe.recipeId, recipeId));
+        await tx.delete(ingredients).where(eq(ingredients.recipeId, recipeId));
+        await tx.delete(stepsTable).where(eq(stepsTable.recipeId, recipeId));
+        await tx.delete(tagsTable).where(eq(tagsTable.recipeId, recipeId));
+        await tx.delete(tipsTable).where(eq(tipsTable.recipeId, recipeId));
+        const deleted = await tx.delete(recipes)
             .where(and(eq(recipes.id, recipeId), eq(recipes.userId, userId)))
             .returning({id: recipes.id});
+
+        const image = recipe[0].image;
+        const [shared] = deleted.length > 0 && image
+            ? await tx.select({id: recipes.id}).from(recipes).where(eq(recipes.image, image)).limit(1)
+            : [];
+
+        return {deleted, imageToDelete: deleted.length > 0 && image && !shared ? image : null};
     });
+
+    if (imageToDelete) {
+        await deleteImage(imageToDelete);
+    }
+
+    return deleted;
 }
 
 export async function updateRecipe({

@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import {promises as fs, readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
+import os from 'node:os';
+import path from 'node:path';
 import vm from 'node:vm';
 import ts from 'typescript';
 import {drizzle} from 'drizzle-orm/pg-proxy';
@@ -33,10 +35,15 @@ const schema = load('src/lib/server/db/schema.ts', {
     '../../shopping-list': shoppingList
 });
 let activeDb = db;
+let deletedImages = [];
+let deleteImageImpl = async imageUrl => {
+    deletedImages.push(imageUrl);
+};
 const recipes = load('src/lib/server/db/recipe.ts', {
     '$lib/server/db/index': {getDb: () => activeDb},
     '$lib/server/db/schema': schema,
     '$lib/server/utils': {getDifficultyId: () => 1},
+    '$lib/server/image': {deleteImage: imageUrl => deleteImageImpl(imageUrl)},
     '$app/server': {}
 });
 
@@ -116,3 +123,93 @@ assert.ok(queries.at(-1).params.includes(500));
 assert.equal((await shopping.getWeeklyShoppingList('other', 'owner', '2026-11-23')).accessible, false);
 await assert.rejects(shopping.addManualShoppingItem('other', 'owner', '2026-11-23', 'Soap'), /unavailable/);
 console.log('Shopping list amount-change checks passed');
+
+// deleteRecipe upload cleanup checks
+{
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'cookify-delete-recipe-test-'));
+    try {
+        const uploadDir = path.join(tempRoot, 'uploads');
+        await fs.mkdir(uploadDir, {recursive: true});
+
+        const imagesLib = load('src/lib/images.ts');
+        const imageSource = ts.transpileModule(readFileSync('src/lib/server/image.ts', 'utf8'), {
+            compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true}
+        }).outputText;
+        const imageExports = {};
+        vm.runInNewContext(imageSource, {
+            exports: imageExports,
+            Buffer,
+            File,
+            URL,
+            process: {...process, cwd: () => tempRoot},
+            console: {error() {}, log() {}},
+            require: name => ({
+                './remote-image': {downloadImage: async () => { throw new Error('unused'); }},
+                'heic-convert': async () => new ArrayBuffer(0),
+                '$lib/images': imagesLib
+            })[name] ?? require(name)
+        }, {filename: 'src/lib/server/image.ts'});
+
+        const targetId = '11111111-2222-3333-4444-555555555555';
+        const keepId = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
+        const targetFiles = [
+            `${targetId}.jpg`,
+            `${targetId}-thumb.webp`,
+            `${targetId}-medium.webp`,
+            `${targetId}-large.webp`
+        ];
+        for (const name of [...targetFiles, `${keepId}.jpg`, `${keepId}-thumb.webp`]) {
+            await fs.writeFile(path.join(uploadDir, name), 'img');
+        }
+
+        const makeDeleteDb = ({owner = 'owner', image = `/uploads/${targetId}.jpg`, shared = false, failDelete = false} = {}) => {
+            const txDb = drizzle(async (sql) => {
+                if (sql.startsWith('select "user_id", "image" from "recipes"')) {
+                    return {rows: owner ? [[owner, image]] : []};
+                }
+                if (sql.startsWith('delete from "recipes"')) {
+                    if (failDelete) throw new Error('delete failed');
+                    return {rows: [[99]]};
+                }
+                if (sql.startsWith('select "id" from "recipes" where "recipes"."image"')) {
+                    return {rows: shared ? [[100]] : []};
+                }
+                return {rows: []};
+            });
+            return {transaction: cb => cb(txDb)};
+        };
+
+        deleteImageImpl = imageExports.deleteImage;
+
+        // 1. Unauthorized deletion must not touch files.
+        activeDb = makeDeleteDb({owner: null});
+        await assert.rejects(recipes.deleteRecipe('other', 99), /Insufficient permissions/);
+        await fs.access(path.join(uploadDir, `${targetId}.jpg`));
+
+        // 2. Failed transaction must not delete files.
+        activeDb = makeDeleteDb({failDelete: true});
+        await assert.rejects(
+            recipes.deleteRecipe('owner', 99),
+            err => /delete failed/.test(err.cause?.message ?? err.message)
+        );
+        await fs.access(path.join(uploadDir, `${targetId}.jpg`));
+
+        // 3. Shared image referenced by another recipe must stay on disk.
+        activeDb = makeDeleteDb({shared: true});
+        await recipes.deleteRecipe('owner', 99);
+        await fs.access(path.join(uploadDir, `${targetId}.jpg`));
+
+        // 4. Successful deletion removes original + all WebP variants while leaving unrelated uploads intact.
+        activeDb = makeDeleteDb({shared: false});
+        const deleted = await recipes.deleteRecipe('owner', 99);
+        assert.deepEqual(deleted, [{id: 99}]);
+        for (const name of targetFiles) {
+            await assert.rejects(fs.access(path.join(uploadDir, name)), {code: 'ENOENT'});
+        }
+        await fs.access(path.join(uploadDir, `${keepId}.jpg`));
+        await fs.access(path.join(uploadDir, `${keepId}-thumb.webp`));
+        console.log('Recipe delete upload cleanup checks passed');
+    } finally {
+        await fs.rm(tempRoot, {recursive: true, force: true});
+    }
+}

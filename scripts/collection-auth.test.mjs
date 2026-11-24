@@ -142,6 +142,7 @@ const recipeDb = load('src/lib/server/db/recipe.ts', {
     '$lib/server/db/index': {getDb: () => db},
     '$lib/server/db/schema': schema,
     '$lib/server/utils': {getDifficultyId: () => 1},
+    '$lib/server/image': {deleteImage: async () => {}},
     '$app/server': {getRequestEvent: () => currentEvent}
 });
 
