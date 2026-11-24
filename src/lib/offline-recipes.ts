@@ -6,7 +6,7 @@ export type OfflineRecipe = {
     title: string;
     description: string;
     servings: number;
-    ingredients: {id: number; name: string; quantity: number; unit: string}[];
+    ingredients: {id: number; name: string; quantity: number | null; unit: string}[];
     steps: {id: number; step: string; number: number}[];
     tips: {id: number; tip: string; recipeId: number}[];
 };

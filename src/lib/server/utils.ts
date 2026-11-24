@@ -56,7 +56,7 @@ export function parseRecipeFormData(formData: FormData): {
     cookTime: number;
     servings: number;
     difficulty: "easy" | "medium" | "hard";
-    ingredientsList: { amount: number; unit: string; name: string }[];
+    ingredientsList: { amount: number | null; unit: string; name: string }[];
     steps: string[];
     tags: string[];
     tips: string[];
@@ -97,7 +97,7 @@ export function parseRecipeFormData(formData: FormData): {
 
     validateInputEmpty(title, difficulty);
 
-    const amounts: number[] = [];
+    const amounts: (number | null)[] = [];
     const units: string[] = [];
     const names: string[] = [];
     const stepsArr: string[] = [];
@@ -106,8 +106,12 @@ export function parseRecipeFormData(formData: FormData): {
 
     for (const amount of formData.getAll("ingredients_amount[]")) {
         const raw = amount.toString().trim();
+        if (raw === "") {
+            amounts.push(null);
+            continue;
+        }
         const num = Number(raw);
-        if (raw === "" || !Number.isFinite(num) || num < 0) {
+        if (!Number.isFinite(num) || num < 0) {
             throw new Error("invalid");
         }
         amounts.push(num);

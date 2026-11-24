@@ -58,12 +58,12 @@ async function reconcileRecipes(tx: Transaction, ownerId: string, weekStart: str
     const aggregated = await tx
         .select({
             name: ingredients.name,
-            quantity: sql<number>`sum(
+            quantity: sql<number>`coalesce(sum(
                 ${ingredients.quantity} * CASE
                     WHEN ${mealPlan.servings} IS NULL OR ${recipes.servings} <= 0 THEN 1
                     ELSE ${mealPlan.servings}::double precision / ${recipes.servings}
                 END
-            )`.mapWith(Number),
+            ), 0)`.mapWith(Number),
             unit: ingredients.unit,
         })
         .from(mealPlan)

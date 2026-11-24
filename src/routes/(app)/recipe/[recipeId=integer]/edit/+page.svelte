@@ -47,7 +47,7 @@
         difficulty: recipe.difficulty,
         ingredients: ingredients.map((ingredient) => ({
             name: ingredient.name,
-            amount: ingredient.quantity ?? 1,
+            amount: ingredient.quantity ?? null,
             unit: ingredient.unit
         })),
         steps: steps.map((step) => step.step),

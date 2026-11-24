@@ -11,3 +11,5 @@ assert.equal(servingsQuery(parseServings('bad')), '');
 assert.equal(scaleIngredientQuantity(500, 2, 4), '1000');
 assert.equal(scaleIngredientQuantity(1, 3, 2), '0.67');
 assert.equal(scaleIngredientQuantity(5, 0, 2), '5');
+assert.equal(scaleIngredientQuantity(null, 2, 4), '');
+assert.equal(scaleIngredientQuantity(undefined, 2, 4), '');

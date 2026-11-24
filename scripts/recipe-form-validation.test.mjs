@@ -96,10 +96,32 @@ test('parseRecipeFormData rejects mismatched ingredients_amount[] and ingredient
     moreNames.append('ingredients_name[]', 'Sugar');
     assert.throws(() => parseRecipeFormData(moreNames), /Mismatched ingredients/);
 
-    const blankAmount = buildFormData();
-    blankAmount.append('ingredients_amount[]', '');
-    blankAmount.append('ingredients_name[]', 'Flour');
-    assert.throws(() => parseRecipeFormData(blankAmount));
+    for (const invalidAmount of ['-1', 'abc', 'Infinity', 'NaN']) {
+        const invalid = buildFormData();
+        invalid.append('ingredients_amount[]', invalidAmount);
+        invalid.append('ingredients_name[]', 'Flour');
+        assert.throws(() => parseRecipeFormData(invalid), /invalid/);
+    }
+});
+
+test('parseRecipeFormData accepts blank ingredient quantities as null', () => {
+    const data = buildFormData();
+    data.append('ingredients_amount[]', '');
+    data.append('ingredients_unit[]', 'etwas');
+    data.append('ingredients_name[]', 'Salz');
+    data.append('ingredients_amount[]', '   ');
+    data.append('ingredients_unit[]', '');
+    data.append('ingredients_name[]', 'Pfeffer nach Geschmack');
+    data.append('ingredients_amount[]', '250');
+    data.append('ingredients_unit[]', 'g');
+    data.append('ingredients_name[]', 'Mehl');
+
+    const parsed = parseRecipeFormData(data);
+    assert.deepEqual(parsed.ingredientsList, [
+        {amount: null, unit: 'etwas', name: 'Salz'},
+        {amount: null, unit: '', name: 'Pfeffer nach Geschmack'},
+        {amount: 250, unit: 'g', name: 'Mehl'}
+    ]);
 });
 
 test('parseRecipeFormData defaults missing ingredients_unit[] entry to empty string', () => {

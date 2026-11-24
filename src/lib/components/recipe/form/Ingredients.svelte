@@ -65,7 +65,6 @@
                     name="ingredients_amount[]"
                     bind:value={item.quantity}
                     placeholder={m["recipe.form.ingredients.quantityPlaceholder"]()}
-                    required
             />
         </div>
         <div class="flex w-full flex-col gap-1.5">

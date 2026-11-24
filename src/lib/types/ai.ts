@@ -13,7 +13,7 @@ export interface AiRecipeResult {
     cookTime: number;
     servings: number;
     difficulty: 'easy' | 'medium' | 'hard';
-    ingredients: { name: string; amount: number; unit: string }[];
+    ingredients: { name: string; amount: number | null; unit: string }[];
     steps: string[];
     tags: string[];
     tips: string[];

@@ -13,7 +13,7 @@ import type {UserLanguage} from '$lib/types/languages';
 
 export type CookbookIngredient = {
     name: string;
-    quantity: number;
+    quantity: number | null;
     unit: string;
 };
 

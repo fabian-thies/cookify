@@ -41,7 +41,7 @@ export interface AiRecipe {
     cookTime: number;
     servings: number;
     difficulty: 'easy' | 'medium' | 'hard';
-    ingredients: { name: string; amount: number; unit: string }[];
+    ingredients: { name: string; amount: number | null; unit: string }[];
     steps: string[];
     tags: string[];
     tips: string[];
@@ -70,7 +70,7 @@ The JSON must use this shape:
   "cookTime": integer (total minutes),
   "servings": integer,
   "difficulty": "easy" | "medium" | "hard",
-  "ingredients": [{"name": string, "amount": integer (whole number), "unit": string}],
+  "ingredients": [{"name": string, "amount": number | null (omit or null when "to taste"), "unit": string}],
   "steps": [string],
   "tags": [string],
   "tips": [string],
@@ -188,13 +188,19 @@ function normalizeRecipe(raw: unknown, options: { sourceUrl?: string | null; ima
             const ingredient = item as Record<string, unknown>;
             const name = typeof ingredient.name === 'string' ? ingredient.name.trim() : '';
             if (!name) return null;
+            const parsedAmount = ingredient.amount === null || ingredient.amount === undefined || ingredient.amount === ''
+                ? null
+                : asNumber(ingredient.amount);
+            const amount = parsedAmount !== null && parsedAmount >= 0
+                ? Math.min(100_000, Math.round(parsedAmount * 100) / 100)
+                : null;
             return {
                 name,
-                amount: Math.max(1, Math.round(toNumber(ingredient.amount, 1, 1, 100_000))),
+                amount,
                 unit: typeof ingredient.unit === 'string' ? ingredient.unit.trim() : ''
             };
         })
-        .filter((item): item is { name: string; amount: number; unit: string } => item !== null)
+        .filter((item): item is { name: string; amount: number | null; unit: string } => item !== null)
         .slice(0, 60);
 
     if (ingredients.length === 0) {

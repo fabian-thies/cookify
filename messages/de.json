@@ -138,7 +138,7 @@
       },
       "ingredients": {
         "title": "Zutaten",
-        "quantityLabel": "Menge",
+        "quantityLabel": "Menge (optional)",
         "quantityPlaceholder": "z.B. 500",
         "unitLabel": "Einheit (optional)",
         "unitPlaceholder": "z.B. g, ml, Stück",

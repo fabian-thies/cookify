@@ -112,7 +112,7 @@ export const ingredients = pgTable('ingredients', {
     id: serial('id').primaryKey(),
     recipeId: integer('recipe_id').notNull().references(() => recipes.id),
     name: text('name').notNull(),
-    quantity: doublePrecision('quantity').notNull(),
+    quantity: doublePrecision('quantity'),
     unit: text('unit').notNull(),
 });
 

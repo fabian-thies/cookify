@@ -9,7 +9,7 @@ export interface CreateRecipeInput {
     servings: number;
     userId: string;
     difficulty: string;
-    ingredientsList: { name: string; amount: number; unit: string }[];
+    ingredientsList: { name: string; amount: number | null; unit: string }[];
     steps: string[];
     tags: string[];
     tips: string[];

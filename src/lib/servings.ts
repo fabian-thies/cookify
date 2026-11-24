@@ -6,7 +6,8 @@ export function parseServings(value: number | string | null | undefined): number
     return Number.isInteger(servings) && servings >= 1 && servings <= MAX_SERVINGS ? servings : undefined;
 }
 
-export function scaleIngredientQuantity(quantity: number, recipeServings: number, desiredServings: number): string {
+export function scaleIngredientQuantity(quantity: number | null | undefined, recipeServings: number, desiredServings: number): string {
+    if (quantity == null) return '';
     const value = recipeServings > 0 ? quantity * (desiredServings / recipeServings) : quantity;
     return Number.isFinite(value) ? String(Math.round(value * 100) / 100) : '';
 }

@@ -138,7 +138,7 @@
       },
       "ingredients": {
         "title": "Ingredients",
-        "quantityLabel": "Quantity",
+        "quantityLabel": "Quantity (optional)",
         "quantityPlaceholder": "e.g. 500",
         "unitLabel": "Unit (optional)",
         "unitPlaceholder": "e.g. g, ml, pieces",

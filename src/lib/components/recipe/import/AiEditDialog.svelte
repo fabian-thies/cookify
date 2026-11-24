@@ -42,11 +42,15 @@
         const amounts = data.getAll("ingredients_amount[]");
         const units = data.getAll("ingredients_unit[]");
         const ingredients = names
-            .map((name, index) => ({
-                name: String(name).trim(),
-                amount: Number(amounts[index]) || 1,
-                unit: String(units[index] ?? "").trim()
-            }))
+            .map((name, index) => {
+                const rawAmount = String(amounts[index] ?? "").trim();
+                const parsed = rawAmount === "" ? null : Number(rawAmount);
+                return {
+                    name: String(name).trim(),
+                    amount: parsed !== null && Number.isFinite(parsed) && parsed >= 0 ? parsed : null,
+                    unit: String(units[index] ?? "").trim()
+                };
+            })
             .filter((ingredient) => ingredient.name);
 
         const difficultyRaw = text("difficulty");

@@ -48,6 +48,7 @@ const recipes = load('src/lib/server/db/recipe.ts', {
 });
 
 assert.equal(schema.ingredients.quantity.getSQLType(), 'double precision', 'Fractional amounts must survive storage');
+assert.equal(schema.ingredients.quantity.notNull, false, 'Ingredient quantities must be optional');
 
 await recipes.getRecipes();
 assert.deepEqual(queries.at(-1).params, ['public']);

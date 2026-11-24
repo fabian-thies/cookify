@@ -187,7 +187,7 @@
                     {#each ingredients as ing}
                         <li class="flex items-start gap-3 py-2.5">
                             <span class="min-w-16 text-sm font-semibold tabular-nums text-primary">
-                                {scaleIngredientQuantity(ing.quantity, recipe.servings, desiredServings)}{ing.unit ? ` ${ing.unit}` : ''}
+                                {[scaleIngredientQuantity(ing.quantity, recipe.servings, desiredServings), ing.unit].filter(Boolean).join(' ')}
                             </span>
                             <span class="text-sm leading-relaxed">{ing.name}</span>
                         </li>

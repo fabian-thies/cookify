@@ -220,9 +220,9 @@
                             >
                                 <span class="min-w-0">
                                     <span id={`shopping-item-${item.id}`} class="block break-words text-sm font-medium {item.checked || item.alreadyHave ? 'line-through' : ''}">{item.name}</span>
-                                    {#if !item.manual}
+                                    {#if !item.manual && (item.quantity > 0 || item.unit)}
                                         <span class="block text-xs text-muted-foreground">
-                                            {formatQuantity(item.quantity)}{item.unit ? ` ${item.unit}` : ''}
+                                            {[item.quantity > 0 ? formatQuantity(item.quantity) : '', item.unit].filter(Boolean).join(' ')}
                                         </span>
                                     {/if}
                                     {#if item.quantityIncreased}

@@ -8,7 +8,7 @@
 
     let {servings, ingredients, desiredServings = $bindable() } = $props<{
         servings: number;
-        ingredients: { id: number; name: string; quantity: number; unit: string }[];
+        ingredients: { id: number; name: string; quantity: number | null; unit: string }[];
         desiredServings?: number;
     }>();
 
@@ -41,7 +41,7 @@
 {#snippet IngredientItem({name, quantity, unit}: IngredientParam)}
     <li class="flex items-baseline gap-3 py-2.5">
         <span class="min-w-16 text-sm font-semibold tabular-nums text-primary">
-            {quantity}{unit ? ` ${unit}` : ''}
+            {[quantity, unit].filter(Boolean).join(' ')}
         </span>
         <span class="text-sm leading-relaxed">{name}</span>
     </li>
@@ -78,7 +78,7 @@
             {#each ingredients ?? [] as ing}
                 {@render IngredientItem({
                     name: ing.name,
-                    quantity: scaleIngredientQuantity(ing.quantity ?? 0, servings, displayedServings),
+                    quantity: scaleIngredientQuantity(ing.quantity, servings, displayedServings),
                     unit: ing.unit
                 })}
             {/each}

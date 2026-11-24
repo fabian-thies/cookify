@@ -138,7 +138,7 @@
       },
       "ingredients": {
         "title": "Ingredientes",
-        "quantityLabel": "Cantidad",
+        "quantityLabel": "Cantidad (opcional)",
         "quantityPlaceholder": "p. ej. 500",
         "unitLabel": "Unidad (opcional)",
         "unitPlaceholder": "p. ej. g, ml, piezas",

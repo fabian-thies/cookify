@@ -143,7 +143,8 @@ async function loadImage(image: string): Promise<PdfImage | null> {
     }
 }
 
-function formatQuantity(quantity: number, locale: string): string {
+function formatQuantity(quantity: number | null, locale: string): string {
+    if (quantity == null) return '';
     return new Intl.NumberFormat(locale, {maximumFractionDigits: 2}).format(quantity);
 }
 
