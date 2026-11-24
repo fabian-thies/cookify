@@ -104,7 +104,8 @@
           "any": "Cualquier tiempo",
           "upTo15": "Hasta 15 min",
           "from15To30": "15-30 min",
-          "from30To60": "30-60 min"
+          "from30To60": "30-60 min",
+          "over60": "> 60 min"
         }
       },
       "results": "{count} recetas encontradas",

@@ -14,6 +14,7 @@
     import {Badge} from "$lib/components/ui/badge";
     import {Filter, Loader2, Plus, Search, SearchX, SlidersHorizontal, X} from "lucide-svelte";
     import {searchRecipes} from "$lib/functions/recipe.remote";
+    import {matchesCookTimeFilter} from "$lib/recipe-filters";
 
     type Props = {
         recipes: Recipe[];
@@ -28,30 +29,13 @@
         actions? : Snippet;
     };
 
-    const cookTimeFilters = [
-        {
-            value: "",
-            label: m["recipe.list.cookTime.options.any"](),
-            matches: () => true
-        },
-        {
-            value: "0-15",
-            label: m["recipe.list.cookTime.options.upTo15"](),
-            matches: (time: number) => time <= 15
-        },
-        {
-            value: "15-30",
-            label: m["recipe.list.cookTime.options.from15To30"](),
-            matches: (time: number) => time > 15 && time <= 30
-        },
-        {
-            value: "30-60",
-            label: m["recipe.list.cookTime.options.from30To60"](),
-            matches: (time: number) => time > 30 && time <= 60
-        }
-    ] as const;
-
-    const cookTimeSelectOptions = cookTimeFilters.map(({value, label}) => ({value, label}));
+    const cookTimeSelectOptions = [
+        {value: "", label: m["recipe.list.cookTime.options.any"]()},
+        {value: "0-15", label: m["recipe.list.cookTime.options.upTo15"]()},
+        {value: "15-30", label: m["recipe.list.cookTime.options.from15To30"]()},
+        {value: "30-60", label: m["recipe.list.cookTime.options.from30To60"]()},
+        {value: "60+", label: m["recipe.list.cookTime.options.over60"]()}
+    ];
     const authorSelectOptions = [
         {value: "all", label: m["recipe.list.author.options.all"]()},
         {value: "user", label: m["recipe.list.author.options.user"]()}
@@ -149,8 +133,7 @@
                 !selectedDifficulty || String(recipe.difficulty) === selectedDifficulty;
 
             const cookTime = Number(recipe.cookingTime ?? 0);
-            const selectedFilter = cookTimeFilters.find(({value}) => value === selectedCookTime);
-            const matchesCookTime = selectedFilter ? selectedFilter.matches(cookTime) : true;
+            const matchesCookTime = matchesCookTimeFilter(cookTime, selectedCookTime);
 
             const matchesTags = !selectedTag || recipeTags.some(tag => tag.toLowerCase() === selectedTag.toLowerCase());
 

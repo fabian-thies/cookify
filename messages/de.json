@@ -104,7 +104,8 @@
           "any": "Alle Kochzeiten",
           "upTo15": "Bis 15 Min",
           "from15To30": "15-30 Min",
-          "from30To60": "30-60 Min"
+          "from30To60": "30-60 Min",
+          "over60": "> 60 Min."
         }
       },
       "results": "{count} Rezepte gefunden",
