@@ -217,8 +217,32 @@ test('recipe.remote.ts does not export unused createRecipe or updateRecipe comma
     assert.equal('updateRecipe' in remote, false, 'recipe.remote.ts must not export updateRecipe');
 });
 
-test('Ingredients.svelte two-way binds item.unit', () => {
+test('Ingredients.svelte two-way binds item.unit and supports optional quantities and reordering', () => {
     const source = readFileSync('src/lib/components/recipe/form/Ingredients.svelte', 'utf8');
     assert.match(source, /name="ingredients_unit\[\]"[\s\S]*?bind:value=\{item\.unit\}/);
     assert.doesNotMatch(source, /value=\{item\.unit \|\| ''\}/);
+    assert.doesNotMatch(source, /name="ingredients_amount\[\]"[^>]*?required/);
+    assert.match(source, /moveIngredient\(index, index - 1\)/);
+    assert.match(source, /moveIngredient\(index, index \+ 1\)/);
+    assert.match(source, /ondrop=\{/);
+});
+
+test('Steps.svelte supports reordering via buttons and drag and drop', () => {
+    const source = readFileSync('src/lib/components/recipe/form/Steps.svelte', 'utf8');
+    assert.match(source, /moveStep\(index, index - 1\)/);
+    assert.match(source, /moveStep\(index, index \+ 1\)/);
+    assert.match(source, /ondrop=\{/);
+    assert.match(source, /#each steps as item, index \(item\._key\)/);
+});
+
+test('reorderList moves items cleanly without mutating the input array', () => {
+    const {reorderList} = loadModule('src/lib/list-order.ts');
+    const original = ['a', 'b', 'c', 'd'];
+
+    assert.deepEqual(reorderList(original, 0, 2), ['b', 'c', 'a', 'd']);
+    assert.deepEqual(reorderList(original, 3, 1), ['a', 'd', 'b', 'c']);
+    assert.deepEqual(reorderList(original, 1, 1), ['a', 'b', 'c', 'd']);
+    assert.deepEqual(reorderList(original, -1, 2), ['a', 'b', 'c', 'd']);
+    assert.deepEqual(reorderList(original, 0, 4), ['a', 'b', 'c', 'd']);
+    assert.deepEqual(original, ['a', 'b', 'c', 'd']);
 });

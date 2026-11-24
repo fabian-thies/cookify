@@ -815,7 +815,11 @@ export async function getSteps(recipeId: number) {
 
 export async function getIngredients(recipeId: number) {
     const db = getDb();
-    return db.select(getTableColumns(ingredients)).from(ingredients).where(eq(ingredients.recipeId, recipeId));
+    return db
+        .select(getTableColumns(ingredients))
+        .from(ingredients)
+        .where(eq(ingredients.recipeId, recipeId))
+        .orderBy(asc(ingredients.id));
 }
 
 export async function getTags(recipeId: number) {

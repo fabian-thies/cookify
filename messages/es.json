@@ -339,7 +339,10 @@
     "collections": "Colecciones",
     "noCollectionsAvailable": "Sin colecciones",
     "newCollection": "Nueva colección",
-    "disableSharing": "Desactivar compartir"
+    "disableSharing": "Desactivar compartir",
+    "moveUp": "Subir",
+    "moveDown": "Bajar",
+    "reorder": "Arrastrar para reordenar"
   },
   "settings": {
     "passkey": {

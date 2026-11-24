@@ -341,7 +341,10 @@
     "collections": "Collections",
     "noCollectionsAvailable": "No collections",
     "newCollection": "New collection",
-    "disableSharing": "Disable sharing"
+    "disableSharing": "Disable sharing",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "reorder": "Drag to reorder"
   },
   "settings": {
     "passkey": {
