@@ -17,7 +17,14 @@
     import {Badge} from "$lib/components/ui/badge";
     import {Filter, Loader2, Plus, Search, SearchX, SlidersHorizontal, X} from "lucide-svelte";
     import {searchRecipes} from "$lib/functions/recipe.remote";
-    import {applyRecipeFilterParams, matchesCookTimeFilter, parseRecipeFilterParams} from "$lib/recipe-filters";
+    import {
+        applyRecipeFilterParams,
+        DEFAULT_RECIPE_SORT,
+        matchesCookTimeFilter,
+        parseRecipeFilterParams,
+        type RecipeListQuery,
+        type RecipeSortOption
+    } from "$lib/recipe-filters";
 
     type Props = {
         recipes: Recipe[];
@@ -28,6 +35,10 @@
         syncUrl?: boolean;
         serverSearch?: boolean;
         loading?: boolean;
+        hasMore?: boolean;
+        loadingMore?: boolean;
+        onLoadMore?: () => void;
+        onQueryChange?: (query: RecipeListQuery) => void;
         emptyHref?: string;
         emptyLabel?: string;
         actions? : Snippet;
@@ -44,15 +55,37 @@
         {value: "all", label: m["recipe.list.author.options.all"]()},
         {value: "user", label: m["recipe.list.author.options.user"]()}
     ];
+    const sortSelectOptions = [
+        {value: "recent", label: m["recipe.list.sort.options.recent"]()},
+        {value: "rating", label: m["recipe.list.sort.options.rating"]()},
+        {value: "cookTime", label: m["recipe.list.sort.options.cookTime"]()},
+        {value: "lastCooked", label: m["recipe.list.sort.options.lastCooked"]()}
+    ];
 
-    let {userId, recipes, initialTag = "", title, showFilters = true, syncUrl, serverSearch = false, loading = false, emptyHref = "/recipe/create", emptyLabel = m["nav.create"](), actions}: Props = $props();
+    let {
+        userId,
+        recipes,
+        initialTag = "",
+        title,
+        showFilters = true,
+        syncUrl,
+        serverSearch = false,
+        loading = false,
+        hasMore = false,
+        loadingMore = false,
+        onLoadMore,
+        onQueryChange,
+        emptyHref = "/recipe/create",
+        emptyLabel = m["nav.create"](),
+        actions
+    }: Props = $props();
 
     const shouldSyncUrl = $derived(syncUrl ?? showFilters);
 
     const initialFilters = untrack(() =>
         (syncUrl ?? showFilters)
             ? parseRecipeFilterParams(page.url.searchParams, {fallbackTag: initialTag, allowIngredientsOnly: serverSearch})
-            : {search: "", ingredientsOnly: false, difficulty: "", cookTime: "", tag: initialTag, author: ""}
+            : {search: "", ingredientsOnly: false, difficulty: "", cookTime: "", tag: initialTag, author: "", sort: DEFAULT_RECIPE_SORT}
     );
 
     let search = $state(initialFilters.search);
@@ -63,8 +96,11 @@
     let selectedCookTime = $state(initialFilters.cookTime);
     let selectedTag = $state(initialFilters.tag);
     let author = $state(initialFilters.author);
+    let selectedSort = $state<RecipeSortOption>(initialFilters.sort);
+    let seenTags = $state<string[]>([]);
     let filterPopoverOpen = $state(false);
     let mounted = $state(false);
+    let lastNotifiedQueryKey = "";
 
     onMount(() => {
         mounted = true;
@@ -84,6 +120,7 @@
         selectedCookTime = next.cookTime;
         selectedTag = next.tag;
         author = next.author;
+        selectedSort = next.sort;
     });
 
     $effect(() => {
@@ -96,12 +133,46 @@
                 difficulty: selectedDifficulty,
                 cookTime: selectedCookTime,
                 tag: selectedTag,
-                author
+                author,
+                sort: selectedSort
             },
             {allowIngredientsOnly: serverSearch}
         );
         if (nextUrl.search !== untrack(() => page.url.search)) {
             replaceState(nextUrl, untrack(() => page.state));
+        }
+    });
+
+    $effect(() => {
+        if (!onQueryChange) return;
+        const query: RecipeListQuery = {
+            orderBy: selectedSort,
+            difficulty: selectedDifficulty,
+            cookTime: selectedCookTime,
+            tag: selectedTag,
+            author: author === "user" ? "user" : ""
+        };
+        const key = JSON.stringify(query);
+        if (key === lastNotifiedQueryKey) return;
+        lastNotifiedQueryKey = key;
+        onQueryChange(query);
+    });
+
+    $effect(() => {
+        const incoming = recipes;
+        const current = untrack(() => seenTags);
+        const next = new Set(current);
+        let changed = false;
+        for (const recipe of incoming) {
+            for (const tag of recipe.tags ?? []) {
+                if (tag && !next.has(tag)) {
+                    next.add(tag);
+                    changed = true;
+                }
+            }
+        }
+        if (changed) {
+            seenTags = Array.from(next);
         }
     });
 
@@ -112,6 +183,7 @@
 
         const term = search.trim();
         const byIngredient = ingredientsOnly;
+        const orderBy = selectedSort;
         if (!term) {
             remoteRecipes = null;
             searching = false;
@@ -124,7 +196,7 @@
 
         const timer = setTimeout(async () => {
             try {
-                const result = await searchRecipes({query: term.slice(0, 100), ingredientsOnly: byIngredient}).run();
+                const result = await searchRecipes({query: term.slice(0, 100), ingredientsOnly: byIngredient, orderBy}).run();
                 if (!cancelled) {
                     remoteRecipes = result as Recipe[];
                 }
@@ -155,10 +227,7 @@
     });
 
     const availableTags = $derived.by(() => {
-        const tags = new Set<string>();
-        for (const recipe of recipes) {
-            (recipe.tags ?? []).forEach(tag => tag && tags.add(tag));
-        }
+        const tags = new Set<string>(seenTags);
         if (selectedTag) {
             tags.add(selectedTag);
         }
@@ -170,10 +239,11 @@
 
     let filterActive = $derived(!!search || !!selectedDifficulty || !!selectedCookTime || !!selectedTag || (!!author && author !== "all"));
 
-    const visibleRecipes = $derived(serverSearch && search.trim() ? (remoteRecipes ?? []) : recipes);
+    const isServerSearching = $derived(serverSearch && !!search.trim());
+    const visibleRecipes = $derived(isServerSearching ? (remoteRecipes ?? []) : recipes);
 
     const filteredRecipes = $derived.by(() => {
-        return visibleRecipes.filter(recipe => {
+        const filtered = visibleRecipes.filter(recipe => {
             const term = search.trim().toLowerCase();
             const recipeTags = recipe.tags ?? [];
             const matchesSearch =
@@ -198,6 +268,27 @@
 
             return matchesSearch && matchesDifficulty && matchesCookTime && matchesTags && matchesAuthor;
         });
+
+        if (onQueryChange || isServerSearching) {
+            return filtered;
+        }
+
+        if (selectedSort === "cookTime") {
+            return [...filtered].sort((a, b) =>
+                (a.cookingTime - b.cookingTime) ||
+                (new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) ||
+                (b.id - a.id)
+            );
+        }
+
+        if (selectedSort === "recent") {
+            return [...filtered].sort((a, b) =>
+                (new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) ||
+                (b.id - a.id)
+            );
+        }
+
+        return filtered;
     });
 
     const clearFilters = () => {
@@ -223,7 +314,9 @@
                 {/if}
                 {#if !loading && !(searching && remoteRecipes === null)}
                     <p role="status" aria-live="polite" aria-atomic="true" class="text-sm text-muted-foreground">
-                        {m["recipe.list.results"]({count: filteredRecipes.length})}
+                        {hasMore && !isServerSearching
+                            ? m["recipe.list.resultsMore"]({count: filteredRecipes.length})
+                            : m["recipe.list.results"]({count: filteredRecipes.length})}
                     </p>
                 {/if}
             </div>
@@ -238,7 +331,7 @@
 
     {#if showFilters}
         <div class="flex flex-col gap-3">
-            <div class="flex items-center gap-2">
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <div class="relative flex-1">
                     <Search class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"/>
                     <Input
@@ -263,7 +356,17 @@
                     {/if}
                 </div>
 
-                <Popover.Root bind:open={filterPopoverOpen}>
+                <div class="flex items-center gap-2">
+                    <SelectComponent
+                        options={sortSelectOptions}
+                        placeholder={m["recipe.list.sortPlaceholder"]()}
+                        groupLabel={m["recipe.list.sortGroupLabel"]()}
+                        name="sort"
+                        class="!h-11 flex-1 sm:w-48 sm:flex-none"
+                        bind:value={selectedSort}
+                    />
+
+                    <Popover.Root bind:open={filterPopoverOpen}>
                     <Popover.Trigger aria-label={m["recipe.list.filter"]()} class={buttonVariants({ variant: "outline" }) + " h-11 gap-2 px-3"}>
                         <SlidersHorizontal class="size-4"/>
                         <span class="hidden sm:inline">{m["recipe.list.filter"]()}</span>
@@ -338,6 +441,7 @@
                         </div>
                     </Popover.Content>
                 </Popover.Root>
+                </div>
             </div>
 
             {#if serverSearch}
@@ -426,5 +530,17 @@
                 <RecipeCard {...recipe}/>
             {/each}
         </div>
+        {#if hasMore && onLoadMore && !isServerSearching}
+            <div class="flex justify-center pt-2">
+                <Button disabled={loadingMore} onclick={onLoadMore} variant="outline" class="min-h-11 min-w-40">
+                    {#if loadingMore}
+                        <Loader2 class="size-4 animate-spin"/>
+                        {m["recipe.list.loadingMore"]()}
+                    {:else}
+                        {m["recipe.list.loadMore"]()}
+                    {/if}
+                </Button>
+            </div>
+        {/if}
     {/if}
 </div>

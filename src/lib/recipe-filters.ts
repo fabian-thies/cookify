@@ -3,9 +3,23 @@ import {DIFFICULTIES} from './constants';
 export const COOK_TIME_FILTERS = ['0-15', '15-30', '30-60', '60+'] as const;
 export type CookTimeFilter = (typeof COOK_TIME_FILTERS)[number];
 
+export const RECIPE_SORT_OPTIONS = ['recent', 'rating', 'cookTime', 'lastCooked'] as const;
+export type RecipeSortOption = (typeof RECIPE_SORT_OPTIONS)[number];
+export const DEFAULT_RECIPE_SORT: RecipeSortOption = 'recent';
+export const DEFAULT_RECIPE_PAGE_SIZE = 24;
+
 export interface RecipeFilterState {
     search: string;
     ingredientsOnly: boolean;
+    difficulty: string;
+    cookTime: string;
+    tag: string;
+    author: string;
+    sort: RecipeSortOption;
+}
+
+export interface RecipeListQuery {
+    orderBy: RecipeSortOption;
     difficulty: string;
     cookTime: string;
     tag: string;
@@ -14,6 +28,19 @@ export interface RecipeFilterState {
 
 const VALID_COOK_TIMES = new Set<string>(COOK_TIME_FILTERS);
 const VALID_DIFFICULTIES = new Set<string>(DIFFICULTIES);
+const VALID_SORTS = new Set<string>(RECIPE_SORT_OPTIONS);
+
+export function isCookTimeFilter(value: string): value is CookTimeFilter {
+    return VALID_COOK_TIMES.has(value);
+}
+
+export function isDifficultyFilter(value: string): value is (typeof DIFFICULTIES)[number] {
+    return VALID_DIFFICULTIES.has(value);
+}
+
+export function isRecipeSortOption(value: string): value is RecipeSortOption {
+    return VALID_SORTS.has(value);
+}
 
 export function matchesCookTimeFilter(cookingTime: number, filter: string): boolean {
     switch (filter) {
@@ -38,6 +65,7 @@ export function parseRecipeFilterParams(
     const rawCookTime = params.get('cookTime') ?? '';
     const rawAuthor = params.get('author') ?? '';
     const rawTag = params.get('tag') ?? options.fallbackTag ?? '';
+    const rawSort = params.get('sort') ?? '';
 
     return {
         search: params.get('q') ?? '',
@@ -45,7 +73,8 @@ export function parseRecipeFilterParams(
         difficulty: VALID_DIFFICULTIES.has(rawDifficulty) ? rawDifficulty : '',
         cookTime: VALID_COOK_TIMES.has(rawCookTime) ? rawCookTime : '',
         tag: rawTag.trim(),
-        author: rawAuthor === 'user' ? 'user' : ''
+        author: rawAuthor === 'user' ? 'user' : '',
+        sort: isRecipeSortOption(rawSort) ? rawSort : DEFAULT_RECIPE_SORT
     };
 }
 
@@ -76,6 +105,9 @@ export function applyRecipeFilterParams(
 
     if (options.allowIngredientsOnly && state.ingredientsOnly) params.set('ingredientsOnly', '1');
     else params.delete('ingredientsOnly');
+
+    if (isRecipeSortOption(state.sort) && state.sort !== DEFAULT_RECIPE_SORT) params.set('sort', state.sort);
+    else params.delete('sort');
 
     return nextUrl;
 }

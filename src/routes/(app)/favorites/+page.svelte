@@ -5,33 +5,58 @@
     import {m} from "$lib/paraglide/messages";
     import {getFavoriteRecipes} from "$lib/functions/recipe.remote";
     import type {Recipe} from "$lib/server/db/recipe";
+    import {DEFAULT_RECIPE_SORT, type RecipeListQuery, type RecipeSortOption} from "$lib/recipe-filters";
 
     const {data}: PageProps = $props();
 
     let recipes = $state<Recipe[]>([]);
     let loading = $state(true);
-    const userId = data.user.id;
-
     let failed = $state(false);
+    const userId = $derived(data.user.id);
 
-    async function loadRecipes() {
+    let lastOrderBy: RecipeSortOption | "" = "";
+    let requestVersion = 0;
+
+    async function loadRecipes(orderBy: RecipeSortOption = DEFAULT_RECIPE_SORT) {
+        const version = ++requestVersion;
         loading = true;
         failed = false;
         try {
-            const result = await getFavoriteRecipes().run();
+            const result = await getFavoriteRecipes({orderBy}).run();
+            if (version !== requestVersion) return;
             recipes = result as Recipe[];
         } catch {
+            if (version !== requestVersion) return;
             failed = true;
         } finally {
-            loading = false;
+            if (version === requestVersion) {
+                loading = false;
+            }
         }
     }
 
-    $effect(() => { queueMicrotask(loadRecipes); });
+    function handleQueryChange(query: RecipeListQuery) {
+        if (query.orderBy === lastOrderBy) return;
+        lastOrderBy = query.orderBy;
+        queueMicrotask(() => loadRecipes(query.orderBy));
+    }
+
+    function retryLoad() {
+        lastOrderBy = "";
+        failed = false;
+    }
 </script>
 
 {#if failed}
-    <ErrorState onRetry={loadRecipes}/>
+    <ErrorState onRetry={retryLoad}/>
 {:else}
-<RecipeList emptyHref="/recipe/search" emptyLabel={m["nav.recipes"]()} {userId} {recipes} title={m["routes.favorites.title"]()} {loading}/>
+    <RecipeList
+        emptyHref="/recipe/search"
+        emptyLabel={m["nav.recipes"]()}
+        {userId}
+        {recipes}
+        title={m["routes.favorites.title"]()}
+        {loading}
+        onQueryChange={handleQueryChange}
+    />
 {/if}

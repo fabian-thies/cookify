@@ -463,6 +463,10 @@ describe('remote auth, shareToken isolation, private recipe guards, and user pro
             {limit: -5},
             {limit: 101},
             {limit: 10.5},
+            {orderBy: 'invalid'},
+            {cookTime: '999'},
+            {difficulty: 'extreme'},
+            {author: 'other'},
         ];
 
         for (const input of invalidInputs) {
@@ -476,8 +480,10 @@ describe('remote auth, shareToken isolation, private recipe guards, and user pro
 
         const validDefault = await recipeRemote.getRecipes(undefined);
         assert.ok(Array.isArray(validDefault));
+        assert.match(queries.at(-1).sql, /limit \$\d+/, 'getRecipes() without limit must enforce a default page limit');
+        assert.ok(queries.at(-1).params.includes(24), 'getRecipes() default limit should be 24');
 
-        const validBounded = await recipeRemote.getRecipes({offset: 0, limit: 100, orderBy: 'recent'});
+        const validBounded = await recipeRemote.getRecipes({offset: 0, limit: 100, orderBy: 'rating', cookTime: '60+'});
         assert.ok(Array.isArray(validBounded));
     });
 

@@ -56,10 +56,29 @@ await recipes.getRecipes(0, undefined, undefined, 'owner');
 assert.deepEqual(queries.at(-1).params, ['public', 'owner']);
 assert.match(queries.at(-1).sql, /"recipes"\."visibility" = \$1 or "recipes"\."user_id" = \$2/);
 
+await recipes.getRecipes(24, 25, 'rating', 'owner', {difficulty: 'hard', cookTime: '60+', tag: 'pasta', author: 'user'});
+assert.match(queries.at(-1).sql, /"difficulty"\."difficulty" = \$3/);
+assert.match(queries.at(-1).sql, /"recipes"\."cooking_time" > \$4/);
+assert.match(queries.at(-1).sql, /LOWER\("tags"\."name"\) = LOWER\(\$5\)/);
+assert.match(queries.at(-1).sql, /"recipes"\."user_id" = \$6/);
+assert.match(queries.at(-1).sql, /AVG\("recipe_rating"\."rating"\)::float[\s\S]*DESC NULLS LAST/);
+assert.match(queries.at(-1).sql, /limit \$7 offset \$8/);
+assert.deepEqual(queries.at(-1).params, ['public', 'owner', 'hard', 60, 'pasta', 'owner', 25, 24]);
+
+await recipes.getRecipes(0, 24, 'cookTime', 'owner');
+assert.match(queries.at(-1).sql, /order by "recipes"\."cooking_time" asc, "recipes"\."created_at" desc, "recipes"\."id" desc/);
+
+await recipes.getRecipes(0, 24, 'lastCooked', 'owner');
+assert.match(queries.at(-1).sql, /MAX\("cook_history"\."cooked_at"\)[\s\S]*"cook_history"\."user_id" = \$3[\s\S]*DESC NULLS LAST/);
+assert.deepEqual(queries.at(-1).params, ['public', 'owner', 'owner', 24]);
+
 await recipes.getFavoriteRecipes('owner');
 assert.deepEqual(queries.at(-1).params, ['owner', true, 'public', 'owner']);
 assert.match(queries.at(-1).sql, /"favorite"\."user_id" = \$1/);
 assert.match(queries.at(-1).sql, /"recipes"\."visibility" = \$3 or "recipes"\."user_id" = \$4/);
+
+await recipes.getFavoriteRecipes('owner', 'lastCooked');
+assert.match(queries.at(-1).sql, /MAX\("cook_history"\."cooked_at"\)/);
 
 collectionOwner = 'other';
 const before = queries.length;

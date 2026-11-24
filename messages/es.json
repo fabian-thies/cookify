@@ -87,6 +87,8 @@
       "authorGroupLabel": "Autor",
       "tagsPlaceholder": "Selecciona una etiqueta",
       "tagsGroupLabel": "Etiquetas",
+      "sortPlaceholder": "Ordenar por",
+      "sortGroupLabel": "Ordenar",
       "filter": "Filtros",
       "filterTitle": "Filtrar y ordenar",
       "filterDescription": "Refina tu búsqueda de recetas",
@@ -108,7 +110,18 @@
           "over60": "> 60 min"
         }
       },
+      "sort": {
+        "options": {
+          "recent": "Más recientes",
+          "rating": "Mejor valoradas",
+          "cookTime": "Menor tiempo",
+          "lastCooked": "Cocinadas recientemente"
+        }
+      },
       "results": "{count} recetas encontradas",
+      "resultsMore": "{count}+ recetas encontradas",
+      "loadMore": "Cargar más",
+      "loadingMore": "Cargando más...",
       "noRecipes": "No se encontraron recetas",
       "clearFilters": "Limpiar filtros"
     },

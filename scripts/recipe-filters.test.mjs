@@ -52,8 +52,8 @@ describe('matchesCookTimeFilter', () => {
 });
 
 describe('recipe filter query parameter synchronization', () => {
-    test('parseRecipeFilterParams reads valid filters and ignores invalid values', () => {
-        const params = new URLSearchParams('q=pasta&cookTime=60%2B&difficulty=hard&tag=italian&author=user&ingredientsOnly=1');
+    test('parseRecipeFilterParams reads valid filters and sort and ignores invalid values', () => {
+        const params = new URLSearchParams('q=pasta&cookTime=60%2B&difficulty=hard&tag=italian&author=user&ingredientsOnly=1&sort=rating');
         assert.deepEqual(
             {...filters.parseRecipeFilterParams(params, {allowIngredientsOnly: true})},
             {
@@ -62,11 +62,12 @@ describe('recipe filter query parameter synchronization', () => {
                 difficulty: 'hard',
                 cookTime: '60+',
                 tag: 'italian',
-                author: 'user'
+                author: 'user',
+                sort: 'rating'
             }
         );
 
-        const invalid = new URLSearchParams('cookTime=999&difficulty=extreme&author=other&ingredientsOnly=1');
+        const invalid = new URLSearchParams('cookTime=999&difficulty=extreme&author=other&ingredientsOnly=1&sort=random');
         assert.deepEqual(
             {...filters.parseRecipeFilterParams(invalid, {fallbackTag: 'vegan', allowIngredientsOnly: false})},
             {
@@ -75,12 +76,13 @@ describe('recipe filter query parameter synchronization', () => {
                 difficulty: '',
                 cookTime: '',
                 tag: 'vegan',
-                author: ''
+                author: '',
+                sort: 'recent'
             }
         );
     });
 
-    test('applyRecipeFilterParams mirrors active filters and removes cleared ones while keeping unrelated params', () => {
+    test('applyRecipeFilterParams mirrors active filters and sort and removes defaults while keeping unrelated params', () => {
         const base = new URL('https://cookify.example/recipe/search?foo=bar');
         const withFilters = filters.applyRecipeFilterParams(base, {
             search: '  risotto ',
@@ -88,7 +90,8 @@ describe('recipe filter query parameter synchronization', () => {
             difficulty: 'medium',
             cookTime: '60+',
             tag: 'dinner',
-            author: 'user'
+            author: 'user',
+            sort: 'lastCooked'
         }, {allowIngredientsOnly: true});
 
         assert.equal(withFilters.searchParams.get('foo'), 'bar');
@@ -98,6 +101,7 @@ describe('recipe filter query parameter synchronization', () => {
         assert.equal(withFilters.searchParams.get('tag'), 'dinner');
         assert.equal(withFilters.searchParams.get('author'), 'user');
         assert.equal(withFilters.searchParams.get('ingredientsOnly'), '1');
+        assert.equal(withFilters.searchParams.get('sort'), 'lastCooked');
 
         const cleared = filters.applyRecipeFilterParams(withFilters, {
             search: '   ',
@@ -105,7 +109,8 @@ describe('recipe filter query parameter synchronization', () => {
             difficulty: '',
             cookTime: '',
             tag: '',
-            author: 'all'
+            author: 'all',
+            sort: 'recent'
         }, {allowIngredientsOnly: true});
 
         assert.equal(cleared.search, '?foo=bar');

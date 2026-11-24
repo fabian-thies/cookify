@@ -211,24 +211,43 @@ export const disableRecipeShare = command(v.object({
     return disableRecipeShareInDb(userId, recipeId);
 });
 
+const DEFAULT_RECIPE_PAGE_SIZE = 24;
+const recipeSortSchema = v.picklist(['recent', 'rating', 'cookTime', 'lastCooked']);
+const recipeOrderBySchema = v.picklist(['recent', 'popular', 'rating', 'cookTime', 'lastCooked']);
+const recipeCookTimeSchema = v.picklist(['0-15', '15-30', '30-60', '60+']);
+const recipeDifficultySchema = v.picklist(['easy', 'medium', 'hard']);
+const recipeAuthorSchema = v.picklist(['all', 'user']);
+
 export const getRecipes = query(v.optional(v.object({
     offset: v.optional(v.pipe(v.number(), v.integer(), v.minValue(0), v.maxValue(100_000)), 0),
-    limit: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(100))),
-    orderBy: v.optional(v.picklist(['recent', 'popular']))
+    limit: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(100)), DEFAULT_RECIPE_PAGE_SIZE),
+    orderBy: v.optional(recipeOrderBySchema),
+    difficulty: v.optional(recipeDifficultySchema),
+    cookTime: v.optional(recipeCookTimeSchema),
+    tag: v.optional(v.pipe(v.string(), v.trim(), v.minLength(1), v.maxLength(100))),
+    author: v.optional(recipeAuthorSchema)
 })), async (params) => {
-    const {offset = 0, limit, orderBy} = params || {};
+    const {offset = 0, limit = DEFAULT_RECIPE_PAGE_SIZE, orderBy, difficulty, cookTime, tag, author} = params || {};
     const {locals} = getRequestEvent();
     if (!locals.user) throw new Error('User not authenticated');
-    return await getRecipesFromDb(offset, limit, orderBy, locals.user.id);
+    return await getRecipesFromDb(offset, limit, orderBy, locals.user.id, {
+        difficulty,
+        cookTime,
+        tag,
+        author
+    });
 });
 
 export const searchRecipes = query(v.object({
     query: v.pipe(v.string(), v.trim(), v.minLength(1), v.maxLength(100)),
     ingredientsOnly: v.optional(v.boolean(), false),
-}), async ({query, ingredientsOnly}) => {
+    orderBy: v.optional(recipeSortSchema),
+}), async ({query, ingredientsOnly, orderBy}) => {
     const {locals} = getRequestEvent();
     if (!locals.user) throw new Error('User not authenticated');
-    return ingredientsOnly ? searchRecipesByIngredients(query, locals.user.id) : searchRecipesFromDb(query, locals.user.id);
+    return ingredientsOnly
+        ? searchRecipesByIngredients(query, locals.user.id, orderBy)
+        : searchRecipesFromDb(query, locals.user.id, 60, orderBy);
 });
 
 export const getRecentRecipes = query(async () => {
@@ -258,9 +277,11 @@ export const recordRecipeCooked = command(v.object({
     await recordRecipeCookedInDb(user.id, recipeId);
 });
 
-export const getFavoriteRecipes = query(async () => {
+export const getFavoriteRecipes = query(v.optional(v.object({
+    orderBy: v.optional(recipeSortSchema)
+})), async (params) => {
     const user = requireAuth();
-    return await getFavoriteRecipesFromDb(user.id);
+    return await getFavoriteRecipesFromDb(user.id, params?.orderBy);
 });
 
 export const getDifficulties = query(async () => {

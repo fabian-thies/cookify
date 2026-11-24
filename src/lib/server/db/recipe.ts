@@ -16,10 +16,79 @@ import {
 } from "$lib/server/db/schema";
 import {getDifficultyId} from "$lib/server/utils";
 import {deleteImage} from "$lib/server/image";
-import {and, asc, desc, eq, getTableColumns, gte, inArray, ne, notInArray, or, sql} from "drizzle-orm";
-import type {CreateRecipeInput, UpdateRecipeInput} from "$lib/types/recipe";
+import {and, asc, desc, eq, getTableColumns, gt, gte, inArray, lte, ne, notInArray, or, sql} from "drizzle-orm";
+import type {CreateRecipeInput, Difficulty as DifficultyName, UpdateRecipeInput} from "$lib/types/recipe";
+import type {CookTimeFilter} from "$lib/recipe-filters";
 import {getRequestEvent} from "$app/server";
 import {randomUUID} from "crypto";
+
+export type RecipeOrderBy = "recent" | "popular" | "random" | "rating" | "cookTime" | "lastCooked";
+export type RecipeListFilters = {
+    difficulty?: DifficultyName;
+    cookTime?: CookTimeFilter;
+    tag?: string;
+    author?: "all" | "user";
+};
+
+function cookTimeSqlCondition(cookTime: CookTimeFilter) {
+    switch (cookTime) {
+        case "0-15":
+            return lte(recipes.cookingTime, 15);
+        case "15-30":
+            return and(gt(recipes.cookingTime, 15), lte(recipes.cookingTime, 30));
+        case "30-60":
+            return and(gt(recipes.cookingTime, 30), lte(recipes.cookingTime, 60));
+        case "60+":
+            return gt(recipes.cookingTime, 60);
+    }
+}
+
+function recipeOrderByExpressions(orderBy: RecipeOrderBy, viewerId?: string) {
+    switch (orderBy) {
+        case "recent":
+            return [desc(recipes.createdAt), desc(recipes.id)];
+        case "popular":
+            return [desc(recipes.viewCount), desc(recipes.id)];
+        case "random":
+            return [sql`RANDOM()`];
+        case "cookTime":
+            return [asc(recipes.cookingTime), desc(recipes.createdAt), desc(recipes.id)];
+        case "rating": {
+            const avgRating = sql`(
+                SELECT AVG(${recipeRating.rating})::float
+                FROM ${recipeRating}
+                WHERE ${recipeRating.recipeId} = ${recipes.id}
+            )`;
+            const ratingCount = sql`(
+                SELECT COUNT(*)::int
+                FROM ${recipeRating}
+                WHERE ${recipeRating.recipeId} = ${recipes.id}
+            )`;
+            return [
+                sql`${avgRating} DESC NULLS LAST`,
+                desc(ratingCount),
+                desc(recipes.createdAt),
+                desc(recipes.id)
+            ];
+        }
+        case "lastCooked": {
+            if (!viewerId) {
+                return [desc(recipes.createdAt), desc(recipes.id)];
+            }
+            const lastCooked = sql`(
+                SELECT MAX(${cookHistory.cookedAt})
+                FROM ${cookHistory}
+                WHERE ${cookHistory.recipeId} = ${recipes.id}
+                  AND ${cookHistory.userId} = ${viewerId}
+            )`;
+            return [
+                sql`${lastCooked} DESC NULLS LAST`,
+                desc(recipes.createdAt),
+                desc(recipes.id)
+            ];
+        }
+    }
+}
 
 const tagListSubquery = sql<string[]>`COALESCE(ARRAY(
     SELECT ${tagsTable.name}
@@ -282,7 +351,13 @@ export async function updateRecipeNutrition(
     return updated;
 }
 
-export async function getRecipes(offset = 0, limit?: number, orderBy?: "recent" | "popular" | "random", viewerId?: string) {
+export async function getRecipes(
+    offset = 0,
+    limit?: number,
+    orderBy?: RecipeOrderBy,
+    viewerId?: string,
+    filters?: RecipeListFilters
+) {
     const db = getDb();
     let query = db.select({
         ...publicRecipeColumns,
@@ -295,26 +370,40 @@ export async function getRecipes(offset = 0, limit?: number, orderBy?: "recent" 
         .offset(offset)
         .$dynamic();
 
-    query = query.where(or(
+    const visibilityCondition = or(
         eq(recipes.visibility, "public"),
         viewerId ? eq(recipes.userId, viewerId) : undefined
-    ));
+    );
+    const conditions = [visibilityCondition];
+
+    if (filters?.difficulty) {
+        conditions.push(eq(difficulty.difficulty, filters.difficulty));
+    }
+    if (filters?.cookTime) {
+        const cookTimeCondition = cookTimeSqlCondition(filters.cookTime);
+        if (cookTimeCondition) {
+            conditions.push(cookTimeCondition);
+        }
+    }
+    if (filters?.tag) {
+        conditions.push(sql`EXISTS (
+            SELECT 1
+            FROM ${tagsTable}
+            WHERE ${tagsTable.recipeId} = ${recipes.id}
+              AND LOWER(${tagsTable.name}) = LOWER(${filters.tag})
+        )`);
+    }
+    if (filters?.author === "user" && viewerId) {
+        conditions.push(eq(recipes.userId, viewerId));
+    }
+
+    query = query.where(conditions.length === 1 ? visibilityCondition : and(...conditions));
 
     if (limit) {
         query = query.limit(limit);
     }
 
-    switch (orderBy) {
-        case "recent":
-            query = query.orderBy(desc(recipes.createdAt))
-            break;
-        case "popular":
-            query = query.orderBy(desc(recipes.viewCount))
-            break;
-        case "random":
-            query = query.orderBy(sql`RANDOM()`)
-            break;
-    }
+    query = query.orderBy(...recipeOrderByExpressions(orderBy ?? "recent", viewerId));
 
     return query;
 }
@@ -327,7 +416,7 @@ function searchTerms(input: string): string[] {
         .filter((term) => term.length > 0);
 }
 
-export async function searchRecipesByIngredients(input: string, viewerId: string) {
+export async function searchRecipesByIngredients(input: string, viewerId: string, orderBy?: RecipeOrderBy) {
     const terms = [...new Set(input.toLowerCase().split(',').map(term => term.trim()).filter(Boolean))];
     if (!terms.length) return [];
 
@@ -347,11 +436,11 @@ export async function searchRecipesByIngredients(input: string, viewerId: string
         .innerJoin(difficultyToRecipe, eq(difficultyToRecipe.recipeId, recipes.id))
         .innerJoin(difficulty, eq(difficulty.id, difficultyToRecipe.difficultyId))
         .where(and(or(eq(recipes.visibility, 'public'), eq(recipes.userId, viewerId)), ...matches))
-        .orderBy(desc(recipes.createdAt), desc(recipes.id))
+        .orderBy(...recipeOrderByExpressions(orderBy ?? "recent", viewerId))
         .limit(60);
 }
 
-export async function searchRecipes(searchTerm: string, viewerId?: string, limit = 60) {
+export async function searchRecipes(searchTerm: string, viewerId?: string, limit = 60, orderBy?: RecipeOrderBy) {
     const query = searchTerm.trim();
     const terms = searchTerms(query);
     if (terms.length === 0) {
@@ -390,6 +479,10 @@ export async function searchRecipes(searchTerm: string, viewerId?: string, limit
         (${descriptionSimilarity})
     )`;
 
+    const orderByClauses = orderBy && orderBy !== "recent"
+        ? recipeOrderByExpressions(orderBy, viewerId)
+        : [desc(relevance), desc(recipes.createdAt), desc(recipes.id)];
+
     return db.select({
         ...publicRecipeColumns,
         difficulty: difficulty.difficulty,
@@ -405,7 +498,7 @@ export async function searchRecipes(searchTerm: string, viewerId?: string, limit
             ),
             and(...termMatches)
         ))
-        .orderBy(desc(relevance), desc(recipes.createdAt))
+        .orderBy(...orderByClauses)
         .limit(limit);
 }
 
@@ -665,9 +758,9 @@ export async function getForYouRecipes(userId: string, limit = 12) {
         .map(({feedScore, ...recipe}) => recipe);
 }
 
-export async function getFavoriteRecipes(userId: string) {
+export async function getFavoriteRecipes(userId: string, orderBy?: RecipeOrderBy) {
     const db = getDb();
-    return db.select({
+    let query = db.select({
         ...publicRecipeColumns,
         difficulty: difficulty.difficulty,
         tags: tagListSubquery,
@@ -680,7 +773,14 @@ export async function getFavoriteRecipes(userId: string) {
             eq(favorite.userId, userId),
             eq(favorite.favorite, true),
             or(eq(recipes.visibility, "public"), eq(recipes.userId, userId))
-        ));
+        ))
+        .$dynamic();
+
+    if (orderBy) {
+        query = query.orderBy(...recipeOrderByExpressions(orderBy, userId));
+    }
+
+    return query;
 }
 
 export async function getRecipeById(id: number) {
