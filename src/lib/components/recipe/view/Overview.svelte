@@ -21,6 +21,8 @@
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import {Badge} from "$lib/components/ui/badge/index.js";
     import {Button, buttonVariants} from "$lib/components/ui/button/index.js";
+    import {Input} from "$lib/components/ui/input/index.js";
+    import {Label} from "$lib/components/ui/label/index.js";
     import {m} from "$lib/paraglide/messages";
     import {
         createCollection,
@@ -112,6 +114,9 @@
     let isUpdatingShare = $state(false);
     let showDeleteDialog = $state(false);
     let showRatingDialog = $state(false);
+    let showCreateCollectionDialog = $state(false);
+    let newCollectionTitle = $state("");
+    let isCreatingCollection = $state(false);
     let isEstimatingNutrition = $state(false);
     let nutrition = $state({
         calories: initialCalories,
@@ -222,12 +227,28 @@
         }
     }
 
+    function openCreateCollectionDialog() {
+        newCollectionTitle = "";
+        showCreateCollectionDialog = true;
+    }
+
     async function createCollectionOnClick() {
+        const title = newCollectionTitle.trim();
+        if (!title || isCreatingCollection) {
+            return;
+        }
+
         try {
-            await createCollection({title: "Collection"});
+            isCreatingCollection = true;
+            await createCollection({title});
+            await getCollectionsForRecipe().refresh().catch(() => {});
+            showCreateCollectionDialog = false;
+            newCollectionTitle = "";
             toast.success(m["collection.created"]());
         } catch (e) {
             toast.error(m["actions.error"]());
+        } finally {
+            isCreatingCollection = false;
         }
     }
 
@@ -497,7 +518,7 @@
                                     <div class="px-4 py-2 text-sm text-destructive">{m["actions.error"]()}</div>
                                 {/await}
                                 <DropdownMenu.Separator/>
-                                <DropdownMenu.Item onclick={createCollectionOnClick}>
+                                <DropdownMenu.Item onclick={openCreateCollectionDialog}>
                                     <Plus class="size-4"/>
                                     <span>{m["actions.newCollection"]()}</span>
                                 </DropdownMenu.Item>
@@ -589,3 +610,35 @@
         </Dialog.Content>
     </Dialog.Root>
 {/if}
+
+<Dialog.Root bind:open={showCreateCollectionDialog} onOpenChange={(open) => { if (!open) newCollectionTitle = ""; }}>
+    <Dialog.Content>
+        <form class="flex flex-col gap-5" onsubmit={(e) => { e.preventDefault(); createCollectionOnClick(); }}>
+            <Dialog.Header>
+                <Dialog.Title>{m["collection.createTitle"]()}</Dialog.Title>
+            </Dialog.Header>
+            <div class="grid gap-2">
+                <Label for="new-collection-title">{m["collection.nameLabel"]()}</Label>
+                <Input
+                    bind:value={newCollectionTitle}
+                    id="new-collection-title"
+                    maxlength={100}
+                    placeholder={m["collection.namePlaceholder"]()}
+                    required
+                />
+            </div>
+            <Dialog.Footer>
+                <Dialog.Close class={buttonVariants({ variant: "outline" })} type="button">
+                    {m["actions.cancel"]()}
+                </Dialog.Close>
+                <Button disabled={isCreatingCollection || !newCollectionTitle.trim()} type="submit">
+                    {#if isCreatingCollection}
+                        <Spinner/>
+                    {:else}
+                        {m["collection.create"]()}
+                    {/if}
+                </Button>
+            </Dialog.Footer>
+        </form>
+    </Dialog.Content>
+</Dialog.Root>

@@ -307,9 +307,15 @@ describe('collection auth, ownership, and recipe visibility', () => {
         assert.equal(state.links.size, 1);
 
         currentEvent = {locals: {user: {id: 'alice', administrator: false}}, params: {}};
-        const createdEmpty = await remote.createCollection({title: 'Empty Picks'});
+        const createdEmpty = await remote.createCollection({title: '  Empty Picks  '});
         assert.equal(createdEmpty.title, 'Empty Picks');
         assert.equal(state.links.size, 1);
+
+        await assert.rejects(
+            () => remote.createCollection({title: '   '}),
+            v.ValiError,
+            'createCollection must reject whitespace-only titles'
+        );
     });
 
     test('getCollections SQL filters recipeCount, thumbnails, and isInCollection by recipe visibility', async () => {

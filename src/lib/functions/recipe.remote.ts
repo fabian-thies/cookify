@@ -165,6 +165,7 @@ export const toggleRecipeInCollection = command(v.object({
 export const createCollection = command(v.object({
     title: v.pipe(
         v.string(),
+        v.trim(),
         v.minLength(1),
         v.maxLength(100)
     )
