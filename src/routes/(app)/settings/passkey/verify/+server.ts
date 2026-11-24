@@ -2,7 +2,7 @@ import {error, json} from '@sveltejs/kit';
 import {isoBase64URL} from '@simplewebauthn/server/helpers';
 import {verifyRegistrationResponse} from '@simplewebauthn/server';
 import {createPasskey} from '$lib/server/db/passkey';
-import {takeChallengeCookie} from '$lib/server/webauthn';
+import {consumeChallenge} from '$lib/server/webauthn';
 
 export const POST = async (event) => {
     const user = event.locals.user;
@@ -10,7 +10,7 @@ export const POST = async (event) => {
         throw error(401, 'Unauthorized');
     }
 
-    const challenge = takeChallengeCookie(event);
+    const challenge = await consumeChallenge(event, 'registration', user.id);
     if (!challenge) {
         throw error(400, 'Challenge expired');
     }

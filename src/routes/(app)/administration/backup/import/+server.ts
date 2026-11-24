@@ -73,7 +73,7 @@ export const POST = async ({ locals, request }) => {
         const uploadRestore = staged;
         await db.transaction(async (tx) => {
             const tables = [
-                table.passkey, table.recipeRating, table.favorite, table.tips, table.tags,
+                table.passkey, table.webauthnChallenge, table.recipeRating, table.favorite, table.tips, table.tags,
                 table.steps, table.ingredients, table.difficultyToRecipe, table.collectionToRecipe,
                 table.collections, table.difficulty, table.mealPlan, table.shoppingListItems, table.shoppingListShares,
                 table.recipeNotes, table.cookHistory, table.session, table.recipes, table.siteSettings, table.user,

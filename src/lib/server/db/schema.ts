@@ -58,6 +58,16 @@ export const passkey = pgTable('passkey', {
     createdAt: timestamp('created_at', {withTimezone: true, mode: 'date'}).notNull().defaultNow()
 });
 
+export const webauthnChallenge = pgTable('webauthn_challenge', {
+    id: text('id').primaryKey(),
+    challenge: text('challenge').notNull(),
+    purpose: text('purpose', {enum: ['authentication', 'registration']}).notNull(),
+    userId: text('user_id').references(() => user.id, {onDelete: 'cascade'}),
+    expiresAt: timestamp('expires_at', {withTimezone: true, mode: 'date'}).notNull()
+}, (t) => [
+    index('webauthn_challenge_expires_at_idx').on(t.expiresAt),
+]);
+
 export const recipes = pgTable('recipes', {
     id: serial('id').primaryKey(),
     title: text('title').notNull(),
@@ -221,6 +231,7 @@ export const collectionToRecipe = pgTable('collection_to_recipe', {
 
 export type Session = typeof session.$inferSelect;
 export type Passkey = typeof passkey.$inferSelect;
+export type WebauthnChallenge = typeof webauthnChallenge.$inferSelect;
 export type Recipe = typeof recipes.$inferSelect;
 export type Ingredient = typeof ingredients.$inferSelect;
 export type Step = typeof steps.$inferSelect;

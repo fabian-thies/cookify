@@ -1,6 +1,6 @@
 import {json} from '@sveltejs/kit';
 import {generateAuthenticationOptions} from '@simplewebauthn/server';
-import {setChallengeCookie} from '$lib/server/webauthn';
+import {createChallenge} from '$lib/server/webauthn';
 
 export const POST = async (event) => {
     const options = await generateAuthenticationOptions({
@@ -8,7 +8,7 @@ export const POST = async (event) => {
         userVerification: 'required'
     });
 
-    setChallengeCookie(event, options.challenge);
+    await createChallenge(event, options.challenge, 'authentication');
 
     return json(options);
 };

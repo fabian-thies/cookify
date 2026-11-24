@@ -183,6 +183,13 @@
       "when": 1795436098418,
       "tag": "0025_recipe_notes",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1795554705763,
+      "tag": "0026_webauthn_challenge",
+      "breakpoints": true
     }
   ]
 }

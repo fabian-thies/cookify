@@ -3,10 +3,10 @@ import {isoBase64URL} from '@simplewebauthn/server/helpers';
 import {verifyAuthenticationResponse, type AuthenticatorTransportFuture} from '@simplewebauthn/server';
 import * as auth from '$lib/server/auth';
 import {getPasskeyById, updatePasskeyCounter} from '$lib/server/db/passkey';
-import {takeChallengeCookie} from '$lib/server/webauthn';
+import {consumeChallenge} from '$lib/server/webauthn';
 
 export const POST = async (event) => {
-    const challenge = takeChallengeCookie(event);
+    const challenge = await consumeChallenge(event, 'authentication');
     if (!challenge) {
         throw error(400, 'Challenge expired');
     }
