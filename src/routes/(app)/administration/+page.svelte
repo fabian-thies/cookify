@@ -3,6 +3,7 @@
     import General from "$lib/components/administration-settings/form/General.svelte";
     import {getUsers} from "$lib/functions/user.remote";
     import {getAllowRegistrations} from "$lib/functions/site.remote";
+    import {m} from "$lib/paraglide/messages";
     import type {PublicUser} from "$lib/server/db/schema";
 
     const {data} = $props();
@@ -34,7 +35,7 @@
 
 {#if loading}
     <div class="flex items-center justify-center py-12">
-        <span class="text-muted-foreground">Loading…</span>
+        <span class="text-muted-foreground">{m.loading()}</span>
     </div>
 {:else if failed}
     <ErrorState onRetry={loadAdministration}/>
