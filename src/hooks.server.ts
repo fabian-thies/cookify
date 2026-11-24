@@ -6,6 +6,37 @@ import {env} from '$env/dynamic/private';
 import {resolveAppLocale} from '$lib/server/locale';
 import {OFFLINE_ACCOUNT_COOKIE} from '$lib/offline-recipes';
 
+const SECURITY_HEADERS: Record<string, string> = {
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+};
+
+const handleSecurityHeaders: Handle = async ({event, resolve}) => {
+    const response = await resolve(event);
+    const missing = Object.entries(SECURITY_HEADERS).filter(([name]) => !response.headers.has(name));
+    if (missing.length === 0) {
+        return response;
+    }
+
+    try {
+        for (const [name, value] of missing) {
+            response.headers.set(name, value);
+        }
+        return response;
+    } catch {
+        const headers = new Headers(response.headers);
+        for (const [name, value] of missing) {
+            headers.set(name, value);
+        }
+        return new Response(response.body, {
+            status: response.status,
+            statusText: response.statusText,
+            headers
+        });
+    }
+};
+
 const handleParaglide: Handle = async ({event, resolve}) => {
     const locale = resolveAppLocale(env.DEFAULT_LOCALE, event.cookies.get('PARAGLIDE_LOCALE'), event.locals.user?.language);
     event.cookies.set('PARAGLIDE_LOCALE', locale, {
@@ -46,4 +77,4 @@ const handleAuth: Handle = async ({event, resolve}) => {
     return resolve(event);
 };
 
-export const handle: Handle = sequence(handleAuth, handleParaglide);
+export const handle: Handle = sequence(handleSecurityHeaders, handleAuth, handleParaglide);
