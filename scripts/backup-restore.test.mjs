@@ -4,6 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {createRequire} from 'node:module';
 import vm from 'node:vm';
+import AdmZip from 'adm-zip';
 import ts from 'typescript';
 import {drizzle} from 'drizzle-orm/pg-proxy';
 
@@ -120,6 +121,76 @@ try {
     assert.equal(fs.statSync(uploads).ino, rootInode);
     assert.equal(fs.readFileSync(restored, 'utf8'), 'saved photo bytes');
     assert.deepEqual(fs.readdirSync(uploads), ['cover.png']);
+
+    const minimalDataJson = Buffer.from(JSON.stringify({users: [], recipes: [], ingredients: [], steps: []}));
+    function readBackupBuffer(zipBuffer) {
+        const body = new FormData();
+        body.set('file', new File([zipBuffer], 'backup.zip'));
+        return archive.readBackup(new Request('https://cookify.example/backup', {method: 'POST', body}));
+    }
+
+    function replaceAllBytes(buffer, from, to) {
+        const copy = Buffer.from(buffer);
+        const needle = Buffer.from(from, 'utf8');
+        const replacement = Buffer.from(to, 'utf8');
+        assert.equal(needle.length, replacement.length);
+        let index = 0;
+        while ((index = copy.indexOf(needle, index)) !== -1) {
+            replacement.copy(copy, index);
+            index += replacement.length;
+        }
+        return copy;
+    }
+
+    // Oversized data.json rejected with 400
+    {
+        const oversizedDataZip = new AdmZip();
+        oversizedDataZip.addFile('data.json', Buffer.alloc(archive.MAX_DATA_JSON_BYTES + 1, 0x20));
+        await assert.rejects(() => readBackupBuffer(oversizedDataZip.toBuffer()), {status: 400});
+    }
+
+    // Oversized upload entry rejected with 400
+    {
+        const oversizedUploadZip = new AdmZip();
+        oversizedUploadZip.addFile('data.json', minimalDataJson);
+        oversizedUploadZip.addFile('uploads/huge.png', Buffer.alloc(archive.MAX_UPLOAD_ENTRY_BYTES + 1, 0x00));
+        await assert.rejects(() => readBackupBuffer(oversizedUploadZip.toBuffer()), {status: 400});
+    }
+
+    // Excessive entry count (> MAX_ARCHIVE_ENTRIES) rejected with 400
+    {
+        const manyEntriesZip = new AdmZip();
+        manyEntriesZip.addFile('data.json', minimalDataJson);
+        for (let i = 0; i < archive.MAX_ARCHIVE_ENTRIES; i++) {
+            manyEntriesZip.addFile(`uploads/f${i}.png`, Buffer.alloc(0));
+        }
+        await assert.rejects(() => readBackupBuffer(manyEntriesZip.toBuffer()), {status: 400});
+    }
+
+    // Duplicate upload entries (exact & case-colliding) rejected with 400
+    {
+        const caseCollidingZip = new AdmZip();
+        caseCollidingZip.addFile('data.json', minimalDataJson);
+        caseCollidingZip.addFile('uploads/Photo.png', Buffer.from('a'));
+        caseCollidingZip.addFile('uploads/photo.png', Buffer.from('b'));
+        await assert.rejects(() => readBackupBuffer(caseCollidingZip.toBuffer()), {status: 400});
+
+        const exactDuplicateZip = new AdmZip();
+        exactDuplicateZip.addFile('data.json', minimalDataJson);
+        exactDuplicateZip.addFile('uploads/dup1.png', Buffer.from('a'));
+        exactDuplicateZip.addFile('uploads/dup2.png', Buffer.from('b'));
+        const exactDuplicateBuffer = replaceAllBytes(exactDuplicateZip.toBuffer(), 'uploads/dup2.png', 'uploads/dup1.png');
+        await assert.rejects(() => readBackupBuffer(exactDuplicateBuffer), {status: 400});
+    }
+
+    // Duplicate data.json rejected with 400
+    {
+        const dupDataZip = new AdmZip();
+        dupDataZip.addFile('data.json', minimalDataJson);
+        dupDataZip.addFile('datb.json', minimalDataJson);
+        const dupDataBuffer = replaceAllBytes(dupDataZip.toBuffer(), 'datb.json', 'data.json');
+        await assert.rejects(() => readBackupBuffer(dupDataBuffer), {status: 400});
+    }
 } finally {
     fs.rmSync(cwd, {recursive: true, force: true});
 }

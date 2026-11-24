@@ -56,7 +56,7 @@ export const GET = async ({ locals }) => {
     const zipBuffer = zip.toBuffer();
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
 
-    return new Response(zipBuffer, {
+    return new Response(new Uint8Array(zipBuffer), {
         headers: {
             'Content-Type': 'application/zip',
             'Content-Disposition': `attachment; filename="cookify-backup-${timestamp}.zip"`,
